@@ -1,0 +1,4 @@
+theme: jekyll-theme-cayman
+title: PyPRT - Python Bindings for the CityEngine SDK
+repository: arcgis/pyprt
+show_downloads: false
