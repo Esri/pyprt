@@ -1,4 +1,4 @@
-STLENC - CityEngine SDK Custom STL Encoder
+PyEncoder - CityEngine SDK Custom Geometry Encoder for Python
 ------------------------------------------
 
 
@@ -22,7 +22,7 @@ BUILD INSTRUCTIONS
 ------------------
 
 1. Open a `VS2015 x64 Native Tools Command Prompt`
-1. Change into the example directory: `cd <your path to>\esri-cityengine-sdk\examples\stlenc`
+1. Change into the example directory: `cd <your path to>\esri-cityengine-sdk\examples\py4prt`
 1. Create a build directory: `mkdir build`
 1. Change into the build directory: `cd build`
 1. Run cmake: `cmake -G "NMake Makefiles" -CMAKE_BUILD_TYPE=RelWithDebSym ..\src`
