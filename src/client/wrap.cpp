@@ -6,6 +6,7 @@
 
 #include "utils.h"
 #include "logging.h"
+#include "PyCallbacks.h"
 
 #include "prt/prt.h"
 #include "prt/API.h"
@@ -35,20 +36,23 @@ namespace {
     const char*    FILE_LOG = "pyprt.log";
     const wchar_t* FILE_CGA_ERROR = L"CGAErrors.txt";
     const wchar_t* FILE_CGA_PRINT = L"CGAPrint.txt";
+    const wchar_t* FILE_CGA_REPORT = L"CGAReport.txt";
+    const char*    FILE_NAME_CGA_REPORT = "CGAReport.txt";
     const wchar_t* ENCODER_ID_CGA_ERROR = L"com.esri.prt.core.CGAErrorEncoder";
     const wchar_t* ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
-    const wchar_t* ENCODER_OPT_NAME = L"name";
-    const wchar_t* FILE_CGA_REPORT = L"CGAReport.txt";
     const wchar_t* ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
-    const char*    FILE_NAME_CGA_REPORT = "CGAReport.txt";
+    const wchar_t* ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
+    const wchar_t* ENCODER_OPT_NAME = L"name";
+    
 
     /**
      * Helper struct to manage PRT lifetime (e.g. the prt::init() call)
      */
     struct PRTContext {
         PRTContext(prt::LogLevel defaultLogLevel) {
-            const pcu::Path sourcefilePath(__FILE__);
-            const pcu::Path installPath = sourcefilePath.getParent().getParent().getParent() / "install";
+            //const pcu::Path executablePath(pcu::getExecutablePath());
+            const pcu::Path executablePath("C:\\Users\\cami9495\\Documents\\esri-cityengine-sdk-master\\examples\\py4prt\\install\\bin");
+            const pcu::Path installPath = executablePath.getParent();
             const pcu::Path fsLogPath = installPath / FILE_LOG;
 
             mLogHandler.reset(prt::ConsoleLogHandler::create(prt::LogHandler::ALL, prt::LogHandler::ALL_COUNT));
@@ -103,7 +107,7 @@ namespace {
 
 } // namespace
 
-PRTContext prtCtx((prt::LogLevel) 8);
+PRTContext prtCtx((prt::LogLevel) 0);
 
 int py_printVal(int val) {
     //std::cout << val << std::endl;
@@ -148,22 +152,18 @@ void py_prtInit() { // Test function (unusable paths)
                 std::cout << e.what() << std::endl;
             }
 
-            std::cout << "Salut1" << std::endl;
 
             if (resolveMap && (status == prt::STATUS_OK)) {
                 LOG_DBG << "resolve map = " << pcu::objectToXML(resolveMap.get()) << std::endl;
-                std::cout << "Salut2" << std::endl;
             }
             else {
                 LOG_ERR << "getting resolve map from '" << inputArgs.mRulePackage << "' failed, aborting." << std::endl;
-                std::cout << "Salut3" << std::endl;
             }
-            std::cout << "Salut4" << std::endl;
         }
-        std::cout << "Salut5" << std::endl;
 
         // -- create cache & callback
-        pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(inputArgs.mOutputPath.native_wstring().c_str()) };
+        //pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(inputArgs.mOutputPath.native_wstring().c_str()) }; // 1/6
+        std::unique_ptr<PyCallbacks> foc(new PyCallbacks());
         pcu::CachePtr cache{ prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT) };
 
         // Step 3: Initial Shape
@@ -211,11 +211,11 @@ void py_prtInit() { // Test function (unusable paths)
             resolveMap.get()
         );
 
-        std::cout << "Salut6" << std::endl;
 
         // -- create initial shape
         const pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
         const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
+
 
         // Step 4 : Generate (encoder info, encoder options, trigger procedural 3D model generation)
         const pcu::AttributeMapBuilderPtr optionsBuilder{ prt::AttributeMapBuilder::create() };
@@ -226,28 +226,34 @@ void py_prtInit() { // Test function (unusable paths)
         optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_REPORT);
         const pcu::AttributeMapPtr reportOptions{ optionsBuilder->createAttributeMapAndReset() };
 
+
         // -- validate & complete encoder options
         const pcu::AttributeMapPtr validatedEncOpts{ createValidatedOptions(pcu::toUTF16FromOSNarrow(inputArgs.mEncoderID), inputArgs.mEncoderOpts) };
         const pcu::AttributeMapPtr validatedErrOpts{ createValidatedOptions(ENCODER_ID_CGA_ERROR, errOptions) };
         const pcu::AttributeMapPtr validatedPrintOpts{ createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions) };
         const pcu::AttributeMapPtr validatedReportOpts{ createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions) };
 
+
         // -- setup encoder IDs and corresponding options
         const std::wstring encoder = pcu::toUTF16FromOSNarrow(inputArgs.mEncoderID);
         const std::array<const wchar_t*, 4> encoders = {
                 encoder.c_str(),      // our desired encoder
-                ENCODER_ID_CGA_ERROR, // an encoder to redirect rule errors into CGAErrors.txt
+                ENCODER_ID_CGA_ERROR, // an encoder to redirect rule errors to CGAErrors.txt
                 ENCODER_ID_CGA_PRINT,  // an encoder to redirect CGA print statements to CGAPrint.txt
-                ENCODER_ID_CGA_REPORT // an encoder to redirect CGA report to CGAReport.txt
+                ENCODER_ID_CGA_REPORT, // an encoder to redirect CGA report to CGAReport.txt
         };
         const std::array<const prt::AttributeMap*, 4> encoderOpts = { validatedEncOpts.get(), validatedErrOpts.get(), validatedPrintOpts.get(), validatedReportOpts.get() };
 
+        std::cout << "Before generate" << std::endl;
         // Step 5: Generate
         const prt::Status genStat = prt::generate(
             initialShapes.data(), initialShapes.size(), nullptr,
             encoders.data(), encoders.size(), encoderOpts.data(),
             foc.get(), cache.get(), nullptr
         );
+
+        std::cout << "After generate" << std::endl;
+
         if (genStat != prt::STATUS_OK) {
             LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
         }

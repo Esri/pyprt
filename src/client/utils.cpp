@@ -56,6 +56,11 @@ void tokenize(const std::basic_string<C>& str, std::vector<std::basic_string<C>>
 	}
 }
 
+} // namespace
+
+
+namespace pcu {
+
 #if defined(_WIN32)
 #	include <Windows.h>
 #elif defined(__APPLE__)
@@ -93,10 +98,6 @@ pcu::Path getExecutablePath() {
 #endif
 }
 
-} // namespace
-
-
-namespace pcu {
 
 /**
  * Helper function to convert a list of "<key>:<type>=<value>" strings into a prt::AttributeMap

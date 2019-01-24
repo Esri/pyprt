@@ -35,6 +35,7 @@
 #include "prtx/EncodeOptions.h"
 #include "prtx/EncoderInfoBuilder.h"
 #include "prtx/ReportsCollector.h"
+#include "prtx/Exception.h"
 
 #include <sstream>
 #include <iostream>
@@ -60,8 +61,8 @@ const prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS = prtx::EncodePrep
 
 
 const std::wstring PyEncoder::ID          = L"com.esri.prt.examples.PyEncoder";
-const std::wstring PyEncoder::NAME        = L"Python Encoder";
-const std::wstring PyEncoder::DESCRIPTION = L"Geometry encoder for Python";
+const std::wstring PyEncoder::NAME        = L"Python Geometry Encoder";
+const std::wstring PyEncoder::DESCRIPTION = L"Encodes geometry for Python.";
 
 
 /**
@@ -101,7 +102,10 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
  * finalized geometry instances.
  */
 void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
-    prt::SimpleOutputCallbacks* cb = dynamic_cast<prt::SimpleOutputCallbacks*>(getCallbacks());
+    //prt::SimpleOutputCallbacks* cb = dynamic_cast<prt::SimpleOutputCallbacks*>(getCallbacks()); // 2/6
+    auto* cb = dynamic_cast<IPyCallbacks*>(getCallbacks());
+    if (cb == nullptr)
+        throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
 	const std::wstring baseName = getOptions()->getString(EO_BASE_NAME);
 
 	std::vector<prtx::EncodePreparator::FinalizedInstance> finalizedInstances;
@@ -110,14 +114,14 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
     std::vector<int32_t> shapeIDs;
     shapeIDs.reserve(finalizedInstances.size());
 
-    std::wostringstream out;
-    out << L"Summary Test: \n";
+    //std::wostringstream out; // 3/6
+    //out << L"Summary Test: \n"; // 4/6
     for (const auto& instance : finalizedInstances) {
 
-        out << L"Shape Name ";
+        /*out << L"Shape Name ";
         out << instance.getShapeId();
         out << L" \n";
-        out << L"List of vertices\n";
+        out << L"List of vertices\n";*/
 
         shapeIDs.push_back(instance.getShapeId());
 
@@ -139,17 +143,17 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
                 coordMatrix.push_back(vertexCoord);
             }
 
-            //cb->add(is->getName(), coordMatrix, shapeIDs.data());
+            cb->add(L"salut", coordMatrix, shapeIDs.data()); // 5/6
         }
     }
 
-    out << "      End of writting file.";
+    std::cout << "End of writting file.";
 
-    // let the client application write the file via callback
+    /*// let the client application write the file via callback // 6/6
 	const std::wstring fileName = baseName + ENCFILE_EXT;
 	const uint64_t h = cb->open(ID.c_str(), prt::CT_GEOMETRY, fileName.c_str(), prt::SimpleOutputCallbacks::SE_UTF8);
 	cb->write(h, out.str().c_str());
-	cb->close(h, 0, 0);
+	cb->close(h, 0, 0);*/
     
 }
 

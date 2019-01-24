@@ -7,11 +7,13 @@ cmake_policy(SET CMP0015 NEW)
 
 message(STATUS "Python Module System Information: " ${PYTHON_MODULE_EXTENSION})
 set(PYTHON_MODULE_EXTENSION ".pyd")
-pybind11_add_module(${CLIENT_TARGET} utils.cpp wrap.cpp)
+pybind11_add_module(${CLIENT_TARGET} utils.cpp wrap.cpp PyCallbacks.cpp)
 
 
 target_link_libraries(${CLIENT_TARGET} PRIVATE ${PRT_LINK_LIBRARIES})
-target_include_directories(${CLIENT_TARGET} PRIVATE ${PRT_INCLUDE_PATH})
+target_include_directories(${CLIENT_TARGET} PRIVATE
+     ${PRT_INCLUDE_PATH}
+     ${PROJECT_SOURCE_DIR}/codec/encoder)
 
 
 ### install target

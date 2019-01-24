@@ -30,7 +30,14 @@
 #include <iostream>
 
 
+
 void PyCallbacks::add(const wchar_t* name, const std::vector<std::vector<double>> verticesCoord, const int32_t* shapeIDs) {
     std::cout << "PYCALLBACKS ADD CALL: " << name << std::endl;
 
 }
+
+// prt::Status PyCallbacks::generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
+//     LOG_WRN << message; // generate error for one shape is not yet a reason to abort cooking
+//     mStatuses[isIndex] = status;
+//     return prt::STATUS_OK;
+// }

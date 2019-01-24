@@ -131,6 +131,8 @@ inline std::wostream& operator<<(std::wostream& out, const Path& p) {
 	return out;
 }
 
+Path getExecutablePath();
+
 /**
  * command line argument helper
  */
