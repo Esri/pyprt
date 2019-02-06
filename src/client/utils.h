@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include "PyCallbacks.h"
+
 #include "prt/API.h"
 #include "prt/FileOutputCallbacks.h"
 #include "prt/LogHandler.h"
@@ -30,7 +32,7 @@
 #include <cstdlib>
 
 
-namespace pcu { // prt4cmd utils
+namespace pcu {
 
 enum class RunStatus : uint8_t {
 	DONE     = EXIT_SUCCESS,
@@ -60,8 +62,9 @@ using ConsoleLogHandlerPtr   = std::unique_ptr<      prt::ConsoleLogHandler,   P
 using FileLogHandlerPtr      = std::unique_ptr<      prt::FileLogHandler,      PRTDestroyer>;
 using EncoderInfoPtr         = std::unique_ptr<const prt::EncoderInfo,         PRTDestroyer>;
 using DecoderInfoPtr         = std::unique_ptr<const prt::DecoderInfo,         PRTDestroyer>;
-
 using SimpleOutputCallbacksPtr = std::unique_ptr<prt::SimpleOutputCallbacks, PRTDestroyer>;
+using PyCallbacksPtr = std::unique_ptr<PyCallbacks>;
+
 /**
  * prt encoder options helpers
  */

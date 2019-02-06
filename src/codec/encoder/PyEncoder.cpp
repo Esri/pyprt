@@ -36,6 +36,7 @@
 #include "prtx/EncoderInfoBuilder.h"
 #include "prtx/ReportsCollector.h"
 #include "prtx/Exception.h"
+//#include "prt/CGAErrorLevel.h"
 
 #include <sstream>
 #include <iostream>
@@ -102,7 +103,7 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
  * finalized geometry instances.
  */
 void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
-    //prt::SimpleOutputCallbacks* cb = dynamic_cast<prt::SimpleOutputCallbacks*>(getCallbacks()); // 2/6
+    //prt::SimpleOutputCallbacks* cb2 = dynamic_cast<prt::SimpleOutputCallbacks*>(getCallbacks()); // 2/6
     auto* cb = dynamic_cast<IPyCallbacks*>(getCallbacks());
     if (cb == nullptr)
         throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
@@ -143,7 +144,8 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
                 coordMatrix.push_back(vertexCoord);
             }
 
-            cb->add(L"salut", coordMatrix, shapeIDs.data()); // 5/6
+            cb->add(baseName.c_str(), coordMatrix, instance.getShapeId()); // 5/6
+
         }
     }
 
@@ -151,9 +153,9 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
 
     /*// let the client application write the file via callback // 6/6
 	const std::wstring fileName = baseName + ENCFILE_EXT;
-	const uint64_t h = cb->open(ID.c_str(), prt::CT_GEOMETRY, fileName.c_str(), prt::SimpleOutputCallbacks::SE_UTF8);
-	cb->write(h, out.str().c_str());
-	cb->close(h, 0, 0);*/
+	const uint64_t h = cb2->open(ID.c_str(), prt::CT_GEOMETRY, fileName.c_str(), prt::SimpleOutputCallbacks::SE_UTF8);
+	cb2->write(h, out.str().c_str());
+	cb2->close(h, 0, 0);*/
     
 }
 

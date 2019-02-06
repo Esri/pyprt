@@ -109,15 +109,17 @@ namespace {
 
 PRTContext prtCtx((prt::LogLevel) 0);
 
+
 int py_printVal(int val) {
     //std::cout << val << std::endl;
     return val;
 }
 
-void py_prtInit() { // Test function (unusable paths)
+std::vector<std::vector<double>> py_prtInit() { // Test function (unusable paths)
+    pcu::PyCallbacksPtr foc;
     try {
         // Step 1: Initialization (setup console, logging, licensing information, PRT extension library path, prt::init)
-        char *argvInit[] = { "","-l","6","-g","C:\\Users\\cami9495\\Documents\\esri-cityengine-sdk-master\\data\\simple_scene_0.obj","-p","C:/Users/cami9495/Documents/esri-cityengine-sdk-master/data/simple_rule2019.rpk","-a","ruleFile:string=bin/simple_rule2019.cgb","-a","startRule:string=Default$Footprint","-e","com.esri.prt.examples.PyEncoder","-z","baseName:string=theBuilding","-o","output1" };
+        char *argvInit[] = { "","-l","6","-g","C:\\Users\\cami9495\\Documents\\esri-cityengine-sdk-master\\data\\simple_scene_0.obj","-p","C:/Users/cami9495/Documents/esri-cityengine-sdk-master/data/simple_rule2019.rpk","-a","ruleFile:string=bin/simple_rule2019.cgb","-a","startRule:string=Default$Footprint","-e","com.esri.prt.examples.PyEncoder","-z","baseName:string=theModel","-o","output1" };
         int argcInit = (int)(sizeof(argvInit) / sizeof(argvInit[0]));
 
         const pcu::InputArgs inputArgs(argcInit, argvInit);
@@ -163,7 +165,8 @@ void py_prtInit() { // Test function (unusable paths)
 
         // -- create cache & callback
         //pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(inputArgs.mOutputPath.native_wstring().c_str()) }; // 1/6
-        std::unique_ptr<PyCallbacks> foc(new PyCallbacks());
+        //std::unique_ptr<PyCallbacks> foc(new PyCallbacks());
+        foc = std::make_unique<PyCallbacks>();
         pcu::CachePtr cache{ prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT) };
 
         // Step 3: Initial Shape
@@ -266,6 +269,8 @@ void py_prtInit() { // Test function (unusable paths)
     catch (...) {
         std::cerr << "caught unknown exception." << std::endl;
     }
+    
+    return foc->getGeometry();
 }
 
 std::vector<std::string> py_prtReadReportGenerate(const std::string theRulePckPath, const std::string theRuleFile, const std::string theStartRule, const std::string theShapePath, const std::string outputFolder) {
@@ -429,11 +434,54 @@ std::vector<std::string> py_prtReadReportGenerate(const std::string theRulePckPa
     return reportRead;
 }
 
+namespace {
+    class ModelGenerator {
+    public:
+        ModelGenerator();
+        ModelGenerator(std::string rulePkgPath);
+        ~ModelGenerator();
+
+        bool generateModel();
+
+    private:
+        std::string initialShapePath = "C:\\Users\\cami9495\\Documents\\esri-cityengine-sdk-master\\data\\simple_scene_0.obj";
+        std::string rulePackagePath = "C:/Users/cami9495/Documents/esri-cityengine-sdk-master/data/simple_rule2019.rpk";
+        std::vector<std::string> shapeAttributes = { "ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint" };
+
+        std::vector<std::vector<double>> modelGeometry;
+    };
+
+    ModelGenerator::ModelGenerator() {
+        std::cout << "Creation of class instance!!! default" << std::endl;
+        std::cout << rulePackagePath << std::endl;
+    }
+
+    ModelGenerator::ModelGenerator(std::string rulePkgPath) {
+        std::cout << "Creation of class instance!!!" << std::endl;
+        rulePackagePath = rulePkgPath;
+        std::cout << rulePackagePath << std::endl;
+    }
+
+    ModelGenerator::~ModelGenerator() {
+    }
+
+    bool ModelGenerator::generateModel() {
+        std::cout << "Geometry will be populated." << std::endl;
+        py_prtInit();
+        //modelGeometry = ? ? ? ;
+        return true;
+    }
+
+} // namespace
 
 
 namespace py = pybind11;
 
 PYBIND11_MODULE(pyprt, m) {
+    py::class_<ModelGenerator>(m, "ModelGenerator")
+        .def(py::init<>()).def(py::init<std::string>())
+        .def("generateModel", &ModelGenerator::generateModel);
+
     m.def("printVal",&py_printVal,"Test Python added function for printing.");
     m.def("prtInit", &py_prtInit, "py4prt Test Init Functions Binding.");
     m.def("prtReportGenerate", &py_prtReadReportGenerate, "");

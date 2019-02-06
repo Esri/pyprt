@@ -32,9 +32,14 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 
 class PyCallbacks : public IPyCallbacks {
+private:
+    std::vector<std::vector<double>> geometryData;
+
+
 public:
     
 	PyCallbacks() = default;
@@ -44,8 +49,14 @@ public:
 	void add(
 		const wchar_t* name,
 		const std::vector<std::vector<double>> verticesCoord,
-		const int32_t* shapeIDs
+		const int32_t shapeIDs
 	) override;
+
+    std::vector<std::vector<double>>& getGeometry() {
+        std::cout << "Get the geometry for the callback." << std::endl;
+        return geometryData;
+    }
+
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
 		return prt::STATUS_OK;
@@ -56,6 +67,9 @@ public:
 	}
 
 	prt::Status cgaError(size_t isIndex, int32_t shapeID, prt::CGAErrorLevel level, int32_t methodId, int32_t pc, const wchar_t* message) {
+
+        //std::cout << "Calling CGA error member function!!!" << std::endl;
+
 		return prt::STATUS_OK;
 	}
 

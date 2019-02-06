@@ -3,3 +3,8 @@
 /src/.idea
 /src/CMakeSettings.json
 /.vs
+
+src/CMakeLists_NOFOLDER.txt
+README_linux_osx.md
+src/client/wrap_simple.cpp
+src/pybind11

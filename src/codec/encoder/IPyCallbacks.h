@@ -41,6 +41,9 @@ public:
         const wchar_t* name,
         const std::vector<std::vector<double>> verticesCoord,
         //const prt::AttributeMap** reports,
-        const int32_t* shapeIDs
+        const int32_t shapeIDs
     ) = 0;
+
+    virtual std::vector<std::vector<double>>& getGeometry() = 0;
+
 };
