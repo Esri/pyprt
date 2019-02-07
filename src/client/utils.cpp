@@ -43,7 +43,7 @@ namespace {
 	const std::string FILE_SCHEMA = "file:";
 #endif
 
-const char* ENCODER_ID_OBJ = "com.esri.prt.codecs.OBJEncoder";
+const char* ENCODER_ID_PYTHON = "com.esri.prt.examples.PyEncoder";
 
 template<typename C>
 void tokenize(const std::basic_string<C>& str, std::vector<std::basic_string<C>>& tokens, const std::basic_string<C>& delimiters) {
@@ -143,89 +143,6 @@ AttributeMapPtr createAttributeMapFromTypedKeyValues(const std::vector<std::stri
 	}
 	return AttributeMapPtr{bld->createAttributeMapAndReset()};
 }
-
-/**
- * Parse the command line arguments and setup the inputArgs struct.
- */
-InputArgs::InputArgs(int argc, char *argv[]) : mStatus(RunStatus::FAILED) {
-	// determine current path
-	const Path sourceFilePath(__FILE__);
-	mWorkDir = sourceFilePath.getParent().getParent().getParent() / "install";
-
-	// setup default values
-	mEncoderID  = ENCODER_ID_OBJ;
-	mLogLevel   = 2;
-	mOutputPath = mWorkDir / "output";
-
-	// setup arg handling callbacks
-	const CLI::callback_t convertShapeAttrs = [this](std::vector<std::string> argShapeAttrs) {
-		mInitialShapeAttrs = createAttributeMapFromTypedKeyValues(argShapeAttrs);
-		return true;
-	};
-	const CLI::callback_t convertEncOpts = [this](std::vector<std::string> argEncOpts) {
-		mEncoderOpts = createAttributeMapFromTypedKeyValues(argEncOpts);
-		return true;
-	};
-	const CLI::callback_t convertOutputPath = [this](std::vector<std::string> arg) {
-		if (arg.empty())
-			return false;
-		mOutputPath = mWorkDir / arg.front();
-		return true;
-	};
-	const CLI::callback_t convertInitialShapeGeoPath = [this](std::vector<std::string> arg) {
-		if (arg.empty())
-			return false;
-		Path p(arg.front());
-		mInitialShapeGeo = p.getFileURI(); // we let prt deal with invalid file paths etc
-		return true;
-	};
-
-	// setup options
-	CLI::App app{"prt4cmd - command line example for the CityEngine Procedural RunTime"};
-	const auto optVer =  app.add_flag  ("-v,--version",                                     "Show CityEngine SDK version.");
-	                     app.add_option("-l,--log-level",       mLogLevel,                  "Set log filter level: 1 = debug, 2 = info, 3 = warning, 4 = error, 5 = fatal, >5 = no output");
-	                     app.add_option("-o,--output",          convertOutputPath,          "Set the output path for the callbacks.");
-	                     app.add_option("-e,--encoder",         mEncoderID,                 "The encoder ID, e.g. 'com.esri.prt.codecs.OBJEncoder'.");
-	const auto optRPK =  app.add_option("-p,--rule-package",    mRulePackage,               "Set the rule package path.");
-	                     app.add_option("-a,--shape-attr",      convertShapeAttrs,          "Set a initial shape attribute (syntax is <name>:<type>=<value>, type = {string,float,int,bool}).");
-	                     app.add_option("-g,--shape-geo",       convertInitialShapeGeoPath, "(Optional) Path to a file with shape geometry");
-	                     app.add_option("-z,--encoder-option",  convertEncOpts,             "Set a encoder option (syntax is <name>:<type>=<value>, type = {string,float,int,bool}).");
-	const auto optInfo = app.add_option("-i,--info",            mInfoFile,                  "Write XML Extension Information to file");
-
-	// setup option requirements
-	optInfo->excludes(optRPK);
-
-	// parse options
-	try {
-		if(argc <= 1)
-			throw CLI::CallForHelp();
-		app.parse(argc, argv);
-	} catch (const CLI::Error& e) {
-    	app.exit(e);
-    	return;
-	}
-
-    // output directory creation if needed
-    if (!mOutputPath.exists()) {
-        _mkdir(mOutputPath.generic_string().c_str()); // or native_wstring() instead of generic_string()
-        std::cout << "New directory created." << std::endl;
-    }
-
-	// basic validation of input args
-	if (optVer->count() == 1) {
-		std::cout << prt::getVersion()->mFullName << std::endl;
-		mStatus = RunStatus::DONE;
-	}
-	else if (optInfo->count() == 0 && optRPK->count() == 0) {
-		std::cerr << "error: at least one of '" << optRPK->get_name() << "' or '" << optInfo->get_name() << "' is required." << std::endl;
-	}
-	else if (optRPK->count() > 0 && !mOutputPath.exists()) {
-		std::cerr << "output path '" << mOutputPath << "' does not exist, cannot continue." << std::endl;
-	}
-	else
-		mStatus = RunStatus::CONTINUE;
-}
-
 
 /**
  * String conversion functions

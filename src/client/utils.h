@@ -68,6 +68,7 @@ using PyCallbacksPtr = std::unique_ptr<PyCallbacks>;
 /**
  * prt encoder options helpers
  */
+AttributeMapPtr createAttributeMapFromTypedKeyValues(const std::vector<std::string>& args);
 AttributeMapPtr createValidatedOptions(const std::wstring& encID, const AttributeMapPtr& unvalidatedOptions);
 
 /**
@@ -135,24 +136,5 @@ inline std::wostream& operator<<(std::wostream& out, const Path& p) {
 }
 
 Path getExecutablePath();
-
-/**
- * command line argument helper
- */
-struct InputArgs {
-	InputArgs(int argc, char *argv[]);
-    bool readyToRumble() const { return (mStatus == RunStatus::CONTINUE); }
-
-	Path            mWorkDir;
-	Path            mOutputPath;
-	std::string     mEncoderID;
-	AttributeMapPtr mEncoderOpts;
-	std::string     mRulePackage;
-	AttributeMapPtr mInitialShapeAttrs;
-	URI             mInitialShapeGeo;
-	int             mLogLevel;
-	std::string     mInfoFile;
-	RunStatus       mStatus;
-};
 
 } // namespace pcu

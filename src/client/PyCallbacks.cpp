@@ -32,11 +32,7 @@
 
 
 void PyCallbacks::add(const wchar_t* name, const std::vector<std::vector<double>> verticesCoord, const int32_t shapeIDs) {
-    std::wcout << L"PYCALLBACKS ADD CALL: " << name << std::endl;
-    std::wcout << verticesCoord.size() << std::endl;
-    std::wcout << shapeIDs << std::endl;
     geometryData = verticesCoord;
-
 }
 
 // prt::Status PyCallbacks::generateError(size_t isIndex, prt::Status status, const wchar_t* message) {

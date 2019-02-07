@@ -52,8 +52,7 @@ public:
 		const int32_t shapeIDs
 	) override;
 
-    std::vector<std::vector<double>>& getGeometry() {
-        std::cout << "Get the geometry for the callback." << std::endl;
+    std::vector<std::vector<double>> getGeometry() const {
         return geometryData;
     }
 
@@ -67,10 +66,7 @@ public:
 	}
 
 	prt::Status cgaError(size_t isIndex, int32_t shapeID, prt::CGAErrorLevel level, int32_t methodId, int32_t pc, const wchar_t* message) {
-
-        //std::cout << "Calling CGA error member function!!!" << std::endl;
-
-		return prt::STATUS_OK;
+        return prt::STATUS_OK;
 	}
 
 	prt::Status cgaPrint(size_t isIndex, int32_t shapeID, const wchar_t* txt) {

@@ -48,7 +48,6 @@ public:
 	static const std::wstring ID;
 	static const std::wstring NAME;
 	static const std::wstring DESCRIPTION;
-    //static const prtx::InitialShape* is;
 
 	using prtx::GeometryEncoder::GeometryEncoder; // re-use parent constructor
 

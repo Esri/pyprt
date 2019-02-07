@@ -36,10 +36,13 @@
 #include "prtx/EncoderInfoBuilder.h"
 #include "prtx/ReportsCollector.h"
 #include "prtx/Exception.h"
-//#include "prt/CGAErrorLevel.h"
+#include "prtx/prtx.h"
+#include "prtx/Attributable.h"
 
 #include <sstream>
 #include <iostream>
+#include <vector>
+#include <wchar.h>
 
 
 namespace {
@@ -115,19 +118,27 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
     std::vector<int32_t> shapeIDs;
     shapeIDs.reserve(finalizedInstances.size());
 
-    //std::wostringstream out; // 3/6
-    //out << L"Summary Test: \n"; // 4/6
     for (const auto& instance : finalizedInstances) {
-
-        /*out << L"Shape Name ";
-        out << instance.getShapeId();
-        out << L" \n";
-        out << L"List of vertices\n";*/
 
         shapeIDs.push_back(instance.getShapeId());
 
-        //const prtx::ReportsPtr& rep = instance.getReports();
-        //out << rep << "\n";
+        const prtx::ReportsPtr& rep = instance.getReports();
+        wchar_t* reportAsText = L"";
+        /*for (prtx::Shape::ReportBool repLine : rep->mBools) {
+            std::wcout << *(std::get<0>(repLine)) << " , " << std::get<1>(repLine) << std::endl;
+            reportAsText += ((std::get<0>(repLine)).get()).c_str() + " , " + std::to_string(std::get<1>(repLine)) + "\n";
+        }*/
+        for (prtx::Shape::ReportFloat repLine : rep->mFloats) {
+            std::wcout << *(std::get<0>(repLine)) << " , " << std::get<1>(repLine) << std::endl;
+            /*wcscat(reportAsText, (std::get<0>(repLine))->c_str());// + " , " + std::to_string(std::get<1>(repLine)) + "\n";
+            wcscat(reportAsText, L" , ");
+            wcscat(reportAsText, (std::to_wstring(std::get<1>(repLine))).c_str());
+            wcscat(reportAsText, L"\n");// THIS DOES NOT WORK YET*/
+        }
+        /*for (prtx::Shape::ReportString repLine : rep->mStrings) {
+            std::wcout << *(std::get<0>(repLine)) << " , " << std::get<1>(repLine) << std::endl;
+            reportAsText += ((std::get<0>(repLine)).get()).c_str() + " , " + std::to_string(std::get<1>(repLine)) + "\n";
+        }*/
 
         for (const prtx::MeshPtr& m : instance.getGeometry()->getMeshes()) {
             
@@ -148,14 +159,6 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
 
         }
     }
-
-    std::cout << "End of writting file.";
-
-    /*// let the client application write the file via callback // 6/6
-	const std::wstring fileName = baseName + ENCFILE_EXT;
-	const uint64_t h = cb2->open(ID.c_str(), prt::CT_GEOMETRY, fileName.c_str(), prt::SimpleOutputCallbacks::SE_UTF8);
-	cb2->write(h, out.str().c_str());
-	cb2->close(h, 0, 0);*/
     
 }
 
