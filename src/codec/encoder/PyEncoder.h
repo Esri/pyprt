@@ -49,7 +49,7 @@ public:
 	static const std::wstring NAME;
 	static const std::wstring DESCRIPTION;
 
-	using prtx::GeometryEncoder::GeometryEncoder; // re-use parent constructor
+	using prtx::GeometryEncoder::GeometryEncoder;
 
     PyEncoder(const PyEncoder&) = delete;
     PyEncoder(PyEncoder&&) = delete;

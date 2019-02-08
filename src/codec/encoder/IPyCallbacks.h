@@ -44,6 +44,6 @@ public:
         const std::string CGAreport
     ) = 0;
 
-    //virtual std::vector<std::vector<double>> getGeometry() const = 0;
+    //virtual std::vector<std::vector<double>> getGeometry() const = 0; // Question: is it necessary or not?
 
 };

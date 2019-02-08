@@ -27,7 +27,7 @@
 #include "PyCallbacks.h"
 
 #include <string>
-#include <iostream>
+#include <vector>
 
 
 
@@ -35,9 +35,3 @@ void PyCallbacks::add(const wchar_t* name, const std::vector<std::vector<double>
     geometryData = verticesCoord;
     reportData = CGAreport;
 }
-
-// prt::Status PyCallbacks::generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
-//     LOG_WRN << message; // generate error for one shape is not yet a reason to abort cooking
-//     mStatuses[isIndex] = status;
-//     return prt::STATUS_OK;
-// }

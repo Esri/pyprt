@@ -34,12 +34,7 @@ namespace {
      * commonly used constants
      */
     const char*    FILE_LOG = "pyprt.log";
-    const wchar_t* FILE_CGA_ERROR = L"CGAErrors.txt";
-    const wchar_t* FILE_CGA_PRINT = L"CGAPrint.txt";
     const wchar_t* FILE_CGA_REPORT = L"CGAReport.txt";
-    const char*    FILE_NAME_CGA_REPORT = "CGAReport.txt";
-    const wchar_t* ENCODER_ID_CGA_ERROR = L"com.esri.prt.core.CGAErrorEncoder";
-    const wchar_t* ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
     const wchar_t* ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
     const wchar_t* ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
     const wchar_t* ENCODER_OPT_NAME = L"name";
@@ -103,22 +98,24 @@ namespace {
         std::string getModelReport() const;
 
     private:
-        std::string initialShapePath = "C:/Users/cami9495/Documents/esri-cityengine-sdk-master/data/simple_scene_0.obj";
-        std::string rulePackagePath = "C:/Users/cami9495/Documents/esri-cityengine-sdk-master/data/simple_rule2019.rpk";
-        std::vector<std::string> shapeAttributes = { "ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint" };
-        std::vector<std::string> encoderOptions = { "baseName:string=theModelSuper" };
+        std::string initialShapePath;
+        std::string rulePackagePath;
+        std::vector<std::string> shapeAttributes;
+        std::vector<std::string> encoderOptions;
 
         std::vector<std::vector<double>> modelGeometry;
         std::string modelReport;
 
     };
 
-    ModelGenerator::ModelGenerator() {
-        std::cout << "Creation of default class instance" << std::endl;
+    ModelGenerator::ModelGenerator() { // unusable paths, used for testing purposes
+        initialShapePath = "C:/Users/cami9495/Documents/esri-cityengine-sdk-master/data/simple_scene_0.obj";
+        rulePackagePath = "C:/Users/cami9495/Documents/esri-cityengine-sdk-master/data/simple_rule2019.rpk";
+        shapeAttributes = { "ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint" };
+        encoderOptions = { "baseName:string=theModelSuper" };
     }
 
     ModelGenerator::ModelGenerator(std::string initShapePath, std::string rulePkgPath, std::vector<std::string> shapeAtt, std::vector<std::string> encOpt) {
-        std::cout << "Creation of class instance" << std::endl;
         initialShapePath = initShapePath;
         rulePackagePath = rulePkgPath;
         shapeAttributes = shapeAtt;
@@ -127,11 +124,6 @@ namespace {
 
     ModelGenerator::~ModelGenerator() {
     }
-
-    /*bool ModelGenerator::generateModel() {
-        modelGeometry = prtInit(initialShapePath, rulePackagePath, shapeAttributes, encoderOptions);
-        return true;
-    }*/
 
     std::vector<std::vector<double>> ModelGenerator::getModelGeometry() const {
         return modelGeometry;
@@ -234,10 +226,6 @@ namespace {
 
             // Step 4 : Generate (encoder info, encoder options, trigger procedural 3D model generation)
             const pcu::AttributeMapBuilderPtr optionsBuilder{ prt::AttributeMapBuilder::create() };
-            optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_ERROR);
-            const pcu::AttributeMapPtr errOptions{ optionsBuilder->createAttributeMapAndReset() };
-            optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_PRINT);
-            const pcu::AttributeMapPtr printOptions{ optionsBuilder->createAttributeMapAndReset() };
             optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_REPORT);
             const pcu::AttributeMapPtr reportOptions{ optionsBuilder->createAttributeMapAndReset() };
             const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromTypedKeyValues(encoderOptions) };
@@ -245,19 +233,16 @@ namespace {
 
             // -- validate & complete encoder options
             const pcu::AttributeMapPtr validatedEncOpts{ createValidatedOptions(ENCODER_ID_PYTHON, encOptions) };
-            const pcu::AttributeMapPtr validatedErrOpts{ createValidatedOptions(ENCODER_ID_CGA_ERROR, errOptions) };
-            const pcu::AttributeMapPtr validatedPrintOpts{ createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions) };
             const pcu::AttributeMapPtr validatedReportOpts{ createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions) };
 
 
             // -- setup encoder IDs and corresponding options
-            const std::array<const wchar_t*, 4> encoders = {
+            const std::array<const wchar_t*, 2> encoders = {
                     ENCODER_ID_PYTHON,     // Python geometry encoder
-                    ENCODER_ID_CGA_ERROR,  // an encoder to redirect rule errors to CGAErrors.txt
-                    ENCODER_ID_CGA_PRINT,  // an encoder to redirect CGA print statements to CGAPrint.txt
                     ENCODER_ID_CGA_REPORT, // an encoder to redirect CGA report to CGAReport.txt
             };
-            const std::array<const prt::AttributeMap*, 4> encoderOpts = { validatedEncOpts.get(), validatedErrOpts.get(), validatedPrintOpts.get(), validatedReportOpts.get() };
+            const std::array<const prt::AttributeMap*, 2> encoderOpts = { validatedEncOpts.get(), validatedReportOpts.get() };
+        
 
 
             // Step 5: Generate
@@ -290,13 +275,15 @@ int py_printVal(int val) {
 }
 
 namespace py = pybind11;
+using namespace pybind11::literals;
 
 PYBIND11_MODULE(pyprt, m) {
     py::class_<ModelGenerator>(m, "ModelGenerator")
-        .def(py::init<>()).def(py::init<std::string,std::string,std::vector<std::string>,std::vector<std::string>>())
+        .def(py::init<>())
+        .def(py::init<std::string,std::string,std::vector<std::string>,std::vector<std::string>>(), "initShapePath"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
         .def("generateModel", &ModelGenerator::generateModel)
         .def("getModelGeometry", &ModelGenerator::getModelGeometry)
         .def("getModelReport", &ModelGenerator::getModelReport);
 
-    m.def("printVal",&py_printVal,"Test Python added function for printing.");
+    m.def("printVal",&py_printVal,"Test Python function for value printing.");
 }

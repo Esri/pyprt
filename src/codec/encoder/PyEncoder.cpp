@@ -102,11 +102,10 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
 
 
 /**
- * After all shapes have been generated, we write the actual file by looping over the
+ * After all shapes have been generated, we call the callback function while looping over the
  * finalized geometry instances.
  */
 void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
-    //prt::SimpleOutputCallbacks* cb2 = dynamic_cast<prt::SimpleOutputCallbacks*>(getCallbacks()); // 2/6
     auto* cb = dynamic_cast<IPyCallbacks*>(getCallbacks());
     if (cb == nullptr)
         throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
@@ -125,19 +124,16 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
         const prtx::ReportsPtr& rep = instance.getReports();
         std::string reportAsText = "";
         for (prtx::Shape::ReportBool repLine : rep->mBools) {
-            //std::wcout << *(std::get<0>(repLine)) << " , " << std::get<1>(repLine) << std::endl;
             std::wstring repName = *(std::get<0>(repLine));
             std::string s(repName.begin(), repName.end());
             reportAsText += s + " , " + (std::get<1>(repLine) ? "true" : "false")+ "\n";
         }
         for (prtx::Shape::ReportFloat repLine : rep->mFloats) {
-            //std::wcout << *(std::get<0>(repLine)) << " , " << std::get<1>(repLine) << std::endl;
             std::wstring repName = *(std::get<0>(repLine));
             std::string s(repName.begin(), repName.end());
             reportAsText += s + " , " + std::to_string(std::get<1>(repLine)) + "\n";
         }
         for (prtx::Shape::ReportString repLine : rep->mStrings) {
-            //std::wcout << *(std::get<0>(repLine)) << " , " << std::get<1>(repLine) << std::endl;
             std::wstring repName = *(std::get<0>(repLine));
             std::string s(repName.begin(), repName.end());
             std::wstring repVal = *(std::get<1>(repLine));
@@ -160,7 +156,7 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
                 coordMatrix.push_back(vertexCoord);
             }
 
-            cb->add(baseName.c_str(), coordMatrix, instance.getShapeId(), reportAsText); // 5/6
+            cb->add(baseName.c_str(), coordMatrix, instance.getShapeId(), reportAsText);
 
         }
     }
