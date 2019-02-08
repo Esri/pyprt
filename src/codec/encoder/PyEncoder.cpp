@@ -42,7 +42,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
-#include <wchar.h>
+#include <string>
 
 
 namespace {
@@ -123,22 +123,27 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
         shapeIDs.push_back(instance.getShapeId());
 
         const prtx::ReportsPtr& rep = instance.getReports();
-        wchar_t* reportAsText = L"";
-        /*for (prtx::Shape::ReportBool repLine : rep->mBools) {
-            std::wcout << *(std::get<0>(repLine)) << " , " << std::get<1>(repLine) << std::endl;
-            reportAsText += ((std::get<0>(repLine)).get()).c_str() + " , " + std::to_string(std::get<1>(repLine)) + "\n";
-        }*/
-        for (prtx::Shape::ReportFloat repLine : rep->mFloats) {
-            std::wcout << *(std::get<0>(repLine)) << " , " << std::get<1>(repLine) << std::endl;
-            /*wcscat(reportAsText, (std::get<0>(repLine))->c_str());// + " , " + std::to_string(std::get<1>(repLine)) + "\n";
-            wcscat(reportAsText, L" , ");
-            wcscat(reportAsText, (std::to_wstring(std::get<1>(repLine))).c_str());
-            wcscat(reportAsText, L"\n");// THIS DOES NOT WORK YET*/
+        std::string reportAsText = "";
+        for (prtx::Shape::ReportBool repLine : rep->mBools) {
+            //std::wcout << *(std::get<0>(repLine)) << " , " << std::get<1>(repLine) << std::endl;
+            std::wstring repName = *(std::get<0>(repLine));
+            std::string s(repName.begin(), repName.end());
+            reportAsText += s + " , " + (std::get<1>(repLine) ? "true" : "false")+ "\n";
         }
-        /*for (prtx::Shape::ReportString repLine : rep->mStrings) {
-            std::wcout << *(std::get<0>(repLine)) << " , " << std::get<1>(repLine) << std::endl;
-            reportAsText += ((std::get<0>(repLine)).get()).c_str() + " , " + std::to_string(std::get<1>(repLine)) + "\n";
-        }*/
+        for (prtx::Shape::ReportFloat repLine : rep->mFloats) {
+            //std::wcout << *(std::get<0>(repLine)) << " , " << std::get<1>(repLine) << std::endl;
+            std::wstring repName = *(std::get<0>(repLine));
+            std::string s(repName.begin(), repName.end());
+            reportAsText += s + " , " + std::to_string(std::get<1>(repLine)) + "\n";
+        }
+        for (prtx::Shape::ReportString repLine : rep->mStrings) {
+            //std::wcout << *(std::get<0>(repLine)) << " , " << std::get<1>(repLine) << std::endl;
+            std::wstring repName = *(std::get<0>(repLine));
+            std::string s(repName.begin(), repName.end());
+            std::wstring repVal = *(std::get<1>(repLine));
+            std::string s2(repVal.begin(), repName.end());
+            reportAsText += s + " , " + s2 + "\n";
+        }
 
         for (const prtx::MeshPtr& m : instance.getGeometry()->getMeshes()) {
             
@@ -155,7 +160,7 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
                 coordMatrix.push_back(vertexCoord);
             }
 
-            cb->add(baseName.c_str(), coordMatrix, instance.getShapeId()); // 5/6
+            cb->add(baseName.c_str(), coordMatrix, instance.getShapeId(), reportAsText); // 5/6
 
         }
     }

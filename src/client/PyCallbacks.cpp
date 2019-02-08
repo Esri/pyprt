@@ -31,8 +31,9 @@
 
 
 
-void PyCallbacks::add(const wchar_t* name, const std::vector<std::vector<double>> verticesCoord, const int32_t shapeIDs) {
+void PyCallbacks::add(const wchar_t* name, const std::vector<std::vector<double>> verticesCoord, const int32_t shapeIDs, const std::string CGAreport) {
     geometryData = verticesCoord;
+    reportData = CGAreport;
 }
 
 // prt::Status PyCallbacks::generateError(size_t isIndex, prt::Status status, const wchar_t* message) {

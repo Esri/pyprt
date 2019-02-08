@@ -40,7 +40,8 @@ public:
     virtual void add(
         const wchar_t* name,
         const std::vector<std::vector<double>> verticesCoord,
-        const int32_t shapeIDs
+        const int32_t shapeIDs,
+        const std::string CGAreport
     ) = 0;
 
     //virtual std::vector<std::vector<double>> getGeometry() const = 0;

@@ -38,7 +38,7 @@
 class PyCallbacks : public IPyCallbacks {
 private:
     std::vector<std::vector<double>> geometryData;
-
+    std::string reportData;
 
 public:
     
@@ -46,14 +46,19 @@ public:
 
 	virtual ~PyCallbacks() = default;
 
-	void add(
-		const wchar_t* name,
-		const std::vector<std::vector<double>> verticesCoord,
-		const int32_t shapeIDs
+    void add(
+        const wchar_t* name,
+        const std::vector<std::vector<double>> verticesCoord,
+        const int32_t shapeIDs,
+        const std::string CGAreport
 	) override;
 
     std::vector<std::vector<double>> getGeometry() const {
         return geometryData;
+    }
+
+    std::string getReport() const {
+        return reportData;
     }
 
 
