@@ -7,7 +7,7 @@ PREREQUISITES
 
 Before you start working with this example, please make sure you follow
 the main installation instructions for the CityEngine SDK in the
-README.md file at the root of this example repository. This will 
+README.md file at the root of the CityEngine SDK example [repository](https://github.com/Esri/esri-cityengine-sdk). This will 
 explain how to get the sdk binaries and example data.
 
 
@@ -16,12 +16,43 @@ SOFTWARE REQUIREMENTS
 
 - see "General Software Requirements" (Windows)
 - Make sure you use the **exact** compiler for PRT extensions
+- Python version: 3.6
+
+
+INSTALLATION INSTRUCTIONS
+---------------------
+
+1. Download the SDK binary archive from the release page
+1. Download the example data archive from the [release page](https://github.com/Esri/esri-cityengine-sdk)
+1. Unzip the archives into the cloned repository into a "prt" and "data" directory
+1. Download and unzip [pybind11](https://github.com/pybind/pybind11/tree/stable)
+1. Download and unzip this repository and rename it "py4prt"
+
+Make modifications for the final directory layout to look like this:
+```
+/esri-cityengine-sdk/
+    examples/
+		py4prt/
+			src/
+				client/...
+				codec/...
+				pybind11/...
+				CMakeLists.txt
+				dependencies.cmake
+    data/...
+    prt/
+        bin/...
+        cmake/...
+        doc/...
+        include/...
+        lib/...
+```
 
 
 BUILD INSTRUCTIONS
 ------------------
 
-1. Open a `VS2015 x64 Native Tools Command Prompt`
+1. Open a `VS2017 x64 Native Tools Command Prompt`
 1. Change into the example directory: `cd <your path to>\esri-cityengine-sdk\examples\py4prt`
 1. Create a build directory: `mkdir build`
 1. Change into the build directory: `cd build`
