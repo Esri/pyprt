@@ -150,7 +150,7 @@ namespace {
                     resolveMap.reset(r);
                 }
                 catch (std::exception e) {
-                    std::cout << e.what() << std::endl;
+                    std::cerr << e.what() << std::endl;
                 }
 
 
@@ -274,9 +274,9 @@ using namespace pybind11::literals;
 PYBIND11_MODULE(pyprt, m) {
     py::class_<ModelGenerator>(m, "ModelGenerator")
         .def(py::init<const std::string&,const std::string&,const std::vector<std::string>&,const std::vector<std::string>&>(), "initShapePath"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
-        .def("generateModel", &ModelGenerator::generateModel)
-        .def("getModelGeometry", &ModelGenerator::getModelGeometry)
-        .def("getModelReport", &ModelGenerator::getModelReport);
+        .def("generate_model", &ModelGenerator::generateModel)
+        .def("get_model_geometry", &ModelGenerator::getModelGeometry)
+        .def("get_model_report", &ModelGenerator::getModelReport);
 
-    m.def("printVal",&py_printVal,"Test Python function for value printing.");
+    m.def("print_val",&py_printVal,"Test Python function for value printing.");
 }
