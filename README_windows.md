@@ -1,4 +1,4 @@
-PyEncoder - CityEngine SDK Custom Geometry Encoder for Python
+PyPRT - CityEngine SDK Python Bindings for PRT
 ------------------------------------------
 
 
@@ -59,6 +59,27 @@ BUILD INSTRUCTIONS
 1. Run cmake: `cmake -G "NMake Makefiles" -CMAKE_BUILD_TYPE=RelWithDebSym ..\src`
 1. Compile: `nmake install`
 1. The build result will appear in the `install` directory in parallel to the `build` directory.
+
+
+USING PY4PRT
+-------------
+
+1. Open a cmd shell and `cd` into the above `install\bin` directory.
+1. Run the `test.py` scrit.
+1. Expected output:
+   
+	`Test Function: it should print 407.
+	407
+
+	Size of the matrix containing all the model vertices:
+	(8, 6)
+
+	Report of the generated model:
+	Building Height.0 , 11.216290
+	Min Height.0 , 10.000000
+	Max Height.0 , 30.000000
+	Id , 0.000000
+	Parcel Area.0 , 4848.810925`
 
 
 LICENSING

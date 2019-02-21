@@ -45,8 +45,10 @@ namespace {
      */
     struct PRTContext {
         PRTContext(prt::LogLevel defaultLogLevel) {
-            //const pcu::Path executablePath(pcu::getExecutablePath());
-            const pcu::Path executablePath("C:\\Users\\cami9495\\Documents\\esri-cityengine-sdk-master\\examples\\py4prt\\install\\bin");
+            //const pcu::Path executablePath(pcu::getExecutablePath()); // gives python.exe path (anaconda3 one).
+            //std::cout << "PATH GIVEN: " << __FILE__; // gives wrap.cpp path.
+
+            const pcu::Path executablePath("C:\\Users\\cami9495\\Documents\\esri-cityengine-sdk-master\\examples\\py4prt\\install\\bin"); // TO DO: remove the hardcoded path.
             const pcu::Path installPath = executablePath.getParent();
             const pcu::Path fsLogPath = installPath / FILE_LOG;
 
@@ -89,8 +91,7 @@ PRTContext prtCtx((prt::LogLevel) 0);
 namespace {
     class ModelGenerator {
     public:
-        ModelGenerator();
-        ModelGenerator(std::string initShapePath, std::string rulePkgPath, std::vector<std::string> shapeAtt, std::vector<std::string> encOpt);
+        ModelGenerator(const std::string& initShapePath, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt);
         ~ModelGenerator();
         
         bool generateModel();
@@ -108,14 +109,7 @@ namespace {
 
     };
 
-    ModelGenerator::ModelGenerator() { // unusable paths, used for testing purposes
-        initialShapePath = "C:/Users/cami9495/Documents/esri-cityengine-sdk-master/data/simple_scene_0.obj";
-        rulePackagePath = "C:/Users/cami9495/Documents/esri-cityengine-sdk-master/data/simple_rule2019.rpk";
-        shapeAttributes = { "ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint" };
-        encoderOptions = { "baseName:string=theModelSuper" };
-    }
-
-    ModelGenerator::ModelGenerator(std::string initShapePath, std::string rulePkgPath, std::vector<std::string> shapeAtt, std::vector<std::string> encOpt) {
+    ModelGenerator::ModelGenerator(const std::string& initShapePath, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt) {
         initialShapePath = initShapePath;
         rulePackagePath = rulePkgPath;
         shapeAttributes = shapeAtt;
@@ -279,8 +273,7 @@ using namespace pybind11::literals;
 
 PYBIND11_MODULE(pyprt, m) {
     py::class_<ModelGenerator>(m, "ModelGenerator")
-        .def(py::init<>())
-        .def(py::init<std::string,std::string,std::vector<std::string>,std::vector<std::string>>(), "initShapePath"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
+        .def(py::init<const std::string&,const std::string&,const std::vector<std::string>&,const std::vector<std::string>&>(), "initShapePath"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
         .def("generateModel", &ModelGenerator::generateModel)
         .def("getModelGeometry", &ModelGenerator::getModelGeometry)
         .def("getModelReport", &ModelGenerator::getModelReport);

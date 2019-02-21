@@ -7,7 +7,7 @@
 
 # prt_DIR must point to the cmake subfolder of the desired SDK installation
 if(NOT prt_DIR)
-	set(prt_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ce_sdk-2.0.5284-win10-vc141-x86_64-rel-opt/cmake")
+	set(prt_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ce_sdk-2.0.5321-win10-vc141-x86_64-rel-opt/cmake")
 endif()
 
 
