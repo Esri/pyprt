@@ -23,8 +23,7 @@ INSTALLATION INSTRUCTIONS
 ---------------------
 
 1. Download the SDK binary archive from the release page
-1. Download the example data archive from the [release page](https://github.com/Esri/esri-cityengine-sdk)
-1. Unzip the archives into the cloned repository into a "prt" and "data" directory
+1. Unzip the archives into the cloned repository into a "prt" directory
 1. Download and unzip [pybind11](https://github.com/pybind/pybind11/tree/stable)
 1. Download and unzip this repository and place it following the layout below.
 
@@ -39,7 +38,7 @@ Make modifications for the final directory layout to look like this:
 				pybind11/...
 				CMakeLists.txt
 				dependencies.cmake
-    data/...
+			caseStudy/...
     prt/
         bin/...
         cmake/...
@@ -64,7 +63,7 @@ BUILD INSTRUCTIONS
 USING PY4PRT
 -------------
 
-1. Open a cmd shell and `cd` into the above `install\bin` directory.
+1. Open a cmd shell and `cd` into the above `py4prt\caseStudy` directory.
 1. Run the `test.py` scrit.
 1. Expected output:
 ```
