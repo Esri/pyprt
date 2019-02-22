@@ -52,9 +52,9 @@ namespace {
             const pcu::Path installPath = executablePath.getParent();
             const pcu::Path fsLogPath = installPath / FILE_LOG;
 
-            //mLogHandler.reset(prt::ConsoleLogHandler::create(prt::LogHandler::ALL, prt::LogHandler::ALL_COUNT));
+            mLogHandler.reset(prt::ConsoleLogHandler::create(prt::LogHandler::ALL, defaultLogLevel));
             mFileLogHandler.reset(prt::FileLogHandler::create(prt::LogHandler::ALL, prt::LogHandler::ALL_COUNT, fsLogPath.native_wstring().c_str()));
-            //prt::addLogHandler(mLogHandler.get());
+            prt::addLogHandler(mLogHandler.get());
             prt::addLogHandler(mFileLogHandler.get());
 
             // setup paths for plugins, assume standard SDK layout as per README.md
@@ -71,7 +71,7 @@ namespace {
             mPRTHandle.reset();
 
             // remove loggers
-            //prt::removeLogHandler(mLogHandler.get());
+            prt::removeLogHandler(mLogHandler.get());
             prt::removeLogHandler(mFileLogHandler.get());
         }
 
@@ -79,14 +79,14 @@ namespace {
             return (bool)mPRTHandle;
         }
 
-        //pcu::ConsoleLogHandlerPtr mLogHandler;
+        pcu::ConsoleLogHandlerPtr mLogHandler;
         pcu::FileLogHandlerPtr    mFileLogHandler;
         pcu::ObjectPtr            mPRTHandle;
     };
 
 } // namespace
 
-PRTContext prtCtx((prt::LogLevel) 0);
+PRTContext prtCtx((prt::LogLevel) 2);
 
 namespace {
     class ModelGenerator {

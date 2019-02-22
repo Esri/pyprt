@@ -26,7 +26,7 @@ INSTALLATION INSTRUCTIONS
 1. Download the example data archive from the [release page](https://github.com/Esri/esri-cityengine-sdk)
 1. Unzip the archives into the cloned repository into a "prt" and "data" directory
 1. Download and unzip [pybind11](https://github.com/pybind/pybind11/tree/stable)
-1. Download and unzip this repository and rename it "py4prt"
+1. Download and unzip this repository and place it following the layout below.
 
 Make modifications for the final directory layout to look like this:
 ```
@@ -67,8 +67,8 @@ USING PY4PRT
 1. Open a cmd shell and `cd` into the above `install\bin` directory.
 1. Run the `test.py` scrit.
 1. Expected output:
-   
-	`Test Function: it should print 407.
+```
+	Test Function: it should print 407.
 	407
 
 	Size of the matrix containing all the model vertices:
@@ -79,7 +79,8 @@ USING PY4PRT
 	Min Height.0 , 10.000000
 	Max Height.0 , 30.000000
 	Id , 0.000000
-	Parcel Area.0 , 4848.810925`
+	Parcel Area.0 , 4848.810925
+```
 
 
 LICENSING
