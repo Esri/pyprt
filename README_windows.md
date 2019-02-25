@@ -64,7 +64,7 @@ USING PY4PRT
 -------------
 
 1. Open a cmd shell and `cd` into the above `py4prt\caseStudy` directory.
-1. Run the `test.py` scrit.
+1. Run the `test.py` script.
 1. Expected output:
 ```
 	Test Function: it should print 407.

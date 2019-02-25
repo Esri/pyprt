@@ -28,65 +28,59 @@
 #include <iostream>
 #include <fstream>
 
-namespace {
-
-    /**
-     * commonly used constants
-     */
-    const char*    FILE_LOG = "pyprt.log";
-    const wchar_t* FILE_CGA_REPORT = L"CGAReport.txt";
-    const wchar_t* ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
-    const wchar_t* ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
-    const wchar_t* ENCODER_OPT_NAME = L"name";
+/**
+    * commonly used constants
+    */
+const char*    FILE_LOG = "pyprt.log";
+const wchar_t* FILE_CGA_REPORT = L"CGAReport.txt";
+const wchar_t* ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
+const wchar_t* ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
+const wchar_t* ENCODER_OPT_NAME = L"name";
     
 
-    /**
-     * Helper struct to manage PRT lifetime (e.g. the prt::init() call)
-     */
-    struct PRTContext {
-        PRTContext(prt::LogLevel defaultLogLevel) {
-            //const pcu::Path executablePath(pcu::getExecutablePath()); // gives python.exe path (anaconda3 one).
-            //std::cout << "PATH GIVEN: " << __FILE__; // gives wrap.cpp path.
+/**
+    * Helper struct to manage PRT lifetime (e.g. the prt::init() call)
+    */
+struct PRTContext {
+    PRTContext(prt::LogLevel defaultLogLevel) {
+        //const pcu::Path executablePath(pcu::getExecutablePath()); // gives python.exe path (anaconda3 one).
+        //std::cout << "PATH GIVEN: " << __FILE__; // gives wrap.cpp path.
 
-            const pcu::Path executablePath("C:\\Users\\cami9495\\Documents\\esri-cityengine-sdk-master\\examples\\py4prt\\install\\bin"); // TO DO: remove the hardcoded path.
-            const pcu::Path installPath = executablePath.getParent();
-            const pcu::Path fsLogPath = installPath / FILE_LOG;
+        const pcu::Path executablePath("C:\\Users\\cami9495\\Documents\\esri-cityengine-sdk-master\\examples\\py4prt\\install\\bin"); // TO DO: remove the hardcoded path.
+        const pcu::Path installPath = executablePath.getParent();
+        const pcu::Path fsLogPath = installPath / FILE_LOG;
 
-            mLogHandler.reset(prt::ConsoleLogHandler::create(prt::LogHandler::ALL, defaultLogLevel));
-            mFileLogHandler.reset(prt::FileLogHandler::create(prt::LogHandler::ALL, prt::LogHandler::ALL_COUNT, fsLogPath.native_wstring().c_str()));
-            prt::addLogHandler(mLogHandler.get());
-            prt::addLogHandler(mFileLogHandler.get());
+        mLogHandler.reset(prt::ConsoleLogHandler::create(prt::LogHandler::ALL, defaultLogLevel));
+        mFileLogHandler.reset(prt::FileLogHandler::create(prt::LogHandler::ALL, prt::LogHandler::ALL_COUNT, fsLogPath.native_wstring().c_str()));
+        prt::addLogHandler(mLogHandler.get());
+        prt::addLogHandler(mFileLogHandler.get());
 
-            // setup paths for plugins, assume standard SDK layout as per README.md
-            const pcu::Path extPath = installPath / "lib";
+        // setup paths for plugins, assume standard SDK layout as per README.md
+        const pcu::Path extPath = installPath / "lib";
 
-            // initialize PRT with the path to its extension libraries, the default log level
-            const std::wstring wExtPath = extPath.native_wstring();
-            const std::array<const wchar_t*, 1> extPaths = { wExtPath.c_str() };
-            mPRTHandle.reset(prt::init(extPaths.data(), extPaths.size(), defaultLogLevel));
-        }
+        // initialize PRT with the path to its extension libraries, the default log level
+        const std::wstring wExtPath = extPath.native_wstring();
+        const std::array<const wchar_t*, 1> extPaths = { wExtPath.c_str() };
+        mPRTHandle.reset(prt::init(extPaths.data(), extPaths.size(), defaultLogLevel));
+    }
 
-        ~PRTContext() {
-            // shutdown PRT
-            mPRTHandle.reset();
+    ~PRTContext() {
+        // shutdown PRT
+        mPRTHandle.reset();
 
-            // remove loggers
-            prt::removeLogHandler(mLogHandler.get());
-            prt::removeLogHandler(mFileLogHandler.get());
-        }
+        // remove loggers
+        prt::removeLogHandler(mLogHandler.get());
+        prt::removeLogHandler(mFileLogHandler.get());
+    }
 
-        explicit operator bool() const {
-            return (bool)mPRTHandle;
-        }
+    explicit operator bool() const {
+        return (bool)mPRTHandle;
+    }
 
-        pcu::ConsoleLogHandlerPtr mLogHandler;
-        pcu::FileLogHandlerPtr    mFileLogHandler;
-        pcu::ObjectPtr            mPRTHandle;
-    };
-
-} // namespace
-
-PRTContext prtCtx((prt::LogLevel) 2);
+    pcu::ConsoleLogHandlerPtr mLogHandler;
+    pcu::FileLogHandlerPtr    mFileLogHandler;
+    pcu::ObjectPtr            mPRTHandle;
+};
 
 namespace {
     class ModelGenerator {
@@ -94,6 +88,8 @@ namespace {
         ModelGenerator(const std::string& initShapePath, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt);
         ~ModelGenerator();
         
+        static void initializePRT();
+        bool isPRTInitialized();
         bool generateModel();
         std::vector<std::vector<double>> getModelGeometry() const;
         std::string getModelReport() const;
@@ -107,7 +103,10 @@ namespace {
         std::vector<std::vector<double>> modelGeometry;
         std::string modelReport;
 
+        static std::unique_ptr<PRTContext> prtCtx;
     };
+
+    std::unique_ptr<PRTContext> ModelGenerator::prtCtx = nullptr;
 
     ModelGenerator::ModelGenerator(const std::string& initShapePath, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt) {
         initialShapePath = initShapePath;
@@ -117,6 +116,19 @@ namespace {
     }
 
     ModelGenerator::~ModelGenerator() {
+    }
+
+    void ModelGenerator::initializePRT() {
+        if (!prtCtx) {
+            prtCtx = std::make_unique<PRTContext>((prt::LogLevel) 2);
+        }
+    }
+
+    bool ModelGenerator::isPRTInitialized() {
+        if (!prtCtx)
+            return false;
+        else
+            return true;
     }
 
     std::vector<std::vector<double>> ModelGenerator::getModelGeometry() const {
@@ -133,7 +145,7 @@ namespace {
         try {
             // Step 1: Initialization (setup console, logging, licensing information, PRT extension library path, prt::init)
             if (!prtCtx) {
-                LOG_ERR << L"failed to get a CityEngine license, bailing out." << std::endl;
+                LOG_ERR << L"prt has not been initialized." << std::endl;
             }
 
 
@@ -273,10 +285,12 @@ using namespace pybind11::literals;
 
 PYBIND11_MODULE(pyprt, m) {
     py::class_<ModelGenerator>(m, "ModelGenerator")
-        .def(py::init<const std::string&,const std::string&,const std::vector<std::string>&,const std::vector<std::string>&>(), "initShapePath"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
+        .def(py::init<const std::string&, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShapePath"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
         .def("generate_model", &ModelGenerator::generateModel)
         .def("get_model_geometry", &ModelGenerator::getModelGeometry)
-        .def("get_model_report", &ModelGenerator::getModelReport);
+        .def("get_model_report", &ModelGenerator::getModelReport)
+        .def("initialize_prt", &ModelGenerator::initializePRT)
+        .def("is_prt_initialized", &ModelGenerator::isPRTInitialized);
 
     m.def("print_val",&py_printVal,"Test Python function for value printing.");
 }

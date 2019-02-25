@@ -1,0 +1,19 @@
+# created with CityEngine 2014.0 0419R (based on ESRI Procedural Runtime 1.1.1405, build date: 2014-04-19 13:45)
+# creation date: Tue Apr 22 16:08:47 2014
+
+# mesh 'mesh_CityEngineShapeMaterial' from geometry 'mesh_CityEngineShapeMaterial'
+v -15.250 0.000 17.500
+v 4.250 0.000 17.500
+v 15.250 0.000 -12.700
+v 5.750 0.000 -16.200
+v -2.050 0.000 5.500
+v -5.250 0.000 5.500
+v -5.250 0.000 -17.500
+v -15.250 0.000 -17.500
+# 8 vertices
+
+g CityEngineShapeMaterial
+s off
+f 1 2 3 4 5 6 7 8
+# 1 face
+
