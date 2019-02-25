@@ -70,15 +70,23 @@ USING PY4PRT
 	Test Function: it should print 407.
 	407
 
+	Initializing PRT.
+
 	Size of the matrix containing all the model vertices:
 	(8, 6)
 
 	Report of the generated model:
-	Building Height.0 , 11.216290
-	Min Height.0 , 10.000000
-	Max Height.0 , 30.000000
-	Id , 0.000000
-	Parcel Area.0 , 4848.810925
+	{'Building Height.0' : 11.216290, 'Id' : 0.000000, 'Max Height.0' : 30.000000, 'Min Height.0' : 10.000000, 'Parcel Area.0' : 4848.810925}
+	
+	Size of the matrix containing all the model vertices:
+	(16, 6)
+
+	Report of the generated model:
+	{'Building Height.0': 11.216289520263672, 'Id': 0.0, 'Max Height.0': 30.0, 'Min Height.0': 10.0, 'Parcel Area.0': 704.054931640625}
+
+	Shutdown PRT.
+
+	PRT is not initialized.
 ```
 
 

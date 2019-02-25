@@ -27,6 +27,7 @@
 #include <cstdio>
 #include <iostream>
 #include <fstream>
+#include <map>
 
 /**
     * commonly used constants
@@ -89,10 +90,13 @@ namespace {
         ~ModelGenerator();
         
         static void initializePRT();
+        static void shutdownPRT();
         bool isPRTInitialized();
         bool generateModel();
         std::vector<std::vector<double>> getModelGeometry() const;
-        std::string getModelReport() const;
+        std::map<std::string, float> getModelFloatReport() const;
+        std::map<std::string, std::string> getModelStringReport() const;
+        std::map<std::string, bool> getModelBoolReport() const;
 
     private:
         std::string initialShapePath;
@@ -101,7 +105,9 @@ namespace {
         std::vector<std::string> encoderOptions;
 
         std::vector<std::vector<double>> modelGeometry;
-        std::string modelReport;
+        std::map<std::string, float> modelFloatReport;
+        std::map<std::string, std::string> modelStringReport;
+        std::map<std::string, bool> modelBoolReport;
 
         static std::unique_ptr<PRTContext> prtCtx;
     };
@@ -124,6 +130,12 @@ namespace {
         }
     }
 
+    void ModelGenerator::shutdownPRT() {
+        if (prtCtx) {
+            prtCtx.reset();
+        }
+    }
+
     bool ModelGenerator::isPRTInitialized() {
         if (!prtCtx)
             return false;
@@ -135,8 +147,16 @@ namespace {
         return modelGeometry;
     }
 
-    std::string ModelGenerator::getModelReport() const {
-        return modelReport;
+    std::map<std::string, float> ModelGenerator::getModelFloatReport() const {
+        return modelFloatReport;
+    }
+
+    std::map<std::string, std::string> ModelGenerator::getModelStringReport() const {
+        return modelStringReport;
+    }
+
+    std::map<std::string, bool> ModelGenerator::getModelBoolReport() const {
+        return modelBoolReport;
     }
 
 
@@ -270,7 +290,10 @@ namespace {
         }
     
         modelGeometry = foc->getGeometry();
-        modelReport = foc->getReport();
+        modelFloatReport = foc->getFloatReport();
+        modelStringReport = foc->getStringReport();
+        modelBoolReport = foc->getBoolReport();
+
         return true;
     }
 
@@ -288,8 +311,11 @@ PYBIND11_MODULE(pyprt, m) {
         .def(py::init<const std::string&, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShapePath"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
         .def("generate_model", &ModelGenerator::generateModel)
         .def("get_model_geometry", &ModelGenerator::getModelGeometry)
-        .def("get_model_report", &ModelGenerator::getModelReport)
+        .def("get_model_float_report", &ModelGenerator::getModelFloatReport)
+        .def("get_model_string_report", &ModelGenerator::getModelStringReport)
+        .def("get_model_bool_report", &ModelGenerator::getModelBoolReport)
         .def("initialize_prt", &ModelGenerator::initializePRT)
+        .def("shutdown_prt", &ModelGenerator::shutdownPRT)
         .def("is_prt_initialized", &ModelGenerator::isPRTInitialized);
 
     m.def("print_val",&py_printVal,"Test Python function for value printing.");

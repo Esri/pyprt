@@ -43,6 +43,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <map>
 
 
 namespace {
@@ -122,23 +123,25 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
         shapeIDs.push_back(instance.getShapeId());
 
         const prtx::ReportsPtr& rep = instance.getReports();
-        std::string reportAsText = "";
+        std::map<std::string, float> reportFloat;
+        std::map<std::string, std::string> reportString;
+        std::map<std::string, bool> reportBool;
         for (prtx::Shape::ReportBool repLine : rep->mBools) {
             std::wstring repName = *(std::get<0>(repLine));
             std::string s(repName.begin(), repName.end());
-            reportAsText += s + " , " + (std::get<1>(repLine) ? "true" : "false")+ "\n";
+            reportBool[s] = std::get<1>(repLine);
         }
         for (prtx::Shape::ReportFloat repLine : rep->mFloats) {
             std::wstring repName = *(std::get<0>(repLine));
             std::string s(repName.begin(), repName.end());
-            reportAsText += s + " , " + std::to_string(std::get<1>(repLine)) + "\n";
+            reportFloat[s] = std::get<1>(repLine);
         }
         for (prtx::Shape::ReportString repLine : rep->mStrings) {
             std::wstring repName = *(std::get<0>(repLine));
             std::string s(repName.begin(), repName.end());
             std::wstring repVal = *(std::get<1>(repLine));
             std::string s2(repVal.begin(), repName.end());
-            reportAsText += s + " , " + s2 + "\n";
+            reportString[s] = s2;
         }
 
         for (const prtx::MeshPtr& m : instance.getGeometry()->getMeshes()) {
@@ -156,7 +159,7 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
                 coordMatrix.push_back(vertexCoord);
             }
 
-            cb->add(baseName.c_str(), coordMatrix, instance.getShapeId(), reportAsText);
+            cb->add(baseName.c_str(), coordMatrix, instance.getShapeId(), reportFloat, reportString, reportBool);
 
         }
     }

@@ -29,6 +29,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 
 class IPyCallbacks : public prt::Callbacks {
@@ -41,7 +42,9 @@ public:
         const wchar_t* name,
         const std::vector<std::vector<double>> verticesCoord,
         const int32_t shapeIDs,
-        const std::string CGAreport
+        const std::map<std::string, float> CGAfloatreport,
+        const std::map<std::string, std::string> CGAstringreport,
+        const std::map<std::string, bool> CGAboolreport
     ) = 0;
 
     //virtual std::vector<std::vector<double>> getGeometry() const = 0; // Question: is it necessary or not?

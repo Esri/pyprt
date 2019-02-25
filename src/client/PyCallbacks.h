@@ -33,12 +33,15 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <map>
 
 
 class PyCallbacks : public IPyCallbacks {
 private:
     std::vector<std::vector<double>> geometryData;
-    std::string reportData;
+    std::map<std::string, float> reportFloatData;
+    std::map<std::string, std::string> reportStringData;
+    std::map<std::string, bool> reportBoolData;
 
 public:
     
@@ -50,17 +53,26 @@ public:
         const wchar_t* name,
         const std::vector<std::vector<double>> verticesCoord,
         const int32_t shapeIDs,
-        const std::string CGAreport
+        const std::map<std::string, float> CGAfloatreport,
+        const std::map<std::string, std::string> CGAstringreport,
+        const std::map<std::string, bool> CGAboolreport
 	) override;
 
     std::vector<std::vector<double>> getGeometry() const {
         return geometryData;
     }
 
-    std::string getReport() const {
-        return reportData;
+    std::map<std::string, float> getFloatReport() const {
+        return reportFloatData;
     }
 
+    std::map<std::string, std::string> getStringReport() const {
+        return reportStringData;
+    }
+
+    std::map<std::string, bool> getBoolReport() const {
+        return reportBoolData;
+    }
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
 		return prt::STATUS_OK;

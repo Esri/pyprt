@@ -28,10 +28,13 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 
 
-void PyCallbacks::add(const wchar_t* name, const std::vector<std::vector<double>> verticesCoord, const int32_t shapeIDs, const std::string CGAreport) {
+void PyCallbacks::add(const wchar_t* name, const std::vector<std::vector<double>> verticesCoord, const int32_t shapeIDs, const std::map<std::string, float> CGAfloatreport, const std::map<std::string, std::string> CGAstringreport, const std::map<std::string, bool> CGAboolreport) {
     geometryData = verticesCoord;
-    reportData = CGAreport;
+    reportFloatData = CGAfloatreport;
+    reportStringData = CGAstringreport;
+    reportBoolData = CGAboolreport;
 }
