@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.12)
 cmake_policy(SET CMP0015 NEW)
 
 
-
 ### python bindings dependency
 
 message(STATUS "Python Module System Information: " ${PYTHON_MODULE_EXTENSION})

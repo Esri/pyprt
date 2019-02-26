@@ -8,12 +8,14 @@
 # prt_DIR must point to the cmake subfolder of the desired SDK installation
 if(NOT prt_DIR)
 	set(prt_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ce_sdk-2.0.5321-win10-vc141-x86_64-rel-opt/cmake")
+	#set(prt_DIR "${CMAKE_CURRENT_LIST_DIR}/../../esri-cityengine-sdk/prt/cmake")
 endif()
+message("Using PRT from: ${prt_DIR}")
 
 
 find_package(prt CONFIG REQUIRED)
 set(CESDK_VERSION "cesdk_${PRT_VERSION_MAJOR}_${PRT_VERSION_MINOR}_${PRT_VERSION_MICRO}")
-message(${CESDK_VERSION})
+message("Found PRT: ${CESDK_VERSION}")
 
 
 ### plugin installation location
