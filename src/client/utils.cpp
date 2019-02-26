@@ -19,6 +19,8 @@
  * limitations under the License.
  */
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "utils.h"
 #include "logging.h"
 
