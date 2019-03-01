@@ -45,11 +45,10 @@ const wchar_t* ENCODER_OPT_NAME = L"name";
     * Helper struct to manage PRT lifetime (e.g. the prt::init() call)
     */
 struct PRTContext {
-    PRTContext(prt::LogLevel defaultLogLevel) {
-        //const pcu::Path executablePath(pcu::getExecutablePath()); // gives python.exe path (anaconda3 one).
-        //std::cout << "PATH GIVEN: " << __FILE__; // gives wrap.cpp path.
-
-        const pcu::Path executablePath("C:\\Users\\cami9495\\Documents\\esri-cityengine-sdk-master\\examples\\py4prt\\install\\bin"); // TO DO: remove the hardcoded path.
+    PRTContext(prt::LogLevel defaultLogLevel, std::string const & sdkPath) {
+        const pcu::Path executablePath(sdkPath.empty() ? pcu::getExecutablePath() : sdkPath);
+        std::cout << "SDK: " << executablePath << std::endl;
+        
         const pcu::Path installPath = executablePath.getParent();
         const pcu::Path fsLogPath = installPath / FILE_LOG;
 
@@ -91,9 +90,9 @@ namespace {
         ModelGenerator(const std::string& initShapePath, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt);
         ~ModelGenerator();
         
-        static void initializePRT();
+        static void initializePRT(std::string const & prtPath = "");
         static void shutdownPRT();
-        bool isPRTInitialized();
+        static bool isPRTInitialized();
         bool generateModel();
         std::vector<std::vector<double>> getModelGeometry() const;
         std::map<std::string, float> getModelFloatReport() const;
@@ -126,23 +125,18 @@ namespace {
     ModelGenerator::~ModelGenerator() {
     }
 
-    void ModelGenerator::initializePRT() {
+    void ModelGenerator::initializePRT(std::string const & prtPath) {
         if (!prtCtx) {
-            prtCtx = std::make_unique<PRTContext>((prt::LogLevel) 2);
+            prtCtx = std::make_unique<PRTContext>((prt::LogLevel) 2, prtPath);
         }
     }
 
     void ModelGenerator::shutdownPRT() {
-        if (prtCtx) {
-            prtCtx.reset();
-        }
+        prtCtx.reset();
     }
 
     bool ModelGenerator::isPRTInitialized() {
-        if (!prtCtx)
-            return false;
-        else
-            return true;
+        return prtCtx;
     }
 
     std::vector<std::vector<double>> ModelGenerator::getModelGeometry() const {
@@ -315,10 +309,11 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_model_geometry", &ModelGenerator::getModelGeometry)
         .def("get_model_float_report", &ModelGenerator::getModelFloatReport)
         .def("get_model_string_report", &ModelGenerator::getModelStringReport)
-        .def("get_model_bool_report", &ModelGenerator::getModelBoolReport)
-        .def("initialize_prt", &ModelGenerator::initializePRT)
-        .def("shutdown_prt", &ModelGenerator::shutdownPRT)
-        .def("is_prt_initialized", &ModelGenerator::isPRTInitialized);
+        .def("get_model_bool_report", &ModelGenerator::getModelBoolReport);
+
+    m.def("initialize_prt", &ModelGenerator::initializePRT, "prt_path"_a = "")
+     .def("shutdown_prt", &ModelGenerator::shutdownPRT)
+     .def("is_prt_initialized", &ModelGenerator::isPRTInitialized);
 
     m.def("print_val",&py_printVal,"Test Python function for value printing.");
 }

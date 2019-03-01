@@ -1,13 +1,14 @@
 /build
 /install
+/src/.vs
 /src/.idea
 /src/CMakeSettings.json
 /.vs
+/prt
 
 src/CMakeLists_NOFOLDER.txt
 README_linux_osx.md
 src/client/wrap_simple.cpp
-src/pybind11
 
 /.vscode
 /vscode_workspace_py4prt.code-workspace
