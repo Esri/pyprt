@@ -14,13 +14,13 @@ SOFTWARE REQUIREMENTS
 INSTALLATION INSTRUCTIONS
 ---------------------
 
-1. Clone this repo
+1. Clone this repository
 2. Download the SDK binary archive from the release page as explained here: [repository](https://github.com/Esri/esri-cityengine-sdk)
 3. Unzip the archives into the cloned repository into a "prt" directory
 
 Make modifications for the final directory layout to look like this:
 ```
-/pyprt/
+/py4prt/
     src/
       client/...
       codec/...
@@ -40,10 +40,10 @@ BUILD INSTRUCTIONS
 ------------------
 
 1. Open a `VS2017 x64 Native Tools Command Prompt`
-2. Change into the example directory: `cd <your path to>\pyprt`
+2. Change into the example directory: `cd <your path to>\py4prt`
 3. Create a build directory: `mkdir build`
 4. Change into the build directory: `cd build`
-5. Run cmake: `cmake -G "NMake Makefiles" -CMAKE_BUILD_TYPE=RelWithDebInfo ..\src`
+5. Run cmake: `cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DPYTHON_EXECUTABLE=path\to\python ..\src`
 6. Compile: `nmake install`
 7. The build result will appear in the `install` directory in parallel to the `build` directory.
 
@@ -51,10 +51,10 @@ VISUAL STUDIO INSTRUCTIONS
 ------------------
 
 1. Open a command prompt
-2. Change into the example directory: `cd <your path to>/pyprt`
+2. Change into the example directory: `cd <your path to>\py4prt`
 3. Create a build directory: `mkdir build`
 4. Change into the build directory: `cd build`
-5. Run cmake: `cmake -G "Visual Studio 15 2017 Win64" ../src`
+5. Run cmake: `cmake -G "Visual Studio 15 2017 Win64" -DPYTHON_EXECUTABLE=path\to\python ..\src`
 6. Open the solution file `build/pyprt.sln` and build/install from Visual Studio
 7. The build result will appear in the `install` directory in parallel to the `build` directory.
 
@@ -63,7 +63,7 @@ VISUAL STUDIO INSTRUCTIONS
 USING PYPRT
 -------------
 
-1. Run the `caseStudy/test.py` script (from pyprt folder)
+1. Run the `caseStudy/test.py` script (from py4prt folder)
 
 
 LICENSING

@@ -12,3 +12,5 @@ src/client/wrap_simple.cpp
 
 /.vscode
 /vscode_workspace_py4prt.code-workspace
+
+/buildvs

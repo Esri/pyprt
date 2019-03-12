@@ -47,8 +47,6 @@ const wchar_t* ENCODER_OPT_NAME = L"name";
 struct PRTContext {
     PRTContext(prt::LogLevel defaultLogLevel, std::string const & sdkPath) {
         const pcu::Path executablePath(sdkPath.empty() ? pcu::getExecutablePath() : sdkPath);
-        std::cout << "SDK: " << executablePath << std::endl;
-        
         const pcu::Path installPath = executablePath.getParent();
         const pcu::Path fsLogPath = installPath / FILE_LOG;
 
@@ -136,7 +134,7 @@ namespace {
     }
 
     bool ModelGenerator::isPRTInitialized() {
-        return prtCtx;
+        return prtCtx != nullptr;
     }
 
     std::vector<std::vector<double>> ModelGenerator::getModelGeometry() const {
