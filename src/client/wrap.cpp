@@ -41,6 +41,18 @@ const wchar_t* ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
 const wchar_t* ENCODER_OPT_NAME = L"name";
     
 
+template <typename T>
+T* vectorToArray(std::vector<T> data) {
+    size_t array_size = data.size();
+    T* tmp = new T[array_size];
+
+    for (int i = 0; i < (int)array_size; i++) {
+        tmp[i] = data[i];
+    }
+
+    return tmp;
+}
+
 /**
     * Helper struct to manage PRT lifetime (e.g. the prt::init() call)
     */
@@ -82,10 +94,37 @@ struct PRTContext {
     pcu::ObjectPtr            mPRTHandle;
 };
 
+struct CustomGeometry {
+    CustomGeometry() { }
+
+    void setVertices(std::vector<double> vert) { vertices = vectorToArray(vert); defined = true; }
+    void setVertexCount(size_t vertCnt) { vertexCount = vertCnt; defined = true; }
+    void setIndices(std::vector<uint32_t> ind) {indices = vectorToArray(ind); defined = true;}
+    void setIndexCount(size_t indCnt) { indexCount = indCnt; defined = true; }
+    void setFaceCounts(std::vector<uint32_t> faceCnt) { faceCounts = vectorToArray(faceCnt); defined = true; }
+    void setFaceCountsCount(size_t faceCntCnt) { faceCountsCount = faceCntCnt; defined = true; }
+    double* getVertices() { return vertices; }
+    size_t getVertexCount() { return vertexCount; }
+    uint32_t* getIndices() { return indices; }
+    size_t getIndexCount() { return indexCount; }
+    uint32_t* getFaceCounts() { return faceCounts; }
+    size_t getFaceCountsCount() { return faceCountsCount; }
+    bool isDefined() { return defined; }
+
+    bool defined = false;
+    double* vertices;
+    size_t vertexCount;
+    uint32_t* indices;
+    size_t indexCount;
+    uint32_t* faceCounts;
+    size_t faceCountsCount;
+};
+
 namespace {
     class ModelGenerator {
     public:
         ModelGenerator(const std::string& initShapePath, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt);
+        ModelGenerator(const CustomGeometry& myGeo, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt);
         ~ModelGenerator();
         
         static void initializePRT(std::string const & prtPath = "");
@@ -99,6 +138,7 @@ namespace {
 
     private:
         std::string initialShapePath;
+        CustomGeometry myGeometry;
         std::string rulePackagePath;
         std::vector<std::string> shapeAttributes;
         std::vector<std::string> encoderOptions;
@@ -115,6 +155,13 @@ namespace {
 
     ModelGenerator::ModelGenerator(const std::string& initShapePath, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt) {
         initialShapePath = initShapePath;
+        rulePackagePath = rulePkgPath;
+        shapeAttributes = shapeAtt;
+        encoderOptions = encOpt;
+    }
+
+    ModelGenerator::ModelGenerator(const CustomGeometry& myGeo, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt) {
+        myGeometry = myGeo;
         rulePackagePath = rulePkgPath;
         shapeAttributes = shapeAtt;
         encoderOptions = encOpt;
@@ -160,6 +207,7 @@ namespace {
             // Step 1: Initialization (setup console, logging, licensing information, PRT extension library path, prt::init)
             if (!prtCtx) {
                 LOG_ERR << L"prt has not been initialized." << std::endl;
+                return false;
             }
 
 
@@ -185,6 +233,7 @@ namespace {
                 }
                 else {
                     LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting." << std::endl;
+                    return false;
                 }
             }
 
@@ -196,11 +245,19 @@ namespace {
 
             // Step 3: Initial Shape
             pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
-            if (!pcu::toFileURI(initialShapePath).empty()) {
+            if (myGeometry.isDefined()) {
+                isb->setGeometry(
+                    myGeometry.getVertices(), myGeometry.getVertexCount(),
+                    myGeometry.getIndices(), myGeometry.getIndexCount(),
+                    myGeometry.getFaceCounts(), myGeometry.getFaceCountsCount()
+                );
+            }
+            else if (!pcu::toFileURI(initialShapePath).empty()) {
                 LOG_DBG << L"trying to read initial shape geometry from " << pcu::toFileURI(initialShapePath);
                 const prt::Status s = isb->resolveGeometry(pcu::toUTF16FromOSNarrow(pcu::toFileURI(initialShapePath)).c_str(), resolveMap.get(), cache.get());
                 if (s != prt::STATUS_OK) {
                     LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(initialShapePath);
+                    return false;
                 }
             }
             else {
@@ -262,8 +319,6 @@ namespace {
                     ENCODER_ID_CGA_REPORT, // an encoder to redirect CGA report to CGAReport.txt
             };
             const std::array<const prt::AttributeMap*, 2> encoderOpts = { validatedEncOpts.get(), validatedReportOpts.get() };
-        
-
 
             // Step 5: Generate
             const prt::Status genStat = prt::generate(
@@ -274,13 +329,16 @@ namespace {
 
             if (genStat != prt::STATUS_OK) {
                 LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
+                return false;
             }
         }
         catch (const std::exception& e) {
             std::cerr << "caught exception: " << e.what() << std::endl;
+            return false;
         }
         catch (...) {
             std::cerr << "caught unknown exception." << std::endl;
+            return false;
         }
     
         modelGeometry = foc->getGeometry();
@@ -303,6 +361,7 @@ using namespace pybind11::literals;
 PYBIND11_MODULE(pyprt, m) {
     py::class_<ModelGenerator>(m, "ModelGenerator")
         .def(py::init<const std::string&, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShapePath"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
+        .def(py::init<const CustomGeometry&, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShape"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
         .def("generate_model", &ModelGenerator::generateModel)
         .def("get_model_geometry", &ModelGenerator::getModelGeometry)
         .def("get_model_float_report", &ModelGenerator::getModelFloatReport)
@@ -312,6 +371,21 @@ PYBIND11_MODULE(pyprt, m) {
     m.def("initialize_prt", &ModelGenerator::initializePRT, "prt_path"_a = "")
      .def("shutdown_prt", &ModelGenerator::shutdownPRT)
      .def("is_prt_initialized", &ModelGenerator::isPRTInitialized);
+
+    py::class_<CustomGeometry>(m, "CustomGeometry")
+        .def(py::init<>())
+        .def("setVertices", &CustomGeometry::setVertices)
+        .def("setVertexCount", &CustomGeometry::setVertexCount)
+        .def("setIndices", &CustomGeometry::setIndices)
+        .def("setIndexCount", &CustomGeometry::setIndexCount)
+        .def("setFaceCounts", &CustomGeometry::setFaceCounts)
+        .def("setFaceCountsCount", &CustomGeometry::setFaceCountsCount)
+        .def("getVertices", &CustomGeometry::getVertices)
+        .def("getVertexCount", &CustomGeometry::getVertexCount)
+        .def("getIndices", &CustomGeometry::getIndices)
+        .def("getIndexCount", &CustomGeometry::getIndexCount)
+        .def("getFaceCounts", &CustomGeometry::getFaceCounts)
+        .def("getFaceCountsCount", &CustomGeometry::getFaceCountsCount);
 
     m.def("print_val",&py_printVal,"Test Python function for value printing.");
 }

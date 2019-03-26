@@ -151,7 +151,7 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
 
             for (int indI = 0; indI < vc.size() / 3; indI++)
             {
-                std::vector<double> vertexCoord(3);
+                std::vector<double> vertexCoord;
                 for (int indJ = 0; indJ < 3; indJ++)
                 {
                     vertexCoord.push_back(vc[3 * indI + indJ]);
