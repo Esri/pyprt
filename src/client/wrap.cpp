@@ -442,18 +442,18 @@ PYBIND11_MODULE(pyprt, m) {
     py::class_<CustomGeometry>(m, "CustomGeometry")
         .def(py::init<>())
         .def(py::init<std::vector<double>>())
-        .def("setVertices", &CustomGeometry::setVertices)
-        .def("setVertexCount", &CustomGeometry::setVertexCount)
-        .def("setIndices", &CustomGeometry::setIndices)
-        .def("setIndexCount", &CustomGeometry::setIndexCount)
-        .def("setFaceCounts", &CustomGeometry::setFaceCounts)
-        .def("setFaceCountsCount", &CustomGeometry::setFaceCountsCount)
-        .def("getVertices", &CustomGeometry::getVertices)
-        .def("getVertexCount", &CustomGeometry::getVertexCount)
-        .def("getIndices", &CustomGeometry::getIndices)
-        .def("getIndexCount", &CustomGeometry::getIndexCount)
-        .def("getFaceCounts", &CustomGeometry::getFaceCounts)
-        .def("getFaceCountsCount", &CustomGeometry::getFaceCountsCount);
+        .def("set_vertices", &CustomGeometry::setVertices)
+        .def("set_vertex_count", &CustomGeometry::setVertexCount)
+        .def("set_indices", &CustomGeometry::setIndices)
+        .def("set_index_count", &CustomGeometry::setIndexCount)
+        .def("set_face_counts", &CustomGeometry::setFaceCounts)
+        .def("set_face_counts_count", &CustomGeometry::setFaceCountsCount)
+        .def("get_vertices", &CustomGeometry::getVertices)
+        .def("get_vertex_count", &CustomGeometry::getVertexCount)
+        .def("get_indices", &CustomGeometry::getIndices)
+        .def("get_index_count", &CustomGeometry::getIndexCount)
+        .def("get_face_counts", &CustomGeometry::getFaceCounts)
+        .def("get_face_counts_count", &CustomGeometry::getFaceCountsCount);
 
     m.def("print_val",&py_printVal,"Test Python function for value printing.");
 }
