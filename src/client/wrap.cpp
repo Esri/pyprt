@@ -30,6 +30,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <numeric>
 
 /**
     * commonly used constants
@@ -95,9 +96,11 @@ struct PRTContext {
 };
 
 struct CustomGeometry {
+    CustomGeometry(std::vector<double> vert);
     CustomGeometry() { }
+    ~CustomGeometry() { }
 
-    void setVertices(std::vector<double> vert) { vertices = vectorToArray(vert); defined = true; }
+    void setVertices(std::vector<double> vert) { vertices = vectorToArray(vert);  defined = true; }
     void setVertexCount(size_t vertCnt) { vertexCount = vertCnt; defined = true; }
     void setIndices(std::vector<uint32_t> ind) {indices = vectorToArray(ind); defined = true;}
     void setIndexCount(size_t indCnt) { indexCount = indCnt; defined = true; }
@@ -119,6 +122,21 @@ struct CustomGeometry {
     uint32_t* faceCounts;
     size_t faceCountsCount;
 };
+
+CustomGeometry::CustomGeometry(std::vector<double> vert) {
+    vertices = vectorToArray(vert);
+    vertexCount = vert.size();
+    indexCount = (size_t) (vertexCount / 3);
+    faceCountsCount = 1;
+
+    std::vector<uint32_t> indicesVector(indexCount);
+    std::iota(std::begin(indicesVector), std::end(indicesVector), 0);
+    indices = vectorToArray(indicesVector);
+    std::vector<uint32_t> faceVector(1, (uint32_t) indexCount);
+    faceCounts = vectorToArray(faceVector);
+
+    defined = true;
+}
 
 namespace {
     class ModelGenerator {
@@ -374,6 +392,7 @@ PYBIND11_MODULE(pyprt, m) {
 
     py::class_<CustomGeometry>(m, "CustomGeometry")
         .def(py::init<>())
+        .def(py::init<std::vector<double>>())
         .def("setVertices", &CustomGeometry::setVertices)
         .def("setVertexCount", &CustomGeometry::setVertexCount)
         .def("setIndices", &CustomGeometry::setIndices)
