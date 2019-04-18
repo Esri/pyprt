@@ -10,7 +10,7 @@ target_compile_definitions(${CODEC_TARGET} PRIVATE -DPRT_VERSION_MAJOR=${PRT_VER
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	target_compile_options(${CODEC_TARGET} PRIVATE -bigobj -GR -EHsc)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-	target_compile_options(${CODEC_TARGET} PRIVATE -std=c++11 -march=nocona -fvisibility=hidden -fvisibility-inlines-hidden -Wl,--exclude-libs,ALL -Wall -Wextra -Wunused-parameter -Wl,-rpath,'$ORIGIN')
+	target_compile_options(${CODEC_TARGET} PRIVATE -std=c++14 -D_GLIBCXX_USE_CXX11_ABI=0 -march=nocona -fvisibility=hidden -fvisibility-inlines-hidden -Wl,--exclude-libs,ALL -Wall -Wextra -Wunused-parameter)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 	target_compile_options(${CODEC_TARGET} PRIVATE -std=c++14 -stdlib=libc++ -fvisibility=hidden -fvisibility-inlines-hidden -Wl,--exclude-libs,ALL -Wall -Wextra -Wunused-parameter)
 endif()

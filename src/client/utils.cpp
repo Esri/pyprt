@@ -19,7 +19,9 @@
  * limitations under the License.
  */
 
-#define _CRT_SECURE_NO_WARNINGS
+#ifdef _MSC_VER
+#	define _CRT_SECURE_NO_WARNINGS
+#endif
 
 #include "utils.h"
 #include "logging.h"
@@ -34,7 +36,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <direct.h>
+//#include <direct.h>
 
 
 namespace {
