@@ -1,7 +1,3 @@
-###
-### common helpers for both codec and client projects
-###
-
 include(FetchContent)
 
 
@@ -9,7 +5,6 @@ include(FetchContent)
 
 # prt_DIR must point to the cmake subfolder of the desired SDK installation
 if(NOT prt_DIR)
-
 	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 		set(PRT_CLS "rhel7-gcc63-x86_64-rel-dbg")
 	else()
@@ -27,16 +22,21 @@ if(NOT prt_DIR)
 
 	set(prt_DIR "${prt_SOURCE_DIR}/cmake")
 endif()
-message("Using PRT from: ${prt_DIR}")
 
 find_package(prt CONFIG REQUIRED)
-set(CESDK_VERSION "cesdk_${PRT_VERSION_MAJOR}_${PRT_VERSION_MINOR}_${PRT_VERSION_MICRO}")
-message("Found PRT: ${CESDK_VERSION}")
+message(STATUS "Using PRT ${PRT_VERSION_MAJOR}.${PRT_VERSION_MINOR}.${PRT_VERSION_MICRO} at ${prt_DIR}")
 
 
-### plugin installation location
+### look for PyBind11
 
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../install" CACHE PATH "default install prefix" FORCE)
+FetchContent_Declare(
+ 	pybind11
+	GIT_REPOSITORY https://github.com/pybind/pybind11.git
+	GIT_TAG v2.2.4
+)
+
+FetchContent_GetProperties(pybind11)
+if(NOT pybind11_POPULATED)
+	FetchContent_Populate(pybind11)
+	add_subdirectory(${pybind11_SOURCE_DIR} ${pybind11_BINARY_DIR})
 endif()
-message(STATUS "Installing into ${CMAKE_INSTALL_PREFIX}")

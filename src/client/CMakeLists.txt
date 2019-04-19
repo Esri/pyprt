@@ -5,20 +5,36 @@ cmake_policy(SET CMP0015 NEW)
 ### python bindings dependency
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-	set(PYTHON_MODULE_EXTENSION ".pyd")
+	set(PYTHON_MODULE_EXTENSION ".pyd") # TODO: needed? probably default...
 endif()
 message(STATUS "Python Module System Information: " ${PYTHON_MODULE_EXTENSION})
-pybind11_add_module(${CLIENT_TARGET} MODULE utils.cpp wrap.cpp PyCallbacks.cpp)
+
+pybind11_add_module(${CLIENT_TARGET} MODULE
+		utils.cpp
+		wrap.cpp
+		PyCallbacks.cpp)
+
+target_compile_features(${CODEC_TARGET} PRIVATE
+		cxx_std_14) # C++14
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	# TODO
+
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-	target_compile_options(${CLIENT_TARGET} PRIVATE -std=c++14 -D_GLIBCXX_USE_CXX11_ABI=0 -march=nocona -fvisibility=hidden -fvisibility-inlines-hidden -Wl,--exclude-libs,ALL -Wall -Wextra -Wunused-parameter)
+	target_compile_options(${CLIENT_TARGET} PRIVATE
+			-D_GLIBCXX_USE_CXX11_ABI=0
+			-march=nocona
+			-fvisibility=hidden -fvisibility-inlines-hidden
+			-Wl,--exclude-libs,ALL
+			-Wall -Wextra -Wunused-parameter)
+
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 	# TODO
 endif()
 
-target_link_libraries(${CLIENT_TARGET} PRIVATE ${PRT_LINK_LIBRARIES})
+target_link_libraries(${CLIENT_TARGET} PRIVATE
+		${PRT_LINK_LIBRARIES})
+
 target_include_directories(${CLIENT_TARGET} PRIVATE
      ${PRT_INCLUDE_PATH}
      ${PROJECT_SOURCE_DIR}/codec/encoder)
