@@ -4,10 +4,7 @@ cmake_policy(SET CMP0015 NEW)
 
 ### python bindings dependency
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-	set(PYTHON_MODULE_EXTENSION ".pyd") # TODO: needed? probably default...
-endif()
-message(STATUS "Python Module System Information: " ${PYTHON_MODULE_EXTENSION})
+message(STATUS "Python Module Suffix: " ${PYTHON_MODULE_EXTENSION})
 
 pybind11_add_module(${CLIENT_TARGET} MODULE
 		utils.cpp
