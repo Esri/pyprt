@@ -14,10 +14,10 @@ pybind11_add_module(${CLIENT_TARGET} MODULE
 target_compile_features(${CODEC_TARGET} PRIVATE
 		cxx_std_14) # C++14
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+if(PYPRT_WINDOWS)
 	# TODO
 
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+elseif(PYPRT_LINUX)
 	target_compile_options(${CLIENT_TARGET} PRIVATE
 			-D_GLIBCXX_USE_CXX11_ABI=0
 			-march=nocona
@@ -25,8 +25,15 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 			-Wl,--exclude-libs,ALL
 			-Wall -Wextra -Wunused-parameter)
 
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+	set_target_properties(${PROJECT_NAME} PROPERTIES
+			INSTALL_RPATH "\$ORIGIN"
+			INSTALL_RPATH_USE_LINK_PATH FALSE
+			SKIP_RPATH FALSE
+			BUILD_WITH_INSTALL_RPATH TRUE)
+		
+elseif(PYPRT_MACOS)
 	# TODO
+
 endif()
 
 target_link_libraries(${CLIENT_TARGET} PRIVATE
@@ -35,12 +42,6 @@ target_link_libraries(${CLIENT_TARGET} PRIVATE
 target_include_directories(${CLIENT_TARGET} PRIVATE
      ${PRT_INCLUDE_PATH}
      ${PROJECT_SOURCE_DIR}/codec/encoder)
-
-set_target_properties(${PROJECT_NAME} PROPERTIES
-	INSTALL_RPATH "\$ORIGIN"
-	INSTALL_RPATH_USE_LINK_PATH FALSE
-	SKIP_RPATH FALSE
-	BUILD_WITH_INSTALL_RPATH TRUE)
 
 
 ### install target
