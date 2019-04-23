@@ -109,7 +109,7 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
 void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
     auto* cb = dynamic_cast<IPyCallbacks*>(getCallbacks());
     if (cb == nullptr)
-        throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
+		throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
 	const std::wstring baseName = getOptions()->getString(EO_BASE_NAME);
 
 	std::vector<prtx::EncodePreparator::FinalizedInstance> finalizedInstances;

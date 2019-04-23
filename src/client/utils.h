@@ -29,6 +29,7 @@
 
 #include <memory>
 #include <string>
+#include <ostream>
 #include <cstdlib>
 
 
