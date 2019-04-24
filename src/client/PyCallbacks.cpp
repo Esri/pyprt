@@ -32,7 +32,7 @@
 
 
 
-void PyCallbacks::add(const wchar_t* name, const std::vector<std::vector<double>> verticesCoord, const int32_t shapeIDs, const std::map<std::string, float> CGAfloatreport, const std::map<std::string, std::string> CGAstringreport, const std::map<std::string, bool> CGAboolreport) {
+void PyCallbacks::add(const wchar_t* name, const std::vector<std::vector<double>> verticesCoord, const int32_t shapeIDs, const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport) {
     geometryData = verticesCoord;
     reportFloatData = CGAfloatreport;
     reportStringData = CGAstringreport;

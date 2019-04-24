@@ -124,9 +124,9 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
 
         const prtx::ReportsPtr& rep = instance.getReports();
         
-        std::map<std::string, float> reportFloat;
-        std::map<std::string, std::string> reportString;
-        std::map<std::string, bool> reportBool;
+        FloatMap reportFloat;
+        StringMap reportString;
+        BoolMap reportBool;
         if (rep) {
             for (prtx::Shape::ReportBool repLine : rep->mBools) {
                 std::wstring repName = *(std::get<0>(repLine));

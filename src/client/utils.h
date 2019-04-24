@@ -32,7 +32,6 @@
 #include <ostream>
 #include <cstdlib>
 
-
 namespace pcu {
 
 enum class RunStatus : uint8_t {

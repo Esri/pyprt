@@ -138,7 +138,7 @@ namespace {
     class ModelGenerator {
     public:
         ModelGenerator(const std::string& initShapePath, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt);
-        ModelGenerator(const std::vector<CustomGeometry> myGeo, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt);
+        ModelGenerator(const std::vector<CustomGeometry>& myGeo, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt);
         ~ModelGenerator();
         
         static void initializePRT(std::string const & prtPath = "");
@@ -146,9 +146,9 @@ namespace {
         static bool isPRTInitialized();
         bool generateModel();
         std::vector<std::vector<std::vector<double>>> getModelGeometry() const;
-        std::vector<std::map<std::string, float>> getModelFloatReport() const;
-        std::vector<std::map<std::string, std::string>> getModelStringReport() const;
-        std::vector<std::map<std::string, bool>> getModelBoolReport() const;
+        std::vector<FloatMap> getModelFloatReport() const;
+        std::vector<StringMap> getModelStringReport() const;
+        std::vector<BoolMap> getModelBoolReport() const;
         
         bool isCustomGeometry() { return customFlag; }
 
@@ -160,9 +160,9 @@ namespace {
         std::vector<std::string> encoderOptions;
 
         std::vector<std::vector<std::vector<double>>> modelsGeometry;
-        std::vector<std::map<std::string, float>> modelsFloatReport;
-        std::vector<std::map<std::string, std::string>> modelsStringReport;
-        std::vector<std::map<std::string, bool>> modelsBoolReport;
+        std::vector<FloatMap> modelsFloatReport;
+        std::vector<StringMap> modelsStringReport;
+        std::vector<BoolMap> modelsBoolReport;
 
         static std::unique_ptr<PRTContext> prtCtx;
 
@@ -178,7 +178,7 @@ namespace {
         encoderOptions = encOpt;
     }
 
-    ModelGenerator::ModelGenerator(const std::vector<CustomGeometry> myGeo, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt) {
+    ModelGenerator::ModelGenerator(const std::vector<CustomGeometry>& myGeo, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt) {
         myGeometries = myGeo;
         rulePackagePath = rulePkgPath;
         shapeAttributes = shapeAtt;
@@ -428,7 +428,7 @@ using namespace pybind11::literals;
 PYBIND11_MODULE(pyprt, m) {
     py::class_<ModelGenerator>(m, "ModelGenerator")
         .def(py::init<const std::string&, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShapePath"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
-        .def(py::init<const std::vector<CustomGeometry>, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShape"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
+        .def(py::init<const std::vector<CustomGeometry>&, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShape"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
         .def("generate_model", &ModelGenerator::generateModel)
         .def("get_model_geometry", &ModelGenerator::getModelGeometry)
         .def("get_model_float_report", &ModelGenerator::getModelFloatReport)

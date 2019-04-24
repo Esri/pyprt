@@ -39,9 +39,9 @@
 class PyCallbacks : public IPyCallbacks {
 private:
     std::vector<std::vector<double>> geometryData;
-    std::map<std::string, float> reportFloatData;
-    std::map<std::string, std::string> reportStringData;
-    std::map<std::string, bool> reportBoolData;
+    FloatMap reportFloatData;
+    StringMap reportStringData;
+    BoolMap reportBoolData;
 
 public:
     
@@ -53,9 +53,9 @@ public:
         const wchar_t* name,
         const std::vector<std::vector<double>> verticesCoord,
         const int32_t shapeIDs,
-        const std::map<std::string, float> CGAfloatreport,
-        const std::map<std::string, std::string> CGAstringreport,
-        const std::map<std::string, bool> CGAboolreport
+        const FloatMap& CGAfloatreport,
+        const StringMap& CGAstringreport,
+        const BoolMap& CGAboolreport
 	) override;
 
     std::vector<std::vector<double>> getGeometry() const {
