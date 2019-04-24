@@ -19,22 +19,18 @@
  * limitations under the License.
  */
 
-#define _CRT_SECURE_NO_WARNINGS
-
 #include "utils.h"
 #include "logging.h"
 
 #include "prt/StringUtils.h"
 
-#include "CLI11.hpp"
-
+#include <fstream>
+#include <functional>
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
 #include <sys/types.h>
 #include <sys/stat.h>
-
-#include <direct.h>
 
 
 namespace {
