@@ -31,10 +31,16 @@
 #include <map>
 
 
+void PyCallbacks::add(const wchar_t* name, const int32_t shapeIDs) {
+    std::cout << "Instance Info: " << name << " - id: " << shapeIDs << std::endl;
+}
 
-void PyCallbacks::add(const wchar_t* name, const std::vector<std::vector<double>> verticesCoord, const int32_t shapeIDs, const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport) {
-    geometryData = verticesCoord;
+void PyCallbacks::setReports(const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport) {
     reportFloatData = CGAfloatreport;
     reportStringData = CGAstringreport;
     reportBoolData = CGAboolreport;
+}
+
+void PyCallbacks::setVertices(const std::vector<std::vector<double>> verticesCoord) {
+    geometryData = verticesCoord;
 }

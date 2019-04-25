@@ -162,7 +162,9 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
                 coordMatrix.push_back(vertexCoord);
             }
 
-            cb->add(baseName.c_str(), coordMatrix, instance.getShapeId(), reportFloat, reportString, reportBool);
+            cb->add(baseName.c_str(), instance.getShapeId());
+            cb->setReports(reportFloat, reportString, reportBool);
+            cb->setVertices(coordMatrix);
 
         }
     }

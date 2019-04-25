@@ -51,12 +51,18 @@ public:
 
     void add(
         const wchar_t* name,
-        const std::vector<std::vector<double>> verticesCoord,
-        const int32_t shapeIDs,
+        const int32_t shapeIDs
+    ) override;
+
+    void setReports(
         const FloatMap& CGAfloatreport,
         const StringMap& CGAstringreport,
         const BoolMap& CGAboolreport
-	) override;
+    ) override;
+
+    void setVertices(
+        const std::vector<std::vector<double>> verticesCoord
+    ) override;
 
     std::vector<std::vector<double>> getGeometry() const {
         return geometryData;

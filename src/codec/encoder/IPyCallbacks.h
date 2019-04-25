@@ -42,14 +42,19 @@ public:
 
     virtual ~IPyCallbacks() override = default;
 
-
     virtual void add(
         const wchar_t* name,
-        const std::vector<std::vector<double>> verticesCoord,
-        const int32_t shapeIDs,
+        const int32_t shapeIDs
+    ) = 0;
+
+    virtual void setReports(
         const FloatMap& CGAfloatreport,
         const StringMap& CGAstringreport,
         const BoolMap& CGAboolreport
+    ) = 0;
+
+    virtual void setVertices(
+        const std::vector<std::vector<double>> verticesCoord
     ) = 0;
 
 };
