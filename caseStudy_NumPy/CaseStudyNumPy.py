@@ -6,6 +6,7 @@ sys.path.append(SDK_PATH)
 import pyprt
 
 import numpy as np
+import itertools
 from vispy import app, scene, visuals
 from vispy.color import Color, Colormap
 from vispy.geometry.meshdata import MeshData
@@ -16,7 +17,7 @@ def asset_file(filename):
 
 
 class Canvas(scene.SceneCanvas):
-    def __init__(self,generated_data, generated_data_faces , window_range_xmin, window_range_xmax, window_range_ymin, window_range_ymax, window_range_zmin, window_range_zmax):
+    def __init__(self, generated_data, generated_data_faces , window_range_xmin, window_range_xmax, window_range_ymin, window_range_ymax, window_range_zmin, window_range_zmax):
         scene.SceneCanvas.__init__(self, keys='interactive', size=(800, 550), show=True, title="Visualization of the generated model(s)")
 
         self.unfreeze()
@@ -26,7 +27,6 @@ class Canvas(scene.SceneCanvas):
         self.selected_point = None
         scene.visuals.GridLines(parent=self.view.scene)
 
-        #self.meshes = [] # will be useful for multiple generated models.
         if(generated_data_faces is not None):
             mdata = MeshData(vertices = generated_data, faces = generated_data_faces)
 
@@ -35,21 +35,22 @@ class Canvas(scene.SceneCanvas):
             fcolor = np.ones((nf, 4), dtype=np.float32)
             someColors = [Color('green').RGBA, Color('green').RGBA ,Color('yellow').RGBA, Color('yellow').RGBA, Color('blue').RGBA, Color('blue').RGBA,Color('red').RGBA, Color('red').RGBA, Color('white').RGBA, Color('white').RGBA,Color('fuchsia').RGBA, Color('fuchsia').RGBA]
 
-            for i in range(0,nf):
-                fcolor[i] = Color('green').RGBA #someColors[i]
+            for l in range(0,nf):
+                fcolor[l] = Color('green').RGBA #someColors[l]
 
+            #fcolor[0] = Color('blue').RGBA
             mdata.set_face_colors(fcolor)
             edge_v_index = mdata.get_edges()
 
             mesh = scene.visuals.Mesh(meshdata = mdata)
             
             mesh.set_gl_state('additive', depth_test=False)
-            mlines = scene.visuals.Line(pos=mat,color='red',connect=edge_v_index)
+            mlines = scene.visuals.Line(pos=generated_data,color='red',connect=edge_v_index)
 
             self.view.add(mesh)
             self.view.add(mlines)
 
-        s = scene.Markers(pos=mat)
+        s = scene.Markers(pos=generated_data)
 
         self.view.add(s)
         self.freeze()
@@ -69,7 +70,9 @@ if __name__ == '__main__':
         raise Exception("PRT is not initialized")
 
     v = np.array([0, 0, 0,  0, 0, 2,  1, 0, 1,  1, 0, 0],dtype='f')
+    v2 = np.array([4, 0, 0,  4, 0, 2,  5, 0, 1,  5, 0, 0],dtype='f')
     initialGeometry = pyprt.CustomGeometry(v)
+    initialGeometry2 = pyprt.CustomGeometry(v2)
 
     mod = pyprt.ModelGenerator([initialGeometry], asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"], ["baseName:string=theModel"])
 
@@ -79,7 +82,7 @@ if __name__ == '__main__':
         face_geo = mod.get_model_faces_geometry()
         print("\nSize of the matrix containing all the model vertices:")
         print(geo_numpy.shape)
-        print(geo_numpy[0])
+        print(geo_numpy)
         print("\nGenerated Model Faces: ")
         print(face_geo)
     else:
@@ -91,8 +94,9 @@ if __name__ == '__main__':
 
 
     # Data
-    mat = geo_numpy[0]
-    mat_faces = np.array([[0,1,3],[1,2,3],[4,5,7],[5,6,7],[0,1,4],[1,4,5],[1,2,5],[2,5,6],[0,3,4],[3,4,7],[2,3,6],[3,6,7]])
+    mat = geo_numpy[0].copy()
+    #mat[:, 1], mat[:, 2] = mat[:, 2], mat[:, 1].copy()
+    mat_f = []
 
     xmin = np.amin(mat[:,0])
     xmax = np.amax(mat[:,0])
@@ -101,6 +105,28 @@ if __name__ == '__main__':
     zmin = np.amin(mat[:,2])
     zmax = np.amax(mat[:,2])
 
-    win = Canvas(mat, mat_faces, xmin, xmax, ymin, ymax, zmin, zmax)
+    mat_faces = []
+    for f in face_geo[0]:
+        if(len(f) == 3):
+            mat_faces.append(f)
+        elif(len(f) > 3):
+            for new_f in np.array(list(itertools.combinations(f,3))):
+                mat_faces.append(new_f)
+        elif(len(f) < 3):
+            # repeat one vertex index
+            current_ind = 0
+            new_f2 = []
+            while(len(new_f2) < 3):
+                new_f2.append(f[current_ind])
+                if(current_ind < len(f)-1):
+                    current_ind += 1
+                else:
+                    while(len(new_f2) < 3):
+                        new_f2.append(f[current_ind])
+                    current_ind += 1
+
+            mat_faces.append(new_f2)
+
+    win = Canvas(mat,np.array(mat_faces), xmin, xmax, ymin, ymax, zmin, zmax)
     if sys.flags.interactive != 1:
         app.run()
