@@ -42,5 +42,9 @@ void PyCallbacks::setReports(const FloatMap& CGAfloatreport, const StringMap& CG
 }
 
 void PyCallbacks::setVertices(const std::vector<std::vector<double>> verticesCoord) {
-    geometryData = verticesCoord;
+    vertices = verticesCoord;
+}
+
+void PyCallbacks::setFaces(const std::vector<std::vector<uint32_t>> facesCoord) {
+    faces = facesCoord;
 }

@@ -76,9 +76,12 @@ if __name__ == '__main__':
     if(mod.generate_model()):
         geo = mod.get_model_geometry()
         geo_numpy = np.array(geo)
+        face_geo = mod.get_model_faces_geometry()
         print("\nSize of the matrix containing all the model vertices:")
         print(geo_numpy.shape)
         print(geo_numpy[0])
+        print("\nGenerated Model Faces: ")
+        print(face_geo)
     else:
         print("\nError while instanciating the model generator.")
 

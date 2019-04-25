@@ -38,7 +38,8 @@
 
 class PyCallbacks : public IPyCallbacks {
 private:
-    std::vector<std::vector<double>> geometryData;
+    std::vector<std::vector<double>> vertices;
+    std::vector<std::vector<uint32_t>> faces;
     FloatMap reportFloatData;
     StringMap reportStringData;
     BoolMap reportBoolData;
@@ -64,8 +65,16 @@ public:
         const std::vector<std::vector<double>> verticesCoord
     ) override;
 
-    std::vector<std::vector<double>> getGeometry() const {
-        return geometryData;
+    void setFaces(
+        const std::vector<std::vector<uint32_t>> facesCoord
+    ) override;
+
+    std::vector<std::vector<double>> getVertices() const {
+        return vertices;
+    }
+
+    std::vector<std::vector<uint32_t>> getFaces() const {
+        return faces;
     }
 
     std::map<std::string, float> getFloatReport() const {

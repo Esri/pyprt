@@ -57,4 +57,8 @@ public:
         const std::vector<std::vector<double>> verticesCoord
     ) = 0;
 
+    virtual void setFaces(
+        const std::vector<std::vector<uint32_t>> facesCoord
+    ) = 0;
+
 };

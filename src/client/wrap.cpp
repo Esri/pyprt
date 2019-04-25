@@ -146,6 +146,7 @@ namespace {
         static bool isPRTInitialized();
         bool generateModel();
         std::vector<std::vector<std::vector<double>>> getModelGeometry() const;
+        std::vector<std::vector<std::vector<uint32_t>>> getModelFaces() const;
         std::vector<FloatMap> getModelFloatReport() const;
         std::vector<StringMap> getModelStringReport() const;
         std::vector<BoolMap> getModelBoolReport() const;
@@ -160,6 +161,7 @@ namespace {
         std::vector<std::string> encoderOptions;
 
         std::vector<std::vector<std::vector<double>>> modelsGeometry;
+        std::vector<std::vector<std::vector<uint32_t>>> modelsFaces;
         std::vector<FloatMap> modelsFloatReport;
         std::vector<StringMap> modelsStringReport;
         std::vector<BoolMap> modelsBoolReport;
@@ -205,6 +207,10 @@ namespace {
 
     std::vector<std::vector<std::vector<double>>> ModelGenerator::getModelGeometry() const {
         return modelsGeometry;
+    }
+
+    std::vector<std::vector<std::vector<uint32_t>>> ModelGenerator::getModelFaces() const {
+        return modelsFaces;
     }
 
     std::vector<std::map<std::string, float>> ModelGenerator::getModelFloatReport() const {
@@ -344,7 +350,8 @@ namespace {
                         return false;
                     }
 
-                    modelsGeometry.push_back(foc->getGeometry());
+                    modelsGeometry.push_back(foc->getVertices());
+                    modelsFaces.push_back(foc->getFaces());
                     modelsFloatReport.push_back(foc->getFloatReport());
                     modelsStringReport.push_back(foc->getStringReport());
                     modelsBoolReport.push_back(foc->getBoolReport());
@@ -395,7 +402,8 @@ namespace {
                     return false;
                 }
 
-                modelsGeometry.push_back(foc->getGeometry());
+                modelsGeometry.push_back(foc->getVertices());
+                modelsFaces.push_back(foc->getFaces());
                 modelsFloatReport.push_back(foc->getFloatReport());
                 modelsStringReport.push_back(foc->getStringReport());
                 modelsBoolReport.push_back(foc->getBoolReport());
@@ -431,6 +439,7 @@ PYBIND11_MODULE(pyprt, m) {
         .def(py::init<const std::vector<CustomGeometry>&, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShape"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
         .def("generate_model", &ModelGenerator::generateModel)
         .def("get_model_geometry", &ModelGenerator::getModelGeometry)
+        .def("get_model_faces_geometry", &ModelGenerator::getModelFaces)
         .def("get_model_float_report", &ModelGenerator::getModelFloatReport)
         .def("get_model_string_report", &ModelGenerator::getModelStringReport)
         .def("get_model_bool_report", &ModelGenerator::getModelBoolReport);

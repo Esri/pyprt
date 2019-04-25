@@ -123,10 +123,10 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
         shapeIDs.push_back(instance.getShapeId());
 
         const prtx::ReportsPtr& rep = instance.getReports();
-        
         FloatMap reportFloat;
         StringMap reportString;
         BoolMap reportBool;
+
         if (rep) {
             for (prtx::Shape::ReportBool repLine : rep->mBools) {
                 std::wstring repName = *(std::get<0>(repLine));
@@ -147,11 +147,14 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
             }
         }
 
-        for (const prtx::MeshPtr& m : instance.getGeometry()->getMeshes()) {
-            
-            const prtx::DoubleVector& vc = m->getVertexCoords();
-            std::vector<std::vector<double>> coordMatrix;
+        std::vector<std::vector<double>> coordMatrix;
+        std::vector<std::vector<uint32_t>> faceMatrix;
 
+        for (const prtx::MeshPtr& mesh : instance.getGeometry()->getMeshes()) {
+            
+            const prtx::DoubleVector& vc = mesh->getVertexCoords();
+            const uint32_t faceCnt = mesh->getFaceCount();
+            
             for (int indI = 0; indI < vc.size() / 3; indI++)
             {
                 std::vector<double> vertexCoord;
@@ -161,12 +164,21 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
                 }
                 coordMatrix.push_back(vertexCoord);
             }
-
-            cb->add(baseName.c_str(), instance.getShapeId());
-            cb->setReports(reportFloat, reportString, reportBool);
-            cb->setVertices(coordMatrix);
+            
+            for (uint32_t fi = 0; fi < faceCnt; ++fi) {
+                const uint32_t* vtxIdx = mesh->getFaceVertexIndices(fi);
+                const uint32_t vtxCnt = mesh->getFaceVertexCount(fi);
+                
+                std::vector<uint32_t> v(vtxIdx, vtxIdx+vtxCnt);
+                faceMatrix.push_back(v);
+            }
 
         }
+
+        cb->add(baseName.c_str(), instance.getShapeId());
+        cb->setReports(reportFloat, reportString, reportBool);
+        cb->setVertices(coordMatrix);
+        cb->setFaces(faceMatrix);
     }
     
 }
