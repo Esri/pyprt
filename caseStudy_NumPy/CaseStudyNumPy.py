@@ -110,7 +110,7 @@ if __name__ == '__main__':
     zmin = np.amin(mat[:,:,2])
     zmax = np.amax(mat[:,:,2])
 
-    for k in range(2):
+    for k in range(mat.shape[0]):
         mat_faces = []
         for f in face_geo[k]:
             if(len(f) == 3):
