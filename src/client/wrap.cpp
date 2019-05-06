@@ -95,17 +95,13 @@ struct PRTContext {
     pcu::ObjectPtr            mPRTHandle;
 };
 
-struct CustomGeometry {
-    CustomGeometry(std::vector<double> vert);
-    CustomGeometry() { }
-    ~CustomGeometry() { }
+class Geometry {
+public:
+    Geometry(std::vector<double> vert);
+    Geometry() { }
+    ~Geometry() { }
 
-    void setVertices(std::vector<double> vert) { vertices = vectorToArray(vert); }
-    void setVertexCount(size_t vertCnt) { vertexCount = vertCnt; }
-    void setIndices(std::vector<uint32_t> ind) {indices = vectorToArray(ind); }
-    void setIndexCount(size_t indCnt) { indexCount = indCnt; }
-    void setFaceCounts(std::vector<uint32_t> faceCnt) { faceCounts = vectorToArray(faceCnt); }
-    void setFaceCountsCount(size_t faceCntCnt) { faceCountsCount = faceCntCnt; }
+    void setGeometry(std::vector<double> vert, size_t vertCnt, std::vector<uint32_t> ind, size_t indCnt, std::vector<uint32_t> faceCnt, size_t faceCntCnt);
     double* getVertices() { return vertices; }
     size_t getVertexCount() { return vertexCount; }
     uint32_t* getIndices() { return indices; }
@@ -113,6 +109,7 @@ struct CustomGeometry {
     uint32_t* getFaceCounts() { return faceCounts; }
     size_t getFaceCountsCount() { return faceCountsCount; }
     
+private:
     double* vertices;
     size_t vertexCount;
     uint32_t* indices;
@@ -121,7 +118,7 @@ struct CustomGeometry {
     size_t faceCountsCount;
 };
 
-CustomGeometry::CustomGeometry(std::vector<double> vert) {
+Geometry::Geometry(std::vector<double> vert) {
     vertices = vectorToArray(vert);
     vertexCount = vert.size();
     indexCount = (size_t) (vertexCount / 3);
@@ -134,11 +131,20 @@ CustomGeometry::CustomGeometry(std::vector<double> vert) {
     faceCounts = vectorToArray(faceVector);
 }
 
+void Geometry::setGeometry(std::vector<double> vert, size_t vertCnt, std::vector<uint32_t> ind, size_t indCnt, std::vector<uint32_t> faceCnt, size_t faceCntCnt) {
+    vertices = vectorToArray(vert);
+    vertexCount = vertCnt;
+    indices = vectorToArray(ind);
+    indexCount = indCnt;
+    faceCounts = vectorToArray(faceCnt);
+    faceCountsCount = faceCntCnt;
+}
+
 namespace {
     class ModelGenerator {
     public:
         ModelGenerator(const std::string& initShapePath, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt);
-        ModelGenerator(const std::vector<CustomGeometry>& myGeo, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt);
+        ModelGenerator(const std::vector<Geometry>& myGeo, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt);
         ~ModelGenerator();
         
         static void initializePRT(std::string const & prtPath = "");
@@ -155,7 +161,7 @@ namespace {
 
     private:
         std::string initialShapePath;
-        std::vector<CustomGeometry> myGeometries;
+        std::vector<Geometry> myGeometries;
         std::string rulePackagePath;
         std::vector<std::string> shapeAttributes;
         std::vector<std::string> encoderOptions;
@@ -180,7 +186,7 @@ namespace {
         encoderOptions = encOpt;
     }
 
-    ModelGenerator::ModelGenerator(const std::vector<CustomGeometry>& myGeo, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt) {
+    ModelGenerator::ModelGenerator(const std::vector<Geometry>& myGeo, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt) {
         myGeometries = myGeo;
         rulePackagePath = rulePkgPath;
         shapeAttributes = shapeAtt;
@@ -306,7 +312,7 @@ namespace {
 
 
             if (isCustomGeometry()) {
-                for (CustomGeometry myGeometry : myGeometries) {
+                for (Geometry myGeometry : myGeometries) {
 
                     // Step 3: Initial Shape
                     pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
@@ -436,7 +442,7 @@ using namespace pybind11::literals;
 PYBIND11_MODULE(pyprt, m) {
     py::class_<ModelGenerator>(m, "ModelGenerator")
         .def(py::init<const std::string&, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShapePath"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
-        .def(py::init<const std::vector<CustomGeometry>&, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShape"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
+        .def(py::init<const std::vector<Geometry>&, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShape"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
         .def("generate_model", &ModelGenerator::generateModel)
         .def("get_model_geometry", &ModelGenerator::getModelGeometry)
         .def("get_model_faces_geometry", &ModelGenerator::getModelFaces)
@@ -448,21 +454,16 @@ PYBIND11_MODULE(pyprt, m) {
      .def("shutdown_prt", &ModelGenerator::shutdownPRT)
      .def("is_prt_initialized", &ModelGenerator::isPRTInitialized);
 
-    py::class_<CustomGeometry>(m, "CustomGeometry")
+    py::class_<Geometry>(m, "Geometry")
         .def(py::init<>())
         .def(py::init<std::vector<double>>())
-        .def("set_vertices", &CustomGeometry::setVertices)
-        .def("set_vertex_count", &CustomGeometry::setVertexCount)
-        .def("set_indices", &CustomGeometry::setIndices)
-        .def("set_index_count", &CustomGeometry::setIndexCount)
-        .def("set_face_counts", &CustomGeometry::setFaceCounts)
-        .def("set_face_counts_count", &CustomGeometry::setFaceCountsCount)
-        .def("get_vertices", &CustomGeometry::getVertices)
-        .def("get_vertex_count", &CustomGeometry::getVertexCount)
-        .def("get_indices", &CustomGeometry::getIndices)
-        .def("get_index_count", &CustomGeometry::getIndexCount)
-        .def("get_face_counts", &CustomGeometry::getFaceCounts)
-        .def("get_face_counts_count", &CustomGeometry::getFaceCountsCount);
+        .def("set_geometry",&Geometry::setGeometry)
+        .def("get_vertices", &Geometry::getVertices)
+        .def("get_vertex_count", &Geometry::getVertexCount)
+        .def("get_indices", &Geometry::getIndices)
+        .def("get_index_count", &Geometry::getIndexCount)
+        .def("get_face_counts", &Geometry::getFaceCounts)
+        .def("get_face_counts_count", &Geometry::getFaceCountsCount);
 
     m.def("print_val",&py_printVal,"Test Python function for value printing.");
 }

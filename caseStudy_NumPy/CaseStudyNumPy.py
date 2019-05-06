@@ -76,8 +76,8 @@ if __name__ == '__main__':
 
     v = np.array([0, 0, 0,  0, 0, 2,  1, 0, 1,  1, 0, 0],dtype='f')
     v2 = np.array([4, 0, 0,  4, 0, 2,  5, 0, 1,  5, 0, 0],dtype='f')
-    initialGeometry = pyprt.CustomGeometry(v)
-    initialGeometry2 = pyprt.CustomGeometry(v2)
+    initialGeometry = pyprt.Geometry(v)
+    initialGeometry2 = pyprt.Geometry(v2)
 
     mod = pyprt.ModelGenerator([initialGeometry, initialGeometry2], asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"], ["baseName:string=theModel"])
 
