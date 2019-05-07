@@ -61,8 +61,7 @@ if(mod2.generate_model()):
 else:
     print("\nError while instanciating the model generator.")
 
-
-mod3 = pyprt.ModelGenerator(asset_file("candler_footprint.obj"), asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"], ["baseName:string=theModelSuper"])
+mod3 = pyprt.ModelGenerator(asset_file("new_sceneCollada_0.dae"), asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"], ["baseName:string=theModelSuper"])
 
 if(mod3.generate_model()):
     geo3 = mod3.get_model_geometry()

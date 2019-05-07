@@ -102,41 +102,41 @@ public:
     ~Geometry() { }
 
     void setGeometry(std::vector<double> vert, size_t vertCnt, std::vector<uint32_t> ind, size_t indCnt, std::vector<uint32_t> faceCnt, size_t faceCntCnt);
-    double* getVertices() { return vertices; }
+    double* getVertices() { return vectorToArray(vertices); }
     size_t getVertexCount() { return vertexCount; }
-    uint32_t* getIndices() { return indices; }
+    uint32_t* getIndices() { return vectorToArray(indices); }
     size_t getIndexCount() { return indexCount; }
-    uint32_t* getFaceCounts() { return faceCounts; }
+    uint32_t* getFaceCounts() { return vectorToArray(faceCounts); }
     size_t getFaceCountsCount() { return faceCountsCount; }
     
 private:
-    double* vertices;
+    std::vector<double> vertices;
     size_t vertexCount;
-    uint32_t* indices;
+    std::vector<uint32_t> indices;
     size_t indexCount;
-    uint32_t* faceCounts;
+    std::vector<uint32_t> faceCounts;
     size_t faceCountsCount;
 };
 
 Geometry::Geometry(std::vector<double> vert) {
-    vertices = vectorToArray(vert);
+    vertices = vert;
     vertexCount = vert.size();
-    indexCount = (size_t) (vertexCount / 3);
+    indexCount = (size_t)(vertexCount / 3);
     faceCountsCount = 1;
 
     std::vector<uint32_t> indicesVector(indexCount);
     std::iota(std::begin(indicesVector), std::end(indicesVector), 0);
-    indices = vectorToArray(indicesVector);
-    std::vector<uint32_t> faceVector(1, (uint32_t) indexCount);
-    faceCounts = vectorToArray(faceVector);
+    indices = indicesVector;
+    std::vector<uint32_t> faceVector(1, (uint32_t)indexCount);
+    faceCounts = faceVector;
 }
 
 void Geometry::setGeometry(std::vector<double> vert, size_t vertCnt, std::vector<uint32_t> ind, size_t indCnt, std::vector<uint32_t> faceCnt, size_t faceCntCnt) {
-    vertices = vectorToArray(vert);
+    vertices = vert;
     vertexCount = vertCnt;
-    indices = vectorToArray(ind);
+    indices = ind;
     indexCount = indCnt;
-    faceCounts = vectorToArray(faceCnt);
+    faceCounts = faceCnt;
     faceCountsCount = faceCntCnt;
 }
 
@@ -151,7 +151,7 @@ namespace {
         static void shutdownPRT();
         static bool isPRTInitialized();
         bool generateModel();
-        std::vector<std::vector<std::vector<double>>> getModelGeometry() const;
+        std::vector<std::vector<std::vector<double>>> getModelVertices() const;
         std::vector<std::vector<std::vector<uint32_t>>> getModelFaces() const;
         std::vector<FloatMap> getModelFloatReport() const;
         std::vector<StringMap> getModelStringReport() const;
@@ -166,7 +166,7 @@ namespace {
         std::vector<std::string> shapeAttributes;
         std::vector<std::string> encoderOptions;
 
-        std::vector<std::vector<std::vector<double>>> modelsGeometry;
+        std::vector<std::vector<std::vector<double>>> modelsVertices;
         std::vector<std::vector<std::vector<uint32_t>>> modelsFaces;
         std::vector<FloatMap> modelsFloatReport;
         std::vector<StringMap> modelsStringReport;
@@ -211,8 +211,8 @@ namespace {
         return prtCtx != nullptr;
     }
 
-    std::vector<std::vector<std::vector<double>>> ModelGenerator::getModelGeometry() const {
-        return modelsGeometry;
+    std::vector<std::vector<std::vector<double>>> ModelGenerator::getModelVertices() const {
+        return modelsVertices;
     }
 
     std::vector<std::vector<std::vector<uint32_t>>> ModelGenerator::getModelFaces() const {
@@ -356,7 +356,7 @@ namespace {
                         return false;
                     }
 
-                    modelsGeometry.push_back(foc->getVertices());
+                    modelsVertices.push_back(foc->getVertices());
                     modelsFaces.push_back(foc->getFaces());
                     modelsFloatReport.push_back(foc->getFloatReport());
                     modelsStringReport.push_back(foc->getStringReport());
@@ -408,7 +408,7 @@ namespace {
                     return false;
                 }
 
-                modelsGeometry.push_back(foc->getVertices());
+                modelsVertices.push_back(foc->getVertices());
                 modelsFaces.push_back(foc->getFaces());
                 modelsFloatReport.push_back(foc->getFloatReport());
                 modelsStringReport.push_back(foc->getStringReport());
@@ -444,8 +444,8 @@ PYBIND11_MODULE(pyprt, m) {
         .def(py::init<const std::string&, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShapePath"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
         .def(py::init<const std::vector<Geometry>&, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShape"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
         .def("generate_model", &ModelGenerator::generateModel)
-        .def("get_model_geometry", &ModelGenerator::getModelGeometry)
-        .def("get_model_faces_geometry", &ModelGenerator::getModelFaces)
+        .def("get_model_geometry_vertices", &ModelGenerator::getModelVertices)
+        .def("get_model_geometry_faces", &ModelGenerator::getModelFaces)
         .def("get_model_float_report", &ModelGenerator::getModelFloatReport)
         .def("get_model_string_report", &ModelGenerator::getModelStringReport)
         .def("get_model_bool_report", &ModelGenerator::getModelBoolReport);

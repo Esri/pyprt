@@ -82,9 +82,9 @@ if __name__ == '__main__':
     mod = pyprt.ModelGenerator([initialGeometry, initialGeometry2], asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"], ["baseName:string=theModel"])
 
     if(mod.generate_model()):
-        geo = mod.get_model_geometry()
+        geo = mod.get_model_geometry_vertices()
         geo_numpy = np.array(geo)
-        face_geo = mod.get_model_faces_geometry()
+        face_geo = mod.get_model_geometry_faces()
         print("\nSize of the matrix containing all the model vertices:")
         print(geo_numpy.shape)
         print(geo_numpy)
