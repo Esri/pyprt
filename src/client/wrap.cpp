@@ -140,7 +140,7 @@ void Geometry::setGeometry(std::vector<double> vert, size_t vertCnt, std::vector
     faceCountsCount = faceCntCnt;
 }
 
-struct GeneratedGeometry {
+class GeneratedGeometry {
 public:
     GeneratedGeometry(std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep);
     GeneratedGeometry() {}
