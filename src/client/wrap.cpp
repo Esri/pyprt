@@ -109,7 +109,7 @@ public:
     uint32_t* getFaceCounts() { return vectorToArray(faceCounts); }
     size_t getFaceCountsCount() { return faceCountsCount; }
     
-private:
+protected:
     std::vector<double> vertices;
     size_t vertexCount;
     std::vector<uint32_t> indices;
@@ -140,37 +140,53 @@ void Geometry::setGeometry(std::vector<double> vert, size_t vertCnt, std::vector
     faceCountsCount = faceCntCnt;
 }
 
+struct GeneratedGeometry {
+public:
+    GeneratedGeometry(std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep);
+    GeneratedGeometry() {}
+    ~GeneratedGeometry() {}
+
+    std::vector<std::vector<double>> getGenerationVertices() { return verticesMatrix; }
+    std::vector<std::vector<uint32_t>> getGenerationFaces() { return facesMatrix; }
+    FloatMap getGenerationFloatReport() { return floatReport; }
+    StringMap getGenerationStringReport() { return stringReport; }
+    BoolMap getGenerationBoolReport() { return boolReport; }
+    
+private:
+    std::vector<std::vector<double>> verticesMatrix;
+    std::vector<std::vector<uint32_t>> facesMatrix;
+    FloatMap floatReport;
+    StringMap stringReport;
+    BoolMap boolReport;
+};
+
+GeneratedGeometry::GeneratedGeometry(std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep) {
+    verticesMatrix = vertMatrix;
+    facesMatrix = fMatrix;
+    floatReport = floatRep;
+    stringReport = stringRep;
+    boolReport = boolRep;
+}
+
 namespace {
     class ModelGenerator {
     public:
-        ModelGenerator(const std::string& initShapePath, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt);
-        ModelGenerator(const std::vector<Geometry>& myGeo, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt);
+        ModelGenerator(const std::string& initShapePath);
+        ModelGenerator(const std::vector<Geometry>& myGeo);
         ~ModelGenerator();
         
         static void initializePRT(std::string const & prtPath = "");
         static void shutdownPRT();
         static bool isPRTInitialized();
-        bool generateModel();
-        std::vector<std::vector<std::vector<double>>> getModelVertices() const;
-        std::vector<std::vector<std::vector<uint32_t>>> getModelFaces() const;
-        std::vector<FloatMap> getModelFloatReport() const;
-        std::vector<StringMap> getModelStringReport() const;
-        std::vector<BoolMap> getModelBoolReport() const;
+        std::vector<GeneratedGeometry> generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const std::vector<std::string>& encoderOptions);
         
         bool isCustomGeometry() { return customFlag; }
 
     private:
         std::string initialShapePath;
-        std::vector<Geometry> myGeometries;
-        std::string rulePackagePath;
-        std::vector<std::string> shapeAttributes;
-        std::vector<std::string> encoderOptions;
+        std::vector<Geometry> initialGeometries;
 
-        std::vector<std::vector<std::vector<double>>> modelsVertices;
-        std::vector<std::vector<std::vector<uint32_t>>> modelsFaces;
-        std::vector<FloatMap> modelsFloatReport;
-        std::vector<StringMap> modelsStringReport;
-        std::vector<BoolMap> modelsBoolReport;
+        std::vector<GeneratedGeometry> generatedGeometries;
 
         static std::unique_ptr<PRTContext> prtCtx;
 
@@ -179,18 +195,12 @@ namespace {
 
     std::unique_ptr<PRTContext> ModelGenerator::prtCtx = nullptr;
 
-    ModelGenerator::ModelGenerator(const std::string& initShapePath, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt) {
+    ModelGenerator::ModelGenerator(const std::string& initShapePath) {
         initialShapePath = initShapePath;
-        rulePackagePath = rulePkgPath;
-        shapeAttributes = shapeAtt;
-        encoderOptions = encOpt;
     }
 
-    ModelGenerator::ModelGenerator(const std::vector<Geometry>& myGeo, const std::string& rulePkgPath, const std::vector<std::string>& shapeAtt, const std::vector<std::string>& encOpt) {
-        myGeometries = myGeo;
-        rulePackagePath = rulePkgPath;
-        shapeAttributes = shapeAtt;
-        encoderOptions = encOpt;
+    ModelGenerator::ModelGenerator(const std::vector<Geometry>& myGeo) {
+        initialGeometries = myGeo;
         customFlag = true;
     }
 
@@ -211,34 +221,13 @@ namespace {
         return prtCtx != nullptr;
     }
 
-    std::vector<std::vector<std::vector<double>>> ModelGenerator::getModelVertices() const {
-        return modelsVertices;
-    }
-
-    std::vector<std::vector<std::vector<uint32_t>>> ModelGenerator::getModelFaces() const {
-        return modelsFaces;
-    }
-
-    std::vector<std::map<std::string, float>> ModelGenerator::getModelFloatReport() const {
-        return modelsFloatReport;
-    }
-
-    std::vector<std::map<std::string, std::string>> ModelGenerator::getModelStringReport() const {
-        return modelsStringReport;
-    }
-
-    std::vector<std::map<std::string, bool>> ModelGenerator::getModelBoolReport() const {
-        return modelsBoolReport;
-    }
-
-
-    bool ModelGenerator::generateModel() {
+    std::vector<GeneratedGeometry> ModelGenerator::generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const std::vector<std::string>& encoderOptions) {
         pcu::PyCallbacksPtr foc;
         try {
             // Step 1: Initialization (setup console, logging, licensing information, PRT extension library path, prt::init)
             if (!prtCtx) {
                 LOG_ERR << L"prt has not been initialized." << std::endl;
-                return false;
+                return {};
             }
 
 
@@ -264,7 +253,7 @@ namespace {
                 }
                 else {
                     LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting." << std::endl;
-                    return false;
+                    return {};
                 }
             }
 
@@ -312,7 +301,7 @@ namespace {
 
 
             if (isCustomGeometry()) {
-                for (Geometry myGeometry : myGeometries) {
+                for (Geometry myGeometry : initialGeometries) {
 
                     // Step 3: Initial Shape
                     pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
@@ -353,14 +342,12 @@ namespace {
 
                     if (genStat != prt::STATUS_OK) {
                         LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
-                        return false;
+                        return {};
                     }
 
-                    modelsVertices.push_back(foc->getVertices());
-                    modelsFaces.push_back(foc->getFaces());
-                    modelsFloatReport.push_back(foc->getFloatReport());
-                    modelsStringReport.push_back(foc->getStringReport());
-                    modelsBoolReport.push_back(foc->getBoolReport());
+                    GeneratedGeometry newGeneratedGeo(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+                    generatedGeometries.push_back(newGeneratedGeo);
+
                 }
             }
             else {
@@ -371,7 +358,7 @@ namespace {
                     const prt::Status s = isb->resolveGeometry(pcu::toUTF16FromOSNarrow(pcu::toFileURI(initialShapePath)).c_str(), resolveMap.get(), cache.get());
                     if (s != prt::STATUS_OK) {
                         LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(initialShapePath);
-                        return false;
+                        return {};
                     }
                 }
                 else {
@@ -405,29 +392,26 @@ namespace {
 
                 if (genStat != prt::STATUS_OK) {
                     LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
-                    return false;
+                    return {};
                 }
 
-                modelsVertices.push_back(foc->getVertices());
-                modelsFaces.push_back(foc->getFaces());
-                modelsFloatReport.push_back(foc->getFloatReport());
-                modelsStringReport.push_back(foc->getStringReport());
-                modelsBoolReport.push_back(foc->getBoolReport());
+                GeneratedGeometry newGeneratedGeo(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+                generatedGeometries.push_back(newGeneratedGeo);
 
             }
 
         }
         catch (const std::exception& e) {
             std::cerr << "caught exception: " << e.what() << std::endl;
-            return false;
+            return {};
         }
         catch (...) {
             std::cerr << "caught unknown exception." << std::endl;
-            return false;
+            return {};
         }
             
 
-        return true;
+        return generatedGeometries;
     }
 
 } // namespace
@@ -441,14 +425,9 @@ using namespace pybind11::literals;
 
 PYBIND11_MODULE(pyprt, m) {
     py::class_<ModelGenerator>(m, "ModelGenerator")
-        .def(py::init<const std::string&, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShapePath"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
-        .def(py::init<const std::vector<Geometry>&, const std::string&, const std::vector<std::string>&, const std::vector<std::string>&>(), "initShape"_a, "rulePkgPath"_a, "shapeAtt"_a, "encOpt"_a)
-        .def("generate_model", &ModelGenerator::generateModel)
-        .def("get_model_geometry_vertices", &ModelGenerator::getModelVertices)
-        .def("get_model_geometry_faces", &ModelGenerator::getModelFaces)
-        .def("get_model_float_report", &ModelGenerator::getModelFloatReport)
-        .def("get_model_string_report", &ModelGenerator::getModelStringReport)
-        .def("get_model_bool_report", &ModelGenerator::getModelBoolReport);
+        .def(py::init<const std::string&>(), "initShapePath"_a)
+        .def(py::init<const std::vector<Geometry>&>(), "initShape"_a)
+        .def("generate_model", &ModelGenerator::generateModel);
 
     m.def("initialize_prt", &ModelGenerator::initializePRT, "prt_path"_a = "")
      .def("shutdown_prt", &ModelGenerator::shutdownPRT)
@@ -464,6 +443,14 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_index_count", &Geometry::getIndexCount)
         .def("get_face_counts", &Geometry::getFaceCounts)
         .def("get_face_counts_count", &Geometry::getFaceCountsCount);
+
+    py::class_<GeneratedGeometry>(m, "GeneratedGeometry")
+        .def(py::init<std::vector<std::vector<double>>, std::vector<std::vector<uint32_t>>, FloatMap, StringMap, BoolMap>())
+        .def("get_vertices", &GeneratedGeometry::getGenerationVertices)
+        .def("get_faces", &GeneratedGeometry::getGenerationFaces)
+        .def("get_float_report", &GeneratedGeometry::getGenerationFloatReport)
+        .def("get_string_report", &GeneratedGeometry::getGenerationStringReport)
+        .def("get_bool_report", &GeneratedGeometry::getGenerationBoolReport);
 
     m.def("print_val",&py_printVal,"Test Python function for value printing.");
 }
