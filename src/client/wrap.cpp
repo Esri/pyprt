@@ -186,8 +186,6 @@ namespace {
         std::string initialShapePath;
         std::vector<Geometry> initialGeometries;
 
-        std::vector<GeneratedGeometry> generatedGeometries;
-
         static std::unique_ptr<PRTContext> prtCtx;
 
         bool customFlag = false;
@@ -222,6 +220,7 @@ namespace {
     }
 
     std::vector<GeneratedGeometry> ModelGenerator::generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const std::vector<std::string>& encoderOptions) {
+        std::vector<GeneratedGeometry> generatedGeometries;
         pcu::PyCallbacksPtr foc;
         try {
             // Step 1: Initialization (setup console, logging, licensing information, PRT extension library path, prt::init)
