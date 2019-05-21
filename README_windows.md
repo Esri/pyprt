@@ -54,7 +54,7 @@ VISUAL STUDIO INSTRUCTIONS
 2. Change into the example directory: `cd <your path to>\py4prt`
 3. Create a build directory: `mkdir build`
 4. Change into the build directory: `cd build`
-5. Run cmake: `cmake -G "Visual Studio 15 2017 Win64" -DPYTHON_EXECUTABLE=path\to\python ..\src`
+5. Run cmake: `cmake -G "Visual Studio 15 2017 Win64" -DPYTHON_EXECUTABLE=path\to\python -DCMAKE_BUILD_TYPE="RelWithDebInfo" ..\src`
 6. Open the solution file `build/pyprt.sln` and build/install from Visual Studio
 7. The build result will appear in the `install` directory in parallel to the `build` directory.
 

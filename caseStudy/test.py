@@ -116,5 +116,28 @@ else:
      print("\nError while instanciating the model generator.")
 
 
+models4bis = mod4.generate_model(asset_file("candler.rpk"), ["ruleFile:string=bin/candler.cgb", "startRule:string=Default$Footprint"], ["baseName:string=theModel"])
+
+print("\nNumber of generated models: "+ str(len(models4bis)))
+if(len(models4bis)>0):
+    for model in models4bis:
+        geo4bis = model.get_vertices()
+        geo_numpy4bis = np.array(geo4bis)
+        print("\nSize of the matrix containing the model vertices:")
+        print(geo_numpy4bis.shape)
+        rep_float4bis = model.get_float_report()
+        rep_string4bis = model.get_string_report()
+        rep_bool4bis = model.get_bool_report()
+        print("Report of the generated model:")
+        if(len(rep_float4bis)):
+            print(rep_float4bis)
+        if(len(rep_string4bis)):
+            print(rep_string4bis)
+        if(len(rep_bool4bis)):
+            print(rep_bool4bis)
+else:
+     print("\nError while instanciating the model generator.")
+
+
 print("\nShutdown PRT.")
 pyprt.shutdown_prt()

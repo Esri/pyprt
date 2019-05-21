@@ -79,27 +79,34 @@ if __name__ == '__main__':
     initialGeometry = pyprt.Geometry(v)
     initialGeometry2 = pyprt.Geometry(v2)
 
-    mod = pyprt.ModelGenerator([initialGeometry, initialGeometry2], asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"], ["baseName:string=theModel"])
+    mod = pyprt.ModelGenerator([initialGeometry, initialGeometry2])
+    generated_mod = mod.generate_model(asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"], ["baseName:string=theModel"])
+    #all_vertices = np.empty((0, 3))
+    all_vertices = []
+    all_faces = []
 
-    if(mod.generate_model()):
-        geo = mod.get_model_geometry_vertices()
-        geo_numpy = np.array(geo)
-        face_geo = mod.get_model_geometry_faces()
-        print("\nSize of the matrix containing all the model vertices:")
-        print(geo_numpy.shape)
-        print(geo_numpy)
-        print("\nGenerated Model Faces: ")
-        print(face_geo)
+    if(len(generated_mod)>0):
+        for model in generated_mod:
+            geo = model.get_vertices()
+            geo_numpy = np.array(geo)
+            #all_vertices = np.append(all_vertices, geo_numpy, axis = 0)
+            all_vertices.append(geo)
+            face_geo = model.get_faces()
+            all_faces.append(face_geo)
+            print("\nSize of the matrix containing all the model vertices:")
+            print(geo_numpy.shape)
+            print(geo_numpy)
+            print("\nGenerated Model Faces: ")
+            print(face_geo)
     else:
         print("\nError while instanciating the model generator.")
-
 
     print("\nShutdown PRT.")
     pyprt.shutdown_prt()
 
 
     # Data
-    mat = geo_numpy.copy()
+    mat = np.array(all_vertices).copy()
     mat[:, :, 1], mat[:, :, 2] = mat[:, :, 2], mat[:, :, 1].copy()
     mat_f = []
 
@@ -112,7 +119,7 @@ if __name__ == '__main__':
 
     for k in range(mat.shape[0]):
         mat_faces = []
-        for f in face_geo[k]:
+        for f in all_faces[k]:
             if(len(f) == 3):
                 mat_faces.append(f)
             elif(len(f) > 3):
