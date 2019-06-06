@@ -80,7 +80,7 @@ if __name__ == '__main__':
     initialGeometry2 = pyprt.Geometry(v2)
 
     mod = pyprt.ModelGenerator([initialGeometry, initialGeometry2])
-    generated_mod = mod.generate_model(asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"], ["baseName:string=theModel"])
+    generated_mod = mod.generate_model(asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"])
     #all_vertices = np.empty((0, 3))
     all_vertices = []
     all_faces = []

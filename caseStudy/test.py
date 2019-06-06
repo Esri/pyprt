@@ -21,7 +21,7 @@ if(not pyprt.is_prt_initialized()):
     raise Exception("PRT is not initialized")
 
 mod = pyprt.ModelGenerator(asset_file("simple_scene_0.obj"))
-models = mod.generate_model(asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"], ["baseName:string=theModelSuper"])
+models = mod.generate_model(asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"])
 
 if(len(models)>0):
     for model in models:
@@ -44,7 +44,7 @@ else:
 
 
 mod2 = pyprt.ModelGenerator(asset_file("candler_footprint.obj"))
-models2 = mod2.generate_model(asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"], ["baseName:string=theModelSuper"])
+models2 = mod2.generate_model(asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"])
 
 if(len(models2)>0):
     for model in models2:
@@ -66,7 +66,7 @@ else:
     print("\nError while instanciating the model generator.")
 
 mod3 = pyprt.ModelGenerator(asset_file("new_sceneCollada_0.dae"))
-models3 = mod3.generate_model(asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"], ["baseName:string=theModelSuper"])
+models3 = mod3.generate_model(asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"])
 
 if(len(models3)>0):
     for model in models3:
@@ -93,7 +93,7 @@ initialGeometry4 = pyprt.Geometry(v4)
 initialGeometry41 = pyprt.Geometry(v41)
 
 mod4 = pyprt.ModelGenerator([initialGeometry4,initialGeometry41])
-all_models = mod4.generate_model(asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"], ["baseName:string=theModel"])
+all_models = mod4.generate_model(asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"])
 
 print("\nNumber of generated models: "+ str(len(all_models)))
 if(len(all_models)>0):
@@ -116,7 +116,7 @@ else:
      print("\nError while instanciating the model generator.")
 
 
-models4bis = mod4.generate_model(asset_file("candler.rpk"), ["ruleFile:string=bin/candler.cgb", "startRule:string=Default$Footprint"], ["baseName:string=theModel"])
+models4bis = mod4.generate_model(asset_file("candler.rpk"), ["ruleFile:string=bin/candler.cgb", "startRule:string=Default$Footprint"])
 
 print("\nNumber of generated models: "+ str(len(models4bis)))
 if(len(models4bis)>0):
@@ -137,6 +137,9 @@ if(len(models4bis)>0):
             print(rep_bool4bis)
 else:
      print("\nError while instanciating the model generator.")
+
+
+model2bis = mod2.generate_model(asset_file("candler.rpk"), ["ruleFile:string=bin/candler.cgb", "startRule:string=Default$Footprint"],"com.esri.prt.codecs.OBJEncoder")
 
 
 print("\nShutdown PRT.")

@@ -31,6 +31,7 @@
 #include <fstream>
 #include <map>
 #include <numeric>
+#include <direct.h>
 
 /**
     * commonly used constants
@@ -40,6 +41,7 @@ const wchar_t* FILE_CGA_REPORT = L"CGAReport.txt";
 const wchar_t* ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
 const wchar_t* ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
 const wchar_t* ENCODER_OPT_NAME = L"name";
+pcu::Path executablePath;
     
 
 template <typename T>
@@ -59,7 +61,7 @@ T* vectorToArray(std::vector<T> data) {
     */
 struct PRTContext {
     PRTContext(prt::LogLevel defaultLogLevel, std::string const & sdkPath) {
-        const pcu::Path executablePath(sdkPath.empty() ? pcu::getExecutablePath() : sdkPath);
+        executablePath = sdkPath.empty() ? pcu::getExecutablePath() : sdkPath;
         const pcu::Path installPath = executablePath.getParent();
         const pcu::Path fsLogPath = installPath / FILE_LOG;
 
@@ -178,7 +180,7 @@ namespace {
         static void initializePRT(std::string const & prtPath = "");
         static void shutdownPRT();
         static bool isPRTInitialized();
-        std::vector<GeneratedGeometry> generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const std::vector<std::string>& encoderOptions);
+        std::vector<GeneratedGeometry> generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const wchar_t* encoderName, const std::vector<std::string>& encoderOptions);
         
         bool isCustomGeometry() { return customFlag; }
 
@@ -219,9 +221,9 @@ namespace {
         return prtCtx != nullptr;
     }
 
-    std::vector<GeneratedGeometry> ModelGenerator::generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const std::vector<std::string>& encoderOptions) {
+    std::vector<GeneratedGeometry> ModelGenerator::generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const wchar_t* encoderName = ENCODER_ID_PYTHON, const std::vector<std::string>& encoderOptions = {"baseName:string=theModel"}) {
         std::vector<GeneratedGeometry> generatedGeometries;
-        pcu::PyCallbacksPtr foc;
+
         try {
             // Step 1: Initialization (setup console, logging, licensing information, PRT extension library path, prt::init)
             if (!prtCtx) {
@@ -256,9 +258,14 @@ namespace {
                 }
             }
 
+            const pcu::Path output_path = executablePath.getParent().getParent() / "output";
+            if (!output_path.exists()) {
+                _mkdir(output_path.generic_string().c_str());
+                LOG_INF << "New output directory created at " << output_path << std::endl;
+            }
 
-            // -- create cache & callback
-            foc = std::make_unique<PyCallbacks>();
+
+            // -- create cache
             pcu::CachePtr cache{ prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT) };
 
 
@@ -288,12 +295,12 @@ namespace {
 
             // -- validate & complete encoder options
             const pcu::AttributeMapPtr validatedReportOpts{ createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions) };
-            const pcu::AttributeMapPtr validatedEncOpts{ createValidatedOptions(ENCODER_ID_PYTHON, encOptions) };
+            const pcu::AttributeMapPtr validatedEncOpts{ createValidatedOptions(encoderName, encOptions) };
 
 
             //-- setup encoder IDs and corresponding options
             const std::array<const wchar_t*, 2> encoders = {
-                    ENCODER_ID_PYTHON,     // Python geometry encoder
+                    encoderName,
                     ENCODER_ID_CGA_REPORT, // an encoder to redirect CGA report to CGAReport.txt
             };
             const std::array<const prt::AttributeMap*, 2> encoderOpts = { validatedEncOpts.get(), validatedReportOpts.get() };
@@ -331,21 +338,41 @@ namespace {
                     const pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
                     const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
 
+                    if (!std::wcscmp(encoderName, ENCODER_ID_PYTHON)) {
+                        pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
 
-                    // Step 5: Generate
-                    const prt::Status genStat = prt::generate(
-                        initialShapes.data(), initialShapes.size(), nullptr,
-                        encoders.data(), encoders.size(), encoderOpts.data(),
-                        foc.get(), cache.get(), nullptr
-                    );
+                        // Step 5: Generate
+                        const prt::Status genStat = prt::generate(
+                            initialShapes.data(), initialShapes.size(), nullptr,
+                            encoders.data(), encoders.size(), encoderOpts.data(),
+                            foc.get(), cache.get(), nullptr
+                        );
 
-                    if (genStat != prt::STATUS_OK) {
-                        LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
+                        if (genStat != prt::STATUS_OK) {
+                            LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
+                            return {};
+                        }
+
+                        GeneratedGeometry newGeneratedGeo(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+                        generatedGeometries.push_back(newGeneratedGeo);
+                    }
+                    else {
+                        pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
+
+                        // Step 5: Generate
+                        const prt::Status genStat = prt::generate(
+                            initialShapes.data(), initialShapes.size(), nullptr,
+                            encoders.data(), encoders.size(), encoderOpts.data(),
+                            foc.get(), cache.get(), nullptr
+                        );
+
+                        if (genStat != prt::STATUS_OK) {
+                            LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
+                            return {};
+                        }
+
                         return {};
                     }
-
-                    GeneratedGeometry newGeneratedGeo(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
-                    generatedGeometries.push_back(newGeneratedGeo);
 
                 }
             }
@@ -381,21 +408,41 @@ namespace {
                 const pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
                 const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
 
+                if (!std::wcscmp(encoderName, ENCODER_ID_PYTHON)) {
+                    pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
 
-                // Step 5: Generate
-                const prt::Status genStat = prt::generate(
-                    initialShapes.data(), initialShapes.size(), nullptr,
-                    encoders.data(), encoders.size(), encoderOpts.data(),
-                    foc.get(), cache.get(), nullptr
-                );
+                    // Step 5: Generate
+                    const prt::Status genStat = prt::generate(
+                        initialShapes.data(), initialShapes.size(), nullptr,
+                        encoders.data(), encoders.size(), encoderOpts.data(),
+                        foc.get(), cache.get(), nullptr
+                    );
 
-                if (genStat != prt::STATUS_OK) {
-                    LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
+                    if (genStat != prt::STATUS_OK) {
+                        LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
+                        return {};
+                    }
+
+                    GeneratedGeometry newGeneratedGeo(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+                    generatedGeometries.push_back(newGeneratedGeo);
+                }
+                else {
+                    pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
+
+                    // Step 5: Generate
+                    const prt::Status genStat = prt::generate(
+                        initialShapes.data(), initialShapes.size(), nullptr,
+                        encoders.data(), encoders.size(), encoderOpts.data(),
+                        foc.get(), cache.get(), nullptr
+                    );
+
+                    if (genStat != prt::STATUS_OK) {
+                        LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
+                        return {};
+                    }
+
                     return {};
                 }
-
-                GeneratedGeometry newGeneratedGeo(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
-                generatedGeometries.push_back(newGeneratedGeo);
 
             }
 
@@ -426,7 +473,7 @@ PYBIND11_MODULE(pyprt, m) {
     py::class_<ModelGenerator>(m, "ModelGenerator")
         .def(py::init<const std::string&>(), "initShapePath"_a)
         .def(py::init<const std::vector<Geometry>&>(), "initShape"_a)
-        .def("generate_model", &ModelGenerator::generateModel);
+        .def("generate_model", &ModelGenerator::generateModel, py::arg("rulePackagePath"), py::arg("shapeAttributes"), py::arg("encoderName") = ENCODER_ID_PYTHON, py::arg("encoderOptions") = std::vector<std::string>(1, "baseName:string=theModel"));
 
     m.def("initialize_prt", &ModelGenerator::initializePRT, "prt_path"_a = "")
      .def("shutdown_prt", &ModelGenerator::shutdownPRT)
