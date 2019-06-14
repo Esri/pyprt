@@ -178,7 +178,6 @@ namespace {
         ~ModelGenerator();
         
         static void initializePRT(std::string const & prtPath = "");
-        static void shutdownPRT();
         static bool isPRTInitialized();
         std::vector<GeneratedGeometry> generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const wchar_t* encoderName, const std::vector<std::string>& encoderOptions);
         
@@ -208,13 +207,7 @@ namespace {
     }
 
     void ModelGenerator::initializePRT(std::string const & prtPath) {
-        if (!prtCtx) {
-            prtCtx = std::make_unique<PRTContext>((prt::LogLevel) 2, prtPath);
-        }
-    }
-
-    void ModelGenerator::shutdownPRT() {
-        prtCtx.reset();
+        if (!prtCtx) prtCtx.reset(new PRTContext((prt::LogLevel) 2, prtPath));
     }
 
     bool ModelGenerator::isPRTInitialized() {
@@ -476,7 +469,6 @@ PYBIND11_MODULE(pyprt, m) {
         .def("generate_model", &ModelGenerator::generateModel, py::arg("rulePackagePath"), py::arg("shapeAttributes"), py::arg("encoderName") = ENCODER_ID_PYTHON, py::arg("encoderOptions") = std::vector<std::string>(1, "baseName:string=theModel"));
 
     m.def("initialize_prt", &ModelGenerator::initializePRT, "prt_path"_a = "")
-     .def("shutdown_prt", &ModelGenerator::shutdownPRT)
      .def("is_prt_initialized", &ModelGenerator::isPRTInitialized);
 
     py::class_<Geometry>(m, "Geometry")
