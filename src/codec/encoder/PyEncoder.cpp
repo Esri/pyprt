@@ -133,19 +133,25 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
                 std::string s(repName.begin(), repName.end());
                 reportBool[s] = std::get<1>(repLine);
             }
+
             for (prtx::Shape::ReportFloat repLine : rep->mFloats) {
                 std::wstring repName = *(std::get<0>(repLine));
                 std::string s(repName.begin(), repName.end());
                 reportFloat[s] = std::get<1>(repLine);
             }
-            for (prtx::Shape::ReportString repLine : rep->mStrings) {
-                std::wstring repName = *(std::get<0>(repLine));
-                std::string s(repName.begin(), repName.end());
-                std::wstring repVal = *(std::get<1>(repLine));
-                std::string s2(repVal.begin(), repName.end());
+
+            prtx::Shape::ReportStringVect&	stringReps = rep->mStrings;
+            for (size_t i = 0; i < stringReps.size(); i++) {
+                const wchar_t* repName = stringReps[i].first->c_str();
+                const wchar_t* repVal = stringReps[i].second->c_str();
+                std::wstring repNameWString = repName;
+                std::wstring repValWString = repVal;
+                std::string s(repNameWString.begin(), repNameWString.end());
+                std::string s2(repValWString.begin(), repValWString.end());
                 reportString[s] = s2;
             }
         }
+
 
         std::vector<std::vector<double>> coordMatrix;
         std::vector<std::vector<uint32_t>> faceMatrix;
