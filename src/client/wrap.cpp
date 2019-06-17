@@ -251,11 +251,11 @@ namespace {
                 }
             }
 
-            const pcu::Path output_path = executablePath.getParent().getParent() / "output";
+            /*const pcu::Path output_path = executablePath.getParent().getParent() / "output";
             if (!output_path.exists()) {
                 _mkdir(output_path.generic_string().c_str());
                 LOG_INF << "New output directory created at " << output_path << std::endl;
-            }
+            }*/
 
 
             // -- create cache
@@ -350,6 +350,12 @@ namespace {
                         generatedGeometries.push_back(newGeneratedGeo);
                     }
                     else {
+                        const pcu::Path output_path = executablePath.getParent().getParent() / "output";
+                        if (!output_path.exists()) {
+                            _mkdir(output_path.generic_string().c_str());
+                            LOG_INF << "New output directory created at " << output_path << std::endl;
+                        }
+
                         pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
 
                         // Step 5: Generate
@@ -420,6 +426,12 @@ namespace {
                     generatedGeometries.push_back(newGeneratedGeo);
                 }
                 else {
+                    const pcu::Path output_path = executablePath.getParent().getParent() / "output";
+                    if (!output_path.exists()) {
+                        _mkdir(output_path.generic_string().c_str());
+                        LOG_INF << "New output directory created at " << output_path << std::endl;
+                    }
+
                     pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
 
                     // Step 5: Generate

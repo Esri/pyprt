@@ -128,16 +128,22 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
         BoolMap reportBool;
 
         if (rep) {
-            for (prtx::Shape::ReportBool repLine : rep->mBools) {
-                std::wstring repName = *(std::get<0>(repLine));
-                std::string s(repName.begin(), repName.end());
-                reportBool[s] = std::get<1>(repLine);
+            prtx::Shape::ReportBoolVect& boolReps = rep->mBools;
+            for (size_t i = 0; i < boolReps.size(); i++) {
+                const wchar_t* repName = boolReps[i].first->c_str();
+                const bool repVal = boolReps[i].second;
+                std::wstring repNameWString = repName;
+                std::string s(repNameWString.begin(), repNameWString.end());
+                reportBool[s] = repVal;
             }
 
-            for (prtx::Shape::ReportFloat repLine : rep->mFloats) {
-                std::wstring repName = *(std::get<0>(repLine));
-                std::string s(repName.begin(), repName.end());
-                reportFloat[s] = std::get<1>(repLine);
+            prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
+            for (size_t i = 0; i < floatReps.size(); i++) {
+                const wchar_t* repName = floatReps[i].first->c_str();
+                const float repVal = floatReps[i].second;
+                std::wstring repNameWString = repName;
+                std::string s(repNameWString.begin(), repNameWString.end());
+                reportFloat[s] = repVal;
             }
 
             prtx::Shape::ReportStringVect&	stringReps = rep->mStrings;
