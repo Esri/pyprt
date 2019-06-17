@@ -90,14 +90,17 @@ public:
     }
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
+        std::wcout << "GENERATE ERROR: " << message << std::endl;
 		return prt::STATUS_OK;
 	}
 
 	prt::Status assetError(size_t isIndex, prt::CGAErrorLevel level, const wchar_t* key, const wchar_t* uri, const wchar_t* message) {
+        std::wcout << "ASSET ERROR: " << message << std::endl;
 		return prt::STATUS_OK;
 	}
 
 	prt::Status cgaError(size_t isIndex, int32_t shapeID, prt::CGAErrorLevel level, int32_t methodId, int32_t pc, const wchar_t* message) {
+        std::wcout << "CGA ERROR: " << message << std::endl;
         return prt::STATUS_OK;
 	}
 
