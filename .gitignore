@@ -15,3 +15,5 @@ src/client/wrap_simple.cpp
 
 /buildvs
 /build_arcgis
+
+/Pipfile*
