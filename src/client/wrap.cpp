@@ -31,7 +31,10 @@
 #include <fstream>
 #include <map>
 #include <numeric>
-#include <direct.h>
+#include <filesystem>
+#ifdef _WIN32
+#	include <direct.h>
+#endif
 
 /**
     * commonly used constants
@@ -352,7 +355,7 @@ namespace {
                     else {
                         const pcu::Path output_path = executablePath.getParent().getParent() / "output";
                         if (!output_path.exists()) {
-                            _mkdir(output_path.generic_string().c_str());
+                            std::filesystem::create_directory(output_path.toStdPath());
                             LOG_INF << "New output directory created at " << output_path << std::endl;
                         }
 
@@ -428,7 +431,7 @@ namespace {
                 else {
                     const pcu::Path output_path = executablePath.getParent().getParent() / "output";
                     if (!output_path.exists()) {
-                        _mkdir(output_path.generic_string().c_str());
+                        std::filesystem::create_directory(output_path.toStdPath());
                         LOG_INF << "New output directory created at " << output_path << std::endl;
                     }
 
