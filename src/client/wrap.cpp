@@ -144,31 +144,59 @@ void Geometry::setGeometry(std::vector<double> vert, size_t vertCnt, std::vector
 
 class GeneratedGeometry {
 public:
-    GeneratedGeometry(std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep);
+    GeneratedGeometry(std::map<int32_t,std::vector<std::vector<double>>> vertMatrix, std::map<int32_t,std::vector<std::vector<uint32_t>>> fMatrix, std::map<int32_t, FloatMap> floatRep, std::map<int32_t, StringMap> stringRep, std::map<int32_t, BoolMap> boolRep);
     GeneratedGeometry() {}
     ~GeneratedGeometry() {}
 
-    std::vector<std::vector<double>> getGenerationVertices() { return verticesMatrix; }
-    std::vector<std::vector<uint32_t>> getGenerationFaces() { return facesMatrix; }
-    FloatMap getGenerationFloatReport() { return floatReport; }
-    StringMap getGenerationStringReport() { return stringReport; }
-    BoolMap getGenerationBoolReport() { return boolReport; }
-    
+    std::map<int32_t, std::vector<std::vector<double>>> getGenerationVertices() { return verticesMatrix; }
+    std::map<int32_t, std::vector<std::vector<uint32_t>>> getGenerationFaces() { return facesMatrix; }
+    std::map<int32_t, FloatMap> getGenerationFloatReport() { return floatReport; }
+    std::map<int32_t, StringMap> getGenerationStringReport() { return stringReport; }
+    std::map<int32_t, BoolMap> getGenerationBoolReport() { return boolReport; }
+
 private:
-    std::vector<std::vector<double>> verticesMatrix;
-    std::vector<std::vector<uint32_t>> facesMatrix;
-    FloatMap floatReport;
-    StringMap stringReport;
-    BoolMap boolReport;
+    std::map<int32_t, std::vector<std::vector<double>>> verticesMatrix;
+    std::map<int32_t, std::vector<std::vector<uint32_t>>> facesMatrix;
+    std::map<int32_t, FloatMap> floatReport;
+    std::map<int32_t, StringMap> stringReport;
+    std::map<int32_t, BoolMap> boolReport;
 };
 
-GeneratedGeometry::GeneratedGeometry(std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep) {
+GeneratedGeometry::GeneratedGeometry(std::map<int32_t, std::vector<std::vector<double>>> vertMatrix, std::map<int32_t, std::vector<std::vector<uint32_t>>> fMatrix, std::map<int32_t, FloatMap> floatRep, std::map<int32_t, StringMap> stringRep, std::map<int32_t, BoolMap> boolRep) {
     verticesMatrix = vertMatrix;
     facesMatrix = fMatrix;
     floatReport = floatRep;
     stringReport = stringRep;
     boolReport = boolRep;
 }
+
+//class GeneratedGeometry {
+//public:
+//    GeneratedGeometry(std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep);
+//    GeneratedGeometry() {}
+//    ~GeneratedGeometry() {}
+//
+//    std::vector<std::vector<double>> getGenerationVertices() { return verticesMatrix; }
+//    std::vector<std::vector<uint32_t>> getGenerationFaces() { return facesMatrix; }
+//    FloatMap getGenerationFloatReport() { return floatReport; }
+//    StringMap getGenerationStringReport() { return stringReport; }
+//    BoolMap getGenerationBoolReport() { return boolReport; }
+//    
+//private:
+//    std::vector<std::vector<double>> verticesMatrix;
+//    std::vector<std::vector<uint32_t>> facesMatrix;
+//    FloatMap floatReport;
+//    StringMap stringReport;
+//    BoolMap boolReport;
+//};
+//
+//GeneratedGeometry::GeneratedGeometry(std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep) {
+//    verticesMatrix = vertMatrix;
+//    facesMatrix = fMatrix;
+//    floatReport = floatRep;
+//    stringReport = stringRep;
+//    boolReport = boolRep;
+//}
 
 namespace {
     class ModelGenerator {
@@ -501,7 +529,7 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_face_counts_count", &Geometry::getFaceCountsCount);
 
     py::class_<GeneratedGeometry>(m, "GeneratedGeometry")
-        .def(py::init<std::vector<std::vector<double>>, std::vector<std::vector<uint32_t>>, FloatMap, StringMap, BoolMap>())
+        .def(py::init<std::map<int32_t, std::vector<std::vector<double>>>, std::map<int32_t, std::vector<std::vector<uint32_t>>>, std::map<int32_t, FloatMap>, std::map<int32_t, StringMap>, std::map<int32_t, BoolMap>>())
         .def("get_vertices", &GeneratedGeometry::getGenerationVertices)
         .def("get_faces", &GeneratedGeometry::getGenerationFaces)
         .def("get_float_report", &GeneratedGeometry::getGenerationFloatReport)

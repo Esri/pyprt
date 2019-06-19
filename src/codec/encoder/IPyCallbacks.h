@@ -31,18 +31,25 @@
 #include <vector>
 #include <map>
 
-
 using FloatMap = std::map<std::string, float>;
 using StringMap = std::map<std::string, std::string>;
 using BoolMap = std::map<std::string, bool>;
-
 
 class IPyCallbacks : public prt::Callbacks {
 public:
 
     virtual ~IPyCallbacks() override = default;
 
-    virtual void add(
+    virtual void addEntry(
+        const int32_t shapeID,
+        const FloatMap& CGAfloatreport,
+        const StringMap& CGAstringreport,
+        const BoolMap& CGAboolreport,
+        const std::vector<std::vector<double>> verticesCoord,
+        const std::vector<std::vector<uint32_t>> facesCoord
+    ) = 0;
+
+    /*virtual void add(
         const wchar_t* name,
         const int32_t shapeID
     ) = 0;
@@ -59,6 +66,6 @@ public:
 
     virtual void setFaces(
         const std::vector<std::vector<uint32_t>> facesCoord
-    ) = 0;
+    ) = 0;*/
 
 };

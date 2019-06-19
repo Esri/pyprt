@@ -118,6 +118,8 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
     std::vector<int32_t> shapeIDs;
     shapeIDs.reserve(finalizedInstances.size());
 
+    int instanceCnt = 0;
+
     for (const auto& instance : finalizedInstances) {
 
         shapeIDs.push_back(instance.getShapeId());
@@ -138,12 +140,21 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
             }
 
             prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
+
             for (size_t i = 0; i < floatReps.size(); i++) {
                 const wchar_t* repName = floatReps[i].first->c_str();
                 const float repVal = floatReps[i].second;
                 std::wstring repNameWString = repName;
                 std::string s(repNameWString.begin(), repNameWString.end());
+                //s += ".." + std::to_string(instance.getShapeId());
                 reportFloat[s] = repVal;
+
+                /*if (reportFloat.find(s) != reportFloat.end()) {
+                    reportFloat[s] += repVal;
+                }
+                else {
+                    reportFloat[s] = repVal;
+                }*/
             }
 
             prtx::Shape::ReportStringVect&	stringReps = rep->mStrings;
@@ -157,7 +168,6 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
                 reportString[s] = s2;
             }
         }
-
 
         std::vector<std::vector<double>> coordMatrix;
         std::vector<std::vector<uint32_t>> faceMatrix;
@@ -187,10 +197,15 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
 
         }
 
-        cb->add(baseName.c_str(), instance.getShapeId());
+        cb->addEntry(instanceCnt, reportFloat, reportString, reportBool, coordMatrix, faceMatrix);
+        //cb->addEntry(instance.getShapeId(), reportFloat, reportString, reportBool, coordMatrix, faceMatrix);
+
+        /*cb->add(baseName.c_str(), instance.getShapeId());
         cb->setReports(reportFloat, reportString, reportBool);
         cb->setVertices(coordMatrix);
-        cb->setFaces(faceMatrix);
+        cb->setFaces(faceMatrix);*/
+
+        instanceCnt++;
     }
     
 }

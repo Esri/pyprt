@@ -35,14 +35,26 @@
 #include <iostream>
 #include <map>
 
-
-class PyCallbacks : public IPyCallbacks {
-private:
-    std::vector<std::vector<double>> vertices;
-    std::vector<std::vector<uint32_t>> faces;
+struct Entry{
+    int32_t id;
     FloatMap reportFloatData;
     StringMap reportStringData;
     BoolMap reportBoolData;
+    std::vector<std::vector<double>> vertices;
+    std::vector<std::vector<uint32_t>> faces;
+};
+
+using Entries = std::vector<Entry>;
+
+class PyCallbacks : public IPyCallbacks {
+private:
+    /*FloatMap reportFloatData;
+    StringMap reportStringData;
+    BoolMap reportBoolData;
+    std::vector<std::vector<double>> vertices;
+    std::vector<std::vector<uint32_t>> faces;*/
+
+    Entries shapes;
 
 public:
     
@@ -50,7 +62,27 @@ public:
 
 	virtual ~PyCallbacks() = default;
 
-    void add(
+    void addEntry(
+        const int32_t shapeID,
+        const FloatMap& CGAfloatreport,
+        const StringMap& CGAstringreport,
+        const BoolMap& CGAboolreport,
+        const std::vector<std::vector<double>> verticesCoord,
+        const std::vector<std::vector<uint32_t>> facesCoord
+    ) override;
+
+    std::map<int32_t, std::vector<std::vector<double>>> getVertices() const;
+
+    std::map<int32_t, std::vector<std::vector<uint32_t>>> getFaces() const;
+
+    std::map<int32_t, FloatMap> getFloatReport() const;
+
+    std::map<int32_t, StringMap> getStringReport() const;
+
+    std::map<int32_t, BoolMap> getBoolReport() const;
+
+
+    /*void add(
         const wchar_t* name,
         const int32_t shapeID
     ) override;
@@ -87,7 +119,7 @@ public:
 
     std::map<std::string, bool> getBoolReport() const {
         return reportBoolData;
-    }
+    }*/
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
         std::wcout << "GENERATE ERROR: " << message << std::endl;

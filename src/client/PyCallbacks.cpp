@@ -31,18 +31,81 @@
 #include <map>
 
 
-void PyCallbacks::add(const wchar_t* name, const int32_t shapeID) { }
+void PyCallbacks::addEntry(const int32_t shapeID, const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport, const std::vector<std::vector<double>> verticesCoord, const std::vector<std::vector<uint32_t>> facesCoord) {
+    Entry instance = {
+        shapeID,
+        CGAfloatreport,
+        CGAstringreport,
+        CGAboolreport,
+        verticesCoord,
+        facesCoord
+    };
 
-void PyCallbacks::setReports(const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport) {
-    reportFloatData = CGAfloatreport;
-    reportStringData = CGAstringreport;
-    reportBoolData = CGAboolreport;
+    shapes.push_back(instance);
 }
 
-void PyCallbacks::setVertices(const std::vector<std::vector<double>> verticesCoord) {
-    vertices = verticesCoord;
+std::map<int32_t, std::vector<std::vector<double>>> PyCallbacks::getVertices() const {
+    std::map<int32_t, std::vector<std::vector<double>>> allVertices;
+
+    for (Entry e : shapes) {
+        allVertices[e.id] = e.vertices;
+    }
+
+    return allVertices;
 }
 
-void PyCallbacks::setFaces(const std::vector<std::vector<uint32_t>> facesCoord) {
-    faces = facesCoord;
+std::map<int32_t, std::vector<std::vector<uint32_t>>> PyCallbacks::getFaces() const {
+    std::map<int32_t, std::vector<std::vector<uint32_t>>> allFaces;
+
+    for (Entry e : shapes) {
+        allFaces[e.id] = e.faces;
+    }
+
+    return allFaces;
 }
+
+std::map<int32_t, FloatMap> PyCallbacks::getFloatReport() const {
+    std::map<int32_t, FloatMap> allFloatReports;
+
+    for (Entry e : shapes) {
+        allFloatReports[e.id] = e.reportFloatData;
+    }
+
+    return allFloatReports;
+}
+
+std::map<int32_t, StringMap> PyCallbacks::getStringReport() const {
+    std::map<int32_t, StringMap> allStringReports;
+
+    for (Entry e : shapes) {
+        allStringReports[e.id] = e.reportStringData;
+    }
+
+    return allStringReports;
+}
+
+std::map<int32_t, BoolMap> PyCallbacks::getBoolReport() const {
+    std::map<int32_t, BoolMap> allBoolReports;
+
+    for (Entry e : shapes) {
+        allBoolReports[e.id] = e.reportBoolData;
+    }
+
+    return allBoolReports;
+}
+
+//void PyCallbacks::add(const wchar_t* name, const int32_t shapeID) { }
+//
+//void PyCallbacks::setReports(const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport) {
+//    reportFloatData = CGAfloatreport;
+//    reportStringData = CGAstringreport;
+//    reportBoolData = CGAboolreport;
+//}
+//
+//void PyCallbacks::setVertices(const std::vector<std::vector<double>> verticesCoord) {
+//    vertices = verticesCoord;
+//}
+//
+//void PyCallbacks::setFaces(const std::vector<std::vector<uint32_t>> facesCoord) {
+//    faces = facesCoord;
+//}
