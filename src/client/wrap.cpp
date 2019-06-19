@@ -42,6 +42,7 @@
 const char*    FILE_LOG = "pyprt.log";
 const wchar_t* FILE_CGA_REPORT = L"CGAReport.txt";
 const wchar_t* ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
+const wchar_t* ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
 const wchar_t* ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
 const wchar_t* ENCODER_OPT_NAME = L"name";
 pcu::Path executablePath;
@@ -293,20 +294,23 @@ namespace {
             const pcu::AttributeMapBuilderPtr optionsBuilder{ prt::AttributeMapBuilder::create() };
             optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_REPORT);
             const pcu::AttributeMapPtr reportOptions{ optionsBuilder->createAttributeMapAndReset() };
+			const pcu::AttributeMapPtr printOptions{ optionsBuilder->createAttributeMapAndReset() };
             const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromTypedKeyValues(encoderOptions) };
 
 
             // -- validate & complete encoder options
             const pcu::AttributeMapPtr validatedReportOpts{ createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions) };
+			const pcu::AttributeMapPtr validatedPrintOpts{ createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions) };
             const pcu::AttributeMapPtr validatedEncOpts{ createValidatedOptions(encoderName, encOptions) };
 
 
             //-- setup encoder IDs and corresponding options
-            const std::array<const wchar_t*, 2> encoders = {
+            const std::array<const wchar_t*, 3> encoders = {
                     encoderName,
                     ENCODER_ID_CGA_REPORT, // an encoder to redirect CGA report to CGAReport.txt
+                    ENCODER_ID_CGA_PRINT // redirects CGA print output to the callback
             };
-            const std::array<const prt::AttributeMap*, 2> encoderOpts = { validatedEncOpts.get(), validatedReportOpts.get() };
+            const std::array<const prt::AttributeMap*, 3> encoderOpts = { validatedEncOpts.get(), validatedReportOpts.get(), validatedPrintOpts.get() };
 
 
             if (isCustomGeometry()) {
