@@ -45,4 +45,5 @@ else:
     print("\nError while instanciating the model generator.")
 
 
+pyprt.shutdown_prt()
 print("\nShutdown PRT.")
