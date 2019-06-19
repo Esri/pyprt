@@ -39,7 +39,6 @@
 /**
     * commonly used constants
     */
-const char*    FILE_LOG = "pyprt.log";
 const wchar_t* FILE_CGA_REPORT = L"CGAReport.txt";
 const wchar_t* ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
 const wchar_t* ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
@@ -60,19 +59,66 @@ T* vectorToArray(std::vector<T> data) {
     return tmp;
 }
 
+// cstr must have space for cstrSize characters
+// cstr will be null-terminated and the actually needed size is placed in cstrSize
+void copyToCStr(const std::string& str, char* cstr, size_t& cstrSize) {
+	if (cstrSize > 0) {
+		strncpy(cstr, str.c_str(), cstrSize);
+		cstr[cstrSize - 1] = 0x0; // enforce null-termination
+	}
+	cstrSize = str.length()+1; // returns the actually needed size including terminating null
+}
+
+/**
+ * custom console logger to redirect PRT log events into the python output
+ */
+class PythonLogHandler : public prt::LogHandler {
+public:
+	PythonLogHandler() = default;
+	virtual ~PythonLogHandler() = default;
+
+public:
+	virtual void handleLogEvent(const wchar_t* msg, prt::LogLevel /*level*/) {
+		pybind11::print(L"[PRT]", msg);
+	}
+
+	virtual const prt::LogLevel* getLevels(size_t* count) {
+		*count = prt::LogHandler::ALL_COUNT;
+		return prt::LogHandler::ALL;
+	}
+	virtual void getFormat(bool* dateTime, bool* level) {
+		*dateTime = true;
+		*level = true;
+	}
+
+	virtual char* toXML(char* result, size_t* resultSize, prt::Status* stat = 0) const {
+		std::ostringstream out;
+		out << *this;
+		copyToCStr(out.str(), result, *resultSize);
+		if (stat) *stat = prt::STATUS_OK;
+		return result;
+	}
+
+	friend std::ostream& operator<<(std::ostream& stream, const PythonLogHandler& v) {
+		stream << "<PythonLogHandler />";
+		return stream;
+	}
+
+private:
+	const prt::LogLevel* mLevels;
+	size_t mCount;
+};
+
+
 /**
     * Helper struct to manage PRT lifetime (e.g. the prt::init() call)
     */
 struct PRTContext {
-    PRTContext(prt::LogLevel defaultLogLevel, std::string const & sdkPath) {
+    PRTContext(prt::LogLevel minimalLogLevel, std::string const & sdkPath) {
         executablePath = sdkPath.empty() ? pcu::getExecutablePath() : sdkPath;
         const pcu::Path installPath = executablePath.getParent();
-        const pcu::Path fsLogPath = installPath / FILE_LOG;
 
-        mLogHandler.reset(prt::ConsoleLogHandler::create(prt::LogHandler::ALL, defaultLogLevel));
-        mFileLogHandler.reset(prt::FileLogHandler::create(prt::LogHandler::ALL, prt::LogHandler::ALL_COUNT, fsLogPath.native_wstring().c_str()));
-        prt::addLogHandler(mLogHandler.get());
-        prt::addLogHandler(mFileLogHandler.get());
+        prt::addLogHandler(&mLogHandler);
 
         // setup paths for plugins, assume standard SDK layout as per README.md
         const pcu::Path extPath = installPath / "lib";
@@ -80,7 +126,7 @@ struct PRTContext {
         // initialize PRT with the path to its extension libraries, the default log level
         const std::wstring wExtPath = extPath.native_wstring();
         const std::array<const wchar_t*, 1> extPaths = { wExtPath.c_str() };
-        mPRTHandle.reset(prt::init(extPaths.data(), extPaths.size(), defaultLogLevel));
+        mPRTHandle.reset(prt::init(extPaths.data(), extPaths.size(), minimalLogLevel));
     }
 
     ~PRTContext() {
@@ -88,16 +134,14 @@ struct PRTContext {
         mPRTHandle.reset();
 
         // remove loggers
-        prt::removeLogHandler(mLogHandler.get());
-        prt::removeLogHandler(mFileLogHandler.get());
+        prt::removeLogHandler(&mLogHandler);
     }
 
     explicit operator bool() const {
         return (bool)mPRTHandle;
     }
 
-    pcu::ConsoleLogHandlerPtr mLogHandler;
-    pcu::FileLogHandlerPtr    mFileLogHandler;
+	PythonLogHandler          mLogHandler;
     pcu::ObjectPtr            mPRTHandle;
 };
 
