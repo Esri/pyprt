@@ -44,7 +44,7 @@ public:
 
     virtual void add(
         const wchar_t* name,
-        const int32_t shapeIDs
+        const int32_t shapeID
     ) = 0;
 
     virtual void setReports(

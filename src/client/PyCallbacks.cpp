@@ -31,7 +31,7 @@
 #include <map>
 
 
-void PyCallbacks::add(const wchar_t* name, const int32_t shapeIDs) { }
+void PyCallbacks::add(const wchar_t* name, const int32_t shapeID) { }
 
 void PyCallbacks::setReports(const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport) {
     reportFloatData = CGAfloatreport;
