@@ -292,13 +292,13 @@ namespace {
                     auto* r = prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status);
                     resolveMap.reset(r);
                 }
-                catch (std::exception e) {
-                    std::cerr << e.what() << std::endl;
+                catch (std::exception& e) {
+                    pybind11::print("CAUGHT EXCEPTION:", e.what());
                 }
 
 
                 if (resolveMap && (status == prt::STATUS_OK)) {
-                    LOG_DBG << "resolve map = " << pcu::objectToXML(resolveMap.get()) << std::endl;
+                    // LOG_DBG << "resolve map = " << pcu::objectToXML(resolveMap.get()) << std::endl;
                 }
                 else {
                     LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting." << std::endl;
@@ -511,14 +511,13 @@ namespace {
 
         }
         catch (const std::exception& e) {
-            std::cerr << "caught exception: " << e.what() << std::endl;
+			LOG_ERR << "caught exception: " << e.what();
             return {};
         }
         catch (...) {
-            std::cerr << "caught unknown exception." << std::endl;
+			LOG_ERR << "caught unknown exception.";
             return {};
         }
-            
 
         return generatedGeometries;
     }
