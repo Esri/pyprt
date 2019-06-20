@@ -15,3 +15,6 @@ src/client/wrap_simple.cpp
 
 /buildvs
 /build_arcgis
+/buildvsTF
+/installVS
+/caseStudy_ArcPy
