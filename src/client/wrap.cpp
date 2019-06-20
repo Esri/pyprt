@@ -533,8 +533,8 @@ PYBIND11_MODULE(pyprt, m) {
         .def("generate_model", &ModelGenerator::generateModel, py::arg("rulePackagePath"), py::arg("shapeAttributes"), py::arg("encoderName") = ENCODER_ID_PYTHON, py::arg("encoderOptions") = std::vector<std::string>(1, "baseName:string=theModel"));
 
     m.def("initialize_prt", &initializePRT, "prt_path"_a = "");
-     .def("is_prt_initialized", &isPRTInitialized);
-     .def("shutdown_prt", &shutdownPRT);
+    m.def("is_prt_initialized", &isPRTInitialized);
+    m.def("shutdown_prt", &shutdownPRT);
 
     py::class_<Geometry>(m, "Geometry")
         .def(py::init<>())
