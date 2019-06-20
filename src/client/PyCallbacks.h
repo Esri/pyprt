@@ -30,6 +30,8 @@
 
 #include "prt/Callbacks.h"
 
+#include <pybind11/pybind11.h>
+
 #include <string>
 #include <vector>
 #include <iostream>
@@ -76,21 +78,22 @@ public:
     std::map<int32_t, BoolMap> getBoolReport() const;
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
-        std::wcout << "GENERATE ERROR: " << message << std::endl;
+		pybind11::print(L"GENERATE ERROR:", message);
 		return prt::STATUS_OK;
 	}
 
 	prt::Status assetError(size_t isIndex, prt::CGAErrorLevel level, const wchar_t* key, const wchar_t* uri, const wchar_t* message) {
-        std::wcout << "ASSET ERROR: " << message << std::endl;
+		pybind11::print(L"ASSET ERROR:", message);
 		return prt::STATUS_OK;
 	}
 
 	prt::Status cgaError(size_t isIndex, int32_t shapeID, prt::CGAErrorLevel level, int32_t methodId, int32_t pc, const wchar_t* message) {
-        std::wcout << "CGA ERROR: " << message << std::endl;
+		pybind11::print(L"CGA ERROR:", message);
         return prt::STATUS_OK;
 	}
 
 	prt::Status cgaPrint(size_t isIndex, int32_t shapeID, const wchar_t* txt) {
+		pybind11::print(L"CGA PRINT:", txt);
 		return prt::STATUS_OK;
 	}
 

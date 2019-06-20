@@ -31,6 +31,7 @@
 #include <string>
 #include <ostream>
 #include <cstdlib>
+#include <filesystem>
 
 namespace pcu {
 
@@ -121,6 +122,8 @@ public:
 	URI getFileURI() const;
 	bool exists() const;
 
+	// transition to C++17 and std::filesystem
+	std::filesystem::path toStdPath() const { return std::filesystem::path(mPath); }
 private:
 	std::string mPath;
 };

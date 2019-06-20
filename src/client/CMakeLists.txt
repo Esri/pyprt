@@ -11,8 +11,7 @@ pybind11_add_module(${CLIENT_TARGET} MODULE
 		wrap.cpp
 		PyCallbacks.cpp)
 
-target_compile_features(${CODEC_TARGET} PRIVATE
-		cxx_std_14) # C++14
+set_target_properties(${CLIENT_TARGET} PROPERTIES CXX_STANDARD 17)
 
 if(PYPRT_WINDOWS)
 	# TODO
@@ -30,7 +29,10 @@ elseif(PYPRT_LINUX)
 			INSTALL_RPATH_USE_LINK_PATH FALSE
 			SKIP_RPATH FALSE
 			BUILD_WITH_INSTALL_RPATH TRUE)
-		
+
+	# GCC 8 needs explicit linking of C++17 std::filesystem lib
+	target_link_libraries(${CLIENT_TARGET} PRIVATE stdc++fs)
+
 elseif(PYPRT_MACOS)
 	# TODO
 

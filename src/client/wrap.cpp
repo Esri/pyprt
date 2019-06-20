@@ -31,14 +31,17 @@
 #include <fstream>
 #include <map>
 #include <numeric>
-#include <direct.h>
+#include <filesystem>
+#ifdef _WIN32
+#	include <direct.h>
+#endif
 
 /**
     * commonly used constants
     */
-const char*    FILE_LOG = "pyprt.log";
 const wchar_t* FILE_CGA_REPORT = L"CGAReport.txt";
 const wchar_t* ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
+const wchar_t* ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
 const wchar_t* ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
 const wchar_t* ENCODER_OPT_NAME = L"name";
 pcu::Path executablePath;
@@ -56,19 +59,66 @@ T* vectorToArray(std::vector<T> data) {
     return tmp;
 }
 
+// cstr must have space for cstrSize characters
+// cstr will be null-terminated and the actually needed size is placed in cstrSize
+void copyToCStr(const std::string& str, char* cstr, size_t& cstrSize) {
+	if (cstrSize > 0) {
+		strncpy(cstr, str.c_str(), cstrSize);
+		cstr[cstrSize - 1] = 0x0; // enforce null-termination
+	}
+	cstrSize = str.length()+1; // returns the actually needed size including terminating null
+}
+
+/**
+ * custom console logger to redirect PRT log events into the python output
+ */
+class PythonLogHandler : public prt::LogHandler {
+public:
+	PythonLogHandler() = default;
+	virtual ~PythonLogHandler() = default;
+
+	virtual void handleLogEvent(const wchar_t* msg, prt::LogLevel /*level*/) {
+		pybind11::print(L"[PRT]", msg);
+	}
+
+	virtual const prt::LogLevel* getLevels(size_t* count) {
+		*count = prt::LogHandler::ALL_COUNT;
+		return prt::LogHandler::ALL;
+	}
+
+	virtual void getFormat(bool* dateTime, bool* level) {
+		*dateTime = true;
+		*level = true;
+	}
+
+	virtual char* toXML(char* result, size_t* resultSize, prt::Status* stat = 0) const {
+		std::ostringstream out;
+		out << *this;
+		copyToCStr(out.str(), result, *resultSize);
+		if (stat) *stat = prt::STATUS_OK;
+		return result;
+	}
+
+	friend std::ostream& operator<<(std::ostream& stream, const PythonLogHandler& v) {
+		stream << "<PythonLogHandler />";
+		return stream;
+	}
+
+private:
+	const prt::LogLevel* mLevels;
+	size_t mCount;
+};
+
+
 /**
     * Helper struct to manage PRT lifetime (e.g. the prt::init() call)
     */
 struct PRTContext {
-    PRTContext(prt::LogLevel defaultLogLevel, std::string const & sdkPath) {
+    PRTContext(prt::LogLevel minimalLogLevel, std::string const & sdkPath) {
         executablePath = sdkPath.empty() ? pcu::getExecutablePath() : sdkPath;
         const pcu::Path installPath = executablePath.getParent();
-        const pcu::Path fsLogPath = installPath / FILE_LOG;
 
-        mLogHandler.reset(prt::ConsoleLogHandler::create(prt::LogHandler::ALL, defaultLogLevel));
-        mFileLogHandler.reset(prt::FileLogHandler::create(prt::LogHandler::ALL, prt::LogHandler::ALL_COUNT, fsLogPath.native_wstring().c_str()));
-        prt::addLogHandler(mLogHandler.get());
-        prt::addLogHandler(mFileLogHandler.get());
+        prt::addLogHandler(&mLogHandler);
 
         // setup paths for plugins, assume standard SDK layout as per README.md
         const pcu::Path extPath = installPath / "lib";
@@ -76,7 +126,7 @@ struct PRTContext {
         // initialize PRT with the path to its extension libraries, the default log level
         const std::wstring wExtPath = extPath.native_wstring();
         const std::array<const wchar_t*, 1> extPaths = { wExtPath.c_str() };
-        mPRTHandle.reset(prt::init(extPaths.data(), extPaths.size(), defaultLogLevel));
+        mPRTHandle.reset(prt::init(extPaths.data(), extPaths.size(), minimalLogLevel));
     }
 
     ~PRTContext() {
@@ -84,18 +134,34 @@ struct PRTContext {
         mPRTHandle.reset();
 
         // remove loggers
-        prt::removeLogHandler(mLogHandler.get());
-        prt::removeLogHandler(mFileLogHandler.get());
+        prt::removeLogHandler(&mLogHandler);
     }
 
     explicit operator bool() const {
         return (bool)mPRTHandle;
     }
 
-    pcu::ConsoleLogHandlerPtr mLogHandler;
-    pcu::FileLogHandlerPtr    mFileLogHandler;
+	PythonLogHandler          mLogHandler;
     pcu::ObjectPtr            mPRTHandle;
 };
+
+namespace {
+
+std::unique_ptr<PRTContext> prtCtx;
+
+void initializePRT(std::string const & prtPath) {
+	if (!prtCtx) prtCtx.reset(new PRTContext(prt::LOG_DEBUG, prtPath));
+}
+
+bool isPRTInitialized() {
+	return (bool)prtCtx;
+}
+
+void shutdownPRT() {
+	prtCtx.reset();
+}
+
+} // namespace
 
 class Geometry {
 public:
@@ -176,10 +242,7 @@ namespace {
         ModelGenerator(const std::string& initShapePath);
         ModelGenerator(const std::vector<Geometry>& myGeo);
         ~ModelGenerator();
-        
-        static void initializePRT(std::string const & prtPath = "");
-        static void shutdownPRT();
-        static bool isPRTInitialized();
+
         std::vector<GeneratedGeometry> generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const wchar_t* encoderName, const std::vector<std::string>& encoderOptions);
         
         bool isCustomGeometry() { return customFlag; }
@@ -187,13 +250,8 @@ namespace {
     private:
         std::string initialShapePath;
         std::vector<Geometry> initialGeometries;
-
-        static std::unique_ptr<PRTContext> prtCtx;
-
         bool customFlag = false;
     };
-
-    std::unique_ptr<PRTContext> ModelGenerator::prtCtx = nullptr;
 
     ModelGenerator::ModelGenerator(const std::string& initShapePath) {
         initialShapePath = initShapePath;
@@ -207,19 +265,12 @@ namespace {
     ModelGenerator::~ModelGenerator() {
     }
 
-    void ModelGenerator::initializePRT(std::string const & prtPath) {
-        if (!prtCtx) prtCtx.reset(new PRTContext((prt::LogLevel) 1, prtPath));
-    }
+    std::vector<GeneratedGeometry> ModelGenerator::generateModel(const std::string& rulePackagePath,
+    		const std::vector<std::string>& shapeAttributes,
+    		const wchar_t* encoderName = ENCODER_ID_PYTHON,
+    		const std::vector<std::string>& encoderOptions = {"baseName:string=theModel"})
+    {
 
-    bool ModelGenerator::isPRTInitialized() {
-        return prtCtx != nullptr;
-    }
-
-    void ModelGenerator::shutdownPRT() {
-        prtCtx.reset();
-    }
-
-    std::vector<GeneratedGeometry> ModelGenerator::generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const wchar_t* encoderName = ENCODER_ID_PYTHON, const std::vector<std::string>& encoderOptions = {"baseName:string=theModel"}) {
         std::vector<GeneratedGeometry> generatedGeometries;
 
         try {
@@ -242,13 +293,13 @@ namespace {
                     auto* r = prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status);
                     resolveMap.reset(r);
                 }
-                catch (std::exception e) {
-                    std::cerr << e.what() << std::endl;
+                catch (std::exception& e) {
+                    pybind11::print("CAUGHT EXCEPTION:", e.what());
                 }
 
 
                 if (resolveMap && (status == prt::STATUS_OK)) {
-                    LOG_DBG << "resolve map = " << pcu::objectToXML(resolveMap.get()) << std::endl;
+                    // LOG_DBG << "resolve map = " << pcu::objectToXML(resolveMap.get()) << std::endl;
                 }
                 else {
                     LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting." << std::endl;
@@ -282,20 +333,23 @@ namespace {
             const pcu::AttributeMapBuilderPtr optionsBuilder{ prt::AttributeMapBuilder::create() };
             optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_REPORT);
             const pcu::AttributeMapPtr reportOptions{ optionsBuilder->createAttributeMapAndReset() };
+			const pcu::AttributeMapPtr printOptions{ optionsBuilder->createAttributeMapAndReset() };
             const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromTypedKeyValues(encoderOptions) };
 
 
             // -- validate & complete encoder options
             const pcu::AttributeMapPtr validatedReportOpts{ createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions) };
+			const pcu::AttributeMapPtr validatedPrintOpts{ createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions) };
             const pcu::AttributeMapPtr validatedEncOpts{ createValidatedOptions(encoderName, encOptions) };
 
 
             //-- setup encoder IDs and corresponding options
-            const std::array<const wchar_t*, 2> encoders = {
+            const std::array<const wchar_t*, 3> encoders = {
                     encoderName,
                     ENCODER_ID_CGA_REPORT, // an encoder to redirect CGA report to CGAReport.txt
+                    ENCODER_ID_CGA_PRINT // redirects CGA print output to the callback
             };
-            const std::array<const prt::AttributeMap*, 2> encoderOpts = { validatedEncOpts.get(), validatedReportOpts.get() };
+            const std::array<const prt::AttributeMap*, 3> encoderOpts = { validatedEncOpts.get(), validatedReportOpts.get(), validatedPrintOpts.get() };
 
 
             if (isCustomGeometry()) {
@@ -351,7 +405,7 @@ namespace {
                     else {
                         const pcu::Path output_path = executablePath.getParent().getParent() / "output";
                         if (!output_path.exists()) {
-                            _mkdir(output_path.generic_string().c_str());
+                            std::filesystem::create_directory(output_path.toStdPath());
                             LOG_INF << "New output directory created at " << output_path << std::endl;
                         }
 
@@ -427,7 +481,7 @@ namespace {
                 else {
                     const pcu::Path output_path = executablePath.getParent().getParent() / "output";
                     if (!output_path.exists()) {
-                        _mkdir(output_path.generic_string().c_str());
+                        std::filesystem::create_directory(output_path.toStdPath());
                         LOG_INF << "New output directory created at " << output_path << std::endl;
                     }
 
@@ -452,14 +506,13 @@ namespace {
 
         }
         catch (const std::exception& e) {
-            std::cerr << "caught exception: " << e.what() << std::endl;
+			LOG_ERR << "caught exception: " << e.what();
             return {};
         }
         catch (...) {
-            std::cerr << "caught unknown exception." << std::endl;
+			LOG_ERR << "caught unknown exception.";
             return {};
         }
-            
 
         return generatedGeometries;
     }
@@ -479,9 +532,9 @@ PYBIND11_MODULE(pyprt, m) {
         .def(py::init<const std::vector<Geometry>&>(), "initShape"_a)
         .def("generate_model", &ModelGenerator::generateModel, py::arg("rulePackagePath"), py::arg("shapeAttributes"), py::arg("encoderName") = ENCODER_ID_PYTHON, py::arg("encoderOptions") = std::vector<std::string>(1, "baseName:string=theModel"));
 
-    m.def("initialize_prt", &ModelGenerator::initializePRT, "prt_path"_a = "")
-     .def("shutdown_prt", &ModelGenerator::shutdownPRT)
-     .def("is_prt_initialized", &ModelGenerator::isPRTInitialized);
+    m.def("initialize_prt", &initializePRT, "prt_path"_a = "");
+     .def("is_prt_initialized", &isPRTInitialized);
+     .def("shutdown_prt", &shutdownPRT);
 
     py::class_<Geometry>(m, "Geometry")
         .def(py::init<>())
