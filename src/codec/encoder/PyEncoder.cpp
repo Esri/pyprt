@@ -54,7 +54,7 @@ const std::wstring ENCFILE_EXT       = L".txt";
 const wchar_t*     WNL               = L"\n";
 
 const prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS = prtx::EncodePreparator::PreparationFlags()
-	.instancing(false)
+	.instancing(true)
 	.mergeByMaterial(true)
 	.triangulate(false)
 	.mergeVertices(true)
@@ -146,15 +146,13 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
                 const float repVal = floatReps[i].second;
                 std::wstring repNameWString = repName;
                 std::string s(repNameWString.begin(), repNameWString.end());
-                //s += ".." + std::to_string(instance.getShapeId());
-                reportFloat[s] = repVal;
 
-                /*if (reportFloat.find(s) != reportFloat.end()) {
+                if (reportFloat.find(s) != reportFloat.end()) {
                     reportFloat[s] += repVal;
                 }
                 else {
                     reportFloat[s] = repVal;
-                }*/
+                }
             }
 
             prtx::Shape::ReportStringVect&	stringReps = rep->mStrings;
@@ -199,11 +197,6 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
 
         cb->addEntry(instanceCnt, reportFloat, reportString, reportBool, coordMatrix, faceMatrix);
         //cb->addEntry(instance.getShapeId(), reportFloat, reportString, reportBool, coordMatrix, faceMatrix);
-
-        /*cb->add(baseName.c_str(), instance.getShapeId());
-        cb->setReports(reportFloat, reportString, reportBool);
-        cb->setVertices(coordMatrix);
-        cb->setFaces(faceMatrix);*/
 
         instanceCnt++;
     }

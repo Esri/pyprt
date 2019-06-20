@@ -170,34 +170,6 @@ GeneratedGeometry::GeneratedGeometry(std::map<int32_t, std::vector<std::vector<d
     boolReport = boolRep;
 }
 
-//class GeneratedGeometry {
-//public:
-//    GeneratedGeometry(std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep);
-//    GeneratedGeometry() {}
-//    ~GeneratedGeometry() {}
-//
-//    std::vector<std::vector<double>> getGenerationVertices() { return verticesMatrix; }
-//    std::vector<std::vector<uint32_t>> getGenerationFaces() { return facesMatrix; }
-//    FloatMap getGenerationFloatReport() { return floatReport; }
-//    StringMap getGenerationStringReport() { return stringReport; }
-//    BoolMap getGenerationBoolReport() { return boolReport; }
-//    
-//private:
-//    std::vector<std::vector<double>> verticesMatrix;
-//    std::vector<std::vector<uint32_t>> facesMatrix;
-//    FloatMap floatReport;
-//    StringMap stringReport;
-//    BoolMap boolReport;
-//};
-//
-//GeneratedGeometry::GeneratedGeometry(std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep) {
-//    verticesMatrix = vertMatrix;
-//    facesMatrix = fMatrix;
-//    floatReport = floatRep;
-//    stringReport = stringRep;
-//    boolReport = boolRep;
-//}
-
 namespace {
     class ModelGenerator {
     public:
@@ -283,12 +255,6 @@ namespace {
                     return {};
                 }
             }
-
-            /*const pcu::Path output_path = executablePath.getParent().getParent() / "output";
-            if (!output_path.exists()) {
-                _mkdir(output_path.generic_string().c_str());
-                LOG_INF << "New output directory created at " << output_path << std::endl;
-            }*/
 
 
             // -- create cache

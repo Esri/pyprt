@@ -48,12 +48,6 @@ using Entries = std::vector<Entry>;
 
 class PyCallbacks : public IPyCallbacks {
 private:
-    /*FloatMap reportFloatData;
-    StringMap reportStringData;
-    BoolMap reportBoolData;
-    std::vector<std::vector<double>> vertices;
-    std::vector<std::vector<uint32_t>> faces;*/
-
     Entries shapes;
 
 public:
@@ -80,46 +74,6 @@ public:
     std::map<int32_t, StringMap> getStringReport() const;
 
     std::map<int32_t, BoolMap> getBoolReport() const;
-
-
-    /*void add(
-        const wchar_t* name,
-        const int32_t shapeID
-    ) override;
-
-    void setReports(
-        const FloatMap& CGAfloatreport,
-        const StringMap& CGAstringreport,
-        const BoolMap& CGAboolreport
-    ) override;
-
-    void setVertices(
-        const std::vector<std::vector<double>> verticesCoord
-    ) override;
-
-    void setFaces(
-        const std::vector<std::vector<uint32_t>> facesCoord
-    ) override;
-
-    std::vector<std::vector<double>> getVertices() const {
-        return vertices;
-    }
-
-    std::vector<std::vector<uint32_t>> getFaces() const {
-        return faces;
-    }
-
-    std::map<std::string, float> getFloatReport() const {
-        return reportFloatData;
-    }
-
-    std::map<std::string, std::string> getStringReport() const {
-        return reportStringData;
-    }
-
-    std::map<std::string, bool> getBoolReport() const {
-        return reportBoolData;
-    }*/
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
         std::wcout << "GENERATE ERROR: " << message << std::endl;

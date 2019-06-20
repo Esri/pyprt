@@ -49,23 +49,4 @@ public:
         const std::vector<std::vector<uint32_t>> facesCoord
     ) = 0;
 
-    /*virtual void add(
-        const wchar_t* name,
-        const int32_t shapeID
-    ) = 0;
-
-    virtual void setReports(
-        const FloatMap& CGAfloatreport,
-        const StringMap& CGAstringreport,
-        const BoolMap& CGAboolreport
-    ) = 0;
-
-    virtual void setVertices(
-        const std::vector<std::vector<double>> verticesCoord
-    ) = 0;
-
-    virtual void setFaces(
-        const std::vector<std::vector<uint32_t>> facesCoord
-    ) = 0;*/
-
 };

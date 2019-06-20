@@ -93,19 +93,3 @@ std::map<int32_t, BoolMap> PyCallbacks::getBoolReport() const {
 
     return allBoolReports;
 }
-
-//void PyCallbacks::add(const wchar_t* name, const int32_t shapeID) { }
-//
-//void PyCallbacks::setReports(const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport) {
-//    reportFloatData = CGAfloatreport;
-//    reportStringData = CGAstringreport;
-//    reportBoolData = CGAboolreport;
-//}
-//
-//void PyCallbacks::setVertices(const std::vector<std::vector<double>> verticesCoord) {
-//    vertices = verticesCoord;
-//}
-//
-//void PyCallbacks::setFaces(const std::vector<std::vector<uint32_t>> facesCoord) {
-//    faces = facesCoord;
-//}
