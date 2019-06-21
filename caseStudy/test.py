@@ -1,4 +1,7 @@
 import sys, os
+sys.path.append(os.path.join(os.getcwd(), "src"))
+from utility import visualize_PRT_results, combine_reports, summarize_matrix, summarize_report
+
 SDK_PATH = os.path.join(os.getcwd(), "install", "bin")
 sys.path.append(SDK_PATH)
 
@@ -13,59 +16,9 @@ print("\nTest Function: it should print 407.")
 print(VAL)
 
 
-# Python utils functions
 CS_FOLDER = os.getcwd()
 def asset_file(filename):
     return os.path.join(CS_FOLDER, "caseStudy", filename)
-
-def summarize_report(report):
-    summary_dict = {}
-    for x in report.values():
-        if(len(x)>0):
-            for y in x:
-                if y in summary_dict:
-                    summary_dict[y] += x[y]
-                else:
-                    summary_dict[y] = x[y]    
-    return summary_dict
-
-def summarize_matrix(vertices_matrix):
-    gathered_matrix = []
-    for x in vertices_matrix.values():
-        gathered_matrix.extend(x)
-    return gathered_matrix
-
-def visualize_PRT_results(models):
-    if len(models) > 0:
-        print("\nNumber of generated geometries (= nber of initial shapes):")
-        print(len(models))
-
-        for model in models:
-
-            geometry_vertices = model.get_vertices()
-            geo_summarized = summarize_matrix(geometry_vertices)
-            geo_numpy = np.array(geo_summarized)
-            print("Size of the matrix containing the model vertices:")
-            print(geo_numpy.shape)
-
-            rep_float = model.get_float_report()
-            rep_string = model.get_string_report()
-            rep_bool = model.get_bool_report()
-            print("Reports of the generated model (floats report, strings report, bools report):")
-            print(rep_float)
-            print(rep_string)
-            print(rep_bool)
-            print("Number of subshapes:")
-            print(len(rep_float))
-            print("Summarized Reports over all subshapes:")
-            if len(summarize_report(rep_float)) > 0:
-                print(summarize_report(rep_float))
-            if len(summarize_report(rep_string)) > 0:
-                print(summarize_report(rep_string))
-            if len(summarize_report(rep_bool)) > 0:
-                print(summarize_report(rep_bool))
-    else:
-        print("\nError while instanciating the model generator.")
 
 
 # PRT initialization
@@ -136,7 +89,6 @@ mod_test6 = pyprt.ModelGenerator(shape_geo_fromOBJ_test6)
 models_test6 = mod_test6.generate_model(rpk_test6, attrs_test6)
 
 visualize_PRT_results(models_test6)
-
 
 print("\nShutdown PRT.")
 pyprt.shutdown_prt()

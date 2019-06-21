@@ -1,4 +1,7 @@
 import sys, os
+sys.path.append(os.path.join(os.getcwd(), "src"))
+from utility import visualize_PRT_results, combine_reports, summarize_matrix, summarize_report
+
 SDK_PATH = os.path.join(os.getcwd(), "install", "bin")
 sys.path.append(SDK_PATH)
 
@@ -24,29 +27,10 @@ shapeGeo = asset_file("candler_footprint.obj")
 rpk = asset_file("Building_From_Footprint5.rpk")
 attrs = ["ruleFile:string=rules/Buildings/Building_From_Footprint.cgb", "startRule:string=Default$Generate", "Reporting:string=All"]
 
-mod2 = pyprt.ModelGenerator(shapeGeo)
-models2 = mod2.generate_model(rpk, attrs)
+mod = pyprt.ModelGenerator(shapeGeo)
+models = mod.generate_model(rpk, attrs)
 
-if len(models2) > 0:
-    for model in models2: 
-        geo2 = model.get_vertices()
-        geo_numpy2 = np.array(geo2)
-        print("\nSize of the matrix containing the model vertices:")
-        print(geo_numpy2.shape)
-        print(geo_numpy2)
-        rep_float2 = model.get_float_report()
-        rep_string2 = model.get_string_report()
-        rep_bool2 = model.get_bool_report()
-        print("Report of the generated model:")
-        if(len(rep_float2)):
-            print(rep_float2)
-        if(len(rep_string2)):
-            print(rep_string2)
-        if(len(rep_bool2)):
-            print(rep_bool2)
-else:
-    print("\nError while instanciating the model generator.")
-
+visualize_PRT_results(models)
 
 pyprt.shutdown_prt()
 print("\nShutdown PRT.")

@@ -55,7 +55,7 @@ const wchar_t*     WNL               = L"\n";
 
 const prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS = prtx::EncodePreparator::PreparationFlags()
 	.instancing(true)
-	.mergeByMaterial(true)
+	.mergeByMaterial(false)
 	.triangulate(false)
 	.mergeVertices(true)
 	.cleanupVertexNormals(true)
@@ -88,10 +88,11 @@ void PyEncoder::init(prtx::GenerateContext& /*context*/) {
 void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex) {
 	const prtx::InitialShape* is = context.getInitialShape(initialShapeIndex);
 	try {
+        prtx::ReportsAccumulatorPtr reportsAccumulator{ prtx::AppendingReportsAccumulator::create() };
+        prtx::ReportingStrategyPtr reportsCollector{ prtx::SingleShapeReportingStrategy::create(context, initialShapeIndex, reportsAccumulator) };
+		const prtx::BreadthFirstIteratorPtr li = prtx::BreadthFirstIterator::create(context, initialShapeIndex);
 
-        prtx::ReportsAccumulatorPtr reportsAccumulator{ prtx::WriteFirstReportsAccumulator::create() };
-        prtx::ReportingStrategyPtr reportsCollector{ prtx::LeafShapeReportingStrategy::create(context, initialShapeIndex, reportsAccumulator) };
-		const prtx::LeafIteratorPtr li = prtx::LeafIterator::create(context, initialShapeIndex);
+
 		for (prtx::ShapePtr shape = li->getNext(); shape.get() != nullptr; shape = li->getNext()) {
             prtx::ReportsPtr r = reportsCollector->getReports(shape->getID());
 			mEncodePreparator->add(context.getCache(), shape, is->getAttributeMap(), r);

@@ -1,4 +1,6 @@
 import sys, os
+sys.path.append(os.path.join(os.getcwd(), "src"))
+from utility import visualize_PRT_results, combine_reports, summarize_matrix, summarize_report
 
 SDK_PATH = os.path.join(os.getcwd(), "install", "bin")
 sys.path.append(SDK_PATH)
@@ -74,36 +76,39 @@ if __name__ == '__main__':
     if(not pyprt.is_prt_initialized()):
         raise Exception("PRT is not initialized")
 
-    v = np.array([0, 0, 0,  0, 0, 2,  1, 0, 1,  1, 0, 0],dtype='f')
-    v2 = np.array([4, 0, 0,  4, 0, 2,  5, 0, 1,  5, 0, 0],dtype='f')
-    initialGeometry = pyprt.Geometry(v)
-    initialGeometry2 = pyprt.Geometry(v2)
+    initialGeometry = pyprt.Geometry(np.array([0, 0, 0,  0, 0, 2,  1, 0, 1,  1, 0, 0],dtype='f'))
+    initialGeometry2 = pyprt.Geometry(np.array([4, 0, 0,  4, 0, 2,  5, 0, 1,  5, 0, 0],dtype='f'))
+    rpk = asset_file("simple_rule2019.rpk")
+    attrs = ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"]
 
     mod = pyprt.ModelGenerator([initialGeometry, initialGeometry2])
-    generated_mod = mod.generate_model(asset_file("simple_rule2019.rpk"), ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"])
-    #all_vertices = np.empty((0, 3))
+    generated_mod = mod.generate_model(rpk, attrs)
     all_vertices = []
     all_faces = []
 
     if(len(generated_mod)>0):
         for model in generated_mod:
+            temp = []
             geo = model.get_vertices()
-            geo_numpy = np.array(geo)
-            #all_vertices = np.append(all_vertices, geo_numpy, axis = 0)
-            all_vertices.append(geo)
+            geo_summarized = summarize_matrix(geo)
+            geo_numpy = np.array(geo_summarized)
+            geo_numpy_unique, indices = np.unique(np.around(geo_numpy,decimals=3), return_index = True, axis=0)
+            for i in indices:
+                temp.append(geo_summarized[i]) # to avoid duplicates
+            all_vertices.append(temp)
             face_geo = model.get_faces()
-            all_faces.append(face_geo)
+            face_summarized = summarize_matrix(face_geo)
+            all_faces.append(face_summarized)
             print("\nSize of the matrix containing all the model vertices:")
             print(geo_numpy.shape)
             print(geo_numpy)
             print("\nGenerated Model Faces: ")
-            print(face_geo)
+            print(face_summarized)
     else:
         print("\nError while instanciating the model generator.")
 
     print("\nShutdown PRT.")
     pyprt.shutdown_prt()
-
 
     # Data
     mat = np.array(all_vertices).copy()
@@ -142,6 +147,7 @@ if __name__ == '__main__':
                 mat_faces.append(new_f2)
 
         mat_f.append(mat_faces)
+
 
     win = Canvas(mat.shape[0],mat,np.array(mat_f), xmin, xmax, ymin, ymax, zmin, zmax)
     if sys.flags.interactive != 1:
