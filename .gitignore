@@ -5,6 +5,7 @@
 /src/CMakeSettings.json
 /.vs
 /prt
+/output
 
 src/CMakeLists_NOFOLDER.txt
 README_linux_osx.md
