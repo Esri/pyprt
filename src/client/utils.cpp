@@ -41,8 +41,6 @@ namespace {
 	const std::string FILE_SCHEMA = "file:";
 #endif
 
-const char* ENCODER_ID_PYTHON = "com.esri.prt.examples.PyEncoder";
-
 template<typename C>
 void tokenize(const std::basic_string<C>& str, std::vector<std::basic_string<C>>& tokens, const std::basic_string<C>& delimiters) {
 	auto lastPos = str.find_first_not_of(delimiters, 0);

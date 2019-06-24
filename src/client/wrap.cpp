@@ -99,7 +99,7 @@ public:
 		return result;
 	}
 
-	friend std::ostream& operator<<(std::ostream& stream, const PythonLogHandler& v) {
+	friend std::ostream& operator<<(std::ostream& stream, const PythonLogHandler&) {
 		stream << "<PythonLogHandler />";
 		return stream;
 	}

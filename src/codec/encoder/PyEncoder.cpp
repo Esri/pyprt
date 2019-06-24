@@ -51,7 +51,6 @@ namespace {
 const wchar_t*     EO_BASE_NAME      = L"baseName";
 const wchar_t*     EO_ERROR_FALLBACK = L"errorFallback";
 const std::wstring ENCFILE_EXT       = L".txt";
-const wchar_t*     WNL               = L"\n";
 
 const prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS = prtx::EncodePreparator::PreparationFlags()
 	.instancing(true)
@@ -176,7 +175,7 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
             const prtx::DoubleVector& vc = mesh->getVertexCoords();
             const uint32_t faceCnt = mesh->getFaceCount();
             
-            for (int indI = 0; indI < vc.size() / 3; indI++)
+            for (size_t indI = 0; indI < vc.size() / 3; indI++)
             {
                 std::vector<double> vertexCoord;
                 for (int indJ = 0; indJ < 3; indJ++)

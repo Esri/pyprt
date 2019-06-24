@@ -78,48 +78,46 @@ public:
     std::map<int32_t, BoolMap> getBoolReport() const;
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
-		pybind11::print(L"GENERATE ERROR:", message);
+		pybind11::print(L"GENERATE ERROR:", isIndex, status, message);
 		return prt::STATUS_OK;
 	}
 
 	prt::Status assetError(size_t isIndex, prt::CGAErrorLevel level, const wchar_t* key, const wchar_t* uri, const wchar_t* message) {
-		pybind11::print(L"ASSET ERROR:", message);
+		pybind11::print(L"ASSET ERROR:", isIndex, level, key, uri, message);
 		return prt::STATUS_OK;
 	}
 
 	prt::Status cgaError(size_t isIndex, int32_t shapeID, prt::CGAErrorLevel level, int32_t methodId, int32_t pc, const wchar_t* message) {
-		pybind11::print(L"CGA ERROR:", message);
+		pybind11::print(L"CGA ERROR:", isIndex, shapeID, level, methodId, pc, message);
         return prt::STATUS_OK;
 	}
 
 	prt::Status cgaPrint(size_t isIndex, int32_t shapeID, const wchar_t* txt) {
-		pybind11::print(L"CGA PRINT:", txt);
+		pybind11::print(L"CGA PRINT:", isIndex, shapeID, txt);
 		return prt::STATUS_OK;
 	}
 
-	prt::Status cgaReportBool(size_t isIndex, int32_t shapeID, const wchar_t* key, bool value) {
+	prt::Status cgaReportBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, bool /*value*/) {
 		return prt::STATUS_OK;
 	}
 
-	prt::Status cgaReportFloat(size_t isIndex, int32_t shapeID, const wchar_t* key, double value) {
+	prt::Status cgaReportFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, double /*value*/) {
 		return prt::STATUS_OK;
 	}
 
-	prt::Status cgaReportString(size_t isIndex, int32_t shapeID, const wchar_t* key, const wchar_t* value) {
+	prt::Status cgaReportString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const wchar_t* /*value*/) {
 		return prt::STATUS_OK;
 	}
 
-	prt::Status attrBool(size_t isIndex, int32_t shapeID, const wchar_t* key, bool value) {
+	prt::Status attrBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, bool /*value*/) {
 		return prt::STATUS_OK;
 	}
 
-	prt::Status attrFloat(size_t isIndex, int32_t shapeID, const wchar_t* key, double value) {
+	prt::Status attrFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, double /*value*/) {
 		return prt::STATUS_OK;
 	}
 
-	prt::Status attrString(size_t isIndex, int32_t shapeID, const wchar_t* key, const wchar_t* value) {
+	prt::Status attrString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const wchar_t* /*value*/) {
 		return prt::STATUS_OK;
 	}
-
-
 };
