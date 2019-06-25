@@ -24,7 +24,7 @@ if(not pyprt.is_prt_initialized()):
     raise Exception("PRT is not initialized")
 
 shapeGeo = asset_file("candler_footprint.obj")
-rpk = asset_file("Building_From_Footprint5.rpk")
+rpk = asset_file("Building_From_Footprint.rpk")
 attrs = ["ruleFile:string=rules/Buildings/Building_From_Footprint.cgb", "startRule:string=Default$Generate", "Reporting:string=All"]
 
 mod = pyprt.ModelGenerator(shapeGeo)
