@@ -20,7 +20,7 @@ def asset_file(filename):
 print("\nInitializing PRT.")
 pyprt.initialize_prt(SDK_PATH)
 
-if(not pyprt.is_prt_initialized()):
+if not pyprt.is_prt_initialized():
     raise Exception("PRT is not initialized")
 
 shapeGeo = asset_file("candler_footprint.obj")

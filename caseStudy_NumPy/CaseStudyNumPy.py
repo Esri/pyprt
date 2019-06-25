@@ -30,7 +30,7 @@ class Canvas(scene.SceneCanvas):
         scene.visuals.GridLines(parent=self.view.scene)
 
         for k in range(geometries_number):
-            if(generated_data_faces[k] is not None):
+            if generated_data_faces[k] is not None:
                 mdata = MeshData(vertices = generated_data[k], faces = generated_data_faces[k])
 
                 rng = np.random.RandomState(0)
@@ -40,7 +40,7 @@ class Canvas(scene.SceneCanvas):
 
                 for l in range(0,nf):
                     k_ind = k
-                    if(k >= len(someColors)):
+                    if k >= len(someColors):
                         k_ind -= len(someColors)
                     fcolor[l] = someColors[k_ind]
 
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     print("\nInitializing PRT.")
     pyprt.initialize_prt(SDK_PATH)
 
-    if(not pyprt.is_prt_initialized()):
+    if not pyprt.is_prt_initialized():
         raise Exception("PRT is not initialized")
 
     initialGeometry = pyprt.Geometry(np.array([0, 0, 0,  0, 0, 2,  1, 0, 1,  1, 0, 0],dtype='f'))
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     all_vertices = []
     all_faces = []
 
-    if(len(generated_mod)>0):
+    if len(generated_mod) > 0:
         for model in generated_mod:
             temp = []
             geo = model.get_vertices()
@@ -125,22 +125,22 @@ if __name__ == '__main__':
     for k in range(mat.shape[0]):
         mat_faces = []
         for f in all_faces[k]:
-            if(len(f) == 3):
+            if len(f) == 3 :
                 mat_faces.append(f)
-            elif(len(f) > 3):
+            elif len(f) > 3:
                 # in vispy, 3 vertex indices per face
                 for new_f in np.array(list(itertools.combinations(f,3))):
                     mat_faces.append(new_f)
-            elif(len(f) < 3):
+            elif len(f) < 3:
                 # repeat one vertex index
                 current_ind = 0
                 new_f2 = []
-                while(len(new_f2) < 3):
+                while len(new_f2) < 3:
                     new_f2.append(f[current_ind])
-                    if(current_ind < len(f)-1):
+                    if current_ind < len(f)-1:
                         current_ind += 1
                     else:
-                        while(len(new_f2) < 3):
+                        while len(new_f2) < 3:
                             new_f2.append(f[current_ind])
                         current_ind += 1
 

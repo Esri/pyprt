@@ -4,7 +4,7 @@ import numpy as np
 def summarize_report(report):
     summary_dict = {}
     for x in report.values():
-        if(len(x)>0):
+        if len(x) > 0:
             for y in x:
                 if y in summary_dict:
                     summary_dict[y] += x[y]
@@ -37,7 +37,7 @@ def visualize_PRT_results(models, printing = False):
             rep_float = model.get_float_report()
             rep_string = model.get_string_report()
             rep_bool = model.get_bool_report()
-            if(printing):
+            if printing :
                 print("Reports of the generated model (floats report, strings report, bools report):")
                 print(rep_float)
                 print(rep_string)
