@@ -36,6 +36,8 @@
 #	include <direct.h>
 #endif
 
+#include <ctime>
+
 /**
     * commonly used constants
     */
@@ -244,22 +246,29 @@ namespace {
         ~ModelGenerator() { }
 
         std::vector<GeneratedGeometry> generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const wchar_t* encoderName, const std::vector<std::string>& encoderOptions);
-        
+        std::vector<GeneratedGeometry> generateAnotherModel(const std::vector<std::string>& shapeAttributes, const wchar_t* encoderName, const std::vector<std::string>& encoderOptions);
+
         bool isCustomGeometry() { return customFlag; }
 
     private:
         std::string initialShapePath;
         std::vector<Geometry> initialGeometries;
         bool customFlag = false;
+        pcu::ResolveMapPtr resolveMap = nullptr;
+        pcu::CachePtr cache;
     };
 
     ModelGenerator::ModelGenerator(const std::string& initShapePath) {
         initialShapePath = initShapePath;
+
+        cache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
     }
 
     ModelGenerator::ModelGenerator(const std::vector<Geometry>& myGeo) {
         initialGeometries = myGeo;
         customFlag = true;
+
+        cache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
     }
 
     std::vector<GeneratedGeometry> ModelGenerator::generateModel(const std::string& rulePackagePath,
@@ -267,6 +276,10 @@ namespace {
     		const wchar_t* encoderName = ENCODER_ID_PYTHON,
     		const std::vector<std::string>& encoderOptions = {"baseName:string=theModel"})
     {
+
+        std::clock_t start;
+        double duration;
+        start = std::clock();
 
         std::vector<GeneratedGeometry> generatedGeometries;
 
@@ -279,8 +292,6 @@ namespace {
 
 
             // Step 2: Resolve Map, Callbacks, Cache
-            pcu::ResolveMapPtr resolveMap;
-
             if (!rulePackagePath.empty()) {
                 LOG_INF << "Using rule package " << rulePackagePath << std::endl;
 
@@ -305,10 +316,6 @@ namespace {
             }
 
 
-            // -- create cache
-            pcu::CachePtr cache{ prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT) };
-
-
             // -- setup initial shape attributes
             std::wstring       ruleFile = L"bin/rule.cgb";
             std::wstring       startRule = L"default$init";
@@ -330,13 +337,13 @@ namespace {
             const pcu::AttributeMapBuilderPtr optionsBuilder{ prt::AttributeMapBuilder::create() };
             optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_REPORT);
             const pcu::AttributeMapPtr reportOptions{ optionsBuilder->createAttributeMapAndReset() };
-			const pcu::AttributeMapPtr printOptions{ optionsBuilder->createAttributeMapAndReset() };
+            const pcu::AttributeMapPtr printOptions{ optionsBuilder->createAttributeMapAndReset() };
             const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromTypedKeyValues(encoderOptions) };
 
 
             // -- validate & complete encoder options
             const pcu::AttributeMapPtr validatedReportOpts{ createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions) };
-			const pcu::AttributeMapPtr validatedPrintOpts{ createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions) };
+            const pcu::AttributeMapPtr validatedPrintOpts{ createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions) };
             const pcu::AttributeMapPtr validatedEncOpts{ createValidatedOptions(encoderName, encOptions) };
 
 
@@ -346,7 +353,7 @@ namespace {
                     ENCODER_ID_CGA_REPORT, // an encoder to redirect CGA report to CGAReport.txt
                     ENCODER_ID_CGA_PRINT // redirects CGA print output to the callback
             };
-            const std::array<const prt::AttributeMap*, 3> encoderOpts = { validatedEncOpts.get(), validatedReportOpts.get(), validatedPrintOpts.get() };
+            const std::array<const prt::AttributeMap*, 3> encodersOptions = { validatedEncOpts.get(), validatedReportOpts.get(), validatedPrintOpts.get() };
 
 
             if (isCustomGeometry()) {
@@ -387,7 +394,7 @@ namespace {
                         // Step 5: Generate
                         const prt::Status genStat = prt::generate(
                             initialShapes.data(), initialShapes.size(), nullptr,
-                            encoders.data(), encoders.size(), encoderOpts.data(),
+                            encoders.data(), encoders.size(), encodersOptions.data(),
                             foc.get(), cache.get(), nullptr
                         );
 
@@ -411,7 +418,7 @@ namespace {
                         // Step 5: Generate
                         const prt::Status genStat = prt::generate(
                             initialShapes.data(), initialShapes.size(), nullptr,
-                            encoders.data(), encoders.size(), encoderOpts.data(),
+                            encoders.data(), encoders.size(), encodersOptions.data(),
                             foc.get(), cache.get(), nullptr
                         );
 
@@ -463,7 +470,7 @@ namespace {
                     // Step 5: Generate
                     const prt::Status genStat = prt::generate(
                         initialShapes.data(), initialShapes.size(), nullptr,
-                        encoders.data(), encoders.size(), encoderOpts.data(),
+                        encoders.data(), encoders.size(), encodersOptions.data(),
                         foc.get(), cache.get(), nullptr
                     );
 
@@ -487,7 +494,7 @@ namespace {
                     // Step 5: Generate
                     const prt::Status genStat = prt::generate(
                         initialShapes.data(), initialShapes.size(), nullptr,
-                        encoders.data(), encoders.size(), encoderOpts.data(),
+                        encoders.data(), encoders.size(), encodersOptions.data(),
                         foc.get(), cache.get(), nullptr
                     );
 
@@ -511,6 +518,232 @@ namespace {
             return {};
         }
 
+        duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
+        std::cout << "Method duration: " << duration << std::endl;
+
+        return generatedGeometries;
+    }
+
+    std::vector<GeneratedGeometry> ModelGenerator::generateAnotherModel(const std::vector<std::string>& shapeAttributes, const wchar_t* encoderName, const std::vector<std::string>& encoderOptions)
+    {
+        std::clock_t start;
+        double duration;
+        start = std::clock();
+
+        std::vector<GeneratedGeometry> generatedGeometries;
+
+        try {
+            // Step 1: Initialization (setup console, logging, licensing information, PRT extension library path, prt::init)
+            if (!prtCtx) {
+                LOG_ERR << L"prt has not been initialized." << std::endl;
+                return {};
+            }
+
+            // -- setup initial shape attributes
+            std::wstring       ruleFile = L"bin/rule.cgb";
+            std::wstring       startRule = L"default$init";
+            int32_t            seed = 666;
+            const std::wstring shapeName = L"TheInitialShape";
+
+            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromTypedKeyValues(shapeAttributes) };
+            if (convertedShapeAttr) {
+                if (convertedShapeAttr->hasKey(L"ruleFile") &&
+                    convertedShapeAttr->getType(L"ruleFile") == prt::AttributeMap::PT_STRING)
+                    ruleFile = convertedShapeAttr->getString(L"ruleFile");
+                if (convertedShapeAttr->hasKey(L"startRule") &&
+                    convertedShapeAttr->getType(L"startRule") == prt::AttributeMap::PT_STRING)
+                    startRule = convertedShapeAttr->getString(L"startRule");
+            }
+
+
+            // Step 4 : Generate (encoder info, encoder options, trigger procedural 3D model generation)
+            const pcu::AttributeMapBuilderPtr optionsBuilder{ prt::AttributeMapBuilder::create() };
+            optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_REPORT);
+            const pcu::AttributeMapPtr reportOptions{ optionsBuilder->createAttributeMapAndReset() };
+            const pcu::AttributeMapPtr printOptions{ optionsBuilder->createAttributeMapAndReset() };
+            const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromTypedKeyValues(encoderOptions) };
+
+
+            // -- validate & complete encoder options
+            const pcu::AttributeMapPtr validatedReportOpts{ createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions) };
+            const pcu::AttributeMapPtr validatedPrintOpts{ createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions) };
+            const pcu::AttributeMapPtr validatedEncOpts{ createValidatedOptions(encoderName, encOptions) };
+
+
+            //-- setup encoder IDs and corresponding options
+            const std::array<const wchar_t*, 3> encoders = {
+                    encoderName,
+                    ENCODER_ID_CGA_REPORT, // an encoder to redirect CGA report to CGAReport.txt
+                    ENCODER_ID_CGA_PRINT // redirects CGA print output to the callback
+            };
+            const std::array<const prt::AttributeMap*, 3> encodersOptions = { validatedEncOpts.get(), validatedReportOpts.get(), validatedPrintOpts.get() };
+
+
+            if (isCustomGeometry()) {
+                for (Geometry myGeometry : initialGeometries) {
+
+                    // Step 3: Initial Shape
+                    pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
+                    if (isb->setGeometry(
+                        myGeometry.getVertices(), myGeometry.getVertexCount(),
+                        myGeometry.getIndices(), myGeometry.getIndexCount(),
+                        myGeometry.getFaceCounts(), myGeometry.getFaceCountsCount()) != prt::STATUS_OK) {
+
+                        isb->setGeometry(
+                            pcu::quad::vertices, pcu::quad::vertexCount,
+                            pcu::quad::indices, pcu::quad::indexCount,
+                            pcu::quad::faceCounts, pcu::quad::faceCountsCount
+                        );
+                    }
+
+
+                    isb->setAttributes(
+                        ruleFile.c_str(),
+                        startRule.c_str(),
+                        seed,
+                        shapeName.c_str(),
+                        convertedShapeAttr.get(),
+                        resolveMap.get()
+                    );
+
+
+                    // -- create initial shape
+                    const pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
+                    const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
+
+                    if (!std::wcscmp(encoderName, ENCODER_ID_PYTHON)) {
+                        pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
+
+                        // Step 5: Generate
+                        const prt::Status genStat = prt::generate(
+                            initialShapes.data(), initialShapes.size(), nullptr,
+                            encoders.data(), encoders.size(), encodersOptions.data(),
+                            foc.get(), cache.get(), nullptr
+                        );
+
+                        if (genStat != prt::STATUS_OK) {
+                            LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
+                            return {};
+                        }
+
+                        GeneratedGeometry newGeneratedGeo(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+                        generatedGeometries.push_back(newGeneratedGeo);
+                    }
+                    else {
+                        const pcu::Path output_path = executablePath.getParent().getParent() / "output";
+                        if (!output_path.exists()) {
+                            std::filesystem::create_directory(output_path.toStdPath());
+                            LOG_INF << "New output directory created at " << output_path << std::endl;
+                        }
+
+                        pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
+
+                        // Step 5: Generate
+                        const prt::Status genStat = prt::generate(
+                            initialShapes.data(), initialShapes.size(), nullptr,
+                            encoders.data(), encoders.size(), encodersOptions.data(),
+                            foc.get(), cache.get(), nullptr
+                        );
+
+                        if (genStat != prt::STATUS_OK) {
+                            LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
+                            return {};
+                        }
+
+                        return {};
+                    }
+
+                }
+            }
+            else {
+                pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
+
+                if (!pcu::toFileURI(initialShapePath).empty()) {
+                    LOG_DBG << L"trying to read initial shape geometry from " << pcu::toFileURI(initialShapePath);
+                    const prt::Status s = isb->resolveGeometry(pcu::toUTF16FromOSNarrow(pcu::toFileURI(initialShapePath)).c_str(), resolveMap.get(), cache.get());
+                    if (s != prt::STATUS_OK) {
+                        LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(initialShapePath);
+                        return {};
+                    }
+                }
+                else {
+                    isb->setGeometry(
+                        pcu::quad::vertices, pcu::quad::vertexCount,
+                        pcu::quad::indices, pcu::quad::indexCount,
+                        pcu::quad::faceCounts, pcu::quad::faceCountsCount
+                    );
+                }
+
+                isb->setAttributes(
+                    ruleFile.c_str(),
+                    startRule.c_str(),
+                    seed,
+                    shapeName.c_str(),
+                    convertedShapeAttr.get(),
+                    resolveMap.get()
+                );
+
+                // -- create initial shape
+                const pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
+                const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
+
+                if (!std::wcscmp(encoderName, ENCODER_ID_PYTHON)) {
+                    pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
+
+                    // Step 5: Generate
+                    const prt::Status genStat = prt::generate(
+                        initialShapes.data(), initialShapes.size(), nullptr,
+                        encoders.data(), encoders.size(), encodersOptions.data(),
+                        foc.get(), cache.get(), nullptr
+                    );
+
+                    if (genStat != prt::STATUS_OK) {
+                        LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
+                        return {};
+                    }
+
+                    GeneratedGeometry newGeneratedGeo(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+                    generatedGeometries.push_back(newGeneratedGeo);
+                }
+                else {
+                    const pcu::Path output_path = executablePath.getParent().getParent() / "output";
+                    if (!output_path.exists()) {
+                        std::filesystem::create_directory(output_path.toStdPath());
+                        LOG_INF << "New output directory created at " << output_path << std::endl;
+                    }
+
+                    pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
+
+                    // Step 5: Generate
+                    const prt::Status genStat = prt::generate(
+                        initialShapes.data(), initialShapes.size(), nullptr,
+                        encoders.data(), encoders.size(), encodersOptions.data(),
+                        foc.get(), cache.get(), nullptr
+                    );
+
+                    if (genStat != prt::STATUS_OK) {
+                        LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
+                        return {};
+                    }
+
+                    return {};
+                }
+
+            }
+
+        }
+        catch (const std::exception& e) {
+            LOG_ERR << "caught exception: " << e.what();
+            return {};
+        }
+        catch (...) {
+            LOG_ERR << "caught unknown exception.";
+            return {};
+        }
+
+        duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
+        std::cout << "Method duration: " << duration << std::endl;
+
         return generatedGeometries;
     }
 
@@ -527,7 +760,8 @@ PYBIND11_MODULE(pyprt, m) {
     py::class_<ModelGenerator>(m, "ModelGenerator")
         .def(py::init<const std::string&>(), "initShapePath"_a)
         .def(py::init<const std::vector<Geometry>&>(), "initShape"_a)
-        .def("generate_model", &ModelGenerator::generateModel, py::arg("rulePackagePath"), py::arg("shapeAttributes"), py::arg("encoderName") = ENCODER_ID_PYTHON, py::arg("encoderOptions") = std::vector<std::string>(1, "baseName:string=theModel"));
+        .def("generate_model", &ModelGenerator::generateModel, py::arg("rulePackagePath"), py::arg("shapeAttributes"), py::arg("encoderName") = ENCODER_ID_PYTHON, py::arg("encoderOptions") = std::vector<std::string>(1, "baseName:string=theModel"))
+        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"), py::arg("encoderName") = ENCODER_ID_PYTHON, py::arg("encoderOptions") = std::vector<std::string>(1, "baseName:string=theModel"));
 
     m.def("initialize_prt", &initializePRT, "prt_path"_a = "");
     m.def("is_prt_initialized", &isPRTInitialized);
