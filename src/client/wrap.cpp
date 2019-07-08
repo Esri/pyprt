@@ -211,8 +211,8 @@ void Geometry::setGeometry(std::vector<double> vert, size_t vertCnt, std::vector
 class GeneratedGeometry {
 public:
     GeneratedGeometry(std::map<int32_t,std::vector<std::vector<double>>> vertMatrix, std::map<int32_t,std::vector<std::vector<uint32_t>>> fMatrix, std::map<int32_t, FloatMap> floatRep, std::map<int32_t, StringMap> stringRep, std::map<int32_t, BoolMap> boolRep);
-    GeneratedGeometry() {}
-    ~GeneratedGeometry() {}
+    GeneratedGeometry() { }
+    ~GeneratedGeometry() { }
 
     std::map<int32_t, std::vector<std::vector<double>>> getGenerationVertices() { return verticesMatrix; }
     std::map<int32_t, std::vector<std::vector<uint32_t>>> getGenerationFaces() { return facesMatrix; }
@@ -241,7 +241,7 @@ namespace {
     public:
         ModelGenerator(const std::string& initShapePath);
         ModelGenerator(const std::vector<Geometry>& myGeo);
-        ~ModelGenerator();
+        ~ModelGenerator() { }
 
         std::vector<GeneratedGeometry> generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const wchar_t* encoderName, const std::vector<std::string>& encoderOptions);
         
@@ -260,9 +260,6 @@ namespace {
     ModelGenerator::ModelGenerator(const std::vector<Geometry>& myGeo) {
         initialGeometries = myGeo;
         customFlag = true;
-    }
-
-    ModelGenerator::~ModelGenerator() {
     }
 
     std::vector<GeneratedGeometry> ModelGenerator::generateModel(const std::string& rulePackagePath,

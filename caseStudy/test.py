@@ -53,7 +53,7 @@ models_test2 = mod_test2.generate_model(rpk, attrs)
 
 visualize_PRT_results(models_test2)
 
-## TEST 3: initial shape as DAE, simple rule.
+## TEST 3: initial shape as OBJ, simple rule, generated geometry outputted as OBJ.
 print("\nTEST3")
 OBJ_exporter = "com.esri.prt.codecs.OBJEncoder"
 
@@ -78,6 +78,17 @@ attrs_test5 = ["ruleFile:string=bin/candler.cgb", "startRule:string=Default$Foot
 models_test5 = mod_test4.generate_model(rpk_test5, attrs_test5)
 
 visualize_PRT_results(models_test5)
+
+# ## TEST 6: initial shapes as custom geometry, complex rule.
+# print("\nTEST6")
+# shape_geo_fromOBJ_test6 = asset_file("greenbuildingfootprint_0.obj")
+# rpk_test6 = asset_file("envelope1806.rpk")
+# attrs_test6 = ["ruleFile:string=rules/typology/envelope.cgb", "startRule:string=Default$Lot", "report_but_not_display_green:string=true"]
+
+# mod_test6 = pyprt.ModelGenerator(shape_geo_fromOBJ_test6)
+# models_test6 = mod_test6.generate_model(rpk_test6, attrs_test6)
+
+# visualize_PRT_results(models_test6)
 
 
 print("\nShutdown PRT.")
