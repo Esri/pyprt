@@ -290,15 +290,17 @@ namespace {
         std::vector<GeneratedGeometry> generatedGeometries;
 
         try {
-            // Step 1: Initialization (setup console, logging, licensing information, PRT extension library path, prt::init)
             if (!prtCtx) {
                 LOG_ERR << L"prt has not been initialized." << std::endl;
                 return {};
             }
 
 
-            // Step 2: Resolve Map, Callbacks
+            // Resolve Map
             if (!resolveMap) {
+
+                std::cout << "RESOLVEMAP DOESNT EXIST YET" << std::endl;
+
                 if (!rulePackagePath.empty()) {
                     LOG_INF << "Using rule package " << rulePackagePath << std::endl;
 
@@ -314,7 +316,7 @@ namespace {
 
 
                     if (resolveMap && (status == prt::STATUS_OK)) {
-                        // LOG_DBG << "resolve map = " << pcu::objectToXML(resolveMap.get()) << std::endl;
+                        LOG_DBG << "resolve map = " << pcu::objectToXML(resolveMap.get()) << std::endl;
                     }
                     else {
                         LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting." << std::endl;
@@ -324,7 +326,7 @@ namespace {
             }
 
 
-            // -- setup initial shape attributes
+            // Initial shape attributes
             std::wstring       ruleFile = L"bin/rule.cgb";
             std::wstring       startRule = L"default$init";
             int32_t            seed = 666;
@@ -341,7 +343,7 @@ namespace {
             }
 
 
-            // Step 4 : Generate (encoder info, encoder options, trigger procedural 3D model generation)
+            // Encoder info, encoder options
             const pcu::AttributeMapBuilderPtr optionsBuilder{ prt::AttributeMapBuilder::create() };
             optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_REPORT);
             const pcu::AttributeMapPtr reportOptions{ optionsBuilder->createAttributeMapAndReset() };
@@ -352,8 +354,12 @@ namespace {
             CGAPrintOptions = createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions);
             pyEncoderOptions = createValidatedOptions(encoderName, encOptions);
 
-            //-- setup encoder IDs and corresponding options
-            if (!allEncoders.empty()) { delete allEncoders[0]; }
+            if (!allEncoders.empty()) { 
+                delete allEncoders[0]; std::cout << "ENCODERS NOT EMPTY" << std::endl;
+            }
+            else {
+                std::cout << "ENCODERS EMPTY" << std::endl;
+            }
 
             // Make a copy
             wchar_t *clone = new wchar_t[wcslen(encoderName) + 1]; // Should I use std::wstring instead of wchar_t*?
@@ -364,13 +370,14 @@ namespace {
                     ENCODER_ID_CGA_REPORT, // an encoder to redirect CGA report to CGAReport.txt
                     ENCODER_ID_CGA_PRINT // redirects CGA print output to the callback
             };
+
             allEncodersOptions = { pyEncoderOptions.get(), CGAReportOptions.get(), CGAPrintOptions.get() };
 
 
             if (isCustomGeometry()) {
                 for (Geometry myGeometry : initialGeometries) {
 
-                    // Step 3: Initial Shape
+                    // Initial Shape
                     pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
                     if(isb->setGeometry(
                             myGeometry.getVertices(), myGeometry.getVertexCount(),
@@ -395,14 +402,13 @@ namespace {
                     );
 
 
-                    // -- create initial shape
                     const pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
                     const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
 
                     if (!std::wcscmp(encoderName, ENCODER_ID_PYTHON)) {
                         pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
 
-                        // Step 5: Generate
+                        // Generate
                         const prt::Status genStat = prt::generate(
                             initialShapes.data(), initialShapes.size(), nullptr,
                             allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
@@ -426,8 +432,7 @@ namespace {
 
                         pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
 
-                        // Step 5: Generate
-
+                        // Generate
                         const prt::Status genStat = prt::generate(
                             initialShapes.data(), initialShapes.size(), nullptr,
                             allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
@@ -445,6 +450,7 @@ namespace {
                 }
             }
             else {
+                // Initial shape
                 pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
 
                 if (!pcu::toFileURI(initialShapePath).empty()) {
@@ -472,14 +478,13 @@ namespace {
                     resolveMap.get()
                 );
 
-                // -- create initial shape
                 const pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
                 const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
 
                 if (!std::wcscmp(encoderName, ENCODER_ID_PYTHON)) {
                     pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
 
-                    // Step 5: Generate
+                    // Generate
                     const prt::Status genStat = prt::generate(
                         initialShapes.data(), initialShapes.size(), nullptr,
                         allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
@@ -503,7 +508,7 @@ namespace {
 
                     pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
 
-                    // Step 5: Generate
+                    // Generate
                     const prt::Status genStat = prt::generate(
                         initialShapes.data(), initialShapes.size(), nullptr,
                         allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
@@ -545,13 +550,17 @@ namespace {
         std::vector<GeneratedGeometry> generatedGeometries;
 
         try {
-            // Step 1: Initialization (setup console, logging, licensing information, PRT extension library path, prt::init)
             if (!prtCtx) {
                 LOG_ERR << L"prt has not been initialized." << std::endl;
                 return {};
             }
 
-            // -- setup initial shape attributes
+            if (!resolveMap) {
+                LOG_ERR << "getting resolve map failed, aborting." << std::endl;
+                return {};
+            }
+
+            // Initial shape attributes
             std::wstring       ruleFile = L"bin/rule.cgb";
             std::wstring       startRule = L"default$init";
             int32_t            seed = 666;
@@ -571,7 +580,7 @@ namespace {
             if (isCustomGeometry()) {
                 for (Geometry myGeometry : initialGeometries) {
 
-                    // Step 3: Initial Shape
+                    // Initial Shape
                     pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
                     if (isb->setGeometry(
                         myGeometry.getVertices(), myGeometry.getVertexCount(),
@@ -595,15 +604,13 @@ namespace {
                         resolveMap.get()
                     );
 
-
-                    // -- create initial shape
                     const pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
                     const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
 
                     if (!std::wcscmp(allEncoders[0], ENCODER_ID_PYTHON)) {
                         pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
 
-                        // Step 5: Generate
+                        // Generate
                         const prt::Status genStat = prt::generate(
                             initialShapes.data(), initialShapes.size(), nullptr,
                             allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
@@ -627,7 +634,7 @@ namespace {
 
                         pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
 
-                        // Step 5: Generate
+                        // Generate
                         const prt::Status genStat = prt::generate(
                             initialShapes.data(), initialShapes.size(), nullptr,
                             allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
@@ -645,6 +652,7 @@ namespace {
                 }
             }
             else {
+                // Initial shape
                 pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
 
                 if (!pcu::toFileURI(initialShapePath).empty()) {
@@ -672,14 +680,13 @@ namespace {
                     resolveMap.get()
                 );
 
-                // -- create initial shape
                 const pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
                 const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
 
                 if (!std::wcscmp(allEncoders[0], ENCODER_ID_PYTHON)) {
                     pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
 
-                    // Step 5: Generate
+                    // Generate
                     const prt::Status genStat = prt::generate(
                         initialShapes.data(), initialShapes.size(), nullptr,
                         allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
@@ -703,7 +710,7 @@ namespace {
 
                     pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
 
-                    // Step 5: Generate
+                    // Generate
                     const prt::Status genStat = prt::generate(
                         initialShapes.data(), initialShapes.size(), nullptr,
                         allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
