@@ -38,6 +38,7 @@
 #include <map>
 
 struct Entry{
+    uint32_t initialShapeIdx;
     int32_t id;
     FloatMap reportFloatData;
     StringMap reportStringData;
@@ -59,6 +60,7 @@ public:
 	virtual ~PyCallbacks() = default;
 
     void addEntry(
+        const uint32_t initialShapeIndex,
         const int32_t shapeID,
         const FloatMap& CGAfloatreport,
         const StringMap& CGAstringreport,
@@ -71,7 +73,7 @@ public:
 
     std::map<int32_t, std::vector<std::vector<uint32_t>>> getFaces() const;
 
-    std::map<int32_t, FloatMap> getFloatReport() const;
+    std::map<uint32_t, std::map<int32_t, FloatMap>> getFloatReport() const;
 
     std::map<int32_t, StringMap> getStringReport() const;
 

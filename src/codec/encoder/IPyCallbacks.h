@@ -41,6 +41,7 @@ public:
     virtual ~IPyCallbacks() override = default;
 
     virtual void addEntry(
+        const uint32_t initialShapeIndex,
         const int32_t shapeID,
         const FloatMap& CGAfloatreport,
         const StringMap& CGAstringreport,

@@ -212,25 +212,25 @@ void Geometry::setGeometry(std::vector<double> vert, size_t vertCnt, std::vector
 
 class GeneratedGeometry {
 public:
-    GeneratedGeometry(std::map<int32_t,std::vector<std::vector<double>>> vertMatrix, std::map<int32_t,std::vector<std::vector<uint32_t>>> fMatrix, std::map<int32_t, FloatMap> floatRep, std::map<int32_t, StringMap> stringRep, std::map<int32_t, BoolMap> boolRep);
+    GeneratedGeometry(std::map<int32_t,std::vector<std::vector<double>>> vertMatrix, std::map<int32_t,std::vector<std::vector<uint32_t>>> fMatrix, std::map<uint32_t, std::map<int32_t, FloatMap>> floatRep, std::map<int32_t, StringMap> stringRep, std::map<int32_t, BoolMap> boolRep);
     GeneratedGeometry() { }
     ~GeneratedGeometry() { }
 
     std::map<int32_t, std::vector<std::vector<double>>> getGenerationVertices() { return verticesMatrix; }
     std::map<int32_t, std::vector<std::vector<uint32_t>>> getGenerationFaces() { return facesMatrix; }
-    std::map<int32_t, FloatMap> getGenerationFloatReport() { return floatReport; }
+    std::map<uint32_t, std::map<int32_t, FloatMap>> getGenerationFloatReport() { return floatReport; }
     std::map<int32_t, StringMap> getGenerationStringReport() { return stringReport; }
     std::map<int32_t, BoolMap> getGenerationBoolReport() { return boolReport; }
 
 private:
     std::map<int32_t, std::vector<std::vector<double>>> verticesMatrix;
     std::map<int32_t, std::vector<std::vector<uint32_t>>> facesMatrix;
-    std::map<int32_t, FloatMap> floatReport;
+    std::map<uint32_t, std::map<int32_t, FloatMap>> floatReport;
     std::map<int32_t, StringMap> stringReport;
     std::map<int32_t, BoolMap> boolReport;
 };
 
-GeneratedGeometry::GeneratedGeometry(std::map<int32_t, std::vector<std::vector<double>>> vertMatrix, std::map<int32_t, std::vector<std::vector<uint32_t>>> fMatrix, std::map<int32_t, FloatMap> floatRep, std::map<int32_t, StringMap> stringRep, std::map<int32_t, BoolMap> boolRep) {
+GeneratedGeometry::GeneratedGeometry(std::map<int32_t, std::vector<std::vector<double>>> vertMatrix, std::map<int32_t, std::vector<std::vector<uint32_t>>> fMatrix, std::map<uint32_t, std::map<int32_t, FloatMap>> floatRep, std::map<int32_t, StringMap> stringRep, std::map<int32_t, BoolMap> boolRep) {
     verticesMatrix = vertMatrix;
     facesMatrix = fMatrix;
     floatReport = floatRep;
@@ -372,25 +372,30 @@ namespace {
             };
 
             allEncodersOptions = { pyEncoderOptions.get(), CGAReportOptions.get(), CGAPrintOptions.get() };
-
+            
+            std::vector<pcu::InitialShapeBuilderPtr> initialShapesBuilders;
+            std::vector<pcu::InitialShapePtr> initialShapePtrs;
+            std::vector<const prt::InitialShape*> initialShapes;
 
             if (isCustomGeometry()) {
-                for (Geometry myGeometry : initialGeometries) {
+
+                //for (Geometry myGeometry : initialGeometries) {
+                for(size_t ind = 0; ind < initialGeometries.size(); ind++) {
 
                     // Initial Shape
                     pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
-                    if(isb->setGeometry(
-                            myGeometry.getVertices(), myGeometry.getVertexCount(),
-                            myGeometry.getIndices(), myGeometry.getIndexCount(),
-                            myGeometry.getFaceCounts(), myGeometry.getFaceCountsCount()) != prt::STATUS_OK) {
-             
+
+                    if (isb->setGeometry(
+                        initialGeometries[ind].getVertices(), initialGeometries[ind].getVertexCount(),
+                        initialGeometries[ind].getIndices(), initialGeometries[ind].getIndexCount(),
+                        initialGeometries[ind].getFaceCounts(), initialGeometries[ind].getFaceCountsCount()) != prt::STATUS_OK) {
+
                         isb->setGeometry(
                             pcu::quad::vertices, pcu::quad::vertexCount,
                             pcu::quad::indices, pcu::quad::indexCount,
                             pcu::quad::faceCounts, pcu::quad::faceCountsCount
                         );
                     }
-
 
                     isb->setAttributes(
                         ruleFile.c_str(),
@@ -401,55 +406,64 @@ namespace {
                         resolveMap.get()
                     );
 
+                pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
 
-                    const pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
-                    const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
+                initialShapesBuilders.push_back(std::move(isb));
+                initialShapes.push_back(initialShape.get());
+                initialShapePtrs.push_back(std::move(initialShape));
 
-                    if (!std::wcscmp(encoderName, ENCODER_ID_PYTHON)) {
-                        pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
+            }
 
-                        // Generate
-                        const prt::Status genStat = prt::generate(
-                            initialShapes.data(), initialShapes.size(), nullptr,
-                            allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
-                            foc.get(), cache.get(), nullptr
-                        );
+                if (!std::wcscmp(encoderName, ENCODER_ID_PYTHON)) {
+                    pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
 
-                        if (genStat != prt::STATUS_OK) {
-                            LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
-                            return {};
-                        }
+                    // Generate
+                    const prt::Status genStat = prt::generate(
+                        initialShapes.data(), initialShapes.size(), nullptr,
+                        allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
+                        foc.get(), cache.get(), nullptr
+                    );
 
-                        GeneratedGeometry newGeneratedGeo(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
-                        generatedGeometries.push_back(newGeneratedGeo);
-                    }
-                    else {
-                        const pcu::Path output_path = executablePath.getParent().getParent() / "output";
-                        if (!output_path.exists()) {
-                            std::filesystem::create_directory(output_path.toStdPath());
-                            LOG_INF << "New output directory created at " << output_path << std::endl;
-                        }
-
-                        pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
-
-                        // Generate
-                        const prt::Status genStat = prt::generate(
-                            initialShapes.data(), initialShapes.size(), nullptr,
-                            allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
-                            foc.get(), cache.get(), nullptr
-                        );
-
-                        if (genStat != prt::STATUS_OK) {
-                            LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
-                            return {};
-                        }
-
+                    if (genStat != prt::STATUS_OK) {
+                        LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
                         return {};
                     }
 
+                    GeneratedGeometry newGeneratedGeo(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+                    generatedGeometries.push_back(newGeneratedGeo);
                 }
+                else {
+                    const pcu::Path output_path = executablePath.getParent().getParent() / "output";
+                    if (!output_path.exists()) {
+                        std::filesystem::create_directory(output_path.toStdPath());
+                        LOG_INF << "New output directory created at " << output_path << std::endl;
+                    }
+
+                    pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
+
+                    // Generate
+                    const prt::Status genStat = prt::generate(
+                        initialShapes.data(), initialShapes.size(), nullptr,
+                        allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
+                        foc.get(), cache.get(), nullptr
+                    );
+
+                    if (genStat != prt::STATUS_OK) {
+                        LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
+                        return {};
+                    }
+
+                    return {};
+                }
+
+                //}
             }
-            else {
+
+
+
+
+
+            if (!isCustomGeometry()) {
                 // Initial shape
                 pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
 
@@ -775,7 +789,7 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_face_counts_count", &Geometry::getFaceCountsCount);
 
     py::class_<GeneratedGeometry>(m, "GeneratedGeometry")
-        .def(py::init<std::map<int32_t, std::vector<std::vector<double>>>, std::map<int32_t, std::vector<std::vector<uint32_t>>>, std::map<int32_t, FloatMap>, std::map<int32_t, StringMap>, std::map<int32_t, BoolMap>>())
+        .def(py::init<std::map<int32_t, std::vector<std::vector<double>>>, std::map<int32_t, std::vector<std::vector<uint32_t>>>, std::map<uint32_t,std::map<int32_t, FloatMap>>, std::map<int32_t, StringMap>, std::map<int32_t, BoolMap>>())
         .def("get_vertices", &GeneratedGeometry::getGenerationVertices)
         .def("get_faces", &GeneratedGeometry::getGenerationFaces)
         .def("get_float_report", &GeneratedGeometry::getGenerationFloatReport)

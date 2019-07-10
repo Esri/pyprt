@@ -85,6 +85,7 @@ void PyEncoder::init(prtx::GenerateContext& /*context*/) {
  * In case the shape generation fails, we collect the initial shape.
  */
 void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex) {
+
 	const prtx::InitialShape* is = context.getInitialShape(initialShapeIndex);
 	try {
         prtx::ReportsAccumulatorPtr reportsAccumulator{ prtx::AppendingReportsAccumulator::create() };
@@ -195,12 +196,11 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
 
         }
 
-        cb->addEntry(instanceCnt, reportFloat, reportString, reportBool, coordMatrix, faceMatrix);
-        //cb->addEntry(instance.getShapeId(), reportFloat, reportString, reportBool, coordMatrix, faceMatrix);
+        //cb->addEntry(instanceCnt, reportFloat, reportString, reportBool, coordMatrix, faceMatrix);
+        cb->addEntry(instance.getInitialShapeIndex(), instance.getShapeId(), reportFloat, reportString, reportBool, coordMatrix, faceMatrix);
 
         instanceCnt++;
     }
-    
 }
 
 

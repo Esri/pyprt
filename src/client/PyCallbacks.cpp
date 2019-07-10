@@ -31,8 +31,9 @@
 #include <map>
 
 
-void PyCallbacks::addEntry(const int32_t shapeID, const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport, const std::vector<std::vector<double>> verticesCoord, const std::vector<std::vector<uint32_t>> facesCoord) {
+void PyCallbacks::addEntry(const uint32_t initialShapeIndex, const int32_t shapeID, const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport, const std::vector<std::vector<double>> verticesCoord, const std::vector<std::vector<uint32_t>> facesCoord) {
     Entry instance = {
+        initialShapeIndex,
         shapeID,
         CGAfloatreport,
         CGAstringreport,
@@ -64,11 +65,16 @@ std::map<int32_t, std::vector<std::vector<uint32_t>>> PyCallbacks::getFaces() co
     return allFaces;
 }
 
-std::map<int32_t, FloatMap> PyCallbacks::getFloatReport() const {
-    std::map<int32_t, FloatMap> allFloatReports;
+std::map<uint32_t, std::map<int32_t, FloatMap>> PyCallbacks::getFloatReport() const {
+    std::map<uint32_t,std::map<int32_t, FloatMap>> allFloatReports;
+    std::map<int32_t, FloatMap> floatReports;
 
+    //for (Entry e : shapes) {
+    //    allFloatReports[e.id] = e.reportFloatData;
+    //}
     for (Entry e : shapes) {
-        allFloatReports[e.id] = e.reportFloatData;
+        floatReports[e.id] = e.reportFloatData;
+        allFloatReports[e.initialShapeIdx] = floatReports;
     }
 
     return allFloatReports;
