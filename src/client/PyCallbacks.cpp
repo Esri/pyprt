@@ -29,6 +29,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <tuple>
 
 
 void PyCallbacks::addEntry(const uint32_t initialShapeIndex, const int32_t shapeID, const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport, const std::vector<std::vector<double>> verticesCoord, const std::vector<std::vector<uint32_t>> facesCoord) {
@@ -65,16 +66,18 @@ std::map<int32_t, std::vector<std::vector<uint32_t>>> PyCallbacks::getFaces() co
     return allFaces;
 }
 
-std::map<uint32_t, std::map<int32_t, FloatMap>> PyCallbacks::getFloatReport() const {
-    std::map<uint32_t,std::map<int32_t, FloatMap>> allFloatReports;
-    std::map<int32_t, FloatMap> floatReports;
+std::map<int32_t, FloatMap> PyCallbacks::getFloatReport() const { //-- std::vector<std::tuple<uint32_t, int32_t, FloatMap>>
+    /*std::vector<std::tuple<uint32_t, int32_t, FloatMap>> allFloatReports;
 
-    //for (Entry e : shapes) {
-    //    allFloatReports[e.id] = e.reportFloatData;
-    //}
     for (Entry e : shapes) {
-        floatReports[e.id] = e.reportFloatData;
-        allFloatReports[e.initialShapeIdx] = floatReports;
+        std::tuple<uint32_t, int32_t, FloatMap> floatReport(e.initialShapeIdx, e.id, e.reportFloatData);
+        allFloatReports.push_back(floatReport);
+    }*/
+
+    std::map<int32_t, FloatMap> allFloatReports;
+
+    for (Entry e : shapes) {
+        allFloatReports[e.id] = e.reportFloatData;
     }
 
     return allFloatReports;

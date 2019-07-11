@@ -196,7 +196,6 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
 
         }
 
-        //cb->addEntry(instanceCnt, reportFloat, reportString, reportBool, coordMatrix, faceMatrix);
         cb->addEntry(instance.getInitialShapeIndex(), instance.getShapeId(), reportFloat, reportString, reportBool, coordMatrix, faceMatrix);
 
         instanceCnt++;

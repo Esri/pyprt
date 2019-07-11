@@ -73,7 +73,7 @@ public:
 
     std::map<int32_t, std::vector<std::vector<uint32_t>>> getFaces() const;
 
-    std::map<uint32_t, std::map<int32_t, FloatMap>> getFloatReport() const;
+    std::map<int32_t, FloatMap> getFloatReport() const; //-- std::vector<std::tuple<uint32_t, int32_t, FloatMap>>
 
     std::map<int32_t, StringMap> getStringReport() const;
 
