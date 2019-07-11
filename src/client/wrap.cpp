@@ -245,8 +245,8 @@ namespace {
         ModelGenerator(const std::vector<Geometry>& myGeo);
         ~ModelGenerator() { }
 
-        std::vector<GeneratedGeometry> generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const wchar_t* encoderName, const std::vector<std::string>& encoderOptions);
-        std::vector<GeneratedGeometry> generateAnotherModel(const std::vector<std::string>& shapeAttributes);
+        GeneratedGeometry generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const wchar_t* encoderName, const std::vector<std::string>& encoderOptions);
+        GeneratedGeometry generateAnotherModel(const std::vector<std::string>& shapeAttributes);
 
         bool isCustomGeometry() { return customFlag; }
 
@@ -262,6 +262,8 @@ namespace {
         pcu::AttributeMapPtr pyEncoderOptions;
         std::vector<const prt::AttributeMap*> allEncodersOptions;
         std::vector<const wchar_t*> allEncoders;
+
+        std::vector<pcu::InitialShapeBuilderPtr> initialShapesBuilders;
     };
 
     ModelGenerator::ModelGenerator(const std::string& initShapePath) {
@@ -277,7 +279,7 @@ namespace {
         cache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
     }
 
-    std::vector<GeneratedGeometry> ModelGenerator::generateModel(const std::string& rulePackagePath,
+    GeneratedGeometry ModelGenerator::generateModel(const std::string& rulePackagePath,
     		const std::vector<std::string>& shapeAttributes,
     		const wchar_t* encoderName = ENCODER_ID_PYTHON,
     		const std::vector<std::string>& encoderOptions = {"baseName:string=theModel"})
@@ -287,7 +289,7 @@ namespace {
         double duration;
         start = std::clock();
 
-        std::vector<GeneratedGeometry> generatedGeometries;
+        GeneratedGeometry newGeneratedGeo;
 
         try {
             if (!prtCtx) {
@@ -324,6 +326,7 @@ namespace {
                     }
                 }
             }
+            else { std::cout << "RESOLVEMAP EXISTS" << std::endl; }
 
 
             // Initial shape attributes
@@ -373,16 +376,15 @@ namespace {
 
             allEncodersOptions = { pyEncoderOptions.get(), CGAReportOptions.get(), CGAPrintOptions.get() };
             
-            std::vector<pcu::InitialShapeBuilderPtr> initialShapesBuilders;
+
+            // Initial shape
             std::vector<pcu::InitialShapePtr> initialShapePtrs;
             std::vector<const prt::InitialShape*> initialShapes;
 
             if (isCustomGeometry()) {
 
-                //for (Geometry myGeometry : initialGeometries) {
                 for(size_t ind = 0; ind < initialGeometries.size(); ind++) {
 
-                    // Initial Shape
                     pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
 
                     if (isb->setGeometry(
@@ -406,11 +408,19 @@ namespace {
                         resolveMap.get()
                     );
 
-                pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
+                    //pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
+                    pcu::InitialShapePtr initialShape{ isb->createInitialShape() };
 
-                initialShapesBuilders.push_back(std::move(isb));
-                initialShapes.push_back(initialShape.get());
-                initialShapePtrs.push_back(std::move(initialShape));
+
+                    if (initialShapesBuilders.size() <= ind) {
+                        initialShapesBuilders.push_back(std::move(isb));
+                    }
+                    else {
+                        initialShapesBuilders[ind] = std::move(isb);
+                    }                    
+
+                    initialShapes.push_back(initialShape.get());
+                    initialShapePtrs.push_back(std::move(initialShape));
 
                 }
 
@@ -429,8 +439,8 @@ namespace {
                         return {};
                     }
 
-                    GeneratedGeometry newGeneratedGeo(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
-                    generatedGeometries.push_back(newGeneratedGeo);
+                    newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+
                 }
                 else {
                     const pcu::Path output_path = executablePath.getParent().getParent() / "output";
@@ -456,7 +466,6 @@ namespace {
                     return {};
                 }
 
-                //}
             }
             else {
                 // Initial shape
@@ -489,7 +498,13 @@ namespace {
 
                 pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
 
-                initialShapesBuilders.push_back(std::move(isb));
+                if (!initialShapesBuilders.size()) {
+                    initialShapesBuilders.push_back(std::move(isb));
+                }
+                else {
+                    initialShapesBuilders[0] = std::move(isb);
+                }
+
                 initialShapes.push_back(initialShape.get());
                 initialShapePtrs.push_back(std::move(initialShape));
 
@@ -508,8 +523,8 @@ namespace {
                         return {};
                     }
 
-                    GeneratedGeometry newGeneratedGeo(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
-                    generatedGeometries.push_back(newGeneratedGeo);
+                    newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+
                 }
                 else {
                     const pcu::Path output_path = executablePath.getParent().getParent() / "output";
@@ -550,16 +565,16 @@ namespace {
         duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
         std::cout << "Method duration: " << duration << std::endl;
 
-        return generatedGeometries;
+        return newGeneratedGeo;
     }
 
-    std::vector<GeneratedGeometry> ModelGenerator::generateAnotherModel(const std::vector<std::string>& shapeAttributes)
+    GeneratedGeometry ModelGenerator::generateAnotherModel(const std::vector<std::string>& shapeAttributes)
     {
         std::clock_t start;
         double duration;
         start = std::clock();
 
-        std::vector<GeneratedGeometry> generatedGeometries;
+        GeneratedGeometry newGeneratedGeo;
 
         try {
             if (!prtCtx) {
@@ -590,14 +605,18 @@ namespace {
 
 
             if (isCustomGeometry()) {
-                for (Geometry myGeometry : initialGeometries) {
+                for (size_t ind = 0; ind < initialGeometries.size(); ind++) {
 
+                    if (initialShapesBuilders.empty()) {
+                        std::cout << "INITIAL SHAPES BUILDERS EMPTY -- weird" << std::endl;
+                        return {};
+                    }
                     // Initial Shape
                     pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
                     if (isb->setGeometry(
-                        myGeometry.getVertices(), myGeometry.getVertexCount(),
-                        myGeometry.getIndices(), myGeometry.getIndexCount(),
-                        myGeometry.getFaceCounts(), myGeometry.getFaceCountsCount()) != prt::STATUS_OK) {
+                        initialGeometries[ind].getVertices(), initialGeometries[ind].getVertexCount(),
+                        initialGeometries[ind].getIndices(), initialGeometries[ind].getIndexCount(),
+                        initialGeometries[ind].getFaceCounts(), initialGeometries[ind].getFaceCountsCount()) != prt::STATUS_OK) {
 
                         isb->setGeometry(
                             pcu::quad::vertices, pcu::quad::vertexCount,
@@ -605,6 +624,20 @@ namespace {
                             pcu::quad::faceCounts, pcu::quad::faceCountsCount
                         );
                     }
+
+                    if (initialShapesBuilders.empty()) {
+                        std::cout << "INITIAL SHAPES BUILDERS EMPTY -- weird" << std::endl;
+                        return {};
+                    }
+
+                    //initialShapesBuilders[ind]->setAttributes(
+                    //    ruleFile.c_str(),
+                    //    startRule.c_str(),
+                    //    seed,
+                    //    shapeName.c_str(),
+                    //    convertedShapeAttr.get(),
+                    //    resolveMap.get()
+                    //);
 
 
                     isb->setAttributes(
@@ -617,6 +650,7 @@ namespace {
                     );
 
                     const pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
+                    //const pcu::InitialShapePtr initialShape{ initialShapesBuilders[ind]->createInitialShapeAndReset() };
                     const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
 
                     if (!std::wcscmp(allEncoders[0], ENCODER_ID_PYTHON)) {
@@ -634,8 +668,7 @@ namespace {
                             return {};
                         }
 
-                        GeneratedGeometry newGeneratedGeo(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
-                        generatedGeometries.push_back(newGeneratedGeo);
+                        newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
                     }
                     else {
                         const pcu::Path output_path = executablePath.getParent().getParent() / "output";
@@ -710,8 +743,7 @@ namespace {
                         return {};
                     }
 
-                    GeneratedGeometry newGeneratedGeo(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
-                    generatedGeometries.push_back(newGeneratedGeo);
+                    newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
                 }
                 else {
                     const pcu::Path output_path = executablePath.getParent().getParent() / "output";
@@ -752,7 +784,7 @@ namespace {
         duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
         std::cout << "Method duration: " << duration << std::endl;
 
-        return generatedGeometries;
+        return newGeneratedGeo;
     }
 
 } // namespace
