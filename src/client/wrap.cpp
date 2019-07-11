@@ -264,6 +264,11 @@ namespace {
         std::vector<const wchar_t*> allEncoders;
 
         std::vector<pcu::InitialShapeBuilderPtr> initialShapesBuilders;
+
+        std::wstring ruleFile = L"bin/rule.cgb";
+        std::wstring startRule = L"default$init";
+        int32_t seed = 666;
+        std::wstring shapeName = L"InitialShape";
     };
 
     ModelGenerator::ModelGenerator(const std::string& initShapePath) {
@@ -330,11 +335,6 @@ namespace {
 
 
             // Initial shape attributes
-            std::wstring       ruleFile = L"bin/rule.cgb";
-            std::wstring       startRule = L"default$init";
-            int32_t            seed = 666;
-            const std::wstring shapeName = L"TheInitialShape";
-
             const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromTypedKeyValues(shapeAttributes) };
             if (convertedShapeAttr) {
                 if (convertedShapeAttr->hasKey(L"ruleFile") &&
@@ -408,9 +408,7 @@ namespace {
                         resolveMap.get()
                     );
 
-                    //pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
                     pcu::InitialShapePtr initialShape{ isb->createInitialShape() };
-
 
                     if (initialShapesBuilders.size() <= ind) {
                         initialShapesBuilders.push_back(std::move(isb));
@@ -496,7 +494,7 @@ namespace {
                     resolveMap.get()
                 );
 
-                pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
+                pcu::InitialShapePtr initialShape{ isb->createInitialShape() };
 
                 if (!initialShapesBuilders.size()) {
                     initialShapesBuilders.push_back(std::move(isb));
@@ -588,11 +586,6 @@ namespace {
             }
 
             // Initial shape attributes
-            std::wstring       ruleFile = L"bin/rule.cgb";
-            std::wstring       startRule = L"default$init";
-            int32_t            seed = 666;
-            const std::wstring shapeName = L"TheInitialShape";
-
             const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromTypedKeyValues(shapeAttributes) };
             if (convertedShapeAttr) {
                 if (convertedShapeAttr->hasKey(L"ruleFile") &&
@@ -603,44 +596,20 @@ namespace {
                     startRule = convertedShapeAttr->getString(L"startRule");
             }
 
+            std::clock_t start2 = std::clock();
+            std::cout << "Method durationA: " << (start2 - start) / (double)CLOCKS_PER_SEC << std::endl;
 
             if (isCustomGeometry()) {
                 for (size_t ind = 0; ind < initialGeometries.size(); ind++) {
 
-                    if (initialShapesBuilders.empty()) {
-                        std::cout << "INITIAL SHAPES BUILDERS EMPTY -- weird" << std::endl;
-                        return {};
-                    }
-                    // Initial Shape
-                    pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
-                    if (isb->setGeometry(
-                        initialGeometries[ind].getVertices(), initialGeometries[ind].getVertexCount(),
-                        initialGeometries[ind].getIndices(), initialGeometries[ind].getIndexCount(),
-                        initialGeometries[ind].getFaceCounts(), initialGeometries[ind].getFaceCountsCount()) != prt::STATUS_OK) {
-
-                        isb->setGeometry(
-                            pcu::quad::vertices, pcu::quad::vertexCount,
-                            pcu::quad::indices, pcu::quad::indexCount,
-                            pcu::quad::faceCounts, pcu::quad::faceCountsCount
-                        );
-                    }
+                    std::clock_t start5 = std::clock();
 
                     if (initialShapesBuilders.empty()) {
                         std::cout << "INITIAL SHAPES BUILDERS EMPTY -- weird" << std::endl;
                         return {};
                     }
 
-                    //initialShapesBuilders[ind]->setAttributes(
-                    //    ruleFile.c_str(),
-                    //    startRule.c_str(),
-                    //    seed,
-                    //    shapeName.c_str(),
-                    //    convertedShapeAttr.get(),
-                    //    resolveMap.get()
-                    //);
-
-
-                    isb->setAttributes(
+                    initialShapesBuilders[ind]->setAttributes(
                         ruleFile.c_str(),
                         startRule.c_str(),
                         seed,
@@ -649,11 +618,19 @@ namespace {
                         resolveMap.get()
                     );
 
-                    const pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
-                    //const pcu::InitialShapePtr initialShape{ initialShapesBuilders[ind]->createInitialShapeAndReset() };
+                    std::clock_t start6 = std::clock();
+                    std::cout << "Method durationA: " << (start6 - start5) / (double)CLOCKS_PER_SEC << std::endl;
+
+                    const pcu::InitialShapePtr initialShape{ initialShapesBuilders[ind]->createInitialShape() };
                     const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
 
+                    std::clock_t start7 = std::clock();
+                    std::cout << "Method durationA: " << (start7 - start6) / (double)CLOCKS_PER_SEC << std::endl;
+
                     if (!std::wcscmp(allEncoders[0], ENCODER_ID_PYTHON)) {
+
+                        std::clock_t start8 = std::clock();
+
                         pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
 
                         // Generate
@@ -663,12 +640,18 @@ namespace {
                             foc.get(), cache.get(), nullptr
                         );
 
+                        std::clock_t start9 = std::clock();
+                        std::cout << "Method durationA: " << (start9 - start8) / (double)CLOCKS_PER_SEC << std::endl;
+
                         if (genStat != prt::STATUS_OK) {
                             LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
                             return {};
                         }
 
                         newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+
+                        std::clock_t start10 = std::clock();
+                        std::cout << "Method durationA: " << (start10 - start9) / (double)CLOCKS_PER_SEC << std::endl;
                     }
                     else {
                         const pcu::Path output_path = executablePath.getParent().getParent() / "output";
@@ -695,28 +678,17 @@ namespace {
                     }
 
                 }
+                std::clock_t start3 = std::clock();
+                std::cout << "Method durationB: " << (start3 - start2) / (double)CLOCKS_PER_SEC << std::endl;
             }
             else {
                 // Initial shape
-                pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
-
-                if (!pcu::toFileURI(initialShapePath).empty()) {
-                    LOG_DBG << L"trying to read initial shape geometry from " << pcu::toFileURI(initialShapePath);
-                    const prt::Status s = isb->resolveGeometry(pcu::toUTF16FromOSNarrow(pcu::toFileURI(initialShapePath)).c_str(), resolveMap.get(), cache.get());
-                    if (s != prt::STATUS_OK) {
-                        LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(initialShapePath);
-                        return {};
-                    }
-                }
-                else {
-                    isb->setGeometry(
-                        pcu::quad::vertices, pcu::quad::vertexCount,
-                        pcu::quad::indices, pcu::quad::indexCount,
-                        pcu::quad::faceCounts, pcu::quad::faceCountsCount
-                    );
+                if (initialShapesBuilders.empty()) {
+                    std::cout << "INITIAL SHAPES BUILDERS EMPTY -- weird" << std::endl;
+                    return {};
                 }
 
-                isb->setAttributes(
+                initialShapesBuilders[0]->setAttributes(
                     ruleFile.c_str(),
                     startRule.c_str(),
                     seed,
@@ -725,7 +697,7 @@ namespace {
                     resolveMap.get()
                 );
 
-                const pcu::InitialShapePtr initialShape{ isb->createInitialShapeAndReset() };
+                const pcu::InitialShapePtr initialShape{ initialShapesBuilders[0]->createInitialShape() };
                 const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
 
                 if (!std::wcscmp(allEncoders[0], ENCODER_ID_PYTHON)) {
@@ -768,6 +740,9 @@ namespace {
 
                     return {};
                 }
+
+                std::clock_t start4 = std::clock();
+                std::cout << "Method durationC: " << (start4 - start2) / (double)CLOCKS_PER_SEC << std::endl;
 
             }
 
