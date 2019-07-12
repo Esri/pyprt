@@ -561,16 +561,16 @@ namespace {
         }
 
         duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
-        std::cout << "Method duration: " << duration << std::endl;
+        std::cout << "Method duration - first model generation: " << duration << std::endl;
 
         return newGeneratedGeo;
     }
 
     GeneratedGeometry ModelGenerator::generateAnotherModel(const std::vector<std::string>& shapeAttributes)
     {
-        std::clock_t start;
+        std::clock_t start1;
         double duration;
-        start = std::clock();
+        start1 = std::clock();
 
         GeneratedGeometry newGeneratedGeo;
 
@@ -597,7 +597,7 @@ namespace {
             }
 
             std::clock_t start2 = std::clock();
-            std::cout << "Method durationA: " << (start2 - start) / (double)CLOCKS_PER_SEC << std::endl;
+            std::cout << "Method duration - pcu::AttributeMapPtr convertedShapeAttr: " << (start2 - start1) / (double)CLOCKS_PER_SEC << std::endl;
 
             if (isCustomGeometry()) {
                 for (size_t ind = 0; ind < initialGeometries.size(); ind++) {
@@ -619,19 +619,19 @@ namespace {
                     );
 
                     std::clock_t start6 = std::clock();
-                    std::cout << "Method durationA: " << (start6 - start5) / (double)CLOCKS_PER_SEC << std::endl;
+                    std::cout << "Method duration - initialShapeBuilder->setAttributes: " << (start6 - start5) / (double)CLOCKS_PER_SEC << std::endl;
 
                     const pcu::InitialShapePtr initialShape{ initialShapesBuilders[ind]->createInitialShape() };
                     const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
 
                     std::clock_t start7 = std::clock();
-                    std::cout << "Method durationA: " << (start7 - start6) / (double)CLOCKS_PER_SEC << std::endl;
+                    std::cout << "Method duration - initialShapeBuilder->createInitialShape: " << (start7 - start6) / (double)CLOCKS_PER_SEC << std::endl;
 
                     if (!std::wcscmp(allEncoders[0], ENCODER_ID_PYTHON)) {
 
-                        std::clock_t start8 = std::clock();
-
                         pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
+
+                        std::clock_t start8 = std::clock();
 
                         // Generate
                         const prt::Status genStat = prt::generate(
@@ -641,17 +641,19 @@ namespace {
                         );
 
                         std::clock_t start9 = std::clock();
-                        std::cout << "Method durationA: " << (start9 - start8) / (double)CLOCKS_PER_SEC << std::endl;
+                        std::cout << "Method duration - prt generate: " << (start9 - start8) / (double)CLOCKS_PER_SEC << std::endl;
 
                         if (genStat != prt::STATUS_OK) {
                             LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
                             return {};
                         }
 
+                        std::clock_t start13 = std::clock();
+
                         newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
 
                         std::clock_t start10 = std::clock();
-                        std::cout << "Method durationA: " << (start10 - start9) / (double)CLOCKS_PER_SEC << std::endl;
+                        std::cout << "Method duration - population of GeneratedGeometry instance: " << (start10 - start13) / (double)CLOCKS_PER_SEC << std::endl;
                     }
                     else {
                         const pcu::Path output_path = executablePath.getParent().getParent() / "output";
@@ -679,7 +681,7 @@ namespace {
 
                 }
                 std::clock_t start3 = std::clock();
-                std::cout << "Method durationB: " << (start3 - start2) / (double)CLOCKS_PER_SEC << std::endl;
+                std::cout << "Method duration - customGeometry is true: " << (start3 - start2) / (double)CLOCKS_PER_SEC << std::endl;
             }
             else {
                 // Initial shape
@@ -742,7 +744,7 @@ namespace {
                 }
 
                 std::clock_t start4 = std::clock();
-                std::cout << "Method durationC: " << (start4 - start2) / (double)CLOCKS_PER_SEC << std::endl;
+                std::cout << "Method duration - customGeometry is false: " << (start4 - start2) / (double)CLOCKS_PER_SEC << std::endl;
 
             }
 
@@ -756,8 +758,8 @@ namespace {
             return {};
         }
 
-        duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
-        std::cout << "Method duration: " << duration << std::endl;
+        duration = (std::clock() - start1) / (double)CLOCKS_PER_SEC;
+        std::cout << "Method duration - generation with other attributes: " << duration << std::endl;
 
         return newGeneratedGeo;
     }
