@@ -599,6 +599,9 @@ namespace {
             std::clock_t start2 = std::clock();
             std::cout << "Method duration - pcu::AttributeMapPtr convertedShapeAttr: " << (start2 - start1) / (double)CLOCKS_PER_SEC << std::endl;
 
+            std::vector<pcu::InitialShapePtr> initialShapePtrs;
+            std::vector<const prt::InitialShape*> initialShapes;
+
             if (isCustomGeometry()) {
                 for (size_t ind = 0; ind < initialGeometries.size(); ind++) {
 
@@ -621,69 +624,74 @@ namespace {
                     std::clock_t start6 = std::clock();
                     std::cout << "Method duration - initialShapeBuilder->setAttributes: " << (start6 - start5) / (double)CLOCKS_PER_SEC << std::endl;
 
-                    const pcu::InitialShapePtr initialShape{ initialShapesBuilders[ind]->createInitialShape() };
-                    const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
+                    pcu::InitialShapePtr initialShape{ initialShapesBuilders[ind]->createInitialShape() };
+
+                    initialShapes.push_back(initialShape.get());
+                    initialShapePtrs.push_back(std::move(initialShape));
 
                     std::clock_t start7 = std::clock();
                     std::cout << "Method duration - initialShapeBuilder->createInitialShape: " << (start7 - start6) / (double)CLOCKS_PER_SEC << std::endl;
+                }
 
-                    if (!std::wcscmp(allEncoders[0], ENCODER_ID_PYTHON)) {
+                if (!std::wcscmp(allEncoders[0], ENCODER_ID_PYTHON)) {
 
-                        pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
+                    pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
 
-                        std::clock_t start8 = std::clock();
+                    std::clock_t start8 = std::clock();
 
-                        // Generate
-                        const prt::Status genStat = prt::generate(
-                            initialShapes.data(), initialShapes.size(), nullptr,
-                            allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
-                            foc.get(), cache.get(), nullptr
-                        );
+                    // Generate
+                    const prt::Status genStat = prt::generate(
+                        initialShapes.data(), initialShapes.size(), nullptr,
+                        allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
+                        foc.get(), cache.get(), nullptr
+                    );
 
-                        std::clock_t start9 = std::clock();
-                        std::cout << "Method duration - prt generate: " << (start9 - start8) / (double)CLOCKS_PER_SEC << std::endl;
+                    std::clock_t start9 = std::clock();
+                    std::cout << "Method duration - prt generate: " << (start9 - start8) / (double)CLOCKS_PER_SEC << std::endl;
 
-                        if (genStat != prt::STATUS_OK) {
-                            LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
-                            return {};
-                        }
-
-                        std::clock_t start13 = std::clock();
-
-                        newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
-
-                        std::clock_t start10 = std::clock();
-                        std::cout << "Method duration - population of GeneratedGeometry instance: " << (start10 - start13) / (double)CLOCKS_PER_SEC << std::endl;
-                    }
-                    else {
-                        const pcu::Path output_path = executablePath.getParent().getParent() / "output";
-                        if (!output_path.exists()) {
-                            std::filesystem::create_directory(output_path.toStdPath());
-                            LOG_INF << "New output directory created at " << output_path << std::endl;
-                        }
-
-                        pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
-
-                        // Generate
-                        const prt::Status genStat = prt::generate(
-                            initialShapes.data(), initialShapes.size(), nullptr,
-                            allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
-                            foc.get(), cache.get(), nullptr
-                        );
-
-                        if (genStat != prt::STATUS_OK) {
-                            LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
-                            return {};
-                        }
-
+                    if (genStat != prt::STATUS_OK) {
+                        LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
                         return {};
                     }
 
+                    std::clock_t start13 = std::clock();
+
+                    newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+
+                    std::clock_t start10 = std::clock();
+                    std::cout << "Method duration - population of GeneratedGeometry instance: " << (start10 - start13) / (double)CLOCKS_PER_SEC << std::endl;
                 }
+                else {
+                    const pcu::Path output_path = executablePath.getParent().getParent() / "output";
+                    if (!output_path.exists()) {
+                        std::filesystem::create_directory(output_path.toStdPath());
+                        LOG_INF << "New output directory created at " << output_path << std::endl;
+                    }
+
+                    pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
+
+                    // Generate
+                    const prt::Status genStat = prt::generate(
+                        initialShapes.data(), initialShapes.size(), nullptr,
+                        allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
+                        foc.get(), cache.get(), nullptr
+                    );
+
+                    if (genStat != prt::STATUS_OK) {
+                        LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
+                        return {};
+                    }
+
+                    return {};
+                }
+
                 std::clock_t start3 = std::clock();
                 std::cout << "Method duration - customGeometry is true: " << (start3 - start2) / (double)CLOCKS_PER_SEC << std::endl;
             }
             else {
+
+                std::clock_t start14 = std::clock();
+
                 // Initial shape
                 if (initialShapesBuilders.empty()) {
                     std::cout << "INITIAL SHAPES BUILDERS EMPTY -- weird" << std::endl;
@@ -699,11 +707,22 @@ namespace {
                     resolveMap.get()
                 );
 
-                const pcu::InitialShapePtr initialShape{ initialShapesBuilders[0]->createInitialShape() };
-                const std::vector<const prt::InitialShape*> initialShapes = { initialShape.get() };
+                std::clock_t start15 = std::clock();
+                std::cout << "Method duration - initialShapeBuilder->setAttributes: " << (start15 - start14) / (double)CLOCKS_PER_SEC << std::endl;
+
+                pcu::InitialShapePtr initialShape{ initialShapesBuilders[0]->createInitialShape() };
+
+                initialShapes.push_back(initialShape.get());
+                initialShapePtrs.push_back(std::move(initialShape));
+
+                std::clock_t start16 = std::clock();
+                std::cout << "Method duration - initialShapeBuilder->createInitialShape: " << (start16 - start15) / (double)CLOCKS_PER_SEC << std::endl;
+
 
                 if (!std::wcscmp(allEncoders[0], ENCODER_ID_PYTHON)) {
                     pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
+
+                    std::clock_t start17 = std::clock();
 
                     // Generate
                     const prt::Status genStat = prt::generate(
@@ -712,12 +731,21 @@ namespace {
                         foc.get(), cache.get(), nullptr
                     );
 
+                    std::clock_t start18 = std::clock();
+                    std::cout << "Method duration - prt generate: " << (start18 - start17) / (double)CLOCKS_PER_SEC << std::endl;
+
+
                     if (genStat != prt::STATUS_OK) {
                         LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
                         return {};
                     }
 
+                    std::clock_t start19 = std::clock();
+
                     newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+
+                    std::clock_t start20 = std::clock();
+                    std::cout << "Method duration - population of GeneratedGeometry instance: " << (start20 - start19) / (double)CLOCKS_PER_SEC << std::endl;
                 }
                 else {
                     const pcu::Path output_path = executablePath.getParent().getParent() / "output";
