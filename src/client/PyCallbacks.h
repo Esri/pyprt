@@ -69,15 +69,15 @@ public:
         const std::vector<std::vector<uint32_t>> facesCoord
     ) override;
 
-    std::map<int32_t, std::vector<std::vector<double>>> getVertices() const;
+    std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>>> getVertices() const;
 
-    std::map<int32_t, std::vector<std::vector<uint32_t>>> getFaces() const;
+    std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>>> getFaces() const;
 
-    std::map<int32_t, FloatMap> getFloatReport() const; //-- std::vector<std::tuple<uint32_t, int32_t, FloatMap>>
+    std::vector<std::tuple<uint32_t, int32_t, FloatMap>> getFloatReport() const;
 
-    std::map<int32_t, StringMap> getStringReport() const;
+    std::vector<std::tuple<uint32_t, int32_t, StringMap>> getStringReport() const;
 
-    std::map<int32_t, BoolMap> getBoolReport() const;
+    std::vector<std::tuple<uint32_t, int32_t, BoolMap>> getBoolReport() const;
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
 		pybind11::print(L"GENERATE ERROR:", isIndex, status, message);

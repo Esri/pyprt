@@ -46,58 +46,56 @@ void PyCallbacks::addEntry(const uint32_t initialShapeIndex, const int32_t shape
     shapes.push_back(instance);
 }
 
-std::map<int32_t, std::vector<std::vector<double>>> PyCallbacks::getVertices() const {
-    std::map<int32_t, std::vector<std::vector<double>>> allVertices;
+std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>>> PyCallbacks::getVertices() const {
+    std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>>> allVertices;
 
     for (Entry e : shapes) {
-        allVertices[e.id] = e.vertices;
+        std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>> vertMat(e.initialShapeIdx, e.id, e.vertices);
+        allVertices.push_back(vertMat);
     }
 
     return allVertices;
 }
 
-std::map<int32_t, std::vector<std::vector<uint32_t>>> PyCallbacks::getFaces() const {
-    std::map<int32_t, std::vector<std::vector<uint32_t>>> allFaces;
+std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>>> PyCallbacks::getFaces() const {
+    std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>>> allFaces;
 
     for (Entry e : shapes) {
-        allFaces[e.id] = e.faces;
+        std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>> facesMat(e.initialShapeIdx, e.id, e.faces);
+        allFaces.push_back(facesMat);
     }
 
     return allFaces;
 }
 
-std::map<int32_t, FloatMap> PyCallbacks::getFloatReport() const { //-- std::vector<std::tuple<uint32_t, int32_t, FloatMap>>
-    /*std::vector<std::tuple<uint32_t, int32_t, FloatMap>> allFloatReports;
+std::vector<std::tuple<uint32_t, int32_t, FloatMap>> PyCallbacks::getFloatReport() const {
+    std::vector<std::tuple<uint32_t, int32_t, FloatMap>> allFloatReports;
 
     for (Entry e : shapes) {
         std::tuple<uint32_t, int32_t, FloatMap> floatReport(e.initialShapeIdx, e.id, e.reportFloatData);
         allFloatReports.push_back(floatReport);
-    }*/
-
-    std::map<int32_t, FloatMap> allFloatReports;
-
-    for (Entry e : shapes) {
-        allFloatReports[e.id] = e.reportFloatData;
     }
 
     return allFloatReports;
 }
 
-std::map<int32_t, StringMap> PyCallbacks::getStringReport() const {
-    std::map<int32_t, StringMap> allStringReports;
+std::vector<std::tuple<uint32_t, int32_t, StringMap>> PyCallbacks::getStringReport() const {
+    std::vector<std::tuple<uint32_t, int32_t, StringMap>> allStringReports;
 
     for (Entry e : shapes) {
-        allStringReports[e.id] = e.reportStringData;
+        std::tuple<uint32_t, int32_t, StringMap> stringReport(e.initialShapeIdx, e.id, e.reportStringData);
+        allStringReports.push_back(stringReport);
     }
 
     return allStringReports;
 }
 
-std::map<int32_t, BoolMap> PyCallbacks::getBoolReport() const {
-    std::map<int32_t, BoolMap> allBoolReports;
+std::vector<std::tuple<uint32_t, int32_t, BoolMap>> PyCallbacks::getBoolReport() const {
+    std::vector<std::tuple<uint32_t, int32_t, BoolMap>> allBoolReports;
 
     for (Entry e : shapes) {
-        allBoolReports[e.id] = e.reportBoolData;
+        std::tuple<uint32_t, int32_t, BoolMap> boolReport(e.initialShapeIdx, e.id, e.reportBoolData);
+        allBoolReports.push_back(boolReport);
     }
 
     return allBoolReports;
