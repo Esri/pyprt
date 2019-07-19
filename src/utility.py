@@ -29,9 +29,7 @@ def summarize_report(report):
     for x in report:
         if generation_indices.count(x[0]) == 0:
             generation_indices.append(x[0])
-            print(generation_indices)
             summary_dicts.append(x[2])
-            print(summary_dicts)
         else:
             ind = generation_indices.index(x[0])
             if len(x[2]) > 0:
@@ -133,4 +131,18 @@ def combine_report1shape(model):
     for x in model.get_bool_report():
         if len(x[2]) > 0:
             report.update(x[2])
+    return report
+
+
+def combine_reports(model):
+    report = []
+    for x in model.get_float_report():
+        if len(x[2]) > 0:
+            report.append(x)
+    for x in model.get_string_report():
+        if len(x[2]) > 0:
+            report.append(x)
+    for x in model.get_bool_report():
+        if len(x[2]) > 0:
+            report.append(x)
     return report

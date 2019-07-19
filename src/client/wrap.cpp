@@ -305,9 +305,6 @@ namespace {
 
             // Resolve Map
             if (!resolveMap) {
-
-                std::cout << "RESOLVEMAP DOESNT EXIST YET" << std::endl;
-
                 if (!rulePackagePath.empty()) {
                     LOG_INF << "Using rule package " << rulePackagePath << std::endl;
 
@@ -331,7 +328,6 @@ namespace {
                     }
                 }
             }
-            else { std::cout << "RESOLVEMAP EXISTS" << std::endl; }
 
 
             // Initial shape attributes
@@ -358,11 +354,9 @@ namespace {
             pyEncoderOptions = createValidatedOptions(encoderName, encOptions);
 
             if (!allEncoders.empty()) { 
-                delete allEncoders[0]; std::cout << "ENCODERS NOT EMPTY" << std::endl;
+                delete allEncoders[0];
             }
-            else {
-                std::cout << "ENCODERS EMPTY" << std::endl;
-            }
+
 
             // Make a copy
             wchar_t *clone = new wchar_t[wcslen(encoderName) + 1];
@@ -806,7 +800,7 @@ PYBIND11_MODULE(pyprt, m) {
         .def(py::init<const std::string&>(), "initShapePath"_a)
         .def(py::init<const std::vector<Geometry>&>(), "initShape"_a)
         .def("generate_model", &ModelGenerator::generateModel, py::arg("rulePackagePath"), py::arg("shapeAttributes"), py::arg("encoderName") = ENCODER_ID_PYTHON, py::arg("encoderOptions") = std::vector<std::string>(1, "baseName:string=theModel"))
-        .def("generate_model2", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
+        .def("generate_another_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
 
     m.def("initialize_prt", &initializePRT, "prt_path"_a = "");
     m.def("is_prt_initialized", &isPRTInitialized);

@@ -1,6 +1,6 @@
 import sys, os
 sys.path.append(os.path.join(os.getcwd(), "src"))
-from utility import visualize_PRT_results, combine_reports, summarize_matrix, summarize_report
+from utility import visualize_PRT_results
 
 SDK_PATH = os.path.join(os.getcwd(), "install", "bin")
 sys.path.append(SDK_PATH)
@@ -71,11 +71,14 @@ models_test4 = mod_test4.generate_model(rpk, attrs)
 
 visualize_PRT_results(models_test4)
 
-## TEST 5: initial shapes as custom geometries, candler rule.
+## TEST 5: initial shapes as OBJ, candler rule.
 print("\nTEST5")
+shape_geo_fromOBJ_test5 = asset_file("candler_footprint.obj")
+mod_test5 = pyprt.ModelGenerator(shape_geo_fromOBJ_test5)
+
 rpk_test5 = asset_file("candler.rpk")
 attrs_test5 = ["ruleFile:string=bin/candler.cgb", "startRule:string=Default$Footprint"]
-models_test5 = mod_test4.generate_model(rpk_test5, attrs_test5)
+models_test5 = mod_test5.generate_model(rpk_test5, attrs_test5)
 
 visualize_PRT_results(models_test5)
 

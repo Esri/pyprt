@@ -1,6 +1,6 @@
 import sys, os
 sys.path.append(os.path.join(os.getcwd(), "src"))
-from utility import visualize_PRT_results, combine_reports, summarize_matrix, summarize_report
+from utility import visualize_PRT_results, summarize_matrix
 
 SDK_PATH = os.path.join(os.getcwd(), "install", "bin")
 sys.path.append(SDK_PATH)
@@ -86,22 +86,25 @@ if __name__ == '__main__':
     all_vertices = []
     all_faces = []
 
-    if len(generated_mod) > 0:
-        for model in generated_mod:
+    if generated_mod:
+        geo = generated_mod.get_vertices()
+        geo_summarized = summarize_matrix(geo)
+        face_geo = generated_mod.get_faces()
+        face_summarized = summarize_matrix(face_geo)
+
+        for i in range(0,len(geo_summarized)):
             temp = []
-            geo = model.get_vertices()
-            geo_summarized = summarize_matrix(geo)
-            geo_numpy = np.array(geo_summarized)
+            geo_numpy = np.array(geo_summarized[i])
             geo_numpy_unique, indices = np.unique(np.around(geo_numpy,decimals=3), return_index = True, axis=0)
-            for i in indices:
-                temp.append(geo_summarized[i]) # to avoid duplicates
+
+            for ind in indices:
+                temp.append(geo_summarized[i][ind]) # to avoid duplicates
+
             all_vertices.append(temp)
-            face_geo = model.get_faces()
-            face_summarized = summarize_matrix(face_geo)
-            all_faces.append(face_summarized)
+            all_faces.append(face_summarized[i])
             print("\nSize of the matrix containing all the model vertices:")
-            print(geo_numpy.shape)
-            print(geo_numpy)
+            print(geo_numpy_unique.shape)
+            print(temp)
             print("\nGenerated Model Faces: ")
             print(face_summarized)
     else:
