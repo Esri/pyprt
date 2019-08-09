@@ -165,6 +165,8 @@ void shutdownPRT() {
 
 } // namespace
 
+namespace py = pybind11;
+
 class Geometry {
 public:
     Geometry(std::vector<double> vert);
@@ -245,7 +247,7 @@ namespace {
         ModelGenerator(const std::vector<Geometry>& myGeo);
         ~ModelGenerator() { }
 
-        GeneratedGeometry generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, const wchar_t* encoderName, const std::vector<std::string>& encoderOptions);
+        GeneratedGeometry generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, py::dict encoderOptions, const wchar_t* encoderName);
         GeneratedGeometry generateAnotherModel(const std::vector<std::string>& shapeAttributes);
 
         bool isCustomGeometry() { return customFlag; }
@@ -286,8 +288,8 @@ namespace {
 
     GeneratedGeometry ModelGenerator::generateModel(const std::string& rulePackagePath,
     		const std::vector<std::string>& shapeAttributes,
-    		const wchar_t* encoderName = ENCODER_ID_PYTHON,
-    		const std::vector<std::string>& encoderOptions = {"baseName:string=theModel"})
+            py::dict encoderOptions,
+            const wchar_t* encoderName = ENCODER_ID_PYTHON)
     {
 
         std::clock_t start;
@@ -347,7 +349,7 @@ namespace {
             optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_REPORT);
             const pcu::AttributeMapPtr reportOptions{ optionsBuilder->createAttributeMapAndReset() };
             const pcu::AttributeMapPtr printOptions{ optionsBuilder->createAttributeMapAndReset() };
-            const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromTypedKeyValues(encoderOptions) };
+            const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions) };
 
             CGAReportOptions = createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions);
             CGAPrintOptions = createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions);
@@ -788,18 +790,58 @@ namespace {
 
 } // namespace
 
+
+void py_testprintdict(py::dict dict) {
+    for (auto item : dict) {
+        std::cout << "key=" << std::string(py::str(item.first)) << ", " << "value=" << std::string(py::str(item.second)) << std::endl;
+
+        if (py::isinstance<py::str>(item.first)) {
+            std::cout << "OK" << std::endl;
+            std::wstring salut = item.first.cast<std::wstring>();
+            std::wcout << L"Ceci est un wstring: " << salut << std::endl;
+        }
+
+        if (py::isinstance<py::list>(item.second.ptr())) {
+            std::cout << "It's a list!" << std::endl;
+            auto lll = item.second.cast<py::list>();
+            
+            if (py::isinstance<py::bool_>(lll[0]))
+                std::cout << "List of bool of size: " << lll.size() << std::endl;
+            else if (py::isinstance<py::float_>(lll[0]))
+                std::cout << "List of float of size: " << lll.size() << std::endl;
+            else if (py::isinstance<py::int_>(lll[0]))
+                std::cout << "List of int of size: " << lll.size() << std::endl;
+            else if (py::isinstance<py::str>(lll[0]))
+                std::cout << "List of string of size: " << lll.size() << std::endl;
+            else
+                std::cout << "Unknown list type." << std::endl;
+        }
+        else {
+            if (py::isinstance<py::bool_>(item.second.ptr())) // check for boolean at first!!
+                std::cout << "Instance of bool." << std::endl;
+            else if (py::isinstance<py::float_>(item.second.ptr()))
+                std::cout << "Instance of float." << std::endl;
+            else if (py::isinstance<py::int_>(item.second.ptr()))
+                std::cout << "Instance of int." << std::endl;
+            else if (py::isinstance<py::str>(item.second.ptr()))
+                std::cout << "Instance of string." << std::endl;
+            else
+                std::cout << "Unknown type." << std::endl;
+        }
+    }
+}
+
 int py_printVal(int val) {
     return val;
 }
 
-namespace py = pybind11;
 using namespace pybind11::literals;
 
 PYBIND11_MODULE(pyprt, m) {
     py::class_<ModelGenerator>(m, "ModelGenerator")
         .def(py::init<const std::string&>(), "initShapePath"_a)
         .def(py::init<const std::vector<Geometry>&>(), "initShape"_a)
-        .def("generate_model", &ModelGenerator::generateModel, py::arg("rulePackagePath"), py::arg("shapeAttributes"), py::arg("encoderName") = ENCODER_ID_PYTHON, py::arg("encoderOptions") = std::vector<std::string>(1, "baseName:string=theModel"))
+        .def("generate_model", &ModelGenerator::generateModel, py::arg("rulePackagePath"), py::arg("shapeAttributes"), py::arg("encoderOptions"), py::arg("encoderName") = ENCODER_ID_PYTHON)
         .def("generate_another_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
 
     m.def("initialize_prt", &initializePRT, "prt_path"_a = "");
@@ -826,4 +868,5 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_bool_report", &GeneratedGeometry::getGenerationBoolReport);
 
     m.def("print_val",&py_printVal,"Test Python function for value printing.");
+    m.def("print_dict", &py_testprintdict, "Test function for dictionary printing.");
 }

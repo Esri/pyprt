@@ -24,6 +24,9 @@
 
 #include "prt/StringUtils.h"
 
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
 #include <fstream>
 #include <functional>
 #include <algorithm>
@@ -54,6 +57,7 @@ void tokenize(const std::basic_string<C>& str, std::vector<std::basic_string<C>>
 
 } // namespace
 
+namespace py = pybind11;
 
 namespace pcu {
 
@@ -210,6 +214,126 @@ AttributeMapPtr createAttributeMapFromTypedKeyValues(const std::vector<std::stri
 			std::wcout << L"warning: ignored key/value item: " << wa << std::endl;
 	}
 	return AttributeMapPtr{bld->createAttributeMapAndReset()};
+}
+
+
+/**
+ * Helper function to convert a Python dictionary of "<key>:<value>" into a prt::AttributeMap
+ */
+AttributeMapPtr createAttributeMapFromPythonDict(py::dict args) {
+    AttributeMapBuilderPtr bld{ prt::AttributeMapBuilder::create() };
+
+    for (auto a : args) {
+
+        std::wstring key = a.first.cast<std::wstring>();
+
+        if (py::isinstance<py::list>(a.second.ptr())) {
+            auto li = a.second.cast<py::list>();
+
+            if (py::isinstance<py::bool_>(li[0])) {
+                try {
+                    size_t count = li.size();
+                    bool* v_arr = new bool[count];
+
+                    for (int i = 0; i < count; i++) {
+                        bool item = li[i].cast<bool>();
+                        v_arr[i] = item;
+                    }
+
+                    bld->setBoolArray(key.c_str(), v_arr, count);
+                    delete[] v_arr;
+                }
+                catch(std::exception& e) {
+                    std::wcerr << L"cannot set bool array attribute " << key << ": " << e.what() << std::endl;
+                }
+            }
+            else if (py::isinstance<py::float_>(li[0])) {
+                try {
+                    size_t count = li.size();
+                    double* v_arr = new double[count];
+
+                    for (int i = 0; i < count; i++) {
+                        double item = li[i].cast<double>();
+                        v_arr[i] = item;
+                    }
+
+                    bld->setFloatArray(key.c_str(), v_arr, count);
+                    delete[] v_arr;
+                }
+                catch (std::exception& e) {
+                    std::wcerr << L"cannot set float array attribute " << key << ": " << e.what() << std::endl;
+                }
+            }
+            else if (py::isinstance<py::int_>(li[0])) {
+                try {
+                    size_t count = li.size();
+                    int32_t* v_arr = new int32_t[count];
+
+                    for (int i = 0; i < count; i++) {
+                        int32_t item = li[i].cast<int32_t>();
+                        v_arr[i] = item;
+                    }
+
+                    bld->setIntArray(key.c_str(), v_arr, count);
+                    delete[] v_arr;
+                }
+                catch (std::exception& e) {
+                    std::wcerr << L"cannot set int array attribute " << key << ": " << e.what() << std::endl;
+                }
+
+            }
+            else if (py::isinstance<py::str>(li[0])) {
+                size_t count = li.size();
+                wchar_t** v_arr = new wchar_t*[count];
+
+                for (int i = 0; i < count; i++) {
+                    std::wstring item = li[i].cast<std::wstring>();
+                    v_arr[i] = (wchar_t*)item.c_str();
+                }
+
+                bld->setStringArray(key.c_str(), v_arr, count);
+                delete[] v_arr;
+            }
+            else
+                std::cout << "Unknown array type." << std::endl;
+        }
+        else {
+            if (py::isinstance<py::bool_>(a.second.ptr())) { // check for boolean first!!
+                try {
+                    bool val = a.second.cast<bool>();
+                    bld->setBool(key.c_str(), val);
+                }
+                catch (std::exception& e) {
+                    std::wcerr << L"cannot set bool attribute " << key << ": " << e.what() << std::endl;
+                }
+            }
+            else if (py::isinstance<py::float_>(a.second.ptr())) {
+                try {
+                    double val = a.second.cast<double>();
+                    bld->setFloat(key.c_str(), val);
+                }
+                catch (std::exception& e) {
+                    std::wcerr << L"cannot set float attribute " << key << ": " << e.what() << std::endl;
+                }
+            }
+            else if (py::isinstance<py::int_>(a.second.ptr())) {
+                try {
+                    int32_t val = a.second.cast<int32_t>();
+                    bld->setInt(key.c_str(), val);
+                }
+                catch (std::exception& e) {
+                    std::wcerr << L"cannot set int attribute " << key << ": " << e.what() << std::endl;
+                }
+            }
+            else if (py::isinstance<py::str>(a.second.ptr())) {
+                std::wstring val = a.second.cast<std::wstring>();
+                bld->setString(key.c_str(), val.c_str());
+            }
+            else
+                std::cout << "Unknown type." << std::endl;
+        }
+    }
+    return AttributeMapPtr{ bld->createAttributeMapAndReset() };
 }
 
 /**

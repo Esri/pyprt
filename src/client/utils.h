@@ -27,11 +27,16 @@
 #include "prt/FileOutputCallbacks.h"
 #include "prt/LogHandler.h"
 
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
 #include <memory>
 #include <string>
 #include <ostream>
 #include <cstdlib>
 #include <filesystem>
+
+namespace py = pybind11;
 
 namespace pcu {
 
@@ -70,6 +75,7 @@ using PyCallbacksPtr = std::unique_ptr<PyCallbacks>;
  * prt encoder options helpers
  */
 AttributeMapPtr createAttributeMapFromTypedKeyValues(const std::vector<std::string>& args);
+AttributeMapPtr createAttributeMapFromPythonDict(py::dict args);
 AttributeMapPtr createValidatedOptions(const std::wstring& encID, const AttributeMapPtr& unvalidatedOptions);
 
 /**

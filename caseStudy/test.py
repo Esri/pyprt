@@ -39,7 +39,7 @@ attrs = ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Fo
 
 
 mod_test1 = pyprt.ModelGenerator(shape_geo_fromOBJ)
-models_test1 = mod_test1.generate_model(rpk, attrs)
+models_test1 = mod_test1.generate_model(rpk, attrs, {})
 
 visualize_PRT_results(models_test1)
 
@@ -49,7 +49,7 @@ shape_geo_fromDAE = asset_file("new_sceneCollada_0.dae")
 
 
 mod_test2 = pyprt.ModelGenerator(shape_geo_fromDAE)
-models_test2 = mod_test2.generate_model(rpk, attrs)
+models_test2 = mod_test2.generate_model(rpk, attrs, {})
 
 visualize_PRT_results(models_test2)
 
@@ -58,7 +58,7 @@ print("\nTEST3")
 OBJ_exporter = "com.esri.prt.codecs.OBJEncoder"
 
 mod_test3 = pyprt.ModelGenerator(shape_geo_fromOBJ)
-models_test3 = mod_test3.generate_model(rpk, attrs, OBJ_exporter)
+models_test3 = mod_test3.generate_model(rpk, attrs, {}, OBJ_exporter)
 print("Results located in the output folder.")
 
 ## TEST 4: initial shapes as custom geometries, simple rule.
@@ -67,7 +67,7 @@ shape_geometry_1 = pyprt.Geometry([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0])
 shape_geometry_2 = pyprt.Geometry([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0, 0.5, 0, 0.5])
 
 mod_test4 = pyprt.ModelGenerator([shape_geometry_1,shape_geometry_2])
-models_test4 = mod_test4.generate_model(rpk, attrs)
+models_test4 = mod_test4.generate_model(rpk, attrs, {})
 
 visualize_PRT_results(models_test4)
 
@@ -78,15 +78,16 @@ mod_test5 = pyprt.ModelGenerator(shape_geo_fromOBJ_test5)
 
 rpk_test5 = asset_file("candler.rpk")
 attrs_test5 = ["ruleFile:string=bin/candler.cgb", "startRule:string=Default$Footprint"]
-models_test5 = mod_test5.generate_model(rpk_test5, attrs_test5)
+models_test5 = mod_test5.generate_model(rpk_test5, attrs_test5, {})
 
 visualize_PRT_results(models_test5)
 
 ## TEST 6: initial shapes as custom geometry, complex rule.
 print("\nTEST6")
 mod_test6 = pyprt.ModelGenerator(shape_geo_fromOBJ_test5)
-enc_optionsSLPK = ["layerTextureEncoding:stringArray=2","layerEnabled:boolArray=true","layerUID:stringArray=1","layerName:stringArray=Name","layerTextureQuality:floatArray=1","layerTextureCompression:intArray=9","layerTextureScaling:floatArray=1","layerTextureMaxDimension:intArray=2048","layerFeatureGranularity:stringArray=0","layerBackfaceCulling:boolArray=false"]
-models_test6 = mod_test6.generate_model(rpk_test5, attrs_test5, "com.esri.prt.codecs.I3SEncoder", enc_optionsSLPK)
+enc_optionsSLPK ={'layerTextureEncoding' : ["2"],'layerEnabled' : [True],'layerUID' : ["1"],'layerName' : ["TheLayer"],'layerTextureQuality' : [1.0],'layerTextureCompression' : [9],'layerTextureScaling': [1.0],'layerTextureMaxDimension' : [2048],'layerFeatureGranularity' : ["0"],'layerBackfaceCulling' : [False]}
+
+models_test6 = mod_test6.generate_model(rpk_test5, attrs_test5, enc_optionsSLPK, "com.esri.prt.codecs.I3SEncoder")
 
 print("SLPK file located in the output folder.")
 
@@ -97,7 +98,7 @@ print("SLPK file located in the output folder.")
 # attrs_test7 = ["ruleFile:string=rules/typology/envelope.cgb", "startRule:string=Default$Lot", "report_but_not_display_green:string=true"]
 
 # mod_test7 = pyprt.ModelGenerator(shape_geo_fromOBJ_test7)
-# models_test7 = mod_test7.generate_model(rpk_test7, attrs_test7)
+# models_test7 = mod_test7.generate_model(rpk_test7, attrs_test7, {})
 
 # visualize_PRT_results(models_test7)
 
