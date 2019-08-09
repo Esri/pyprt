@@ -79,10 +79,10 @@ if __name__ == '__main__':
     initialGeometry = pyprt.Geometry(np.array([0, 0, 0,  0, 0, 2,  1, 0, 1,  1, 0, 0],dtype='f'))
     initialGeometry2 = pyprt.Geometry(np.array([4, 0, 0,  4, 0, 2,  5, 0, 1,  5, 0, 0],dtype='f'))
     rpk = asset_file("simple_rule2019.rpk")
-    attrs = ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"]
+    attrs = {'ruleFile' : "bin/simple_rule2019.cgb", 'startRule' : "Default$Footprint"}
 
     mod = pyprt.ModelGenerator([initialGeometry, initialGeometry2])
-    generated_mod = mod.generate_model(rpk, attrs)
+    generated_mod = mod.generate_model(rpk, attrs, {})
     all_vertices = []
     all_faces = []
 

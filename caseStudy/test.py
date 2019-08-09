@@ -35,8 +35,7 @@ if not pyprt.is_prt_initialized():
 print("\nTEST1")
 shape_geo_fromOBJ = asset_file("simple_scene_0.obj")
 rpk = asset_file("simple_rule2019.rpk")
-attrs = ["ruleFile:string=bin/simple_rule2019.cgb", "startRule:string=Default$Footprint"]
-
+attrs = {'ruleFile' : "bin/simple_rule2019.cgb", 'startRule' : "Default$Footprint"}
 
 mod_test1 = pyprt.ModelGenerator(shape_geo_fromOBJ)
 models_test1 = mod_test1.generate_model(rpk, attrs, {})
@@ -46,7 +45,6 @@ visualize_PRT_results(models_test1)
 ## TEST 2: initial shape as DAE, simple rule.
 print("\nTEST2")
 shape_geo_fromDAE = asset_file("new_sceneCollada_0.dae")
-
 
 mod_test2 = pyprt.ModelGenerator(shape_geo_fromDAE)
 models_test2 = mod_test2.generate_model(rpk, attrs, {})
@@ -77,7 +75,7 @@ shape_geo_fromOBJ_test5 = asset_file("candler_footprint.obj")
 mod_test5 = pyprt.ModelGenerator(shape_geo_fromOBJ_test5)
 
 rpk_test5 = asset_file("candler.rpk")
-attrs_test5 = ["ruleFile:string=bin/candler.cgb", "startRule:string=Default$Footprint"]
+attrs_test5 = {'ruleFile' : "bin/candler.cgb", 'startRule' : "Default$Footprint"}
 models_test5 = mod_test5.generate_model(rpk_test5, attrs_test5, {})
 
 visualize_PRT_results(models_test5)
@@ -91,16 +89,16 @@ models_test6 = mod_test6.generate_model(rpk_test5, attrs_test5, enc_optionsSLPK,
 
 print("SLPK file located in the output folder.")
 
-# ## TEST 7: initial shapes as custom geometry, complex rule.
-# print("\nTEST7")
-# shape_geo_fromOBJ_test7 = asset_file("greenbuildingfootprint_0.obj")
-# rpk_test7 = asset_file("envelope1806.rpk")
-# attrs_test7 = ["ruleFile:string=rules/typology/envelope.cgb", "startRule:string=Default$Lot", "report_but_not_display_green:string=true"]
+## TEST 7: initial shapes as custom geometry, complex rule.
+print("\nTEST7")
+shape_geo_fromOBJ_test7 = asset_file("greenbuildingfootprint_0.obj")
+rpk_test7 = asset_file("envelope1806.rpk")
+attrs_test7 = {'ruleFile' : "rules/typology/envelope.cgb", 'startRule' : "Default$Lot", 'report_but_not_display_green' : "true"}
 
-# mod_test7 = pyprt.ModelGenerator(shape_geo_fromOBJ_test7)
-# models_test7 = mod_test7.generate_model(rpk_test7, attrs_test7, {})
+mod_test7 = pyprt.ModelGenerator(shape_geo_fromOBJ_test7)
+models_test7 = mod_test7.generate_model(rpk_test7, attrs_test7, {})
 
-# visualize_PRT_results(models_test7)
+visualize_PRT_results(models_test7)
 
 
 print("\nShutdown PRT.")

@@ -247,8 +247,8 @@ namespace {
         ModelGenerator(const std::vector<Geometry>& myGeo);
         ~ModelGenerator() { }
 
-        GeneratedGeometry generateModel(const std::string& rulePackagePath, const std::vector<std::string>& shapeAttributes, py::dict encoderOptions, const wchar_t* encoderName);
-        GeneratedGeometry generateAnotherModel(const std::vector<std::string>& shapeAttributes);
+        GeneratedGeometry generateModel(const std::string& rulePackagePath, py::dict shapeAttributes, py::dict encoderOptions, const wchar_t* encoderName);
+        GeneratedGeometry generateAnotherModel(py::dict shapeAttributes);
 
         bool isCustomGeometry() { return customFlag; }
 
@@ -287,7 +287,7 @@ namespace {
     }
 
     GeneratedGeometry ModelGenerator::generateModel(const std::string& rulePackagePath,
-    		const std::vector<std::string>& shapeAttributes,
+            py::dict shapeAttributes,
             py::dict encoderOptions,
             const wchar_t* encoderName = ENCODER_ID_PYTHON)
     {
@@ -333,7 +333,7 @@ namespace {
 
 
             // Initial shape attributes
-            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromTypedKeyValues(shapeAttributes) };
+            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes) };
             if (convertedShapeAttr) {
                 if (convertedShapeAttr->hasKey(L"ruleFile") &&
                     convertedShapeAttr->getType(L"ruleFile") == prt::AttributeMap::PT_STRING)
@@ -562,7 +562,7 @@ namespace {
         return newGeneratedGeo;
     }
 
-    GeneratedGeometry ModelGenerator::generateAnotherModel(const std::vector<std::string>& shapeAttributes)
+    GeneratedGeometry ModelGenerator::generateAnotherModel(py::dict shapeAttributes)
     {
         std::clock_t start1;
         double duration;
@@ -582,7 +582,7 @@ namespace {
             }
 
             // Initial shape attributes
-            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromTypedKeyValues(shapeAttributes) };
+            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes) };
             if (convertedShapeAttr) {
                 if (convertedShapeAttr->hasKey(L"ruleFile") &&
                     convertedShapeAttr->getType(L"ruleFile") == prt::AttributeMap::PT_STRING)

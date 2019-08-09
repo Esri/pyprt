@@ -25,16 +25,16 @@ if not pyprt.is_prt_initialized():
 
 shapeGeo = asset_file("candler_footprint.obj")
 rpk = asset_file("Building_From_Footprint.rpk")
-attrs = ["ruleFile:string=rules/Buildings/Building_From_Footprint.cgb", "startRule:string=Default$Generate", "Reporting:string=All"]
-attrs2 = ["ruleFile:string=rules/Buildings/Building_From_Footprint.cgb", "startRule:string=Default$Generate", "Reporting:string=None"]
+attrs = {'ruleFile' : "rules/Buildings/Building_From_Footprint.cgb", 'startRule' : "Default$Generate", 'Reporting' : "All"}
+attrs2 = {'ruleFile' : "rules/Buildings/Building_From_Footprint.cgb", 'startRule' : "Default$Generate", 'Reporting' : "None"}
 
 # shapeGeo = asset_file("greenbuildingfootprint_0.obj")
 # rpk = asset_file("envelope1806.rpk")
-# attrs = ["ruleFile:string=rules/typology/envelope.cgb", "startRule:string=Default$Lot", "report_but_not_display_green:string=true"]
-# attrs2 = ["ruleFile:string=rules/typology/envelope.cgb", "startRule:string=Default$Lot", "report_but_not_display_green:string=false"]
+# attrs = {'ruleFile' : "rules/typology/envelope.cgb", 'startRule' : "Default$Lot", 'report_but_not_display_green' : "true"}
+# attrs2 = {'ruleFile' : "rules/typology/envelope.cgb", 'startRule' : "Default$Lot", 'report_but_not_display_green' : "false"}
 
 mod = pyprt.ModelGenerator(shapeGeo)
-models = mod.generate_model(rpk, attrs)
+models = mod.generate_model(rpk, attrs, {})
 
 visualize_PRT_results(models)
 
