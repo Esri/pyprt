@@ -284,15 +284,14 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args) {
             }
             else if (py::isinstance<py::str>(li[0])) {
                 size_t count = li.size();
-                wchar_t** v_arr = new wchar_t*[count];
+                std::vector<std::wstring> v_arr;
 
                 for (int i = 0; i < count; i++) {
                     std::wstring item = li[i].cast<std::wstring>();
-                    v_arr[i] = (wchar_t*)item.c_str();
+                    v_arr.push_back(item);
                 }
 
-                bld->setStringArray(key.c_str(), v_arr, count);
-                delete[] v_arr;
+                bld->setStringArray(key.c_str(), toPtrVec(v_arr).data(), count);
             }
             else
                 std::cout << "Unknown array type." << std::endl;
@@ -335,6 +334,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args) {
     }
     return AttributeMapPtr{ bld->createAttributeMapAndReset() };
 }
+
 
 /**
  * String conversion functions

@@ -79,6 +79,25 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args);
 AttributeMapPtr createValidatedOptions(const std::wstring& encID, const AttributeMapPtr& unvalidatedOptions);
 
 /**
+ * prt specific conversion functions
+ */
+
+template<typename C>
+std::vector<const C*> toPtrVec(const std::vector<std::basic_string<C>>& sv) {
+    std::vector<const C*> pv(sv.size());
+    std::transform(sv.begin(), sv.end(), pv.begin(), [](const auto& s) { return s.c_str(); });
+    return pv;
+}
+
+template<typename C, typename D>
+std::vector<const C*> toPtrVec(const std::vector<std::unique_ptr<C, D>>& sv) {
+    std::vector<const C*> pv(sv.size());
+    std::transform(sv.begin(), sv.end(), pv.begin(), [](const std::unique_ptr<C, D>& s) { return s.get(); });
+    return pv;
+}
+
+
+/**
  * string and URI helpers
  */
 using URI = std::string;
