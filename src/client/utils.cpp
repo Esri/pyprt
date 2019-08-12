@@ -233,15 +233,14 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args) {
             if (py::isinstance<py::bool_>(li[0])) {
                 try {
                     size_t count = li.size();
-                    bool* v_arr = new bool[count];
+                    std::unique_ptr<bool[]> v_arr(new bool[count]);
 
                     for (int i = 0; i < count; i++) {
                         bool item = li[i].cast<bool>();
                         v_arr[i] = item;
                     }
 
-                    bld->setBoolArray(key.c_str(), v_arr, count);
-                    delete[] v_arr;
+                    bld->setBoolArray(key.c_str(), v_arr.get(), count);
                 }
                 catch(std::exception& e) {
                     std::wcerr << L"cannot set bool array attribute " << key << ": " << e.what() << std::endl;
@@ -250,15 +249,15 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args) {
             else if (py::isinstance<py::float_>(li[0])) {
                 try {
                     size_t count = li.size();
-                    double* v_arr = new double[count];
+                    std::vector<double> v_arr;
+                    v_arr.reserve(count);
 
                     for (int i = 0; i < count; i++) {
                         double item = li[i].cast<double>();
-                        v_arr[i] = item;
+                        v_arr.push_back(item);
                     }
 
-                    bld->setFloatArray(key.c_str(), v_arr, count);
-                    delete[] v_arr;
+                    bld->setFloatArray(key.c_str(), v_arr.data(), count);
                 }
                 catch (std::exception& e) {
                     std::wcerr << L"cannot set float array attribute " << key << ": " << e.what() << std::endl;
@@ -267,15 +266,15 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args) {
             else if (py::isinstance<py::int_>(li[0])) {
                 try {
                     size_t count = li.size();
-                    int32_t* v_arr = new int32_t[count];
+                    std::vector<int32_t> v_arr;
+                    v_arr.reserve(count);
 
                     for (int i = 0; i < count; i++) {
                         int32_t item = li[i].cast<int32_t>();
-                        v_arr[i] = item;
+                        v_arr.push_back(item);
                     }
 
-                    bld->setIntArray(key.c_str(), v_arr, count);
-                    delete[] v_arr;
+                    bld->setIntArray(key.c_str(), v_arr.data(), count);
                 }
                 catch (std::exception& e) {
                     std::wcerr << L"cannot set int array attribute " << key << ": " << e.what() << std::endl;
@@ -285,6 +284,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args) {
             else if (py::isinstance<py::str>(li[0])) {
                 size_t count = li.size();
                 std::vector<std::wstring> v_arr;
+                v_arr.reserve(count);
 
                 for (int i = 0; i < count; i++) {
                     std::wstring item = li[i].cast<std::wstring>();
