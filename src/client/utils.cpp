@@ -140,29 +140,18 @@ AttributeMapPtr createAttributeMapFromTypedKeyValues(const std::vector<std::stri
             else if (tokens[1] == L"stringArray") {
                 std::vector<std::wstring> subtokens;
                 tokenize<wchar_t>(tokens[2], subtokens, L",");
-                size_t count = subtokens.size();
-                wchar_t** v_arr = new wchar_t*[count];
-
-                for (int i = 0; i < count; i++) {
-                    v_arr[i] = (wchar_t*) subtokens[i].c_str();
-                }
-
-                bld->setStringArray(tokens[0].c_str(), v_arr, count);
-                delete[] v_arr;
+                std::vector<const wchar_t*> v_arr = toPtrVec(subtokens);
+                bld->setStringArray(tokens[0].c_str(), v_arr.data(), v_arr.size());
             }
             else if (tokens[1] == L"floatArray") {
                 try {
                     std::vector<std::wstring> subtokens;
                     tokenize<wchar_t>(tokens[2], subtokens, L",");
-                    size_t count = subtokens.size();
-                    double* v_arr = new double[count];
-
-                    for (int i = 0; i < count; i++) {
+                    std::vector<double> v_arr(subtokens.size());
+                    for (size_t i = 0; i < v_arr.size(); i++) {
                         v_arr[i] = std::stod(subtokens[i]);
                     }
-
-                    bld->setFloatArray(tokens[0].c_str(), v_arr, count);
-                    delete[] v_arr;
+                    bld->setFloatArray(tokens[0].c_str(), v_arr.data(), v_arr.size());
                 }
                 catch (std::exception& e) {
                     std::wcerr << L"cannot set float array attribute " << tokens[0] << ": " << e.what() << std::endl;
@@ -172,15 +161,11 @@ AttributeMapPtr createAttributeMapFromTypedKeyValues(const std::vector<std::stri
                 try {
                     std::vector<std::wstring> subtokens;
                     tokenize<wchar_t>(tokens[2], subtokens, L",");
-                    size_t count = subtokens.size();
-                    int32_t* v_arr = new int32_t[count];
-
-                    for (int i = 0; i < count; i++) {
+                    std::vector<int32_t> v_arr(subtokens.size());
+                    for (size_t i = 0; i < v_arr.size(); i++) {
                         v_arr[i] = std::stoi(subtokens[i]);
                     }
-
-                    bld->setIntArray(tokens[0].c_str(), v_arr, count);
-                    delete[] v_arr;
+                    bld->setIntArray(tokens[0].c_str(), v_arr.data(), v_arr.size());
                 }
                 catch (std::exception& e) {
                     std::wcerr << L"cannot set int array attribute " << tokens[0] << ": " << e.what() << std::endl;
@@ -189,11 +174,11 @@ AttributeMapPtr createAttributeMapFromTypedKeyValues(const std::vector<std::stri
             else if (tokens[1] == L"boolArray") {
                 std::vector<std::wstring> subtokens;
                 tokenize<wchar_t>(tokens[2], subtokens, L",");
-                size_t count = subtokens.size();
-                bool* v_arr = new bool[count];
+                const size_t count = subtokens.size();
+                std::unique_ptr<bool[]> v_arr(new bool[count]);
                 bool ok = true;
 
-                for (int i = 0; i < count; i++) {
+                for (size_t i = 0; i < count; i++) {
                     bool v;
                     std::wistringstream istr(subtokens[i]);
                     istr >> std::boolalpha >> v;
@@ -203,8 +188,7 @@ AttributeMapPtr createAttributeMapFromTypedKeyValues(const std::vector<std::stri
                     v_arr[i] = v;
                 }
                 if (ok) {
-                    bld->setBoolArray(tokens[0].c_str(), v_arr, count);
-                    delete[] v_arr;
+                    bld->setBoolArray(tokens[0].c_str(), v_arr.get(), count);
                 }
                 else
                     std::wcerr << L"cannot set bool array attribute " << tokens[0] << std::endl;
@@ -225,7 +209,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args) {
 
     for (auto a : args) {
 
-        std::wstring key = a.first.cast<std::wstring>();
+        const std::wstring key = a.first.cast<std::wstring>();
 
         if (py::isinstance<py::list>(a.second.ptr())) {
             auto li = a.second.cast<py::list>();
@@ -235,7 +219,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args) {
                     size_t count = li.size();
                     std::unique_ptr<bool[]> v_arr(new bool[count]);
 
-                    for (int i = 0; i < count; i++) {
+                    for (size_t i = 0; i < count; i++) {
                         bool item = li[i].cast<bool>();
                         v_arr[i] = item;
                     }
@@ -248,16 +232,14 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args) {
             }
             else if (py::isinstance<py::float_>(li[0])) {
                 try {
-                    size_t count = li.size();
-                    std::vector<double> v_arr;
-                    v_arr.reserve(count);
-
-                    for (int i = 0; i < count; i++) {
-                        double item = li[i].cast<double>();
-                        v_arr.push_back(item);
+                    const size_t count = li.size();
+                    std::vector<double> v_arr(count);
+                    for (size_t i = 0; i < v_arr.size(); i++) {
+						double item = li[i].cast<double>();
+                    	v_arr[i] = item;
                     }
 
-                    bld->setFloatArray(key.c_str(), v_arr.data(), count);
+                    bld->setFloatArray(key.c_str(), v_arr.data(), v_arr.size());
                 }
                 catch (std::exception& e) {
                     std::wcerr << L"cannot set float array attribute " << key << ": " << e.what() << std::endl;
@@ -265,16 +247,14 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args) {
             }
             else if (py::isinstance<py::int_>(li[0])) {
                 try {
-                    size_t count = li.size();
-                    std::vector<int32_t> v_arr;
-                    v_arr.reserve(count);
-
-                    for (int i = 0; i < count; i++) {
-                        int32_t item = li[i].cast<int32_t>();
-                        v_arr.push_back(item);
+                    const size_t count = li.size();
+                    std::vector<int32_t> v_arr(count);
+                    for (size_t i = 0; i < v_arr.size(); i++) {
+						int32_t item = li[i].cast<int32_t>();
+						v_arr[i] = item;
                     }
 
-                    bld->setIntArray(key.c_str(), v_arr.data(), count);
+                    bld->setIntArray(key.c_str(), v_arr.data(), v_arr.size());
                 }
                 catch (std::exception& e) {
                     std::wcerr << L"cannot set int array attribute " << key << ": " << e.what() << std::endl;
@@ -282,16 +262,15 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args) {
 
             }
             else if (py::isinstance<py::str>(li[0])) {
-                size_t count = li.size();
-                std::vector<std::wstring> v_arr;
-                v_arr.reserve(count);
-
-                for (int i = 0; i < count; i++) {
-                    std::wstring item = li[i].cast<std::wstring>();
-                    v_arr.push_back(item);
+                const size_t count = li.size();
+                std::vector<std::wstring> v_arr(count);
+                for (size_t i = 0; i < v_arr.size(); i++) {
+					std::wstring item = li[i].cast<std::wstring>();
+                    v_arr[i] = item;
                 }
 
-                bld->setStringArray(key.c_str(), toPtrVec(v_arr).data(), count);
+				const auto v_arr_ptrs = toPtrVec(v_arr); // setStringArray requires contiguous array
+                bld->setStringArray(key.c_str(), v_arr_ptrs.data(), v_arr_ptrs.size());
             }
             else
                 std::cout << "Unknown array type." << std::endl;

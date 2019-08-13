@@ -89,16 +89,16 @@ models_test6 = mod_test6.generate_model(rpk_test5, attrs_test5, enc_optionsSLPK,
 
 print("SLPK file located in the output folder.")
 
-## TEST 7: initial shapes as custom geometry, complex rule.
-print("\nTEST7")
-shape_geo_fromOBJ_test7 = asset_file("greenbuildingfootprint_0.obj")
-rpk_test7 = asset_file("envelope1806.rpk")
-attrs_test7 = {'ruleFile' : "rules/typology/envelope.cgb", 'startRule' : "Default$Lot", 'report_but_not_display_green' : "true"}
-
-mod_test7 = pyprt.ModelGenerator(shape_geo_fromOBJ_test7)
-models_test7 = mod_test7.generate_model(rpk_test7, attrs_test7, {})
-
-visualize_PRT_results(models_test7)
+## TEST 7: initial shapes as custom geometry, complex rule. (disabled by default due to large resources needed)
+# print("\nTEST7")
+# shape_geo_fromOBJ_test7 = asset_file("greenbuildingfootprint_0.obj")
+# rpk_test7 = asset_file("envelope1806.rpk")
+# attrs_test7 = {'ruleFile' : "rules/typology/envelope.cgb", 'startRule' : "Default$Lot", 'report_but_not_display_green' : "true"}
+#
+# mod_test7 = pyprt.ModelGenerator(shape_geo_fromOBJ_test7)
+# models_test7 = mod_test7.generate_model(rpk_test7, attrs_test7, {})
+#
+# visualize_PRT_results(models_test7)
 
 
 print("\nShutdown PRT.")
