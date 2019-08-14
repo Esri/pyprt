@@ -5,7 +5,7 @@ PyPRT - CityEngine SDK Python Bindings for PRT
 SOFTWARE REQUIREMENTS
 ---------------------
 
-- see "General Software Requirements" (Windows)
+- see "General Software Requirements" (Windows 64bit)
 - Make sure you use the **exact** compiler for PRT extensions
 - Python (version >= 3.4)
 - CMake (version >= 3.12)
@@ -15,10 +15,8 @@ INSTALLATION INSTRUCTIONS
 ---------------------
 
 1. Clone this repository
-2. Download the SDK binary archive from the release page as explained here: [repository](https://github.com/Esri/esri-cityengine-sdk)
-3. Unzip the archives into the cloned repository into a "prt" directory
 
-Make modifications for the final directory layout to look like this:
+The final directory layout should look like this:
 ```
 /py4prt/
     src/
@@ -26,13 +24,8 @@ Make modifications for the final directory layout to look like this:
       codec/...
       CMakeLists.txt
       dependencies.cmake
+	  utility.py
     caseStudy/...
-    prt/
-        bin/...
-        cmake/...
-        doc/...
-        include/...
-        lib/...
 ```
 
 
@@ -64,6 +57,8 @@ USING PYPRT
 -------------
 
 1. Run the `caseStudy/test.py` script (from py4prt folder)
+
+Additional Python libraries may be needed to run other test scripts (e.g. NumPy, VisPy).
 
 
 LICENSING

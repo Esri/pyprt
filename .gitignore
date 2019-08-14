@@ -7,16 +7,9 @@
 /prt
 /output
 
-src/CMakeLists_NOFOLDER.txt
 README_linux_osx.md
-src/client/wrap_simple.cpp
 
 /.vscode
 /vscode_workspace_py4prt.code-workspace
-
-/buildvs
-/buildvsTF
-/installVS
-/caseStudy_ArcPy
 
 /Pipfile*
