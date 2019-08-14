@@ -24,7 +24,7 @@ The final directory layout should look like this:
       codec/...
       CMakeLists.txt
       dependencies.cmake
-	  utility.py
+      utility.py
     caseStudy/...
 ```
 

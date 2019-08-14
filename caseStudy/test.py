@@ -80,16 +80,16 @@ models_test5 = mod_test5.generate_model(rpk_test5, attrs_test5, {})
 
 visualize_PRT_results(models_test5)
 
-## TEST 6: initial shapes as custom geometry, complex rule.
+## TEST 6: initial shapes as OBJ, candler rule, generated geometry outputted as Scene Layer Package.
 print("\nTEST6")
 mod_test6 = pyprt.ModelGenerator(shape_geo_fromOBJ_test5)
-enc_optionsSLPK ={'layerTextureEncoding' : ["2"],'layerEnabled' : [True],'layerUID' : ["1"],'layerName' : ["TheLayer"],'layerTextureQuality' : [1.0],'layerTextureCompression' : [9],'layerTextureScaling': [1.0],'layerTextureMaxDimension' : [2048],'layerFeatureGranularity' : ["0"],'layerBackfaceCulling' : [False]}
+enc_optionsSLPK = {'layerTextureEncoding' : ["2"],'layerEnabled' : [True],'layerUID' : ["1"],'layerName' : ["TheLayer"],'layerTextureQuality' : [1.0],'layerTextureCompression' : [9],'layerTextureScaling': [1.0],'layerTextureMaxDimension' : [2048],'layerFeatureGranularity' : ["0"],'layerBackfaceCulling' : [False]}
 
 models_test6 = mod_test6.generate_model(rpk_test5, attrs_test5, enc_optionsSLPK, "com.esri.prt.codecs.I3SEncoder")
 
 print("SLPK file located in the output folder.")
 
-## TEST 7: initial shapes as custom geometry, complex rule. (disabled by default due to large resources needed)
+## TEST 7: initial shapes as OBJ, complex rule. (disabled by default due to large resources needed)
 # print("\nTEST7")
 # shape_geo_fromOBJ_test7 = asset_file("greenbuildingfootprint_0.obj")
 # rpk_test7 = asset_file("envelope1806.rpk")
