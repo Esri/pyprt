@@ -46,13 +46,44 @@ void PyCallbacks::addEntry(const uint32_t initialShapeIndex, const int32_t shape
     shapes.push_back(instance);
 }
 
+void PyCallbacks::addGeometry(const uint32_t initialShapeIndex, const std::vector<std::vector<double>> verticesCoord, const std::vector<std::vector<uint32_t>> facesCoord) {
+    //std::cout << "CALLBACK TO ADDGEOMETRY ! " << std::endl;
+    //std::cout << "Vertices Matrix size: " << verticesCoord.size() << std::endl;
+    //std::cout << "Faces Matrix size: " << facesCoord.size() << std::endl;
+
+    initialShapesIndices.insert(initialShapeIndex);
+    verticesMap.insert({ initialShapeIndex, verticesCoord });
+    facesMap.insert({ initialShapeIndex, facesCoord });
+}
+
+void PyCallbacks::addReports(const uint32_t initialShapeIndex, const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport) {
+    std::cout << "CALLBACK TO ADDREPORTS ! " << std::endl;
+    std::cout << "Reports: " << CGAfloatreport.size() << "-" << CGAstringreport.size() << "-" << CGAboolreport.size() << std::endl;
+
+    initialShapesIndices.insert(initialShapeIndex);
+    CGAfloatReportsMap.insert({ initialShapeIndex, CGAfloatreport });
+    CGAstringReportsMap.insert({ initialShapeIndex, CGAstringreport });
+    CGAboolReportsMap.insert({ initialShapeIndex, CGAboolreport });
+}
+
+std::unordered_set<uint32_t> PyCallbacks::getInitialShapesIndices() const {
+    return initialShapesIndices;
+}
+
+
 std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>>> PyCallbacks::getVertices() const {
     std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>>> allVertices;
 
-    for (Entry e : shapes) {
-        std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>> vertMat(e.initialShapeIdx, e.id, e.vertices);
+    //for (Entry e : shapes) {
+    //    std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>> vertMat(e.initialShapeIdx, e.id, e.vertices);
+    //    allVertices.push_back(vertMat);
+    //}
+
+    for (auto i : initialShapesIndices) {
+        std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>> vertMat(i, 10, verticesMap.at(i));
         allVertices.push_back(vertMat);
     }
+
 
     return allVertices;
 }
@@ -66,6 +97,10 @@ std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>>> P
     }
 
     return allFaces;
+}
+
+std::map<uint32_t, FloatMap> PyCallbacks::getFloatReportNEW() const {
+    return CGAfloatReportsMap;
 }
 
 std::vector<std::tuple<uint32_t, int32_t, FloatMap>> PyCallbacks::getFloatReport() const {

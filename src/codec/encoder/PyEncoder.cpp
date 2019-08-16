@@ -53,14 +53,36 @@ const wchar_t*     EO_ERROR_FALLBACK = L"errorFallback";
 const std::wstring ENCFILE_EXT       = L".txt";
 
 const prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS = prtx::EncodePreparator::PreparationFlags()
-	.instancing(true)
-	.mergeByMaterial(false)
-	.triangulate(false)
-	.mergeVertices(true)
-	.cleanupVertexNormals(true)
-	.cleanupUVs(true)
-	.processVertexNormals(prtx::VertexNormalProcessor::SET_ALL_TO_FACE_NORMALS);
+    .instancing(true)
+    .triangulate(false)
+    .mergeVertices(true)
+    .processVertexNormals(prtx::VertexNormalProcessor::SET_ALL_TO_FACE_NORMALS);
+    //.mergeToleranceVertices(float v)
 
+/*
+instancing(bool v); // If true, the preparator shares/reuses cached/identical geometry objects over multiple instances.
+//mergeByMaterial(bool v);
+//cutoutTextures(bool v);
+//createTextureAtlases(bool v);
+//atlasRepeatingTextures(bool v);
+//maxAtlasDim(int v);
+//atlasAddWrapBorder(bool v);
+//forceAtlasing(bool v);
+//maxTexSize(uint32_t v);
+triangulate(bool v); // If true, all meshes are triangulated.
+//offset(double x, double y, double z);
+//offset(const double* xyz);
+processVertexNormals(VertexNormalProcessor::Action v);
+// ? processHoles(HoleProcessor::Action v); // The specified action is applied to faces with holes.
+mergeVertices(bool v); // If true, vertices will be merged together if they are closer than the distance specified with mergeToleranceVertices(float v).
+//cleanupVertexNormals(bool v);
+//cleanupUVs(bool v);
+mergeToleranceVertices(float v);
+//mergeToleranceNormals(float v);
+//mergeToleranceUVs(float v);
+//indexSharing(IndexSharing v); // Specify the index setup of the finalized meshes.
+//determineMeshProperties(bool v);
+*/
 } // namespace
 
 
@@ -87,19 +109,59 @@ void PyEncoder::init(prtx::GenerateContext& /*context*/) {
 void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex) {
 
 	const prtx::InitialShape* is = context.getInitialShape(initialShapeIndex);
-	try {
-        prtx::ReportsAccumulatorPtr reportsAccumulator{ prtx::AppendingReportsAccumulator::create() };
-        prtx::ReportingStrategyPtr reportsCollector{ prtx::SingleShapeReportingStrategy::create(context, initialShapeIndex, reportsAccumulator) };
-		const prtx::BreadthFirstIteratorPtr li = prtx::BreadthFirstIterator::create(context, initialShapeIndex);
+    auto* cb = dynamic_cast<IPyCallbacks*>(getCallbacks());
 
+    try {
+        prtx::ReportsAccumulatorPtr reportsAccumulator{ prtx::SummarizingReportsAccumulator::create() };
+        prtx::ReportingStrategyPtr reportsCollector{ prtx::AllShapesReportingStrategy::create(context, initialShapeIndex, reportsAccumulator) };
 
-		for (prtx::ShapePtr shape = li->getNext(); shape.get() != nullptr; shape = li->getNext()) {
-            prtx::ReportsPtr r = reportsCollector->getReports(shape->getID());
-			mEncodePreparator->add(context.getCache(), shape, is->getAttributeMap(), r);
-		}
-	} catch(...) {
-		mEncodePreparator->add(context.getCache(), *is, initialShapeIndex);
-	}
+        prtx::ReportsPtr rep = reportsCollector->getReports();
+        FloatMap reportFloat;
+        StringMap reportString;
+        BoolMap reportBool;
+
+        if (rep) {
+            prtx::Shape::ReportBoolVect& boolReps = rep->mBools;
+            for (size_t i = 0; i < boolReps.size(); i++) {
+                const wchar_t* repName = boolReps[i].first->c_str();
+                const bool repVal = boolReps[i].second;
+                std::wstring repNameWString = repName;
+                std::string s(repNameWString.begin(), repNameWString.end());
+                reportBool[s] = repVal;
+            }
+
+            prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
+            for (size_t i = 0; i < floatReps.size(); i++) {
+                const wchar_t* repName = floatReps[i].first->c_str();
+                const double repVal = floatReps[i].second;
+                std::wstring repNameWString = repName;
+                std::string s(repNameWString.begin(), repNameWString.end());
+                reportFloat[s] = repVal;
+            }
+
+            prtx::Shape::ReportStringVect&	stringReps = rep->mStrings;
+            for (size_t i = 0; i < stringReps.size(); i++) {
+                const wchar_t* repName = stringReps[i].first->c_str();
+                const wchar_t* repVal = stringReps[i].second->c_str();
+                std::wstring repNameWString = repName;
+                std::wstring repValWString = repVal;
+                std::string s(repNameWString.begin(), repNameWString.end());
+                std::string s2(repValWString.begin(), repValWString.end());
+                reportString[s] = s2;
+            }
+        }
+
+        cb->addReports(initialShapeIndex, reportFloat, reportString, reportBool);
+
+        const prtx::LeafIteratorPtr li = prtx::LeafIterator::create(context, initialShapeIndex);
+
+        for (prtx::ShapePtr shape = li->getNext(); shape.get() != nullptr; shape = li->getNext()) {
+            mEncodePreparator->add(context.getCache(), shape, is->getAttributeMap());
+        }
+    }
+    catch (...) {
+        mEncodePreparator->add(context.getCache(), *is, initialShapeIndex);
+    }
 }
 
 
@@ -119,7 +181,6 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
     std::vector<int32_t> shapeIDs;
     shapeIDs.reserve(finalizedInstances.size());
 
-    int instanceCnt = 0;
 
     for (const auto& instance : finalizedInstances) {
 
@@ -197,9 +258,9 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
         }
 
         cb->addEntry(instance.getInitialShapeIndex(), instance.getShapeId(), reportFloat, reportString, reportBool, coordMatrix, faceMatrix);
-
-        instanceCnt++;
+        cb->addGeometry(instance.getInitialShapeIndex(), coordMatrix, faceMatrix);
     }
+    
 }
 
 

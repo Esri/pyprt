@@ -31,7 +31,7 @@
 #include <vector>
 #include <map>
 
-using FloatMap = std::map<std::string, float>;
+using FloatMap = std::map<std::string, double>;
 using StringMap = std::map<std::string, std::string>;
 using BoolMap = std::map<std::string, bool>;
 
@@ -48,6 +48,19 @@ public:
         const BoolMap& CGAboolreport,
         const std::vector<std::vector<double>> verticesCoord,
         const std::vector<std::vector<uint32_t>> facesCoord
+    ) = 0;
+
+    virtual void addGeometry(
+        const uint32_t initialShapeIndex,
+        const std::vector<std::vector<double>> verticesCoord,
+        const std::vector<std::vector<uint32_t>> facesCoord
+    ) = 0;
+
+    virtual void addReports(
+        const uint32_t initialShapeIndex,
+        const FloatMap& CGAfloatreport,
+        const StringMap& CGAstringreport,
+        const BoolMap& CGAboolreport
     ) = 0;
 
 };

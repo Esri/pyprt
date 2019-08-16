@@ -53,6 +53,13 @@ class PyCallbacks : public IPyCallbacks {
 private:
     Entries shapes;
 
+    std::unordered_set<uint32_t> initialShapesIndices;
+    std::map<uint32_t, FloatMap> CGAfloatReportsMap;
+    std::map<uint32_t, StringMap> CGAstringReportsMap;
+    std::map<uint32_t, BoolMap> CGAboolReportsMap;
+    std::map<uint32_t, std::vector<std::vector<double>>> verticesMap;
+    std::map<uint32_t, std::vector<std::vector<uint32_t>>> facesMap;
+
 public:
     
 	PyCallbacks() = default;
@@ -69,9 +76,26 @@ public:
         const std::vector<std::vector<uint32_t>> facesCoord
     ) override;
 
+    void addGeometry(
+        const uint32_t initialShapeIndex,
+        const std::vector<std::vector<double>> verticesCoord,
+        const std::vector<std::vector<uint32_t>> facesCoord
+    ) override;
+
+    void addReports(
+        const uint32_t initialShapeIndex,
+        const FloatMap& CGAfloatreport,
+        const StringMap& CGAstringreport,
+        const BoolMap& CGAboolreport
+    ) override;
+
+    std::unordered_set<uint32_t> PyCallbacks::getInitialShapesIndices() const;
+
     std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>>> getVertices() const;
 
     std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>>> getFaces() const;
+
+    std::map<uint32_t, FloatMap> PyCallbacks::getFloatReportNEW() const;
 
     std::vector<std::tuple<uint32_t, int32_t, FloatMap>> getFloatReport() const;
 
