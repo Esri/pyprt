@@ -60,32 +60,6 @@ const prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS = prtx::EncodePrep
     .triangulate(false)
     .mergeVertices(true)
     .processVertexNormals(prtx::VertexNormalProcessor::SET_ALL_TO_FACE_NORMALS);
-    //.mergeToleranceVertices(float v)
-
-/*
-instancing(bool v); // If true, the preparator shares/reuses cached/identical geometry objects over multiple instances.
-//mergeByMaterial(bool v);
-//cutoutTextures(bool v);
-//createTextureAtlases(bool v);
-//atlasRepeatingTextures(bool v);
-//maxAtlasDim(int v);
-//atlasAddWrapBorder(bool v);
-//forceAtlasing(bool v);
-//maxTexSize(uint32_t v);
-triangulate(bool v); // If true, all meshes are triangulated.
-//offset(double x, double y, double z);
-//offset(const double* xyz);
-processVertexNormals(VertexNormalProcessor::Action v);
-// ? processHoles(HoleProcessor::Action v); // The specified action is applied to faces with holes.
-mergeVertices(bool v); // If true, vertices will be merged together if they are closer than the distance specified with mergeToleranceVertices(float v).
-//cleanupVertexNormals(bool v);
-//cleanupUVs(bool v);
-mergeToleranceVertices(float v);
-//mergeToleranceNormals(float v);
-//mergeToleranceUVs(float v);
-//indexSharing(IndexSharing v); // Specify the index setup of the finalized meshes.
-//determineMeshProperties(bool v);
-*/
 } // namespace
 
 
@@ -182,57 +156,7 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
 	std::vector<prtx::EncodePreparator::FinalizedInstance> finalizedInstances;
 	mEncodePreparator->fetchFinalizedInstances(finalizedInstances, ENC_PREP_FLAGS);
 
-    std::vector<int32_t> shapeIDs;
-    shapeIDs.reserve(finalizedInstances.size());
-
-
     for (const auto& instance : finalizedInstances) {
-
-        shapeIDs.push_back(instance.getShapeId());
-
-        const prtx::ReportsPtr& rep = instance.getReports();
-        FloatMap reportFloat;
-        StringMap reportString;
-        BoolMap reportBool;
-
-        if (rep) {
-            prtx::Shape::ReportBoolVect& boolReps = rep->mBools;
-            for (size_t i = 0; i < boolReps.size(); i++) {
-                const wchar_t* repName = boolReps[i].first->c_str();
-                const bool repVal = boolReps[i].second;
-                std::wstring repNameWString = repName;
-                std::string s(repNameWString.begin(), repNameWString.end());
-                reportBool[s] = repVal;
-            }
-
-            prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
-
-            for (size_t i = 0; i < floatReps.size(); i++) {
-                const wchar_t* repName = floatReps[i].first->c_str();
-                const float repVal = floatReps[i].second;
-                std::wstring repNameWString = repName;
-                std::string s(repNameWString.begin(), repNameWString.end());
-
-                if (reportFloat.find(s) != reportFloat.end()) {
-                    reportFloat[s] += repVal;
-                }
-                else {
-                    reportFloat[s] = repVal;
-                }
-            }
-
-            prtx::Shape::ReportStringVect&	stringReps = rep->mStrings;
-            for (size_t i = 0; i < stringReps.size(); i++) {
-                const wchar_t* repName = stringReps[i].first->c_str();
-                const wchar_t* repVal = stringReps[i].second->c_str();
-                std::wstring repNameWString = repName;
-                std::wstring repValWString = repVal;
-                std::string s(repNameWString.begin(), repNameWString.end());
-                std::string s2(repValWString.begin(), repValWString.end());
-                reportString[s] = s2;
-            }
-        }
-
         std::vector<std::vector<double>> coordMatrix;
         std::vector<std::vector<uint32_t>> faceMatrix;
 
@@ -261,10 +185,8 @@ void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
 
         }
 
-        cb->addEntry(instance.getInitialShapeIndex(), instance.getShapeId(), reportFloat, reportString, reportBool, coordMatrix, faceMatrix);
         cb->addGeometry(instance.getInitialShapeIndex(), coordMatrix, faceMatrix);
     }
-    
 }
 
 
