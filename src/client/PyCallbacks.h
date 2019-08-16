@@ -37,22 +37,9 @@
 #include <iostream>
 #include <map>
 
-struct Entry{
-    uint32_t initialShapeIdx;
-    int32_t id;
-    FloatMap reportFloatData;
-    StringMap reportStringData;
-    BoolMap reportBoolData;
-    std::vector<std::vector<double>> vertices;
-    std::vector<std::vector<uint32_t>> faces;
-};
-
-using Entries = std::vector<Entry>;
 
 class PyCallbacks : public IPyCallbacks {
 private:
-    Entries shapes;
-
     std::unordered_set<uint32_t> initialShapesIndices;
     std::map<uint32_t, FloatMap> CGAfloatReportsMap;
     std::map<uint32_t, StringMap> CGAstringReportsMap;
@@ -65,16 +52,6 @@ public:
 	PyCallbacks() = default;
 
 	virtual ~PyCallbacks() = default;
-
-    void addEntry(
-        const uint32_t initialShapeIndex,
-        const int32_t shapeID,
-        const FloatMap& CGAfloatreport,
-        const StringMap& CGAstringreport,
-        const BoolMap& CGAboolreport,
-        const std::vector<std::vector<double>> verticesCoord,
-        const std::vector<std::vector<uint32_t>> facesCoord
-    ) override;
 
     void addGeometry(
         const uint32_t initialShapeIndex,

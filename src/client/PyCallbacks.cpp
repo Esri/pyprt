@@ -32,34 +32,27 @@
 #include <tuple>
 
 
-void PyCallbacks::addEntry(const uint32_t initialShapeIndex, const int32_t shapeID, const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport, const std::vector<std::vector<double>> verticesCoord, const std::vector<std::vector<uint32_t>> facesCoord) {
-    Entry instance = {
-        initialShapeIndex,
-        shapeID,
-        CGAfloatreport,
-        CGAstringreport,
-        CGAboolreport,
-        verticesCoord,
-        facesCoord
-    };
-
-    shapes.push_back(instance);
-}
-
 void PyCallbacks::addGeometry(const uint32_t initialShapeIndex, const std::vector<std::vector<double>> verticesCoord, const std::vector<std::vector<uint32_t>> facesCoord) {
-    std::cout << "CALLBACK TO ADDGEOMETRY ! " << std::endl;
-    //std::cout << "Vertices Matrix size: " << verticesCoord.size() << std::endl;
-    //std::cout << "Faces Matrix size: " << facesCoord.size() << std::endl;
+    std::map<uint32_t, std::vector<std::vector<double>>>::iterator it;
+    it = verticesMap.find(initialShapeIndex);
 
-    initialShapesIndices.insert(initialShapeIndex);
-    verticesMap.insert({ initialShapeIndex, verticesCoord });
-    facesMap.insert({ initialShapeIndex, facesCoord });
+    if (it != verticesMap.end()) {
+        std::vector<std::vector<double>> existVertMat = verticesMap.at(initialShapeIndex);
+        existVertMat.insert(existVertMat.begin(), verticesCoord.begin(), verticesCoord.end());
+        verticesMap.at(initialShapeIndex) = existVertMat;
+
+        std::vector<std::vector<uint32_t>> existFacesMat = facesMap.at(initialShapeIndex);
+        existFacesMat.insert(existFacesMat.begin(), facesCoord.begin(), facesCoord.end());
+        facesMap.at(initialShapeIndex) = existFacesMat;
+    }
+    else {
+        initialShapesIndices.insert(initialShapeIndex);
+        verticesMap.insert({ initialShapeIndex, verticesCoord });
+        facesMap.insert({ initialShapeIndex, facesCoord });
+    }
 }
 
 void PyCallbacks::addReports(const uint32_t initialShapeIndex, const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport) {
-    std::cout << "CALLBACK TO ADDREPORTS ! " << std::endl;
-    std::cout << "Reports: " << CGAfloatreport.size() << "-" << CGAstringreport.size() << "-" << CGAboolreport.size() << std::endl;
-
     initialShapesIndices.insert(initialShapeIndex);
     CGAfloatReportsMap.insert({ initialShapeIndex, CGAfloatreport });
     CGAstringReportsMap.insert({ initialShapeIndex, CGAstringreport });
@@ -74,16 +67,10 @@ std::unordered_set<uint32_t> PyCallbacks::getInitialShapesIndices() const {
 std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>>> PyCallbacks::getVertices() const {
     std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>>> allVertices;
 
-    //for (Entry e : shapes) {
-    //    std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>> vertMat(e.initialShapeIdx, e.id, e.vertices);
-    //    allVertices.push_back(vertMat);
-    //}
-
     for (auto i : initialShapesIndices) {
         std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>> vertMat(i, 10, verticesMap.at(i));
         allVertices.push_back(vertMat);
     }
-
 
     return allVertices;
 }
@@ -91,8 +78,8 @@ std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>>> PyC
 std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>>> PyCallbacks::getFaces() const {
     std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>>> allFaces;
 
-    for (Entry e : shapes) {
-        std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>> facesMat(e.initialShapeIdx, e.id, e.faces);
+    for (auto i : initialShapesIndices) {
+        std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>> facesMat(i, 10, facesMap.at(i));
         allFaces.push_back(facesMat);
     }
 
@@ -106,9 +93,11 @@ std::map<uint32_t, FloatMap> PyCallbacks::getFloatReportNEW() const {
 std::vector<std::tuple<uint32_t, int32_t, FloatMap>> PyCallbacks::getFloatReport() const {
     std::vector<std::tuple<uint32_t, int32_t, FloatMap>> allFloatReports;
 
-    for (Entry e : shapes) {
-        std::tuple<uint32_t, int32_t, FloatMap> floatReport(e.initialShapeIdx, e.id, e.reportFloatData);
-        allFloatReports.push_back(floatReport);
+    if (CGAfloatReportsMap.size() > 0) {
+        for (auto i : initialShapesIndices) {
+            std::tuple<uint32_t, int32_t, FloatMap> floatReport(i, 10, CGAfloatReportsMap.at(i));
+            allFloatReports.push_back(floatReport);
+        }
     }
 
     return allFloatReports;
@@ -117,9 +106,11 @@ std::vector<std::tuple<uint32_t, int32_t, FloatMap>> PyCallbacks::getFloatReport
 std::vector<std::tuple<uint32_t, int32_t, StringMap>> PyCallbacks::getStringReport() const {
     std::vector<std::tuple<uint32_t, int32_t, StringMap>> allStringReports;
 
-    for (Entry e : shapes) {
-        std::tuple<uint32_t, int32_t, StringMap> stringReport(e.initialShapeIdx, e.id, e.reportStringData);
-        allStringReports.push_back(stringReport);
+    if (CGAstringReportsMap.size() > 0) {
+        for (auto i : initialShapesIndices) {
+            std::tuple<uint32_t, int32_t, StringMap> stringReport(i, 10, CGAstringReportsMap.at(i));
+            allStringReports.push_back(stringReport);
+        }
     }
 
     return allStringReports;
@@ -128,9 +119,11 @@ std::vector<std::tuple<uint32_t, int32_t, StringMap>> PyCallbacks::getStringRepo
 std::vector<std::tuple<uint32_t, int32_t, BoolMap>> PyCallbacks::getBoolReport() const {
     std::vector<std::tuple<uint32_t, int32_t, BoolMap>> allBoolReports;
 
-    for (Entry e : shapes) {
-        std::tuple<uint32_t, int32_t, BoolMap> boolReport(e.initialShapeIdx, e.id, e.reportBoolData);
-        allBoolReports.push_back(boolReport);
+    if (CGAboolReportsMap.size() > 0) {
+        for (auto i : initialShapesIndices) {
+            std::tuple<uint32_t, int32_t, BoolMap> boolReport(i, 10, CGAboolReportsMap.at(i));
+            allBoolReports.push_back(boolReport);
+        }
     }
 
     return allBoolReports;

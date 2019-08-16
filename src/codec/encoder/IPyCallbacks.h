@@ -40,16 +40,6 @@ public:
 
     virtual ~IPyCallbacks() override = default;
 
-    virtual void addEntry(
-        const uint32_t initialShapeIndex,
-        const int32_t shapeID,
-        const FloatMap& CGAfloatreport,
-        const StringMap& CGAstringreport,
-        const BoolMap& CGAboolreport,
-        const std::vector<std::vector<double>> verticesCoord,
-        const std::vector<std::vector<uint32_t>> facesCoord
-    ) = 0;
-
     virtual void addGeometry(
         const uint32_t initialShapeIndex,
         const std::vector<std::vector<double>> verticesCoord,
