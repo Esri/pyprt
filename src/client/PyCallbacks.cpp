@@ -47,7 +47,7 @@ void PyCallbacks::addEntry(const uint32_t initialShapeIndex, const int32_t shape
 }
 
 void PyCallbacks::addGeometry(const uint32_t initialShapeIndex, const std::vector<std::vector<double>> verticesCoord, const std::vector<std::vector<uint32_t>> facesCoord) {
-    //std::cout << "CALLBACK TO ADDGEOMETRY ! " << std::endl;
+    std::cout << "CALLBACK TO ADDGEOMETRY ! " << std::endl;
     //std::cout << "Vertices Matrix size: " << verticesCoord.size() << std::endl;
     //std::cout << "Faces Matrix size: " << facesCoord.size() << std::endl;
 

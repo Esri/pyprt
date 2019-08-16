@@ -47,7 +47,7 @@ const wchar_t* ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
 const wchar_t* ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
 const wchar_t* ENCODER_OPT_NAME = L"name";
 pcu::Path executablePath;
-    
+
 
 template <typename T>
 T* vectorToArray(std::vector<T> data) {

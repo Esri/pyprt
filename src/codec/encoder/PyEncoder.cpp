@@ -51,6 +51,9 @@ namespace {
 const wchar_t*     EO_BASE_NAME      = L"baseName";
 const wchar_t*     EO_ERROR_FALLBACK = L"errorFallback";
 const std::wstring ENCFILE_EXT       = L".txt";
+const wchar_t*     EO_EMIT_REPORTS = L"emitReports";
+const wchar_t*     EO_EMIT_GEOMETRY = L"emitGeometry";
+
 
 const prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS = prtx::EncodePreparator::PreparationFlags()
     .instancing(true)
@@ -111,7 +114,7 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
 	const prtx::InitialShape* is = context.getInitialShape(initialShapeIndex);
     auto* cb = dynamic_cast<IPyCallbacks*>(getCallbacks());
 
-    try {
+    if (getOptions()->getBool(EO_EMIT_REPORTS)) {
         prtx::ReportsAccumulatorPtr reportsAccumulator{ prtx::SummarizingReportsAccumulator::create() };
         prtx::ReportingStrategyPtr reportsCollector{ prtx::AllShapesReportingStrategy::create(context, initialShapeIndex, reportsAccumulator) };
 
@@ -152,16 +155,17 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
         }
 
         cb->addReports(initialShapeIndex, reportFloat, reportString, reportBool);
+    }
 
+    if (getOptions()->getBool(EO_EMIT_GEOMETRY)) {
         const prtx::LeafIteratorPtr li = prtx::LeafIterator::create(context, initialShapeIndex);
 
         for (prtx::ShapePtr shape = li->getNext(); shape.get() != nullptr; shape = li->getNext()) {
             mEncodePreparator->add(context.getCache(), shape, is->getAttributeMap());
         }
     }
-    catch (...) {
+    else
         mEncodePreparator->add(context.getCache(), *is, initialShapeIndex);
-    }
 }
 
 
@@ -282,6 +286,8 @@ PyEncoderFactory* PyEncoderFactory::createInstance() {
 	prtx::PRTUtils::AttributeMapBuilderPtr amb(prt::AttributeMapBuilder::create());
 	amb->setString(EO_BASE_NAME, L"enc_default_name"); // required by CityEngine
 	amb->setBool(EO_ERROR_FALLBACK, prtx::PRTX_TRUE); // required by CityEngine
+    amb->setBool(EO_EMIT_REPORTS, prtx::PRTX_FALSE);
+    amb->setBool(EO_EMIT_GEOMETRY, prtx::PRTX_FALSE);
 	encoderInfoBuilder.setDefaultOptions(amb->createAttributeMap());
 
 	// CityEngine requires the following annotations to create an UI for an option:
