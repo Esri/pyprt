@@ -68,17 +68,15 @@ public:
 
     std::unordered_set<uint32_t> PyCallbacks::getInitialShapesIndices() const;
 
-    std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>>> getVertices() const;
+    std::map<uint32_t, std::vector<std::vector<double>>> getVertices() const;
 
-    std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>>> getFaces() const;
+    std::map<uint32_t, std::vector<std::vector<uint32_t>>> getFaces() const;
 
-    std::map<uint32_t, FloatMap> PyCallbacks::getFloatReportNEW() const;
+    std::map<uint32_t, FloatMap> PyCallbacks::getFloatReport() const;
 
-    std::vector<std::tuple<uint32_t, int32_t, FloatMap>> getFloatReport() const;
+    std::map<uint32_t, StringMap> getStringReport() const;
 
-    std::vector<std::tuple<uint32_t, int32_t, StringMap>> getStringReport() const;
-
-    std::vector<std::tuple<uint32_t, int32_t, BoolMap>> getBoolReport() const;
+    std::map<uint32_t, BoolMap> getBoolReport() const;
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
 		pybind11::print(L"GENERATE ERROR:", isIndex, status, message);

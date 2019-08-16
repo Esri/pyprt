@@ -64,67 +64,22 @@ std::unordered_set<uint32_t> PyCallbacks::getInitialShapesIndices() const {
 }
 
 
-std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>>> PyCallbacks::getVertices() const {
-    std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>>> allVertices;
-
-    for (auto i : initialShapesIndices) {
-        std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>> vertMat(i, 10, verticesMap.at(i));
-        allVertices.push_back(vertMat);
-    }
-
-    return allVertices;
+std::map<uint32_t, std::vector<std::vector<double>>> PyCallbacks::getVertices() const {
+    return verticesMap;
 }
 
-std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>>> PyCallbacks::getFaces() const {
-    std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>>> allFaces;
-
-    for (auto i : initialShapesIndices) {
-        std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>> facesMat(i, 10, facesMap.at(i));
-        allFaces.push_back(facesMat);
-    }
-
-    return allFaces;
+std::map<uint32_t, std::vector<std::vector<uint32_t>>> PyCallbacks::getFaces() const {
+    return facesMap;
 }
 
-std::map<uint32_t, FloatMap> PyCallbacks::getFloatReportNEW() const {
+std::map<uint32_t, FloatMap> PyCallbacks::getFloatReport() const {
     return CGAfloatReportsMap;
 }
 
-std::vector<std::tuple<uint32_t, int32_t, FloatMap>> PyCallbacks::getFloatReport() const {
-    std::vector<std::tuple<uint32_t, int32_t, FloatMap>> allFloatReports;
-
-    if (CGAfloatReportsMap.size() > 0) {
-        for (auto i : initialShapesIndices) {
-            std::tuple<uint32_t, int32_t, FloatMap> floatReport(i, 10, CGAfloatReportsMap.at(i));
-            allFloatReports.push_back(floatReport);
-        }
-    }
-
-    return allFloatReports;
+std::map<uint32_t, StringMap> PyCallbacks::getStringReport() const {
+    return CGAstringReportsMap;
 }
 
-std::vector<std::tuple<uint32_t, int32_t, StringMap>> PyCallbacks::getStringReport() const {
-    std::vector<std::tuple<uint32_t, int32_t, StringMap>> allStringReports;
-
-    if (CGAstringReportsMap.size() > 0) {
-        for (auto i : initialShapesIndices) {
-            std::tuple<uint32_t, int32_t, StringMap> stringReport(i, 10, CGAstringReportsMap.at(i));
-            allStringReports.push_back(stringReport);
-        }
-    }
-
-    return allStringReports;
-}
-
-std::vector<std::tuple<uint32_t, int32_t, BoolMap>> PyCallbacks::getBoolReport() const {
-    std::vector<std::tuple<uint32_t, int32_t, BoolMap>> allBoolReports;
-
-    if (CGAboolReportsMap.size() > 0) {
-        for (auto i : initialShapesIndices) {
-            std::tuple<uint32_t, int32_t, BoolMap> boolReport(i, 10, CGAboolReportsMap.at(i));
-            allBoolReports.push_back(boolReport);
-        }
-    }
-
-    return allBoolReports;
+std::map<uint32_t, BoolMap> PyCallbacks::getBoolReport() const {
+    return CGAboolReportsMap;
 }

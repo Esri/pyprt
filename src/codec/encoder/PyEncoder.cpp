@@ -208,8 +208,8 @@ PyEncoderFactory* PyEncoderFactory::createInstance() {
 	prtx::PRTUtils::AttributeMapBuilderPtr amb(prt::AttributeMapBuilder::create());
 	amb->setString(EO_BASE_NAME, L"enc_default_name"); // required by CityEngine
 	amb->setBool(EO_ERROR_FALLBACK, prtx::PRTX_TRUE); // required by CityEngine
-    amb->setBool(EO_EMIT_REPORTS, prtx::PRTX_FALSE);
-    amb->setBool(EO_EMIT_GEOMETRY, prtx::PRTX_FALSE);
+    amb->setBool(EO_EMIT_REPORTS, prtx::PRTX_TRUE);
+    amb->setBool(EO_EMIT_GEOMETRY, prtx::PRTX_TRUE);
 	encoderInfoBuilder.setDefaultOptions(amb->createAttributeMap());
 
 	// CityEngine requires the following annotations to create an UI for an option:
