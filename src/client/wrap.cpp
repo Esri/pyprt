@@ -232,13 +232,6 @@ private:
     std::map<uint32_t, BoolMap> boolReportMap;
 };
 
-//GeneratedGeometry::GeneratedGeometry(std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<double>>>> vertMatrix, std::vector<std::tuple<uint32_t, int32_t, std::vector<std::vector<uint32_t>>>> fMatrix, std::vector<std::tuple<uint32_t, int32_t, FloatMap>> floatRep, std::vector<std::tuple<uint32_t, int32_t, StringMap>> stringRep, std::vector<std::tuple<uint32_t, int32_t, BoolMap>> boolRep) {
-//    verticesMatrix = vertMatrix;
-//    facesMatrix = fMatrix;
-//    floatReport = floatRep;
-//    stringReport = stringRep;
-//    boolReport = boolRep;
-//}
 
 GeneratedGeometry::GeneratedGeometry(std::map<uint32_t, std::vector<std::vector<double>>> vertMatrix, std::map<uint32_t, std::vector<std::vector<uint32_t>>> fMatrix, std::map<uint32_t, FloatMap> floatRep, std::map<uint32_t, StringMap> stringRep, std::map<uint32_t, BoolMap> boolRep) {
     verticesMatrix = vertMatrix;
@@ -257,7 +250,7 @@ namespace {
         ~ModelGenerator() { }
 
         GeneratedGeometry generateModel(const std::string& rulePackagePath, py::dict shapeAttributes, py::dict encoderOptions, const wchar_t* encoderName);
-        GeneratedGeometry generateAnotherModel(py::dict shapeAttributes);
+        GeneratedGeometry generateAnotherModel(py::dict shapeAttributes, py::dict encoderOptions);
 
         bool isCustomGeometry() { return customFlag; }
 
@@ -268,6 +261,8 @@ namespace {
         pcu::ResolveMapPtr resolveMap;
         pcu::CachePtr cache;
 
+        wchar_t* encoder;
+        pcu::AttributeMapBuilderPtr encoderBuilder;
         pcu::AttributeMapPtr CGAReportOptions;
         pcu::AttributeMapPtr CGAPrintOptions;
         pcu::AttributeMapPtr pyEncoderOptions;
@@ -342,7 +337,8 @@ namespace {
 
 
             // Initial shape attributes
-            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes) };
+            pcu::AttributeMapBuilderPtr shapeBld{ prt::AttributeMapBuilder::create() };
+            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes, shapeBld) };
             if (convertedShapeAttr) {
                 if (convertedShapeAttr->hasKey(L"ruleFile") &&
                     convertedShapeAttr->getType(L"ruleFile") == prt::AttributeMap::PT_STRING)
@@ -358,7 +354,10 @@ namespace {
             optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_REPORT);
             const pcu::AttributeMapPtr reportOptions{ optionsBuilder->createAttributeMapAndReset() };
             const pcu::AttributeMapPtr printOptions{ optionsBuilder->createAttributeMapAndReset() };
-            const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions) };
+
+            pcu::AttributeMapBuilderPtr bld{ prt::AttributeMapBuilder::create() };
+            encoderBuilder = std::move(bld);
+            const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions, encoderBuilder) };
 
             CGAReportOptions = createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions);
             CGAPrintOptions = createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions);
@@ -370,11 +369,11 @@ namespace {
 
 
             // Make a copy
-            wchar_t *clone = new wchar_t[wcslen(encoderName) + 1];
-            wcsncpy(clone, encoderName, wcslen(encoderName) + 1);
+            encoder = new wchar_t[wcslen(encoderName) + 1];
+            wcsncpy(encoder, encoderName, wcslen(encoderName) + 1);
 
             allEncoders = {
-                    clone,
+                    encoder, //clone,
                     ENCODER_ID_CGA_REPORT, // an encoder to redirect CGA report to CGAReport.txt
                     ENCODER_ID_CGA_PRINT // redirects CGA print output to the callback
             };
@@ -382,7 +381,7 @@ namespace {
             allEncodersOptions = { pyEncoderOptions.get(), CGAReportOptions.get(), CGAPrintOptions.get() };
             
 
-            // Initial shape
+            // Initial shapes
             std::vector<pcu::InitialShapePtr> initialShapePtrs;
             std::vector<const prt::InitialShape*> initialShapes;
 
@@ -571,11 +570,11 @@ namespace {
         return newGeneratedGeo;
     }
 
-    GeneratedGeometry ModelGenerator::generateAnotherModel(py::dict shapeAttributes)
+    GeneratedGeometry ModelGenerator::generateAnotherModel(py::dict shapeAttributes, py::dict encoderOptions = {})
     {
-        std::clock_t start1;
+        std::clock_t start;
         double duration;
-        start1 = std::clock();
+        start = std::clock();
 
         GeneratedGeometry newGeneratedGeo;
 
@@ -591,7 +590,8 @@ namespace {
             }
 
             // Initial shape attributes
-            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes) };
+            pcu::AttributeMapBuilderPtr shapeBld{ prt::AttributeMapBuilder::create() };
+            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes, shapeBld) };
             if (convertedShapeAttr) {
                 if (convertedShapeAttr->hasKey(L"ruleFile") &&
                     convertedShapeAttr->getType(L"ruleFile") == prt::AttributeMap::PT_STRING)
@@ -601,16 +601,34 @@ namespace {
                     startRule = convertedShapeAttr->getString(L"startRule");
             }
 
-            std::clock_t start2 = std::clock();
-            std::cout << "Method duration - pcu::AttributeMapPtr convertedShapeAttr: " << (start2 - start1) / (double)CLOCKS_PER_SEC << std::endl;
+            // Encoder info, encoder options
+            const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions, encoderBuilder) };
 
+            pyEncoderOptions = createValidatedOptions(encoder, encOptions);
+            
+            if (!allEncoders.empty()) {
+                delete allEncoders[0];
+            }
+
+
+            // Make a copy
+            wchar_t *clone = new wchar_t[wcslen(encoder) + 1];
+            wcsncpy(clone, encoder, wcslen(encoder) + 1);
+
+            allEncoders = {
+                    clone,
+                    ENCODER_ID_CGA_REPORT, // an encoder to redirect CGA report to CGAReport.txt
+                    ENCODER_ID_CGA_PRINT // redirects CGA print output to the callback
+            };
+
+            allEncodersOptions[0] = pyEncoderOptions.get();
+
+            // Initial Shapes
             std::vector<pcu::InitialShapePtr> initialShapePtrs;
             std::vector<const prt::InitialShape*> initialShapes;
 
             if (isCustomGeometry()) {
                 for (size_t ind = 0; ind < initialGeometries.size(); ind++) {
-
-                    std::clock_t start5 = std::clock();
 
                     if (initialShapesBuilders.empty()) {
                         std::cout << "INITIAL SHAPES BUILDERS EMPTY -- weird" << std::endl;
@@ -626,23 +644,15 @@ namespace {
                         resolveMap.get()
                     );
 
-                    std::clock_t start6 = std::clock();
-                    std::cout << "Method duration - initialShapeBuilder->setAttributes: " << (start6 - start5) / (double)CLOCKS_PER_SEC << std::endl;
-
                     pcu::InitialShapePtr initialShape{ initialShapesBuilders[ind]->createInitialShape() };
 
                     initialShapes.push_back(initialShape.get());
                     initialShapePtrs.push_back(std::move(initialShape));
-
-                    std::clock_t start7 = std::clock();
-                    std::cout << "Method duration - initialShapeBuilder->createInitialShape: " << (start7 - start6) / (double)CLOCKS_PER_SEC << std::endl;
                 }
 
                 if (!std::wcscmp(allEncoders[0], ENCODER_ID_PYTHON)) {
 
                     pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
-
-                    std::clock_t start8 = std::clock();
 
                     // Generate
                     const prt::Status genStat = prt::generate(
@@ -651,20 +661,12 @@ namespace {
                         foc.get(), cache.get(), nullptr
                     );
 
-                    std::clock_t start9 = std::clock();
-                    std::cout << "Method duration - prt generate: " << (start9 - start8) / (double)CLOCKS_PER_SEC << std::endl;
-
                     if (genStat != prt::STATUS_OK) {
                         LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
                         return {};
                     }
 
-                    std::clock_t start13 = std::clock();
-
                     newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
-
-                    std::clock_t start10 = std::clock();
-                    std::cout << "Method duration - population of GeneratedGeometry instance: " << (start10 - start13) / (double)CLOCKS_PER_SEC << std::endl;
                 }
                 else {
                     const pcu::Path output_path = executablePath.getParent().getParent() / "output";
@@ -689,13 +691,8 @@ namespace {
 
                     return {};
                 }
-
-                std::clock_t start3 = std::clock();
-                std::cout << "Method duration - customGeometry is true: " << (start3 - start2) / (double)CLOCKS_PER_SEC << std::endl;
             }
             else {
-
-                std::clock_t start14 = std::clock();
 
                 // Initial shape
                 if (initialShapesBuilders.empty()) {
@@ -712,22 +709,14 @@ namespace {
                     resolveMap.get()
                 );
 
-                std::clock_t start15 = std::clock();
-                std::cout << "Method duration - initialShapeBuilder->setAttributes: " << (start15 - start14) / (double)CLOCKS_PER_SEC << std::endl;
-
                 pcu::InitialShapePtr initialShape{ initialShapesBuilders[0]->createInitialShape() };
 
                 initialShapes.push_back(initialShape.get());
                 initialShapePtrs.push_back(std::move(initialShape));
 
-                std::clock_t start16 = std::clock();
-                std::cout << "Method duration - initialShapeBuilder->createInitialShape: " << (start16 - start15) / (double)CLOCKS_PER_SEC << std::endl;
-
 
                 if (!std::wcscmp(allEncoders[0], ENCODER_ID_PYTHON)) {
                     pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
-
-                    std::clock_t start17 = std::clock();
 
                     // Generate
                     const prt::Status genStat = prt::generate(
@@ -736,21 +725,12 @@ namespace {
                         foc.get(), cache.get(), nullptr
                     );
 
-                    std::clock_t start18 = std::clock();
-                    std::cout << "Method duration - prt generate: " << (start18 - start17) / (double)CLOCKS_PER_SEC << std::endl;
-
-
                     if (genStat != prt::STATUS_OK) {
                         LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
                         return {};
                     }
 
-                    std::clock_t start19 = std::clock();
-
                     newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
-
-                    std::clock_t start20 = std::clock();
-                    std::cout << "Method duration - population of GeneratedGeometry instance: " << (start20 - start19) / (double)CLOCKS_PER_SEC << std::endl;
                 }
                 else {
                     const pcu::Path output_path = executablePath.getParent().getParent() / "output";
@@ -776,9 +756,6 @@ namespace {
                     return {};
                 }
 
-                std::clock_t start4 = std::clock();
-                std::cout << "Method duration - customGeometry is false: " << (start4 - start2) / (double)CLOCKS_PER_SEC << std::endl;
-
             }
 
         }
@@ -791,8 +768,8 @@ namespace {
             return {};
         }
 
-        duration = (std::clock() - start1) / (double)CLOCKS_PER_SEC;
-        std::cout << "Method duration - generation with other attributes: " << duration << std::endl;
+        duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
+        std::cout << "Method duration - second model generation (with other attributes): " << duration << std::endl;
 
         return newGeneratedGeo;
     }
@@ -851,7 +828,7 @@ PYBIND11_MODULE(pyprt, m) {
         .def(py::init<const std::string&>(), "initShapePath"_a)
         .def(py::init<const std::vector<Geometry>&>(), "initShape"_a)
         .def("generate_model", &ModelGenerator::generateModel, py::arg("rulePackagePath"), py::arg("shapeAttributes"), py::arg("encoderOptions"), py::arg("encoderName") = ENCODER_ID_PYTHON)
-        .def("generate_another_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
+        .def("generate_another_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"), py::arg("encoderOptions") = py::dict());
 
     m.def("initialize_prt", &initializePRT, "prt_path"_a = "");
     m.def("is_prt_initialized", &isPRTInitialized);

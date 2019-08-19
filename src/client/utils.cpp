@@ -204,9 +204,7 @@ AttributeMapPtr createAttributeMapFromTypedKeyValues(const std::vector<std::stri
 /**
  * Helper function to convert a Python dictionary of "<key>:<value>" into a prt::AttributeMap
  */
-AttributeMapPtr createAttributeMapFromPythonDict(py::dict args) {
-    AttributeMapBuilderPtr bld{ prt::AttributeMapBuilder::create() };
-
+AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, AttributeMapBuilderPtr& bld) {
     for (auto a : args) {
 
         const std::wstring key = a.first.cast<std::wstring>();
@@ -311,7 +309,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args) {
                 std::cout << "Unknown type." << std::endl;
         }
     }
-    return AttributeMapPtr{ bld->createAttributeMapAndReset() };
+    return AttributeMapPtr{ bld->createAttributeMap() };
 }
 
 
