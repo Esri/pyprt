@@ -132,14 +132,18 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
     }
 
     if (getOptions()->getBool(EO_EMIT_GEOMETRY)) {
-        const prtx::LeafIteratorPtr li = prtx::LeafIterator::create(context, initialShapeIndex);
+        try {
+            const prtx::LeafIteratorPtr li = prtx::LeafIterator::create(context, initialShapeIndex);
 
-        for (prtx::ShapePtr shape = li->getNext(); shape.get() != nullptr; shape = li->getNext()) {
-            mEncodePreparator->add(context.getCache(), shape, is->getAttributeMap());
+            for (prtx::ShapePtr shape = li->getNext(); shape.get() != nullptr; shape = li->getNext()) {
+                mEncodePreparator->add(context.getCache(), shape, is->getAttributeMap());
+            }
+        }
+        catch (...) {
+            mEncodePreparator->add(context.getCache(), *is, initialShapeIndex);
         }
     }
-    else
-        mEncodePreparator->add(context.getCache(), *is, initialShapeIndex);
+
 }
 
 
