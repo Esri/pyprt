@@ -303,7 +303,7 @@ namespace {
 
         try {
             if (!prtCtx) {
-                LOG_ERR << L"prt has not been initialized." << std::endl;
+                LOG_ERR << "prt has not been initialized.";
                 return {};
             }
 
@@ -311,7 +311,7 @@ namespace {
             // Resolve Map
             if (!resolveMap) {
                 if (!rulePackagePath.empty()) {
-                    LOG_INF << "Using rule package " << rulePackagePath << std::endl;
+                    LOG_INF << "using rule package " << rulePackagePath << std::endl;
 
                     const std::string u8rpkURI = pcu::toFileURI(rulePackagePath);
                     prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
@@ -328,7 +328,7 @@ namespace {
                         LOG_DBG << "resolve map = " << pcu::objectToXML(resolveMap.get()) << std::endl;
                     }
                     else {
-                        LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting." << std::endl;
+                        LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting.";
                         return {};
                     }
                 }
@@ -446,7 +446,7 @@ namespace {
                     const pcu::Path output_path = executablePath.getParent().getParent() / "output";
                     if (!output_path.exists()) {
                         std::filesystem::create_directory(output_path.toStdPath());
-                        LOG_INF << "New output directory created at " << output_path << std::endl;
+                        LOG_INF << "new output directory created at " << output_path << std::endl;
                     }
 
                     pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
@@ -472,7 +472,7 @@ namespace {
                 pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
 
                 if (!pcu::toFileURI(initialShapePath).empty()) {
-                    LOG_DBG << L"trying to read initial shape geometry from " << pcu::toFileURI(initialShapePath);
+                    LOG_DBG << "trying to read initial shape geometry from " << pcu::toFileURI(initialShapePath) << std::endl;
                     const prt::Status s = isb->resolveGeometry(pcu::toUTF16FromOSNarrow(pcu::toFileURI(initialShapePath)).c_str(), resolveMap.get(), cache.get());
                     if (s != prt::STATUS_OK) {
                         LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(initialShapePath);
@@ -530,7 +530,7 @@ namespace {
                     const pcu::Path output_path = executablePath.getParent().getParent() / "output";
                     if (!output_path.exists()) {
                         std::filesystem::create_directory(output_path.toStdPath());
-                        LOG_INF << "New output directory created at " << output_path << std::endl;
+                        LOG_INF << "new output directory created at " << output_path << std::endl;
                     }
 
                     pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
@@ -578,12 +578,12 @@ namespace {
 
         try {
             if (!prtCtx) {
-                LOG_ERR << L"prt has not been initialized." << std::endl;
+                LOG_ERR << "prt has not been initialized.";
                 return {};
             }
 
             if (!resolveMap) {
-                LOG_ERR << "getting resolve map failed, aborting." << std::endl;
+                LOG_ERR << "getting resolve map failed, aborting.";
                 return {};
             }
 
@@ -613,7 +613,7 @@ namespace {
                 for (size_t ind = 0; ind < initialGeometries.size(); ind++) {
 
                     if (initialShapesBuilders.empty()) {
-                        std::cout << "INITIAL SHAPES BUILDERS EMPTY -- weird" << std::endl;
+                        LOG_ERR << "initial shape builders empty.";
                         return {};
                     }
 
@@ -654,7 +654,7 @@ namespace {
                     const pcu::Path output_path = executablePath.getParent().getParent() / "output";
                     if (!output_path.exists()) {
                         std::filesystem::create_directory(output_path.toStdPath());
-                        LOG_INF << "New output directory created at " << output_path << std::endl;
+                        LOG_INF << "new output directory created at " << output_path << std::endl;
                     }
 
                     pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
@@ -678,7 +678,7 @@ namespace {
 
                 // Initial shape
                 if (initialShapesBuilders.empty()) {
-                    std::cout << "INITIAL SHAPES BUILDERS EMPTY -- weird" << std::endl;
+                    LOG_ERR << "initial shape builders empty.";
                     return {};
                 }
 
@@ -718,7 +718,7 @@ namespace {
                     const pcu::Path output_path = executablePath.getParent().getParent() / "output";
                     if (!output_path.exists()) {
                         std::filesystem::create_directory(output_path.toStdPath());
-                        LOG_INF << "New output directory created at " << output_path << std::endl;
+                        LOG_INF << "new output directory created at " << output_path << std::endl;
                     }
 
                     pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
