@@ -261,7 +261,6 @@ namespace {
         pcu::ResolveMapPtr resolveMap;
         pcu::CachePtr cache;
 
-        wchar_t* encoder;
         pcu::AttributeMapBuilderPtr encoderBuilder;
         pcu::AttributeMapPtr CGAReportOptions;
         pcu::AttributeMapPtr CGAPrintOptions;
@@ -367,9 +366,8 @@ namespace {
                 delete allEncoders[0];
             }
 
-
             // Make a copy
-            encoder = new wchar_t[wcslen(encoderName) + 1];
+            wchar_t* encoder = new wchar_t[wcslen(encoderName) + 1];
             wcsncpy(encoder, encoderName, wcslen(encoderName) + 1);
 
             allEncoders = {
@@ -604,18 +602,7 @@ namespace {
             // Encoder info, encoder options
             const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions, encoderBuilder) };
 
-            pyEncoderOptions = createValidatedOptions(encoder, encOptions);
-
-            // Make a copy
-            wchar_t *clone = new wchar_t[wcslen(encoder) + 1];
-            wcsncpy(clone, encoder, wcslen(encoder) + 1);
-
-            allEncoders = {
-                    clone,
-                    ENCODER_ID_CGA_REPORT, // an encoder to redirect CGA report to CGAReport.txt
-                    ENCODER_ID_CGA_PRINT // redirects CGA print output to the callback
-            };
-
+            pyEncoderOptions = createValidatedOptions(allEncoders[0], encOptions);
             allEncodersOptions[0] = pyEncoderOptions.get();
 
             // Initial Shapes
