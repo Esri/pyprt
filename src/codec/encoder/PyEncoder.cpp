@@ -56,10 +56,12 @@ const wchar_t*     EO_EMIT_GEOMETRY = L"emitGeometry";
 
 
 const prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS = prtx::EncodePreparator::PreparationFlags()
-    .instancing(true)
+    .instancing(false)
     .triangulate(false)
-    .mergeVertices(true)
-    .processVertexNormals(prtx::VertexNormalProcessor::SET_ALL_TO_FACE_NORMALS);
+    .mergeVertices(false)
+    .cleanupUVs(false)
+    .cleanupVertexNormals(false)
+    .mergeByMaterial(true); // if false, generation takes ages... 40 sec instead of 1.5 sec
 } // namespace
 
 
@@ -142,6 +144,41 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
         catch (...) {
             mEncodePreparator->add(context.getCache(), *is, initialShapeIndex);
         }
+
+        std::vector<prtx::EncodePreparator::FinalizedInstance> finalizedInstances;
+        mEncodePreparator->fetchFinalizedInstances(finalizedInstances, ENC_PREP_FLAGS);
+
+        for (const auto& instance : finalizedInstances) {
+            std::vector<std::vector<double>> coordMatrix;
+            std::vector<std::vector<uint32_t>> faceMatrix;
+
+            for (const prtx::MeshPtr& mesh : instance.getGeometry()->getMeshes()) {
+
+                const prtx::DoubleVector& vc = mesh->getVertexCoords();
+                const uint32_t faceCnt = mesh->getFaceCount();
+
+                for (size_t indI = 0; indI < vc.size() / 3; indI++)
+                {
+                    std::vector<double> vertexCoord;
+                    for (int indJ = 0; indJ < 3; indJ++)
+                    {
+                        vertexCoord.push_back(vc[3 * indI + indJ]);
+                    }
+                    coordMatrix.push_back(vertexCoord);
+                }
+
+                for (uint32_t fi = 0; fi < faceCnt; ++fi) {
+                    const uint32_t* vtxIdx = mesh->getFaceVertexIndices(fi);
+                    const uint32_t vtxCnt = mesh->getFaceVertexCount(fi);
+
+                    std::vector<uint32_t> v(vtxIdx, vtxIdx + vtxCnt);
+                    faceMatrix.push_back(v);
+                }
+
+            }
+
+            cb->addGeometry(instance.getInitialShapeIndex(), coordMatrix, faceMatrix);
+        }
     }
 
 }
@@ -152,45 +189,6 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
  * finalized geometry instances.
  */
 void PyEncoder::finish(prtx::GenerateContext& /*context*/) {
-    auto* cb = dynamic_cast<IPyCallbacks*>(getCallbacks());
-    if (cb == nullptr)
-		throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
-	const std::wstring baseName = getOptions()->getString(EO_BASE_NAME);
-
-	std::vector<prtx::EncodePreparator::FinalizedInstance> finalizedInstances;
-	mEncodePreparator->fetchFinalizedInstances(finalizedInstances, ENC_PREP_FLAGS);
-
-    for (const auto& instance : finalizedInstances) {
-        std::vector<std::vector<double>> coordMatrix;
-        std::vector<std::vector<uint32_t>> faceMatrix;
-
-        for (const prtx::MeshPtr& mesh : instance.getGeometry()->getMeshes()) {
-            
-            const prtx::DoubleVector& vc = mesh->getVertexCoords();
-            const uint32_t faceCnt = mesh->getFaceCount();
-            
-            for (size_t indI = 0; indI < vc.size() / 3; indI++)
-            {
-                std::vector<double> vertexCoord;
-                for (int indJ = 0; indJ < 3; indJ++)
-                {
-                    vertexCoord.push_back(vc[3 * indI + indJ]);
-                }
-                coordMatrix.push_back(vertexCoord);
-            }
-            
-            for (uint32_t fi = 0; fi < faceCnt; ++fi) {
-                const uint32_t* vtxIdx = mesh->getFaceVertexIndices(fi);
-                const uint32_t vtxCnt = mesh->getFaceVertexCount(fi);
-                
-                std::vector<uint32_t> v(vtxIdx, vtxIdx+vtxCnt);
-                faceMatrix.push_back(v);
-            }
-
-        }
-
-        cb->addGeometry(instance.getInitialShapeIndex(), coordMatrix, faceMatrix);
-    }
 }
 
 

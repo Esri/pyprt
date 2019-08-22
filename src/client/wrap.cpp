@@ -373,7 +373,7 @@ namespace {
             wcsncpy(encoder, encoderName, wcslen(encoderName) + 1);
 
             allEncoders = {
-                    encoder, //clone,
+                    encoder,
                     ENCODER_ID_CGA_REPORT, // an encoder to redirect CGA report to CGAReport.txt
                     ENCODER_ID_CGA_PRINT // redirects CGA print output to the callback
             };
@@ -605,11 +605,6 @@ namespace {
             const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions, encoderBuilder) };
 
             pyEncoderOptions = createValidatedOptions(encoder, encOptions);
-            
-            if (!allEncoders.empty()) {
-                delete allEncoders[0];
-            }
-
 
             // Make a copy
             wchar_t *clone = new wchar_t[wcslen(encoder) + 1];

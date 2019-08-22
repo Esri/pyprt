@@ -33,22 +33,33 @@
 
 
 void PyCallbacks::addGeometry(const uint32_t initialShapeIndex, const std::vector<std::vector<double>> verticesCoord, const std::vector<std::vector<uint32_t>> facesCoord) {
-    std::map<uint32_t, std::vector<std::vector<double>>>::iterator it;
-    it = verticesMap.find(initialShapeIndex);
+    
+    if (!verticesCoord.empty()) {
+        auto it = verticesMap.find(initialShapeIndex);
 
-    if (it != verticesMap.end()) {
-        std::vector<std::vector<double>> existVertMat = verticesMap.at(initialShapeIndex);
-        existVertMat.insert(existVertMat.begin(), verticesCoord.begin(), verticesCoord.end());
-        verticesMap.at(initialShapeIndex) = existVertMat;
-
-        std::vector<std::vector<uint32_t>> existFacesMat = facesMap.at(initialShapeIndex);
-        existFacesMat.insert(existFacesMat.begin(), facesCoord.begin(), facesCoord.end());
-        facesMap.at(initialShapeIndex) = existFacesMat;
+        if (it != verticesMap.end()) {
+            std::vector<std::vector<double>> existVertMat = verticesMap.at(initialShapeIndex);
+            existVertMat.insert(existVertMat.begin(), verticesCoord.begin(), verticesCoord.end());
+            verticesMap.at(initialShapeIndex) = existVertMat;
+        }
+        else {
+            initialShapesIndices.insert(initialShapeIndex);
+            verticesMap.insert({ initialShapeIndex, verticesCoord });
+        }
     }
-    else {
-        initialShapesIndices.insert(initialShapeIndex);
-        verticesMap.insert({ initialShapeIndex, verticesCoord });
-        facesMap.insert({ initialShapeIndex, facesCoord });
+
+    if (!facesCoord.empty()) {
+        auto it = facesMap.find(initialShapeIndex);
+
+        if (it != facesMap.end()) {
+            std::vector<std::vector<uint32_t>> existFacesMat = facesMap.at(initialShapeIndex);
+            existFacesMat.insert(existFacesMat.begin(), facesCoord.begin(), facesCoord.end());
+            facesMap.at(initialShapeIndex) = existFacesMat;
+        }
+        else {
+            initialShapesIndices.insert(initialShapeIndex);
+            facesMap.insert({ initialShapeIndex, facesCoord });
+        }
     }
 }
 
