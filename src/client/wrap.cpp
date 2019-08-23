@@ -291,7 +291,7 @@ namespace {
 
     GeneratedGeometry ModelGenerator::generateModel(const std::string& rulePackagePath,
             py::dict shapeAttributes,
-            py::dict encoderOptions,
+        py::dict encoderOptions = {},
             const wchar_t* encoderName = ENCODER_ID_PYTHON)
     {
 
@@ -599,11 +599,13 @@ namespace {
                     startRule = convertedShapeAttr->getString(L"startRule");
             }
 
+
             // Encoder info, encoder options
             const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions, encoderBuilder) };
 
             pyEncoderOptions = createValidatedOptions(allEncoders[0], encOptions);
             allEncodersOptions[0] = pyEncoderOptions.get();
+
 
             // Initial Shapes
             std::vector<pcu::InitialShapePtr> initialShapePtrs;
@@ -699,7 +701,7 @@ namespace {
 
                 if (!std::wcscmp(allEncoders[0], ENCODER_ID_PYTHON)) {
                     pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>() };
-
+                    
                     // Generate
                     const prt::Status genStat = prt::generate(
                         initialShapes.data(), initialShapes.size(), nullptr,
@@ -809,7 +811,7 @@ PYBIND11_MODULE(pyprt, m) {
     py::class_<ModelGenerator>(m, "ModelGenerator")
         .def(py::init<const std::string&>(), "initShapePath"_a)
         .def(py::init<const std::vector<Geometry>&>(), "initShape"_a)
-        .def("generate_model", &ModelGenerator::generateModel, py::arg("rulePackagePath"), py::arg("shapeAttributes"), py::arg("encoderOptions"), py::arg("encoderName") = ENCODER_ID_PYTHON)
+        .def("generate_model", &ModelGenerator::generateModel, py::arg("rulePackagePath"), py::arg("shapeAttributes"), py::arg("encoderOptions") = py::dict(), py::arg("encoderName") = ENCODER_ID_PYTHON)
         .def("generate_another_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"), py::arg("encoderOptions") = py::dict());
 
     m.def("initialize_prt", &initializePRT, "prt_path"_a = "");
