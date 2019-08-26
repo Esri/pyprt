@@ -66,17 +66,18 @@ public:
         const BoolMap& CGAboolreport
     ) override;
 
-    std::unordered_set<uint32_t> PyCallbacks::getInitialShapesIndices() const;
 
-    std::map<uint32_t, std::vector<std::vector<double>>> getVertices() const;
+    uint32_t PyCallbacks::getInitialShapeIndex(size_t i) const;
 
-    std::map<uint32_t, std::vector<std::vector<uint32_t>>> getFaces() const;
+    std::vector<std::vector<double>> getVertices(uint32_t idx) const;
 
-    std::map<uint32_t, FloatMap> PyCallbacks::getFloatReport() const;
+    std::vector<std::vector<uint32_t>> getFaces(uint32_t idx) const;
 
-    std::map<uint32_t, StringMap> getStringReport() const;
+    FloatMap PyCallbacks::getFloatReport(uint32_t idx) const;
 
-    std::map<uint32_t, BoolMap> getBoolReport() const;
+    StringMap getStringReport(uint32_t idx) const;
+
+    BoolMap getBoolReport(uint32_t idx) const;
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
 		pybind11::print(L"GENERATE ERROR:", isIndex, status, message);

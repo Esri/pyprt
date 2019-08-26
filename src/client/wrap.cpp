@@ -214,26 +214,28 @@ void Geometry::setGeometry(std::vector<double> vert, size_t vertCnt, std::vector
 
 class GeneratedGeometry {
 public:
-    GeneratedGeometry(std::map<uint32_t, std::vector<std::vector<double>>> vertMatrix, std::map<uint32_t, std::vector<std::vector<uint32_t>>> fMatrix, std::map<uint32_t, FloatMap> floatRep, std::map<uint32_t, StringMap> stringRep, std::map<uint32_t, BoolMap> boolRep);
+    GeneratedGeometry(uint32_t initialShapeIdx, std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep);
     GeneratedGeometry() { }
     ~GeneratedGeometry() { }
 
-    std::map<uint32_t, std::vector<std::vector<double>>> getGenerationVertices() { return verticesMatrix; }
-    std::map<uint32_t, std::vector<std::vector<uint32_t>>> getGenerationFaces() { return facesMatrix; }
-    std::map<uint32_t, FloatMap> getGenerationFloatReport() { return floatReportMap; }
-    std::map<uint32_t, StringMap> getGenerationStringReport() { return stringReportMap; }
-    std::map<uint32_t, BoolMap> getGenerationBoolReport() { return boolReportMap; }
+    uint32_t getInitialShapeIndex() { return initialShapeIdx; }
+    std::vector<std::vector<double>> getGenerationVertices() { return verticesMatrix; }
+    std::vector<std::vector<uint32_t>> getGenerationFaces() { return facesMatrix; }
+    FloatMap getGenerationFloatReport() { return floatReportMap; }
+    StringMap getGenerationStringReport() { return stringReportMap; }
+    BoolMap getGenerationBoolReport() { return boolReportMap; }
 
 private:
-    std::map<uint32_t, std::vector<std::vector<double>>> verticesMatrix;
-    std::map<uint32_t, std::vector<std::vector<uint32_t>>> facesMatrix;
-    std::map<uint32_t, FloatMap> floatReportMap;
-    std::map<uint32_t, StringMap> stringReportMap;
-    std::map<uint32_t, BoolMap> boolReportMap;
+    uint32_t initialShapeIdx;
+    std::vector<std::vector<double>> verticesMatrix;
+    std::vector<std::vector<uint32_t>> facesMatrix;
+    FloatMap floatReportMap;
+    StringMap stringReportMap;
+    BoolMap boolReportMap;
 };
 
-
-GeneratedGeometry::GeneratedGeometry(std::map<uint32_t, std::vector<std::vector<double>>> vertMatrix, std::map<uint32_t, std::vector<std::vector<uint32_t>>> fMatrix, std::map<uint32_t, FloatMap> floatRep, std::map<uint32_t, StringMap> stringRep, std::map<uint32_t, BoolMap> boolRep) {
+GeneratedGeometry::GeneratedGeometry(uint32_t initShapeIdx, std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep) {
+    initialShapeIdx = initShapeIdx;
     verticesMatrix = vertMatrix;
     facesMatrix = fMatrix;
     floatReportMap = floatRep;
@@ -249,8 +251,8 @@ namespace {
         ModelGenerator(const std::vector<Geometry>& myGeo);
         ~ModelGenerator() { }
 
-        GeneratedGeometry generateModel(const std::string& rulePackagePath, py::dict shapeAttributes, py::dict encoderOptions, const wchar_t* encoderName);
-        GeneratedGeometry generateAnotherModel(py::dict shapeAttributes, py::dict encoderOptions);
+        std::vector<GeneratedGeometry> generateModel(const std::string& rulePackagePath, py::dict shapeAttributes, py::dict encoderOptions, const wchar_t* encoderName);
+        std::vector<GeneratedGeometry> generateAnotherModel(py::dict shapeAttributes, py::dict encoderOptions);
 
         bool isCustomGeometry() { return customFlag; }
 
@@ -342,7 +344,7 @@ namespace {
         }
     }
 
-    GeneratedGeometry ModelGenerator::generateModel(const std::string& rulePackagePath,
+    std::vector<GeneratedGeometry> ModelGenerator::generateModel(const std::string& rulePackagePath,
             py::dict shapeAttributes,
             py::dict encoderOptions = {},
             const wchar_t* encoderName = ENCODER_ID_PYTHON)
@@ -352,7 +354,9 @@ namespace {
         double duration;
         start = std::clock();
 
-        GeneratedGeometry newGeneratedGeo;
+        std::vector<GeneratedGeometry> newGeneratedGeo;
+        newGeneratedGeo.reserve(initialShapesBuilders.size());
+
 
         try {
             if (!prtCtx) {
@@ -468,7 +472,11 @@ namespace {
                     return {};
                 }
 
-                newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+                for (size_t i = 0; i < initialShapesBuilders.size(); i++) {
+                    uint32_t theIndex = foc->getInitialShapeIndex(i);
+                    GeneratedGeometry geo(theIndex, foc->getVertices(theIndex), foc->getFaces(theIndex), foc->getFloatReport(theIndex), foc->getStringReport(theIndex), foc->getBoolReport(theIndex));
+                    newGeneratedGeo.emplace_back(geo);
+                }
 
             }
             else {
@@ -510,13 +518,14 @@ namespace {
         return newGeneratedGeo;
     }
 
-    GeneratedGeometry ModelGenerator::generateAnotherModel(py::dict shapeAttributes, py::dict encoderOptions = {})
+    std::vector<GeneratedGeometry> ModelGenerator::generateAnotherModel(py::dict shapeAttributes, py::dict encoderOptions = {})
     {
         std::clock_t start;
         double duration;
         start = std::clock();
 
-        GeneratedGeometry newGeneratedGeo;
+        std::vector<GeneratedGeometry> newGeneratedGeo;
+        newGeneratedGeo.reserve(initialShapesBuilders.size());
 
         try {
             if (!prtCtx) {
@@ -591,7 +600,13 @@ namespace {
                     return {};
                 }
 
-                newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+                //newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
+                for (size_t i = 0; i < initialShapesBuilders.size(); i++) {
+                    uint32_t theIndex = foc->getInitialShapeIndex(i);
+                    GeneratedGeometry geo(theIndex, foc->getVertices(theIndex), foc->getFaces(theIndex), foc->getFloatReport(theIndex), foc->getStringReport(theIndex), foc->getBoolReport(theIndex));
+                    newGeneratedGeo.emplace_back(geo);
+                }
+
             }
             else {
                 const pcu::Path output_path = executablePath.getParent().getParent() / "output";
@@ -704,13 +719,14 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_face_counts_count", &Geometry::getFaceCountsCount);
 
     py::class_<GeneratedGeometry>(m, "GeneratedGeometry")
-        .def(py::init<std::map<uint32_t, std::vector<std::vector<double>>>, std::map<uint32_t, std::vector<std::vector<uint32_t>>>, std::map<uint32_t, FloatMap>, std::map<uint32_t, StringMap>, std::map<uint32_t, BoolMap>>())
+        .def(py::init<uint32_t, std::vector<std::vector<double>>, std::vector<std::vector<uint32_t>>, FloatMap, StringMap, BoolMap>())
+        .def("get_initial_shape_index", &GeneratedGeometry::getInitialShapeIndex)
         .def("get_vertices", &GeneratedGeometry::getGenerationVertices)
         .def("get_faces", &GeneratedGeometry::getGenerationFaces)
         .def("get_float_report", &GeneratedGeometry::getGenerationFloatReport)
         .def("get_string_report", &GeneratedGeometry::getGenerationStringReport)
         .def("get_bool_report", &GeneratedGeometry::getGenerationBoolReport);
 
-    m.def("print_val",&py_printVal,"Test Python function for value printing.");
+    m.def("print_val", &py_printVal,"Test Python function for value printing.");
     m.def("print_dict", &py_testprintdict, "Test function for dictionary printing.");
 }

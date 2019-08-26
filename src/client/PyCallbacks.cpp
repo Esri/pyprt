@@ -70,27 +70,29 @@ void PyCallbacks::addReports(const uint32_t initialShapeIndex, const FloatMap& C
     CGAboolReportsMap.insert({ initialShapeIndex, CGAboolreport });
 }
 
-std::unordered_set<uint32_t> PyCallbacks::getInitialShapesIndices() const {
-    return initialShapesIndices;
+uint32_t PyCallbacks::getInitialShapeIndex(size_t i) const {
+    auto it = initialShapesIndices.begin();
+    std::advance(it, i);
+    return *it;
 }
 
 
-std::map<uint32_t, std::vector<std::vector<double>>> PyCallbacks::getVertices() const {
-    return verticesMap;
+std::vector<std::vector<double>> PyCallbacks::getVertices(uint32_t index) const {
+    return verticesMap.at(index);
 }
 
-std::map<uint32_t, std::vector<std::vector<uint32_t>>> PyCallbacks::getFaces() const {
-    return facesMap;
+std::vector<std::vector<uint32_t>> PyCallbacks::getFaces(uint32_t index) const {
+    return facesMap.at(index);
 }
 
-std::map<uint32_t, FloatMap> PyCallbacks::getFloatReport() const {
-    return CGAfloatReportsMap;
+FloatMap PyCallbacks::getFloatReport(uint32_t index) const {
+    return CGAfloatReportsMap.at(index);
 }
 
-std::map<uint32_t, StringMap> PyCallbacks::getStringReport() const {
-    return CGAstringReportsMap;
+StringMap PyCallbacks::getStringReport(uint32_t index) const {
+    return CGAstringReportsMap.at(index);
 }
 
-std::map<uint32_t, BoolMap> PyCallbacks::getBoolReport() const {
-    return CGAboolReportsMap;
+BoolMap PyCallbacks::getBoolReport(uint32_t index) const {
+    return CGAboolReportsMap.at(index);
 }
