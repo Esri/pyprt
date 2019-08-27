@@ -181,6 +181,8 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
         }
     }
 
+    if (!(getOptions()->getBool(EO_EMIT_GEOMETRY)) && !(getOptions()->getBool(EO_EMIT_REPORTS)))
+        cb->addIndex(initialShapeIndex);
 }
 
 

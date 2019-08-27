@@ -169,11 +169,11 @@ namespace py = pybind11;
 
 class Geometry {
 public:
-    Geometry(std::vector<double> vert);
+    Geometry(const std::vector<double>& vert);
     Geometry() { }
     ~Geometry() { }
 
-    void setGeometry(std::vector<double> vert, size_t vertCnt, std::vector<uint32_t> ind, size_t indCnt, std::vector<uint32_t> faceCnt, size_t faceCntCnt);
+    void setGeometry(const std::vector<double>& vert, const size_t vertCnt, const std::vector<uint32_t>& ind, const size_t indCnt, const std::vector<uint32_t>& faceCnt, const size_t faceCntCnt);
     double* getVertices() { return vectorToArray(vertices); }
     size_t getVertexCount() { return vertexCount; }
     uint32_t* getIndices() { return vectorToArray(indices); }
@@ -190,7 +190,7 @@ protected:
     size_t faceCountsCount;
 };
 
-Geometry::Geometry(std::vector<double> vert) {
+Geometry::Geometry(const std::vector<double>& vert) {
     vertices = vert;
     vertexCount = vert.size();
     indexCount = (size_t)(vertexCount / 3);
@@ -203,7 +203,7 @@ Geometry::Geometry(std::vector<double> vert) {
     faceCounts = faceVector;
 }
 
-void Geometry::setGeometry(std::vector<double> vert, size_t vertCnt, std::vector<uint32_t> ind, size_t indCnt, std::vector<uint32_t> faceCnt, size_t faceCntCnt) {
+void Geometry::setGeometry(const std::vector<double>& vert, const size_t vertCnt, const std::vector<uint32_t>& ind, const size_t indCnt, const std::vector<uint32_t>& faceCnt, const size_t faceCntCnt) {
     vertices = vert;
     vertexCount = vertCnt;
     indices = ind;

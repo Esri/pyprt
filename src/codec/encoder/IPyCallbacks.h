@@ -42,8 +42,8 @@ public:
 
     virtual void addGeometry(
         const uint32_t initialShapeIndex,
-        const std::vector<std::vector<double>> verticesCoord,
-        const std::vector<std::vector<uint32_t>> facesCoord
+        const std::vector<std::vector<double>>& verticesCoord,
+        const std::vector<std::vector<uint32_t>>& facesCoord
     ) = 0;
 
     virtual void addReports(
@@ -52,5 +52,7 @@ public:
         const StringMap& CGAstringreport,
         const BoolMap& CGAboolreport
     ) = 0;
+
+    virtual void addIndex(const uint32_t initialShapeIndex) = 0;
 
 };

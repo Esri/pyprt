@@ -55,8 +55,8 @@ public:
 
     void addGeometry(
         const uint32_t initialShapeIndex,
-        const std::vector<std::vector<double>> verticesCoord,
-        const std::vector<std::vector<uint32_t>> facesCoord
+        const std::vector<std::vector<double>>& verticesCoord,
+        const std::vector<std::vector<uint32_t>>& facesCoord
     ) override;
 
     void addReports(
@@ -65,6 +65,8 @@ public:
         const StringMap& CGAstringreport,
         const BoolMap& CGAboolreport
     ) override;
+
+    void addIndex(const uint32_t initialShapeIndex) override;
 
 
     uint32_t getInitialShapeIndex(size_t i) const;
