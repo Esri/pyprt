@@ -71,15 +71,15 @@ public:
 
     uint32_t getInitialShapeIndex(size_t i) const;
 
-    std::vector<std::vector<double>> getVertices(uint32_t idx) const;
+    std::vector<std::vector<double>> getVertices(const uint32_t idx) const;
 
-    std::vector<std::vector<uint32_t>> getFaces(uint32_t idx) const;
+    std::vector<std::vector<uint32_t>> getFaces(const uint32_t idx) const;
 
-    FloatMap getFloatReport(uint32_t idx) const;
+    FloatMap getFloatReport(const uint32_t idx) const;
 
-    StringMap getStringReport(uint32_t idx) const;
+    StringMap getStringReport(const uint32_t idx) const;
 
-    BoolMap getBoolReport(uint32_t idx) const;
+    BoolMap getBoolReport(const uint32_t idx) const;
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
 		pybind11::print(L"GENERATE ERROR:", isIndex, status, message);

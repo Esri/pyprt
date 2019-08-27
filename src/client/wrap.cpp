@@ -214,8 +214,7 @@ void Geometry::setGeometry(const std::vector<double>& vert, const size_t vertCnt
 
 class GeneratedGeometry {
 public:
-    //GeneratedGeometry(const uint32_t& initialShapeIdx, const std::vector<std::vector<double>>& vertMatrix, const std::vector<std::vector<uint32_t>>& fMatrix, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep);
-    GeneratedGeometry(uint32_t initialShapeIdx, std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep);
+    GeneratedGeometry(const uint32_t initialShapeIdx, const std::vector<std::vector<double>>& vertMatrix, const std::vector<std::vector<uint32_t>>& fMatrix, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep);
     GeneratedGeometry() { }
     ~GeneratedGeometry() { }
 
@@ -235,8 +234,7 @@ private:
     BoolMap boolReportMap;
 };
 
-//GeneratedGeometry::GeneratedGeometry(const uint32_t& initShapeIdx, const std::vector<std::vector<double>>& vertMatrix, const std::vector<std::vector<uint32_t>>& fMatrix, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep) {
-GeneratedGeometry::GeneratedGeometry(uint32_t initShapeIdx, std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep) {
+GeneratedGeometry::GeneratedGeometry(const uint32_t initShapeIdx, const std::vector<std::vector<double>>& vertMatrix, const std::vector<std::vector<uint32_t>>& fMatrix, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep) {
     initialShapeIdx = initShapeIdx;
     verticesMatrix = vertMatrix;
     facesMatrix = fMatrix;
@@ -440,9 +438,9 @@ namespace {
 
             // Initial shapes
             std::vector<pcu::InitialShapePtr> initialShapePtrs;
-            //initialShapePtrs.reserve(initialShapesBuilders.size());
+            initialShapePtrs.reserve(initialShapesBuilders.size());
             std::vector<const prt::InitialShape*> initialShapes;
-            //initialShapes.reserve(initialShapesBuilders.size());
+            initialShapes.reserve(initialShapesBuilders.size());
 
             for (size_t ind = 0; ind < initialShapesBuilders.size(); ind++) {
 
@@ -564,9 +562,9 @@ namespace {
 
             // Initial Shapes
             std::vector<pcu::InitialShapePtr> initialShapePtrs;
-            //initialShapePtrs.reserve(initialShapesBuilders.size());
+            initialShapePtrs.reserve(initialShapesBuilders.size());
             std::vector<const prt::InitialShape*> initialShapes;
-            //initialShapes.reserve(initialShapesBuilders.size());
+            initialShapes.reserve(initialShapesBuilders.size());
 
             for (size_t ind = 0; ind < initialShapesBuilders.size(); ind++) {
 
@@ -606,7 +604,6 @@ namespace {
                     return {};
                 }
 
-                //newGeneratedGeo = GeneratedGeometry(foc->getVertices(), foc->getFaces(), foc->getFloatReport(), foc->getStringReport(), foc->getBoolReport());
                 for (size_t i = 0; i < initialShapesBuilders.size(); i++) {
                     uint32_t theIndex = foc->getInitialShapeIndex(i);
                     GeneratedGeometry geo(theIndex, foc->getVertices(theIndex), foc->getFaces(theIndex), foc->getFloatReport(theIndex), foc->getStringReport(theIndex), foc->getBoolReport(theIndex));
@@ -725,8 +722,7 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_face_counts_count", &Geometry::getFaceCountsCount);
 
     py::class_<GeneratedGeometry>(m, "GeneratedGeometry")
-        //.def(py::init<const uint32_t&, const std::vector<std::vector<double>>&, const std::vector<std::vector<uint32_t>>&, const FloatMap&, const StringMap&, const BoolMap&>())
-        .def(py::init<uint32_t, std::vector<std::vector<double>>, std::vector<std::vector<uint32_t>>, FloatMap, StringMap, BoolMap>())
+        .def(py::init<const uint32_t, const std::vector<std::vector<double>>&, const std::vector<std::vector<uint32_t>>&, const FloatMap&, const StringMap&, const BoolMap&>())
         .def("get_initial_shape_index", &GeneratedGeometry::getInitialShapeIndex)
         .def("get_vertices", &GeneratedGeometry::getGenerationVertices)
         .def("get_faces", &GeneratedGeometry::getGenerationFaces)

@@ -2,50 +2,45 @@
 import numpy as np
 import copy
 
-def collect_initial_shape_indices(report_or_matrix):
+def collect_initial_shape_indices(models):
     generation_indices = []
-    for x in report_or_matrix:
-        if generation_indices.count(x) == 0:
-            generation_indices.append(x)
+    for m in models:
+        if generation_indices.count(m.get_initial_shape_index()) == 0:
+            generation_indices.append(m.get_initial_shape_index())
     return generation_indices
 
 
-def visualize_PRT_results(model, printing = False): ###
-    if model:
-        geometry_vertices = model.get_vertices()
-        rep_float = model.get_float_report()
-        rep_string = model.get_string_report()
-        rep_bool = model.get_bool_report()
-        combined_rep = combine_reports(model)
+def visualize_PRT_results(models, printing = False):
+    initial_shape_idx = collect_initial_shape_indices(models)
 
-        if len(geometry_vertices) > 0:
-            initial_shape_idx = collect_initial_shape_indices(geometry_vertices)
-        elif len(combined_rep) > 0:
-            initial_shape_idx = collect_initial_shape_indices(combined_rep)
-        else:
-            return
+    print("\nNumber of generated geometries (= nber of initial shapes):")
+    print(len(initial_shape_idx))
 
-        print("\nNumber of generated geometries (= nber of initial shapes):")
-        print(len(initial_shape_idx))
+    for m in models:
+        if m:
+            geometry_vertices = m.get_vertices()
+            rep_float = m.get_float_report()
+            rep_string = m.get_string_report()
+            rep_bool = m.get_bool_report()
+            combined_rep = combine_reports(m)
 
-        for i in initial_shape_idx:
             print()
-            print("Initial Shape Index: " + str(i))
+            print("Initial Shape Index: " + str(m.get_initial_shape_index()))
 
             if len(geometry_vertices) > 0:
                 print()
-                geo_numpy = np.array(geometry_vertices[i])
+                geo_numpy = np.array(geometry_vertices)
                 print("Size of the matrix containing the model vertices (with possible duplicates): " + str(geo_numpy.shape))
 
                 geo_numpy_unique, indices = np.unique(np.around(geo_numpy,decimals=3), return_index = True, axis=0)
                 print("Size of the matrix containing the model vertices (no duplicates): " + str(geo_numpy[indices].shape))
 
-                print("Size of the matrix containing the model faces: " + str(np.array(model.get_faces()[i]).shape))
+                print("Size of the matrix containing the model faces: " + str(np.array(m.get_faces()).shape))
 
             if len(combined_rep) > 0 :
                 print()
                 print("Report of the generated model:")
-                print(combined_rep[i])
+                print(combined_rep)
 
                 print()
                 if printing :
@@ -53,16 +48,21 @@ def visualize_PRT_results(model, printing = False): ###
                     print(rep_float)
                     print(rep_string)
                     print(rep_bool)
-    else:
-        print("\nError while instanciating the model generator.")
+        else:
+            print("\nError while instanciating the model generator.")
 
 
 def combine_reports(model):
     combined_dict = {}
-    for x in model.get_float_report():
-        dict_per_ind = {}
-        dict_per_ind.update(model.get_float_report()[x])
-        dict_per_ind.update(model.get_string_report()[x])
-        dict_per_ind.update(model.get_bool_report()[x])
-        combined_dict[x] = dict_per_ind
+    combined_dict.update(model.get_float_report())
+    combined_dict.update(model.get_string_report())
+    combined_dict.update(model.get_bool_report())
+    return combined_dict
+
+def combine_reports_all(models):
+    combined_dict = {}
+    for m in models:
+        combined_dict.update(m.get_float_report())
+        combined_dict.update(m.get_string_report())
+        combined_dict.update(m.get_bool_report())
     return combined_dict

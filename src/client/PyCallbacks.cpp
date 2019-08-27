@@ -84,35 +84,35 @@ uint32_t PyCallbacks::getInitialShapeIndex(size_t i) const {
 }
 
 
-std::vector<std::vector<double>> PyCallbacks::getVertices(uint32_t index) const {
+std::vector<std::vector<double>> PyCallbacks::getVertices(const uint32_t index) const {
     if ((verticesMap.find(index) == verticesMap.end()) || (verticesMap.empty()))
         return {};
     else
         return verticesMap.at(index);
 }
 
-std::vector<std::vector<uint32_t>> PyCallbacks::getFaces(uint32_t index) const {
+std::vector<std::vector<uint32_t>> PyCallbacks::getFaces(const uint32_t index) const {
     if ((facesMap.find(index) == facesMap.end()) || (facesMap.empty()))
         return {};
     else
         return facesMap.at(index);
 }
 
-FloatMap PyCallbacks::getFloatReport(uint32_t index) const {
+FloatMap PyCallbacks::getFloatReport(const uint32_t index) const {
     if ((CGAfloatReportsMap.find(index) == CGAfloatReportsMap.end()) || (CGAfloatReportsMap.empty()))
         return {};
     else
         return CGAfloatReportsMap.at(index);
 }
 
-StringMap PyCallbacks::getStringReport(uint32_t index) const {
+StringMap PyCallbacks::getStringReport(const uint32_t index) const {
     if ((CGAstringReportsMap.find(index) == CGAstringReportsMap.end()) || (CGAstringReportsMap.empty()))
         return {};
     else
         return CGAstringReportsMap.at(index);
 }
 
-BoolMap PyCallbacks::getBoolReport(uint32_t index) const {
+BoolMap PyCallbacks::getBoolReport(const uint32_t index) const {
     if ((CGAboolReportsMap.find(index) == CGAboolReportsMap.end()) || (CGAboolReportsMap.empty()))
         return {};
     else
