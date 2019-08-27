@@ -39,8 +39,8 @@
 #include <ctime>
 
 /**
-    * commonly used constants
-    */
+  * commonly used constants
+  */
 const wchar_t* FILE_CGA_REPORT = L"CGAReport.txt";
 const wchar_t* ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
 const wchar_t* ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
@@ -50,7 +50,7 @@ pcu::Path executablePath;
 
 
 template <typename T>
-T* vectorToArray(std::vector<T> data) {
+T* vectorToArray(const std::vector<T>& data) {
     size_t array_size = data.size();
     T* tmp = new T[array_size];
 
@@ -72,8 +72,8 @@ void copyToCStr(const std::string& str, char* cstr, size_t& cstrSize) {
 }
 
 /**
- * custom console logger to redirect PRT log events into the python output
- */
+  * custom console logger to redirect PRT log events into the python output
+  */
 class PythonLogHandler : public prt::LogHandler {
 public:
 	PythonLogHandler() = default;
@@ -113,8 +113,8 @@ private:
 
 
 /**
-    * Helper struct to manage PRT lifetime (e.g. the prt::init() call)
-    */
+  * Helper struct to manage PRT lifetime (e.g. the prt::init() call)
+  */
 struct PRTContext {
     PRTContext(prt::LogLevel minimalLogLevel, std::string const & sdkPath) {
         executablePath = sdkPath.empty() ? pcu::getExecutablePath() : sdkPath;
@@ -143,8 +143,8 @@ struct PRTContext {
         return (bool)mPRTHandle;
     }
 
-	PythonLogHandler          mLogHandler;
-    pcu::ObjectPtr            mPRTHandle;
+	PythonLogHandler mLogHandler;
+    pcu::ObjectPtr mPRTHandle;
 };
 
 namespace {
@@ -214,6 +214,7 @@ void Geometry::setGeometry(std::vector<double> vert, size_t vertCnt, std::vector
 
 class GeneratedGeometry {
 public:
+    //GeneratedGeometry(const uint32_t& initialShapeIdx, const std::vector<std::vector<double>>& vertMatrix, const std::vector<std::vector<uint32_t>>& fMatrix, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep);
     GeneratedGeometry(uint32_t initialShapeIdx, std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep);
     GeneratedGeometry() { }
     ~GeneratedGeometry() { }
@@ -234,6 +235,7 @@ private:
     BoolMap boolReportMap;
 };
 
+//GeneratedGeometry::GeneratedGeometry(const uint32_t& initShapeIdx, const std::vector<std::vector<double>>& vertMatrix, const std::vector<std::vector<uint32_t>>& fMatrix, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep) {
 GeneratedGeometry::GeneratedGeometry(uint32_t initShapeIdx, std::vector<std::vector<double>> vertMatrix, std::vector<std::vector<uint32_t>> fMatrix, FloatMap floatRep, StringMap stringRep, BoolMap boolRep) {
     initialShapeIdx = initShapeIdx;
     verticesMatrix = vertMatrix;
@@ -438,7 +440,9 @@ namespace {
 
             // Initial shapes
             std::vector<pcu::InitialShapePtr> initialShapePtrs;
+            //initialShapePtrs.reserve(initialShapesBuilders.size());
             std::vector<const prt::InitialShape*> initialShapes;
+            //initialShapes.reserve(initialShapesBuilders.size());
 
             for (size_t ind = 0; ind < initialShapesBuilders.size(); ind++) {
 
@@ -475,7 +479,7 @@ namespace {
                 for (size_t i = 0; i < initialShapesBuilders.size(); i++) {
                     uint32_t theIndex = foc->getInitialShapeIndex(i);
                     GeneratedGeometry geo(theIndex, foc->getVertices(theIndex), foc->getFaces(theIndex), foc->getFloatReport(theIndex), foc->getStringReport(theIndex), foc->getBoolReport(theIndex));
-                    newGeneratedGeo.emplace_back(geo);
+                    newGeneratedGeo.push_back(geo);
                 }
 
             }
@@ -560,7 +564,9 @@ namespace {
 
             // Initial Shapes
             std::vector<pcu::InitialShapePtr> initialShapePtrs;
+            //initialShapePtrs.reserve(initialShapesBuilders.size());
             std::vector<const prt::InitialShape*> initialShapes;
+            //initialShapes.reserve(initialShapesBuilders.size());
 
             for (size_t ind = 0; ind < initialShapesBuilders.size(); ind++) {
 
@@ -604,7 +610,7 @@ namespace {
                 for (size_t i = 0; i < initialShapesBuilders.size(); i++) {
                     uint32_t theIndex = foc->getInitialShapeIndex(i);
                     GeneratedGeometry geo(theIndex, foc->getVertices(theIndex), foc->getFaces(theIndex), foc->getFloatReport(theIndex), foc->getStringReport(theIndex), foc->getBoolReport(theIndex));
-                    newGeneratedGeo.emplace_back(geo);
+                    newGeneratedGeo.push_back(geo);
                 }
 
             }
@@ -719,6 +725,7 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_face_counts_count", &Geometry::getFaceCountsCount);
 
     py::class_<GeneratedGeometry>(m, "GeneratedGeometry")
+        //.def(py::init<const uint32_t&, const std::vector<std::vector<double>>&, const std::vector<std::vector<uint32_t>>&, const FloatMap&, const StringMap&, const BoolMap&>())
         .def(py::init<uint32_t, std::vector<std::vector<double>>, std::vector<std::vector<uint32_t>>, FloatMap, StringMap, BoolMap>())
         .def("get_initial_shape_index", &GeneratedGeometry::getInitialShapeIndex)
         .def("get_vertices", &GeneratedGeometry::getGenerationVertices)

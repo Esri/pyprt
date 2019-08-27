@@ -67,13 +67,13 @@ public:
     ) override;
 
 
-    uint32_t PyCallbacks::getInitialShapeIndex(size_t i) const;
+    uint32_t getInitialShapeIndex(size_t i) const;
 
     std::vector<std::vector<double>> getVertices(uint32_t idx) const;
 
     std::vector<std::vector<uint32_t>> getFaces(uint32_t idx) const;
 
-    FloatMap PyCallbacks::getFloatReport(uint32_t idx) const;
+    FloatMap getFloatReport(uint32_t idx) const;
 
     StringMap getStringReport(uint32_t idx) const;
 
