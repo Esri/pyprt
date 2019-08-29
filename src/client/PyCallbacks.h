@@ -44,7 +44,7 @@ private:
     std::map<uint32_t, FloatMap> CGAfloatReportsMap;
     std::map<uint32_t, StringMap> CGAstringReportsMap;
     std::map<uint32_t, BoolMap> CGAboolReportsMap;
-    std::map<uint32_t, std::vector<std::vector<double>>> verticesMap;
+    std::map<uint32_t, std::vector<double>> verticesMap;
     std::map<uint32_t, std::vector<std::vector<uint32_t>>> facesMap;
 
 public:
@@ -55,7 +55,7 @@ public:
 
     void addGeometry(
         const uint32_t initialShapeIndex,
-        const std::vector<std::vector<double>>& verticesCoord,
+        const std::vector<double>& verticesCoord,
         const std::vector<std::vector<uint32_t>>& facesCoord
     ) override;
 
@@ -68,10 +68,9 @@ public:
 
     void addIndex(const uint32_t initialShapeIndex) override;
 
-
     uint32_t getInitialShapeIndex(size_t i) const;
 
-    std::vector<std::vector<double>> getVertices(const uint32_t idx) const;
+    std::vector<double> getVertices(const uint32_t idx) const;
 
     std::vector<std::vector<uint32_t>> getFaces(const uint32_t idx) const;
 

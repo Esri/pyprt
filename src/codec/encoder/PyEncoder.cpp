@@ -149,7 +149,7 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
         mEncodePreparator->fetchFinalizedInstances(finalizedInstances, ENC_PREP_FLAGS);
 
         for (const auto& instance : finalizedInstances) {
-            std::vector<std::vector<double>> coordMatrix;
+            std::vector<double> coordMatrix;
             std::vector<std::vector<uint32_t>> faceMatrix;
 
             for (const prtx::MeshPtr& mesh : instance.getGeometry()->getMeshes()) {
@@ -157,15 +157,7 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
                 const prtx::DoubleVector& vc = mesh->getVertexCoords();
                 const uint32_t faceCnt = mesh->getFaceCount();
 
-                for (size_t indI = 0; indI < vc.size() / 3; indI++)
-                {
-                    std::vector<double> vertexCoord;
-                    for (int indJ = 0; indJ < 3; indJ++)
-                    {
-                        vertexCoord.push_back(vc[3 * indI + indJ]);
-                    }
-                    coordMatrix.push_back(vertexCoord);
-                }
+                coordMatrix.insert(coordMatrix.end(), vc.begin(), vc.end());
 
                 for (uint32_t fi = 0; fi < faceCnt; ++fi) {
                     const uint32_t* vtxIdx = mesh->getFaceVertexIndices(fi);

@@ -29,16 +29,15 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <tuple>
 
 
-void PyCallbacks::addGeometry(const uint32_t initialShapeIndex, const std::vector<std::vector<double>>& verticesCoord, const std::vector<std::vector<uint32_t>>& facesCoord) {
+void PyCallbacks::addGeometry(const uint32_t initialShapeIndex, const std::vector<double>& verticesCoord, const std::vector<std::vector<uint32_t>>& facesCoord) {
     
     if (!verticesCoord.empty()) {
         auto it = verticesMap.find(initialShapeIndex);
 
         if (it != verticesMap.end()) {
-            std::vector<std::vector<double>> existVertMat = verticesMap.at(initialShapeIndex);
+            std::vector<double> existVertMat = verticesMap.at(initialShapeIndex);
             existVertMat.insert(existVertMat.begin(), verticesCoord.begin(), verticesCoord.end());
             verticesMap.at(initialShapeIndex) = existVertMat;
         }
@@ -84,7 +83,7 @@ uint32_t PyCallbacks::getInitialShapeIndex(size_t i) const {
 }
 
 
-std::vector<std::vector<double>> PyCallbacks::getVertices(const uint32_t index) const {
+std::vector<double> PyCallbacks::getVertices(const uint32_t index) const {
     if ((verticesMap.find(index) == verticesMap.end()) || (verticesMap.empty()))
         return {};
     else

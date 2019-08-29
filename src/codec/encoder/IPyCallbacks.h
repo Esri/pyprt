@@ -42,7 +42,7 @@ public:
 
     virtual void addGeometry(
         const uint32_t initialShapeIndex,
-        const std::vector<std::vector<double>>& verticesCoord,
+        const std::vector<double>& verticesCoord,
         const std::vector<std::vector<uint32_t>>& facesCoord
     ) = 0;
 
