@@ -1,6 +1,8 @@
 # Python utility functions
 import numpy as np
 import copy
+# import pyprt
+# from arcgis.geometry import Geometry
 
 def collect_initial_shape_indices(models):
     generation_indices = []
@@ -59,10 +61,12 @@ def combine_reports(model):
     combined_dict.update(model.get_bool_report())
     return combined_dict
 
-def combine_reports_all(models):
-    combined_dict = {}
-    for m in models:
-        combined_dict.update(m.get_float_report())
-        combined_dict.update(m.get_string_report())
-        combined_dict.update(m.get_bool_report())
-    return combined_dict
+
+def convert_2darcgis_to_pyprt(geometry_2d):
+    geo = geometry_2d[0]
+    a = geo[:-1]
+    b = np.flip(a,axis=0)
+    b[:,1] *= -1
+    c = np.insert(b, 1, 0, axis=1)
+    d = np.reshape(c,(1,c.shape[0]*c.shape[1]))
+    return (d.tolist()[0])
