@@ -252,11 +252,12 @@ void GeneratedGeometry::convertGeometryIntoPythonStyle() {
     for(size_t indI = 0; indI < verticesVect.size() / 3; indI++)
     {
         std::vector<double> vertexCoord;
+        vertexCoord.reserve(3);
         for (int indJ = 0; indJ < 3; indJ++)
         {
-            vertexCoord.push_back(verticesVect[3 * indI + indJ]);
+            vertexCoord.emplace_back(verticesVect[3 * indI + indJ]);
         }
-        verticesMatrix.push_back(vertexCoord);
+        verticesMatrix.emplace_back(vertexCoord);
     }
 }
 
@@ -493,7 +494,7 @@ namespace {
                     uint32_t theIndex = foc->getInitialShapeIndex(i);
                     GeneratedGeometry geo(theIndex, foc->getVertices(theIndex), foc->getFaces(theIndex), foc->getFloatReport(theIndex), foc->getStringReport(theIndex), foc->getBoolReport(theIndex));
                     geo.convertGeometryIntoPythonStyle();
-                    newGeneratedGeo.push_back(geo);
+                    newGeneratedGeo.emplace_back(geo);
                 }
 
             }
@@ -624,7 +625,7 @@ namespace {
                     uint32_t theIndex = foc->getInitialShapeIndex(i);
                     GeneratedGeometry geo(theIndex, foc->getVertices(theIndex), foc->getFaces(theIndex), foc->getFloatReport(theIndex), foc->getStringReport(theIndex), foc->getBoolReport(theIndex));
                     geo.convertGeometryIntoPythonStyle();
-                    newGeneratedGeo.push_back(geo);
+                    newGeneratedGeo.emplace_back(geo);
                 }
 
             }
@@ -670,46 +671,6 @@ namespace {
 } // namespace
 
 
-void py_testprintdict(py::dict dict) {
-    for (auto item : dict) {
-        std::cout << "key=" << std::string(py::str(item.first)) << ", " << "value=" << std::string(py::str(item.second)) << std::endl;
-
-        if (py::isinstance<py::str>(item.first)) {
-            std::cout << "OK" << std::endl;
-            std::wstring salut = item.first.cast<std::wstring>();
-            std::wcout << L"Ceci est un wstring: " << salut << std::endl;
-        }
-
-        if (py::isinstance<py::list>(item.second.ptr())) {
-            std::cout << "It's a list!" << std::endl;
-            auto lll = item.second.cast<py::list>();
-            
-            if (py::isinstance<py::bool_>(lll[0]))
-                std::cout << "List of bool of size: " << lll.size() << std::endl;
-            else if (py::isinstance<py::float_>(lll[0]))
-                std::cout << "List of float of size: " << lll.size() << std::endl;
-            else if (py::isinstance<py::int_>(lll[0]))
-                std::cout << "List of int of size: " << lll.size() << std::endl;
-            else if (py::isinstance<py::str>(lll[0]))
-                std::cout << "List of string of size: " << lll.size() << std::endl;
-            else
-                std::cout << "Unknown list type." << std::endl;
-        }
-        else {
-            if (py::isinstance<py::bool_>(item.second.ptr())) // check for boolean at first!!
-                std::cout << "Instance of bool." << std::endl;
-            else if (py::isinstance<py::float_>(item.second.ptr()))
-                std::cout << "Instance of float." << std::endl;
-            else if (py::isinstance<py::int_>(item.second.ptr()))
-                std::cout << "Instance of int." << std::endl;
-            else if (py::isinstance<py::str>(item.second.ptr()))
-                std::cout << "Instance of string." << std::endl;
-            else
-                std::cout << "Unknown type." << std::endl;
-        }
-    }
-}
-
 int py_printVal(int val) {
     return val;
 }
@@ -748,5 +709,4 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_bool_report", &GeneratedGeometry::getGenerationBoolReport);
 
     m.def("print_val", &py_printVal,"Test Python function for value printing.");
-    m.def("print_dict", &py_testprintdict, "Test function for dictionary printing.");
 }

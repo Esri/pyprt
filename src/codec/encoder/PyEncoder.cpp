@@ -164,7 +164,7 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
                     const uint32_t vtxCnt = mesh->getFaceVertexCount(fi);
 
                     std::vector<uint32_t> v(vtxIdx, vtxIdx + vtxCnt);
-                    faceMatrix.push_back(v);
+                    faceMatrix.emplace_back(v);
                 }
 
             }
