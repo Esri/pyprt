@@ -50,7 +50,7 @@ pcu::Path executablePath;
 
 
 template <typename T>
-T* vectorToArray(const std::vector<T>& data) {
+T* copyVectorToArray(const std::vector<T>& data) {
     size_t array_size = data.size();
     T* tmp = new T[array_size];
 
@@ -173,13 +173,13 @@ public:
     Geometry() { }
     ~Geometry() { }
 
-    void setGeometry(const std::vector<double>& vert, const size_t vertCnt, const std::vector<uint32_t>& ind, const size_t indCnt, const std::vector<uint32_t>& faceCnt, const size_t faceCntCnt);
-    double* getVertices() { return vectorToArray(vertices); }
-    size_t getVertexCount() { return vertexCount; }
-    uint32_t* getIndices() { return vectorToArray(indices); }
-    size_t getIndexCount() { return indexCount; }
-    uint32_t* getFaceCounts() { return vectorToArray(faceCounts); }
-    size_t getFaceCountsCount() { return faceCountsCount; }
+    void setGeometry(const std::vector<double>& vert, const size_t& vertCnt, const std::vector<uint32_t>& ind, const size_t& indCnt, const std::vector<uint32_t>& faceCnt, const size_t& faceCntCnt);
+    double* getVertices() const { return copyVectorToArray(vertices); }
+    size_t getVertexCount() const { return vertexCount; }
+    uint32_t* getIndices() const { return copyVectorToArray(indices); }
+    size_t getIndexCount() const { return indexCount; }
+    uint32_t* getFaceCounts() const { return copyVectorToArray(faceCounts); }
+    size_t getFaceCountsCount() const { return faceCountsCount; }
     
 protected:
     std::vector<double> vertices;
@@ -203,7 +203,7 @@ Geometry::Geometry(const std::vector<double>& vert) {
     faceCounts = faceVector;
 }
 
-void Geometry::setGeometry(const std::vector<double>& vert, const size_t vertCnt, const std::vector<uint32_t>& ind, const size_t indCnt, const std::vector<uint32_t>& faceCnt, const size_t faceCntCnt) {
+void Geometry::setGeometry(const std::vector<double>& vert, const size_t& vertCnt, const std::vector<uint32_t>& ind, const size_t& indCnt, const std::vector<uint32_t>& faceCnt, const size_t& faceCntCnt) {
     vertices = vert;
     vertexCount = vertCnt;
     indices = ind;
@@ -214,18 +214,18 @@ void Geometry::setGeometry(const std::vector<double>& vert, const size_t vertCnt
 
 class GeneratedGeometry {
 public:
-    GeneratedGeometry(const uint32_t initialShapeIdx, const std::vector<double>& vertMatrix, const std::vector<std::vector<uint32_t>>& fMatrix, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep);
+    GeneratedGeometry(const uint32_t& initialShapeIdx, const std::vector<double>& vertMatrix, const std::vector<std::vector<uint32_t>>& fMatrix, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep);
     GeneratedGeometry() { }
     ~GeneratedGeometry() { }
 
     void convertGeometryIntoPythonStyle();
 
-    uint32_t getInitialShapeIndex() { return initialShapeIdx; }
-    std::vector<std::vector<double>> getGenerationVertices() { return verticesMatrix; }
-    std::vector<std::vector<uint32_t>> getGenerationFaces() { return facesMatrix; }
-    FloatMap getGenerationFloatReport() { return floatReportMap; }
-    StringMap getGenerationStringReport() { return stringReportMap; }
-    BoolMap getGenerationBoolReport() { return boolReportMap; }
+    uint32_t getInitialShapeIndex() const { return initialShapeIdx; }
+    std::vector<std::vector<double>> getGenerationVertices() const { return verticesMatrix; }
+    std::vector<std::vector<uint32_t>> getGenerationFaces() const { return facesMatrix; }
+    FloatMap getGenerationFloatReport() const { return floatReportMap; }
+    StringMap getGenerationStringReport() const { return stringReportMap; }
+    BoolMap getGenerationBoolReport() const { return boolReportMap; }
 
 private:
     uint32_t initialShapeIdx;
@@ -237,7 +237,7 @@ private:
     BoolMap boolReportMap;
 };
 
-GeneratedGeometry::GeneratedGeometry(const uint32_t initShapeIdx, const std::vector<double>& vertMatrix, const std::vector<std::vector<uint32_t>>& fMatrix, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep) {
+GeneratedGeometry::GeneratedGeometry(const uint32_t& initShapeIdx, const std::vector<double>& vertMatrix, const std::vector<std::vector<uint32_t>>& fMatrix, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep) {
     initialShapeIdx = initShapeIdx;
     verticesVect = vertMatrix;
     facesMatrix = fMatrix;
@@ -700,7 +700,7 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_face_counts_count", &Geometry::getFaceCountsCount);
 
     py::class_<GeneratedGeometry>(m, "GeneratedGeometry")
-        .def(py::init<const uint32_t, const std::vector<double>&, const std::vector<std::vector<uint32_t>>&, const FloatMap&, const StringMap&, const BoolMap&>())
+        .def(py::init<const uint32_t&, const std::vector<double>&, const std::vector<std::vector<uint32_t>>&, const FloatMap&, const StringMap&, const BoolMap&>())
         .def("get_initial_shape_index", &GeneratedGeometry::getInitialShapeIndex)
         .def("get_vertices", &GeneratedGeometry::getGenerationVertices)
         .def("get_faces", &GeneratedGeometry::getGenerationFaces)
