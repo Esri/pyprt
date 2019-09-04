@@ -145,7 +145,7 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
         std::vector<prtx::EncodePreparator::FinalizedInstance> finalizedInstances;
         mEncodePreparator->fetchFinalizedInstances(finalizedInstances, ENC_PREP_FLAGS);
 
-        for (const auto& instance : finalizedInstances) {
+        /*for (const auto& instance : finalizedInstances) {
             std::vector<double> coordMatrix;
             std::vector<std::vector<uint32_t>> faceMatrix;
 
@@ -167,8 +167,31 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
             }
 
             cb->addGeometry(instance.getInitialShapeIndex(), coordMatrix, faceMatrix);
+        }*/
+
+        for (const auto& instance : finalizedInstances) {
+            const size_t nberMeshes = instance.getGeometry()->getMeshes().size();
+            std::vector<double> vertexCoords;
+            std::vector<uint32_t> faceIndices;
+            std::vector<uint32_t> faceCounts;
+
+            for (size_t i = 0; i < nberMeshes; i++) {
+                const prtx::MeshPtr& mesh = instance.getGeometry()->getMeshes()[i];
+                vertexCoords.insert(vertexCoords.end(), mesh->getVertexCoords().begin(), mesh->getVertexCoords().end());
+
+                faceCounts.emplace_back(mesh->getFaceCount());
+
+                for (uint32_t fi = 0; fi < mesh->getFaceCount(); ++fi) {
+                    faceIndices.insert(faceIndices.end(), mesh->getFaceVertexIndices(fi), mesh->getFaceVertexIndices(fi) + mesh->getFaceVertexCount(fi));
+                    faceCounts.emplace_back(mesh->getFaceVertexCount(fi));
+                }
+            }
+
+            cb->addGeometry(instance.getInitialShapeIndex(), vertexCoords.data(), vertexCoords.size(), faceIndices.data(), faceCounts.data(), faceCounts.size());
         }
     }
+    else
+        cb->addGeometry(initialShapeIndex, nullptr, 0, nullptr, nullptr, 0);
 
     if (!(getOptions()->getBool(EO_EMIT_GEOMETRY)) && !(getOptions()->getBool(EO_EMIT_REPORTS)))
         cb->addIndex(initialShapeIndex);

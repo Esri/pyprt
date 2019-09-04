@@ -61,18 +61,6 @@ const wchar_t* ENCODER_OPT_NAME = L"name";
 pcu::Path executablePath;
 
 
-template <typename T>
-T* copyVectorToArray(const std::vector<T>& data) {
-    size_t array_size = data.size();
-    T* tmp = new T[array_size];
-
-    for (int i = 0; i < (int)array_size; i++) {
-        tmp[i] = data[i];
-    }
-
-    return tmp;
-}
-
 // cstr must have space for cstrSize characters
 // cstr will be null-terminated and the actually needed size is placed in cstrSize
 void copyToCStr(const std::string& str, char* cstr, size_t& cstrSize) {
@@ -186,11 +174,11 @@ public:
     ~Geometry() { }
 
     void setGeometry(const std::vector<double>& vert, const size_t& vertCnt, const std::vector<uint32_t>& ind, const size_t& indCnt, const std::vector<uint32_t>& faceCnt, const size_t& faceCntCnt);
-    double* getVertices() const { return copyVectorToArray(vertices); }
+    const double* getVertices() const { return vertices.data(); }
     size_t getVertexCount() const { return vertexCount; }
-    uint32_t* getIndices() const { return copyVectorToArray(indices); }
+    const uint32_t* getIndices() const { return indices.data(); }
     size_t getIndexCount() const { return indexCount; }
-    uint32_t* getFaceCounts() const { return copyVectorToArray(faceCounts); }
+    const uint32_t* getFaceCounts() const { return faceCounts.data(); }
     size_t getFaceCountsCount() const { return faceCountsCount; }
     
 protected:
