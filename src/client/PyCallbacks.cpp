@@ -1,21 +1,14 @@
 /**
- * Esri CityEngine SDK Callbacks for Geometry Encoder for Python
+ * Esri CityEngine SDK Geometry Encoder for Python
  *
- * This example demonstrates the usage of the PRTX interface
- * to write custom encoders.
- *
- * See README.md in http://github.com/ArcGIS/esri-cityengine-sdk for build instructions.
- *
- * Written by Camille Lechot
- * Esri R&D Center Zurich, Switzerland
- *
- * Copyright 2012-2017 (c) Esri R&D Center Zurich
+ * Copyright 2014-2019 Esri R&D Zurich and VRBN
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +24,7 @@
 #include <map>
 
 
-void PyCallbacks::addGeometry(const uint32_t initialShapeIndex, const std::vector<double>& verticesCoord, const std::vector<std::vector<uint32_t>>& facesCoord) {
+void PyCallbacks::addGeometry(const uint32_t& initialShapeIndex, const std::vector<double>& verticesCoord, const std::vector<std::vector<uint32_t>>& facesCoord) {
     
     if (!verticesCoord.empty()) {
         auto it = verticesMap.find(initialShapeIndex);
@@ -62,18 +55,18 @@ void PyCallbacks::addGeometry(const uint32_t initialShapeIndex, const std::vecto
     }
 }
 
-void PyCallbacks::addReports(const uint32_t initialShapeIndex, const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport) {
+void PyCallbacks::addReports(const uint32_t& initialShapeIndex, const FloatMap& CGAfloatreport, const StringMap& CGAstringreport, const BoolMap& CGAboolreport) {
     initialShapesIndices.insert(initialShapeIndex);
     CGAfloatReportsMap.insert({ initialShapeIndex, CGAfloatreport });
     CGAstringReportsMap.insert({ initialShapeIndex, CGAstringreport });
     CGAboolReportsMap.insert({ initialShapeIndex, CGAboolreport });
 }
 
-void PyCallbacks::addIndex(const uint32_t initialShapeIndex) {
+void PyCallbacks::addIndex(const uint32_t& initialShapeIndex) {
     initialShapesIndices.insert(initialShapeIndex);
 }
 
-uint32_t PyCallbacks::getInitialShapeIndex(size_t i) const {
+uint32_t PyCallbacks::getInitialShapeIndex(const size_t& i) const {
     if (initialShapesIndices.empty())
         return -1;
 
@@ -83,35 +76,35 @@ uint32_t PyCallbacks::getInitialShapeIndex(size_t i) const {
 }
 
 
-std::vector<double> PyCallbacks::getVertices(const uint32_t index) const {
+std::vector<double> PyCallbacks::getVertices(const uint32_t& index) const {
     if ((verticesMap.find(index) == verticesMap.end()) || (verticesMap.empty()))
         return {};
     else
         return verticesMap.at(index);
 }
 
-std::vector<std::vector<uint32_t>> PyCallbacks::getFaces(const uint32_t index) const {
+std::vector<std::vector<uint32_t>> PyCallbacks::getFaces(const uint32_t& index) const {
     if ((facesMap.find(index) == facesMap.end()) || (facesMap.empty()))
         return {};
     else
         return facesMap.at(index);
 }
 
-FloatMap PyCallbacks::getFloatReport(const uint32_t index) const {
+FloatMap PyCallbacks::getFloatReport(const uint32_t& index) const {
     if ((CGAfloatReportsMap.find(index) == CGAfloatReportsMap.end()) || (CGAfloatReportsMap.empty()))
         return {};
     else
         return CGAfloatReportsMap.at(index);
 }
 
-StringMap PyCallbacks::getStringReport(const uint32_t index) const {
+StringMap PyCallbacks::getStringReport(const uint32_t& index) const {
     if ((CGAstringReportsMap.find(index) == CGAstringReportsMap.end()) || (CGAstringReportsMap.empty()))
         return {};
     else
         return CGAstringReportsMap.at(index);
 }
 
-BoolMap PyCallbacks::getBoolReport(const uint32_t index) const {
+BoolMap PyCallbacks::getBoolReport(const uint32_t& index) const {
     if ((CGAboolReportsMap.find(index) == CGAboolReportsMap.end()) || (CGAboolReportsMap.empty()))
         return {};
     else
