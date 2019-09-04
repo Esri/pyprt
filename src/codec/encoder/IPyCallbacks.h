@@ -24,14 +24,32 @@
 #include <vector>
 #include <map>
 
-using FloatMap = std::map<std::string, double>;
-using StringMap = std::map<std::string, std::string>;
-using BoolMap = std::map<std::string, bool>;
-
 class IPyCallbacks : public prt::Callbacks {
 public:
 
     virtual ~IPyCallbacks() override = default;
+
+    //virtual void addGeometry(
+    //    const uint32_t initialShapeIndex,
+    //    const double* vertexCoords,
+    //    const size_t vextexCoordsCount,
+    //    const uint32_t* facesIndices,
+    //    const uint32_t* faceCounts,
+    //    const size_t faceCount
+    //) = 0;
+
+    virtual void addReports(
+        const uint32_t initialShapeIndex,
+        const wchar_t** stringReportKeys,
+        const wchar_t** stringReportValues,
+        size_t stringReportCount,
+        const wchar_t** floatReportKeys,
+        const double* floatReportValues,
+        size_t floatReportCount,
+        const wchar_t** boolReportKeys,
+        const bool* boolReportValues,
+        size_t boolReportCount
+    ) = 0;
 
     virtual void addGeometry(
         const uint32_t& initialShapeIndex,
@@ -39,13 +57,6 @@ public:
         const std::vector<std::vector<uint32_t>>& facesCoord
     ) = 0;
 
-    virtual void addReports(
-        const uint32_t& initialShapeIndex,
-        const FloatMap& CGAfloatreport,
-        const StringMap& CGAstringreport,
-        const BoolMap& CGAboolreport
-    ) = 0;
-
-    virtual void addIndex(const uint32_t& initialShapeIndex) = 0;
+    virtual void addIndex(const uint32_t initialShapeIndex) = 0;
 
 };

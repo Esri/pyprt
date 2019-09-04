@@ -31,6 +31,11 @@
 #include <map>
 
 
+using FloatMap = std::map<std::wstring, double>;
+using StringMap = std::map<std::wstring, std::wstring>;
+using BoolMap = std::map<std::wstring, bool>;
+
+
 class PyCallbacks : public IPyCallbacks {
 private:
     std::unordered_set<uint32_t> initialShapesIndices;
@@ -52,26 +57,41 @@ public:
         const std::vector<std::vector<uint32_t>>& facesCoord
     ) override;
 
+    //void addGeometry(
+    //    const uint32_t initialShapeIndex,
+    //    const double* vertexCoords,
+    //    const size_t vextexCoordsCount,
+    //    const uint32_t* facesIndices,
+    //    const uint32_t* faceCounts,
+    //    const size_t faceCount
+    //) override;
+
     void addReports(
-        const uint32_t& initialShapeIndex,
-        const FloatMap& CGAfloatreport,
-        const StringMap& CGAstringreport,
-        const BoolMap& CGAboolreport
+        const uint32_t initialShapeIndex,
+        const wchar_t** stringReportKeys,
+        const wchar_t** stringReportValues,
+        size_t stringReportCount,
+        const wchar_t** floatReportKeys,
+        const double* floatReportValues,
+        size_t floatReportCount,
+        const wchar_t** boolReportKeys,
+        const bool* boolReportValues,
+        size_t boolReportCount
     ) override;
 
-    void addIndex(const uint32_t& initialShapeIndex) override;
+    void addIndex(const uint32_t initialShapeIndex) override;
 
-    uint32_t getInitialShapeIndex(const size_t& i) const;
+    uint32_t getInitialShapeIndex(const size_t i) const;
 
-    std::vector<double> getVertices(const uint32_t& idx) const;
+    std::vector<double> getVertices(const uint32_t idx) const;
 
-    std::vector<std::vector<uint32_t>> getFaces(const uint32_t& idx) const;
+    std::vector<std::vector<uint32_t>> getFaces(const uint32_t idx) const;
 
-    FloatMap getFloatReport(const uint32_t& idx) const;
+    FloatMap getFloatReport(const uint32_t idx) const;
 
-    StringMap getStringReport(const uint32_t& idx) const;
+    StringMap getStringReport(const uint32_t idx) const;
 
-    BoolMap getBoolReport(const uint32_t& idx) const;
+    BoolMap getBoolReport(const uint32_t idx) const;
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
 		pybind11::print(L"GENERATE ERROR:", isIndex, status, message);

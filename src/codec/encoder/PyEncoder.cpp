@@ -87,42 +87,47 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
         prtx::ReportingStrategyPtr reportsCollector{ prtx::AllShapesReportingStrategy::create(context, initialShapeIndex, reportsAccumulator) };
 
         prtx::ReportsPtr rep = reportsCollector->getReports();
-        FloatMap reportFloat;
-        StringMap reportString;
-        BoolMap reportBool;
 
         if (rep) {
             prtx::Shape::ReportBoolVect& boolReps = rep->mBools;
-            for (size_t i = 0; i < boolReps.size(); i++) {
-                const wchar_t* repName = boolReps[i].first->c_str();
-                const bool repVal = boolReps[i].second;
-                std::wstring repNameWString = repName;
-                std::string s(repNameWString.begin(), repNameWString.end());
-                reportBool[s] = repVal;
+            const size_t boolRepCount = boolReps.size();
+            std::vector<const wchar_t*> boolRepKeys;
+            boolRepKeys.reserve(boolRepCount);
+            std::unique_ptr<bool[]> boolRepValues(new bool[boolRepCount]);
+
+            for (size_t i = 0; i < boolRepCount; i++) {
+                boolRepKeys[i] = boolReps[i].first->c_str();
+                boolRepValues[i] = boolReps[i].second;
             }
 
             prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
-            for (size_t i = 0; i < floatReps.size(); i++) {
-                const wchar_t* repName = floatReps[i].first->c_str();
-                const double repVal = floatReps[i].second;
-                std::wstring repNameWString = repName;
-                std::string s(repNameWString.begin(), repNameWString.end());
-                reportFloat[s] = repVal;
+            const size_t floatRepCount = floatReps.size();
+            std::vector<const wchar_t*> floatRepKeys;
+            floatRepKeys.reserve(floatRepCount);
+            std::vector<double> floatRepValues;
+            floatRepValues.reserve(floatRepCount);
+
+            for (size_t i = 0; i < floatRepCount; i++) {
+                floatRepKeys[i] = floatReps[i].first->c_str();
+                floatRepValues[i] = floatReps[i].second;
             }
 
             prtx::Shape::ReportStringVect&	stringReps = rep->mStrings;
-            for (size_t i = 0; i < stringReps.size(); i++) {
-                const wchar_t* repName = stringReps[i].first->c_str();
-                const wchar_t* repVal = stringReps[i].second->c_str();
-                std::wstring repNameWString = repName;
-                std::wstring repValWString = repVal;
-                std::string s(repNameWString.begin(), repNameWString.end());
-                std::string s2(repValWString.begin(), repValWString.end());
-                reportString[s] = s2;
-            }
-        }
+            const size_t stringRepCount = stringReps.size();
+            std::vector<const wchar_t*> stringRepKeys;
+            stringRepKeys.reserve(stringRepCount);
+            std::vector<const wchar_t*> stringRepValues;
+            stringRepValues.reserve(stringRepCount);
 
-        cb->addReports(initialShapeIndex, reportFloat, reportString, reportBool);
+            for (size_t i = 0; i < stringRepCount; i++) {
+                stringRepKeys[i] = stringReps[i].first->c_str();
+                stringRepValues[i] = stringReps[i].second->c_str();
+            }
+
+            cb->addReports(initialShapeIndex, stringRepKeys.data(), stringRepValues.data(), stringRepCount, floatRepKeys.data(), floatRepValues.data(), floatRepCount, boolRepKeys.data(), boolRepValues.get(), boolRepCount);
+        }
+        else
+            cb->addReports(initialShapeIndex, nullptr, nullptr, 0, nullptr, nullptr, 0, nullptr, nullptr, 0);
     }
 
     if (getOptions()->getBool(EO_EMIT_GEOMETRY)) {

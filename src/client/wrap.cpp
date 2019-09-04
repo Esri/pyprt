@@ -287,7 +287,6 @@ namespace {
     private:
         std::string initialShapePath;
         std::vector<Geometry> initialGeometries;
-        bool customFlag = false;
         pcu::ResolveMapPtr resolveMap;
         pcu::CachePtr cache;
 
@@ -340,7 +339,6 @@ namespace {
 
     ModelGenerator::ModelGenerator(const std::vector<Geometry>& myGeo) {
         initialGeometries = myGeo;
-        customFlag = true;
         initialShapesBuilders.reserve(myGeo.size());
 
         cache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
