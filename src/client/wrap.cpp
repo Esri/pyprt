@@ -434,7 +434,7 @@ namespace {
             pyEncoderOptions = createValidatedOptions(encoderName, encOptions);
 
             if (!allEncoders.empty()) { 
-                delete allEncoders[0];
+                delete[] allEncoders[0];
             }
 
             // Make a copy

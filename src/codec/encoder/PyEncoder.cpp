@@ -145,30 +145,6 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
         std::vector<prtx::EncodePreparator::FinalizedInstance> finalizedInstances;
         mEncodePreparator->fetchFinalizedInstances(finalizedInstances, ENC_PREP_FLAGS);
 
-        /*for (const auto& instance : finalizedInstances) {
-            std::vector<double> coordMatrix;
-            std::vector<std::vector<uint32_t>> faceMatrix;
-
-            for (const prtx::MeshPtr& mesh : instance.getGeometry()->getMeshes()) {
-
-                const prtx::DoubleVector& vc = mesh->getVertexCoords();
-                const uint32_t faceCnt = mesh->getFaceCount();
-
-                coordMatrix.insert(coordMatrix.end(), vc.begin(), vc.end());
-
-                for (uint32_t fi = 0; fi < faceCnt; ++fi) {
-                    const uint32_t* vtxIdx = mesh->getFaceVertexIndices(fi);
-                    const uint32_t vtxCnt = mesh->getFaceVertexCount(fi);
-
-                    std::vector<uint32_t> v(vtxIdx, vtxIdx + vtxCnt);
-                    faceMatrix.emplace_back(v);
-                }
-
-            }
-
-            cb->addGeometry(instance.getInitialShapeIndex(), coordMatrix, faceMatrix);
-        }*/
-
         for (const auto& instance : finalizedInstances) {
             const size_t nberMeshes = instance.getGeometry()->getMeshes().size();
             std::vector<double> vertexCoords;
@@ -178,8 +154,6 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
             for (size_t i = 0; i < nberMeshes; i++) {
                 const prtx::MeshPtr& mesh = instance.getGeometry()->getMeshes()[i];
                 vertexCoords.insert(vertexCoords.end(), mesh->getVertexCoords().begin(), mesh->getVertexCoords().end());
-
-                faceCounts.emplace_back(mesh->getFaceCount());
 
                 for (uint32_t fi = 0; fi < mesh->getFaceCount(); ++fi) {
                     faceIndices.insert(faceIndices.end(), mesh->getFaceVertexIndices(fi), mesh->getFaceVertexIndices(fi) + mesh->getFaceVertexCount(fi));

@@ -51,19 +51,13 @@ public:
 
 	virtual ~PyCallbacks() = default;
 
-    //void addGeometry(
-    //    const uint32_t& initialShapeIndex,
-    //    const std::vector<double>& verticesCoord,
-    //    const std::vector<std::vector<uint32_t>>& facesCoord
-    //) override;
-
     void addGeometry(
         const uint32_t initialShapeIndex,
         const double* vertexCoords,
         const size_t vextexCoordsCount,
         const uint32_t* facesIndices,
         const uint32_t* faceCounts,
-        const size_t faceCount
+        const size_t faceCountsCount
     ) override;
 
     void addReports(

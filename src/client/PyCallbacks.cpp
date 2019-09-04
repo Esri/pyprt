@@ -24,75 +24,13 @@
 #include <map>
 
 
-//void PyCallbacks::addGeometry(const uint32_t& initialShapeIndex, const std::vector<double>& verticesCoord, const std::vector<std::vector<uint32_t>>& facesCoord) {
-//    
-//    if (!verticesCoord.empty()) {
-//        auto it = verticesMap.find(initialShapeIndex);
-//
-//        if (it != verticesMap.end()) {
-//            std::vector<double> existVertMat = verticesMap.at(initialShapeIndex);
-//            existVertMat.insert(existVertMat.begin(), verticesCoord.begin(), verticesCoord.end());
-//            verticesMap.at(initialShapeIndex) = existVertMat;
-//        }
-//        else {
-//            initialShapesIndices.insert(initialShapeIndex);
-//            verticesMap.insert({ initialShapeIndex, verticesCoord });
-//        }
-//    }
-//
-//    if (!facesCoord.empty()) {
-//        auto it = facesMap.find(initialShapeIndex);
-//
-//        if (it != facesMap.end()) {
-//            std::vector<std::vector<uint32_t>> existFacesMat = facesMap.at(initialShapeIndex);
-//            existFacesMat.insert(existFacesMat.begin(), facesCoord.begin(), facesCoord.end());
-//            facesMap.at(initialShapeIndex) = existFacesMat;
-//        }
-//        else {
-//            initialShapesIndices.insert(initialShapeIndex);
-//            facesMap.insert({ initialShapeIndex, facesCoord });
-//        }
-//    }
-//}
-
 void PyCallbacks::addGeometry(
     const uint32_t initialShapeIndex,
     const double* vertexCoords,
     const size_t vertexCoordsCount,
     const uint32_t* facesIndices,
     const uint32_t* faceCounts,
-    const size_t faceCount) {
-
-    //if (!verticesCoord.empty()) {
-    //    auto it = verticesMap.find(initialShapeIndex);
-
-    //    if (it != verticesMap.end()) {
-    //        std::vector<double> existVertMat = verticesMap.at(initialShapeIndex);
-    //        existVertMat.insert(existVertMat.begin(), verticesCoord.begin(), verticesCoord.end());
-    //        verticesMap.at(initialShapeIndex) = existVertMat;
-    //    }
-    //    else {
-    //        initialShapesIndices.insert(initialShapeIndex);
-    //        verticesMap.insert({ initialShapeIndex, verticesCoord });
-    //    }
-    //}
-
-    //if (!facesCoord.empty()) {
-    //    auto it = facesMap.find(initialShapeIndex);
-
-    //    if (it != facesMap.end()) {
-    //        std::vector<std::vector<uint32_t>> existFacesMat = facesMap.at(initialShapeIndex);
-    //        existFacesMat.insert(existFacesMat.begin(), facesCoord.begin(), facesCoord.end());
-    //        facesMap.at(initialShapeIndex) = existFacesMat;
-    //    }
-    //    else {
-    //        initialShapesIndices.insert(initialShapeIndex);
-    //        facesMap.insert({ initialShapeIndex, facesCoord });
-    //    }
-    //}
-
-    std::map<uint32_t, std::vector<double>> verticesMap;
-    std::map<uint32_t, std::vector<std::vector<uint32_t>>> facesMap;
+    const size_t faceCountsCount) {
 
     if (vertexCoords != nullptr) {
         auto it = verticesMap.find(initialShapeIndex);
@@ -109,21 +47,30 @@ void PyCallbacks::addGeometry(
         }
     }
 
-    //if (facesIndices != nullptr) { // TO DO!!
-    //    auto it = facesMap.find(initialShapeIndex);
+    if (facesIndices != nullptr) { // THERE IS A MISTAKE HERE!!!!
+        auto it = facesMap.find(initialShapeIndex);
 
-    //    if (it != facesMap.end()) {
-    //        std::vector<std::vector<uint32_t>> existFacesMat = facesMap.at(initialShapeIndex);
-    //        std::vector<uint32_t> temp(facesIndices, facesIndices + )
-    //        existFacesMat.insert(existFacesMat.begin(), facesCoord.begin(), facesCoord.end());
-    //        facesMap.at(initialShapeIndex) = existFacesMat;
-    //    }
-    //    else {
-    //        initialShapesIndices.insert(initialShapeIndex);
-    //        facesMap.insert({ initialShapeIndex, facesCoord });
-    //    }
-    //}
+        if (it != facesMap.end()) {
+            std::vector<std::vector<uint32_t>> existFacesMat = facesMap.at(initialShapeIndex);
 
+            for (uint32_t ind = 0; ind < faceCountsCount; ind++) {
+                std::vector<uint32_t> v(facesIndices, facesIndices + faceCounts[ind]);
+                existFacesMat.insert(existFacesMat.begin(), v);
+            }
+            facesMap.at(initialShapeIndex) = existFacesMat;
+        }
+        else {
+            initialShapesIndices.insert(initialShapeIndex);
+            std::vector<std::vector<uint32_t>> f;
+            f.resize(faceCountsCount);
+
+            for (uint32_t ind = 0; ind < faceCountsCount; ind++) {
+                std::vector<uint32_t> v(facesIndices, facesIndices + faceCounts[ind]);
+                f.emplace_back(v);
+            }
+            facesMap.insert({ initialShapeIndex, f });
+        }
+    }
 }
 
 void PyCallbacks::addReports(

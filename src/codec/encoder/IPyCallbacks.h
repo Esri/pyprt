@@ -35,7 +35,7 @@ public:
         const size_t vextexCoordsCount,
         const uint32_t* facesIndices,
         const uint32_t* faceCounts,
-        const size_t faceCount
+        const size_t faceCountsCount
     ) = 0;
 
     virtual void addReports(
@@ -50,12 +50,6 @@ public:
         const bool* boolReportValues,
         size_t boolReportCount
     ) = 0;
-
-    //virtual void addGeometry(
-    //    const uint32_t& initialShapeIndex,
-    //    const std::vector<double>& verticesCoord,
-    //    const std::vector<std::vector<uint32_t>>& facesCoord
-    //) = 0;
 
     virtual void addIndex(const uint32_t initialShapeIndex) = 0;
 
