@@ -291,6 +291,8 @@ namespace {
         std::wstring startRule = L"default$init";
         int32_t seed = 666;
         std::wstring shapeName = L"InitialShape";
+
+        bool valid = true;
     };
 
     ModelGenerator::ModelGenerator(const std::string& initShapePath) {
@@ -307,21 +309,21 @@ namespace {
             const prt::Status s = isb->resolveGeometry(pcu::toUTF16FromOSNarrow(pcu::toFileURI(initialShapePath)).c_str(), resolveMap.get(), cache.get());
             if (s != prt::STATUS_OK) {
                 LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(initialShapePath);
+                valid = false;
             }
         }
         else {
-            isb->setGeometry(
-                pcu::quad::vertices, pcu::quad::vertexCount,
-                pcu::quad::indices, pcu::quad::indexCount,
-                pcu::quad::faceCounts, pcu::quad::faceCountsCount
-            );
+            LOG_ERR << "could not read initial shape geometry, unvalid path";
+            valid = false;
         }
 
-        if (!initialShapesBuilders.size()) {
-            initialShapesBuilders.push_back(std::move(isb));
-        }
-        else {
-            initialShapesBuilders[0] = std::move(isb);
+        if (valid) {
+            if (!initialShapesBuilders.size()) {
+                initialShapesBuilders.push_back(std::move(isb));
+            }
+            else {
+                initialShapesBuilders[0] = std::move(isb);
+            }
         }
     }
 
@@ -341,18 +343,17 @@ namespace {
                 initialGeometries[ind].getIndices(), initialGeometries[ind].getIndexCount(),
                 initialGeometries[ind].getFaceCounts(), initialGeometries[ind].getFaceCountsCount()) != prt::STATUS_OK) {
 
-                isb->setGeometry(
-                    pcu::quad::vertices, pcu::quad::vertexCount,
-                    pcu::quad::indices, pcu::quad::indexCount,
-                    pcu::quad::faceCounts, pcu::quad::faceCountsCount
-                );
+                LOG_ERR << "invalid initial geometry";
+                valid = false;
             }
 
-            if (initialShapesBuilders.size() <= ind) {
-                initialShapesBuilders.push_back(std::move(isb));
-            }
-            else {
-                initialShapesBuilders[ind] = std::move(isb);
+            if (valid) {
+                if (initialShapesBuilders.size() <= ind) {
+                    initialShapesBuilders.push_back(std::move(isb));
+                }
+                else {
+                    initialShapesBuilders[ind] = std::move(isb);
+                }
             }
 
         }
@@ -363,6 +364,10 @@ namespace {
             py::dict encoderOptions = {},
             const wchar_t* encoderName = ENCODER_ID_PYTHON)
     {
+        if (!valid) {
+            LOG_ERR << "invalid ModelGenerator instance";
+            return {};
+        }
 
         std::clock_t start;
         double duration;
@@ -535,6 +540,11 @@ namespace {
 
     std::vector<GeneratedGeometry> ModelGenerator::generateAnotherModel(py::dict shapeAttributes, py::dict encoderOptions = {})
     {
+        if (!valid) {
+            LOG_ERR << "invalid ModelGenerator instance";
+            return {};
+        }
+
         std::clock_t start;
         double duration;
         start = std::clock();
