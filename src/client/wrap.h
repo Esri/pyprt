@@ -98,8 +98,8 @@ public:
 	}
 
 private:
-	const prt::LogLevel* mLevels;
-	size_t mCount;
+	const prt::LogLevel*    mLevels;
+	size_t                  mCount;
 };
 
 
@@ -134,8 +134,8 @@ struct PRTContext {
 		return (bool)mPRTHandle;
 	}
 
-	PythonLogHandler mLogHandler;
-	pcu::ObjectPtr mPRTHandle;
+	PythonLogHandler    mLogHandler;
+	pcu::ObjectPtr      mPRTHandle;
 };
 
 
@@ -145,34 +145,34 @@ public:
 	Geometry() { }
 	~Geometry() { }
 
-	void setGeometry(const std::vector<double>& vert, const size_t& vertCnt, const std::vector<uint32_t>& ind, const size_t& indCnt, const std::vector<uint32_t>& faceCnt, const size_t& faceCntCnt);
-	const double* getVertices() const { return vertices.data(); }
-	size_t getVertexCount() const { return vertexCount; }
-	const uint32_t* getIndices() const { return indices.data(); }
-	size_t getIndexCount() const { return indexCount; }
-	const uint32_t* getFaceCounts() const { return faceCounts.data(); }
-	size_t getFaceCountsCount() const { return faceCountsCount; }
+	void updateGeometry(const std::vector<double>& vert, const size_t& vertCnt, const std::vector<uint32_t>& ind, const size_t& indCnt, const std::vector<uint32_t>& faceCnt, const size_t& faceCntCnt);
+	const double* getVertices() const { return mVertices.data(); }
+	size_t getVertexCount() const { return mVertexCount; }
+	const uint32_t* getIndices() const { return mIndices.data(); }
+	size_t getIndexCount() const { return mIndexCount; }
+	const uint32_t* getFaceCounts() const { return mFaceCounts.data(); }
+	size_t getFaceCountsCount() const { return mFaceCountsCount; }
 
 protected:
-	std::vector<double> vertices;
-	size_t vertexCount;
-	std::vector<uint32_t> indices;
-	size_t indexCount;
-	std::vector<uint32_t> faceCounts;
-	size_t faceCountsCount;
+	std::vector<double>     mVertices;
+	size_t                  mVertexCount;
+	std::vector<uint32_t>   mIndices;
+	size_t                  mIndexCount;
+	std::vector<uint32_t>   mFaceCounts;
+	size_t                  mFaceCountsCount;
 };
 
 Geometry::Geometry(const std::vector<double>& vert) {
-	vertices = vert;
-	vertexCount = vert.size();
-	indexCount = (size_t)(vertexCount / 3);
-	faceCountsCount = 1;
+	mVertices = vert;
+	mVertexCount = vert.size();
+	mIndexCount = (size_t)(mVertexCount / 3);
+	mFaceCountsCount = 1;
 
-	std::vector<uint32_t> indicesVector(indexCount);
+	std::vector<uint32_t> indicesVector(mIndexCount);
 	std::iota(std::begin(indicesVector), std::end(indicesVector), 0);
-	indices = indicesVector;
-	std::vector<uint32_t> faceVector(1, (uint32_t)indexCount);
-	faceCounts = faceVector;
+	mIndices = indicesVector;
+	std::vector<uint32_t> faceVector(1, (uint32_t) mIndexCount);
+	mFaceCounts = faceVector;
 }
 
 
@@ -184,21 +184,21 @@ public:
 
 	void convertGeometryIntoPythonStyle();
 
-	size_t getInitialShapeIndex() const { return initialShapeIdx; }
-	std::vector<std::vector<double>> getGenerationVertices() const { return verticesMatrix; }
-	std::vector<std::vector<uint32_t>> getGenerationFaces() const { return facesMatrix; }
-	FloatMap getGenerationFloatReport() const { return floatReportMap; }
-	StringMap getGenerationStringReport() const { return stringReportMap; }
-	BoolMap getGenerationBoolReport() const { return boolReportMap; }
+	size_t getInitialShapeIndex() const { return mInitialShapeIndex; }
+	std::vector<std::vector<double>> getVertices() const { return mVertices; }
+	std::vector<std::vector<uint32_t>> getFaces() const { return mFaces; }
+	FloatMap getFloatReport() const { return mFloatReport; }
+	StringMap getStringReport() const { return mStringReport; }
+	BoolMap getBoolReport() const { return mBoolReport; }
 
 private:
-	size_t initialShapeIdx;
-	std::vector<double> verticesVect;
-	std::vector<std::vector<double>> verticesMatrix;
-	std::vector<std::vector<uint32_t>> facesMatrix;
-	FloatMap floatReportMap;
-	StringMap stringReportMap;
-	BoolMap boolReportMap;
+	size_t                              mInitialShapeIndex;
+	std::vector<double>                 mVerticesVect;
+	std::vector<std::vector<double>>    mVertices;
+	std::vector<std::vector<uint32_t>>  mFaces;
+	FloatMap                            mFloatReport;
+	StringMap                           mStringReport;
+	BoolMap                             mBoolReport;
 };
 
 

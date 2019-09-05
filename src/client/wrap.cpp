@@ -54,11 +54,11 @@
 /**
   * commonly used constants
   */
-const wchar_t* FILE_CGA_REPORT = L"CGAReport.txt";
-const wchar_t* ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
-const wchar_t* ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
-const wchar_t* ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
-const wchar_t* ENCODER_OPT_NAME = L"name";
+const wchar_t* FILE_CGA_REPORT          = L"CGAReport.txt";
+const wchar_t* ENCODER_ID_CGA_REPORT    = L"com.esri.prt.core.CGAReportEncoder";
+const wchar_t* ENCODER_ID_CGA_PRINT     = L"com.esri.prt.core.CGAPrintEncoder";
+const wchar_t* ENCODER_ID_PYTHON        = L"com.esri.prt.examples.PyEncoder";
+const wchar_t* ENCODER_OPT_NAME         = L"name";
 pcu::Path executablePath;
 
 
@@ -83,30 +83,30 @@ namespace {
 namespace py = pybind11;
 
 
-void Geometry::setGeometry(const std::vector<double>& vert, const size_t& vertCnt, const std::vector<uint32_t>& ind, const size_t& indCnt, const std::vector<uint32_t>& faceCnt, const size_t& faceCntCnt) {
-    vertices = vert;
-    vertexCount = vertCnt;
-    indices = ind;
-    indexCount = indCnt;
-    faceCounts = faceCnt;
-    faceCountsCount = faceCntCnt;
+void Geometry::updateGeometry(const std::vector<double>& vert, const size_t& vertCnt, const std::vector<uint32_t>& ind, const size_t& indCnt, const std::vector<uint32_t>& faceCnt, const size_t& faceCntCnt) {
+    mVertices = vert;
+    mVertexCount = vertCnt;
+    mIndices = ind;
+    mIndexCount = indCnt;
+    mFaceCounts = faceCnt;
+    mFaceCountsCount = faceCntCnt;
 }
 
 
-GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vector<double>& vertMatrix, const std::vector<std::vector<uint32_t>>& fMatrix, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep) {
-    initialShapeIdx = initShapeIdx;
-    verticesVect = vertMatrix;
-    facesMatrix = fMatrix;
-    floatReportMap = floatRep;
-    stringReportMap = stringRep;
-    boolReportMap = boolRep;
+GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vector<double>& vert, const std::vector<std::vector<uint32_t>>& face, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep) {
+    mInitialShapeIndex = initShapeIdx;
+    mVerticesVect = vert;
+    mFaces = face;
+    mFloatReport = floatRep;
+    mStringReport = stringRep;
+    mBoolReport = boolRep;
 }
 
 void GeneratedGeometry::convertGeometryIntoPythonStyle() {
-    verticesMatrix.resize(verticesVect.size() / 3);
+    mVertices.resize(mVerticesVect.size() / 3);
 
-    for(size_t i = 0; i < verticesVect.size() / 3; i++)
-        verticesMatrix[i] = { verticesVect[0], verticesVect[1], verticesVect[2] };
+    for(size_t i = 0; i < mVerticesVect.size() / 3; i++)
+        mVertices[i] = { mVerticesVect[0], mVerticesVect[1], mVerticesVect[2] };
 }
 
 
@@ -513,7 +513,7 @@ PYBIND11_MODULE(pyprt, m) {
     py::class_<Geometry>(m, "Geometry")
         .def(py::init<>())
         .def(py::init<std::vector<double>>())
-        .def("set_geometry",&Geometry::setGeometry)
+        .def("update_geometry",&Geometry::updateGeometry)
         .def("get_vertices", &Geometry::getVertices)
         .def("get_vertex_count", &Geometry::getVertexCount)
         .def("get_indices", &Geometry::getIndices)
@@ -524,11 +524,11 @@ PYBIND11_MODULE(pyprt, m) {
     py::class_<GeneratedGeometry>(m, "GeneratedGeometry")
         .def(py::init<const size_t&, const std::vector<double>&, const std::vector<std::vector<uint32_t>>&, const FloatMap&, const StringMap&, const BoolMap&>())
         .def("get_initial_shape_index", &GeneratedGeometry::getInitialShapeIndex)
-        .def("get_vertices", &GeneratedGeometry::getGenerationVertices)
-        .def("get_faces", &GeneratedGeometry::getGenerationFaces)
-        .def("get_float_report", &GeneratedGeometry::getGenerationFloatReport)
-        .def("get_string_report", &GeneratedGeometry::getGenerationStringReport)
-        .def("get_bool_report", &GeneratedGeometry::getGenerationBoolReport);
+        .def("get_vertices", &GeneratedGeometry::getVertices)
+        .def("get_faces", &GeneratedGeometry::getFaces)
+        .def("get_float_report", &GeneratedGeometry::getFloatReport)
+        .def("get_string_report", &GeneratedGeometry::getStringReport)
+        .def("get_bool_report", &GeneratedGeometry::getBoolReport);
 
     m.def("print_val", &py_printVal,"Test Python function for value printing.");
 }
