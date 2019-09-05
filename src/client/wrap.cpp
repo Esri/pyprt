@@ -247,18 +247,10 @@ GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vect
 }
 
 void GeneratedGeometry::convertGeometryIntoPythonStyle() {
-    verticesMatrix.reserve(verticesVect.size() / 3);
+    verticesMatrix.resize(verticesVect.size() / 3);
 
-    for(size_t indI = 0; indI < verticesVect.size() / 3; indI++)
-    {
-        std::vector<double> vertexCoord;
-        vertexCoord.reserve(3);
-        for (int indJ = 0; indJ < 3; indJ++)
-        {
-            vertexCoord.emplace_back(verticesVect[3 * indI + indJ]);
-        }
-        verticesMatrix.emplace_back(vertexCoord);
-    }
+    for(size_t i = 0; i < verticesVect.size() / 3; i++)
+        verticesMatrix[i] = { verticesVect[0], verticesVect[1], verticesVect[2] };
 }
 
 

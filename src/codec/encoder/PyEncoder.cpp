@@ -92,7 +92,7 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
             prtx::Shape::ReportBoolVect& boolReps = rep->mBools;
             const size_t boolRepCount = boolReps.size();
             std::vector<const wchar_t*> boolRepKeys;
-            boolRepKeys.reserve(boolRepCount);
+            boolRepKeys.resize(boolRepCount);
             std::unique_ptr<bool[]> boolRepValues(new bool[boolRepCount]);
 
             for (size_t i = 0; i < boolRepCount; i++) {
@@ -103,9 +103,9 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
             prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
             const size_t floatRepCount = floatReps.size();
             std::vector<const wchar_t*> floatRepKeys;
-            floatRepKeys.reserve(floatRepCount);
+            floatRepKeys.resize(floatRepCount);
             std::vector<double> floatRepValues;
-            floatRepValues.reserve(floatRepCount);
+            floatRepValues.resize(floatRepCount);
 
             for (size_t i = 0; i < floatRepCount; i++) {
                 floatRepKeys[i] = floatReps[i].first->c_str();
@@ -115,9 +115,9 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
             prtx::Shape::ReportStringVect&	stringReps = rep->mStrings;
             const size_t stringRepCount = stringReps.size();
             std::vector<const wchar_t*> stringRepKeys;
-            stringRepKeys.reserve(stringRepCount);
+            stringRepKeys.resize(stringRepCount);
             std::vector<const wchar_t*> stringRepValues;
-            stringRepValues.reserve(stringRepCount);
+            stringRepValues.resize(stringRepCount);
 
             for (size_t i = 0; i < stringRepCount; i++) {
                 stringRepKeys[i] = stringReps[i].first->c_str();

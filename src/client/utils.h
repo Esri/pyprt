@@ -53,20 +53,20 @@ struct PRTDestroyer {
 	}
 };
 
-using ObjectPtr              = std::unique_ptr<const prt::Object,              PRTDestroyer>;
-using CachePtr               = std::unique_ptr<      prt::CacheObject,         PRTDestroyer>;
-using ResolveMapPtr          = std::unique_ptr<const prt::ResolveMap,          PRTDestroyer>;
-using InitialShapePtr        = std::unique_ptr<const prt::InitialShape,        PRTDestroyer>;
-using InitialShapeBuilderPtr = std::unique_ptr<      prt::InitialShapeBuilder, PRTDestroyer>;
-using AttributeMapPtr        = std::unique_ptr<const prt::AttributeMap,        PRTDestroyer>;
-using AttributeMapBuilderPtr = std::unique_ptr<      prt::AttributeMapBuilder, PRTDestroyer>;
-using FileOutputCallbacksPtr = std::unique_ptr<      prt::FileOutputCallbacks, PRTDestroyer>;
-using ConsoleLogHandlerPtr   = std::unique_ptr<      prt::ConsoleLogHandler,   PRTDestroyer>;
-using FileLogHandlerPtr      = std::unique_ptr<      prt::FileLogHandler,      PRTDestroyer>;
-using EncoderInfoPtr         = std::unique_ptr<const prt::EncoderInfo,         PRTDestroyer>;
-using DecoderInfoPtr         = std::unique_ptr<const prt::DecoderInfo,         PRTDestroyer>;
-using SimpleOutputCallbacksPtr = std::unique_ptr<prt::SimpleOutputCallbacks, PRTDestroyer>;
-using PyCallbacksPtr = std::unique_ptr<PyCallbacks>;
+using ObjectPtr                 = std::unique_ptr<const prt::Object,              PRTDestroyer>;
+using CachePtr                  = std::unique_ptr<      prt::CacheObject,         PRTDestroyer>;
+using ResolveMapPtr             = std::unique_ptr<const prt::ResolveMap,          PRTDestroyer>;
+using InitialShapePtr           = std::unique_ptr<const prt::InitialShape,        PRTDestroyer>;
+using InitialShapeBuilderPtr    = std::unique_ptr<      prt::InitialShapeBuilder, PRTDestroyer>;
+using AttributeMapPtr           = std::unique_ptr<const prt::AttributeMap,        PRTDestroyer>;
+using AttributeMapBuilderPtr    = std::unique_ptr<      prt::AttributeMapBuilder, PRTDestroyer>;
+using FileOutputCallbacksPtr    = std::unique_ptr<      prt::FileOutputCallbacks, PRTDestroyer>;
+using ConsoleLogHandlerPtr      = std::unique_ptr<      prt::ConsoleLogHandler,   PRTDestroyer>;
+using FileLogHandlerPtr         = std::unique_ptr<      prt::FileLogHandler,      PRTDestroyer>;
+using EncoderInfoPtr            = std::unique_ptr<const prt::EncoderInfo,         PRTDestroyer>;
+using DecoderInfoPtr            = std::unique_ptr<const prt::DecoderInfo,         PRTDestroyer>;
+using SimpleOutputCallbacksPtr  = std::unique_ptr<prt::SimpleOutputCallbacks, PRTDestroyer>;
+using PyCallbacksPtr            = std::unique_ptr<PyCallbacks>;
 
 /**
  * prt encoder options helpers
