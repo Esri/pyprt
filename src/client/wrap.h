@@ -162,19 +162,6 @@ protected:
 	size_t                  mFaceCountsCount;
 };
 
-Geometry::Geometry(const std::vector<double>& vert) {
-	mVertices = vert;
-	mVertexCount = vert.size();
-	mIndexCount = (size_t)(mVertexCount / 3);
-	mFaceCountsCount = 1;
-
-	std::vector<uint32_t> indicesVector(mIndexCount);
-	std::iota(std::begin(indicesVector), std::end(indicesVector), 0);
-	mIndices = indicesVector;
-	std::vector<uint32_t> faceVector(1, (uint32_t) mIndexCount);
-	mFaceCounts = faceVector;
-}
-
 
 class GeneratedGeometry {
 public:
@@ -184,12 +171,12 @@ public:
 
 	void convertGeometryIntoPythonStyle();
 
-	size_t getInitialShapeIndex() const { return mInitialShapeIndex; }
-	std::vector<std::vector<double>> getVertices() const { return mVertices; }
-	std::vector<std::vector<uint32_t>> getFaces() const { return mFaces; }
-	FloatMap getFloatReport() const { return mFloatReport; }
-	StringMap getStringReport() const { return mStringReport; }
-	BoolMap getBoolReport() const { return mBoolReport; }
+	const size_t getInitialShapeIndex() const { return mInitialShapeIndex; }
+	const std::vector<std::vector<double>>& getVertices() const { return mVertices; }
+	const std::vector<std::vector<uint32_t>>& getFaces() const { return mFaces; }
+	const FloatMap& getFloatReport() const { return mFloatReport; }
+	const StringMap& getStringReport() const { return mStringReport; }
+	const BoolMap& getBoolReport() const { return mBoolReport; }
 
 private:
 	size_t                              mInitialShapeIndex;

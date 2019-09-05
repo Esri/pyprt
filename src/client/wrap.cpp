@@ -82,6 +82,17 @@ namespace {
 
 namespace py = pybind11;
 
+Geometry::Geometry(const std::vector<double>& vert) {
+    mVertices = vert;
+    mVertexCount = vert.size();
+    mIndexCount = (size_t)(mVertexCount / 3);
+    mIndices.resize(mIndexCount);
+    mFaceCountsCount = 1;
+    mFaceCounts.resize(1);
+
+    std::iota(std::begin(mIndices), std::end(mIndices), 0);
+    mFaceCounts[0] = (uint32_t) mIndexCount;
+}
 
 void Geometry::updateGeometry(const std::vector<double>& vert, const size_t& vertCnt, const std::vector<uint32_t>& ind, const size_t& indCnt, const std::vector<uint32_t>& faceCnt, const size_t& faceCntCnt) {
     mVertices = vert;
@@ -114,7 +125,7 @@ namespace {
 
     ModelGenerator::ModelGenerator(const std::string& initShapePath) {
         initialShapePath = initShapePath;
-        initialShapesBuilders.reserve(1);
+        initialShapesBuilders.resize(1);
 
         cache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
 
@@ -134,14 +145,8 @@ namespace {
             valid = false;
         }
 
-        if (valid) {
-            if (!initialShapesBuilders.size()) {
-                initialShapesBuilders.push_back(std::move(isb));
-            }
-            else {
-                initialShapesBuilders[0] = std::move(isb);
-            }
-        }
+        if (valid)
+            initialShapesBuilders[0] = std::move(isb);
     }
 
     ModelGenerator::ModelGenerator(const std::vector<Geometry>& myGeo) {
@@ -164,15 +169,8 @@ namespace {
                 valid = false;
             }
 
-            if (valid) {
-                if (initialShapesBuilders.size() <= ind) {
-                    initialShapesBuilders.push_back(std::move(isb));
-                }
-                else {
-                    initialShapesBuilders[ind] = std::move(isb);
-                }
-            }
-
+            if (valid)
+                initialShapesBuilders[ind] = std::move(isb);
         }
     }
 
@@ -228,8 +226,7 @@ namespace {
 
 
             // Initial shape attributes
-            pcu::AttributeMapBuilderPtr shapeBld{ prt::AttributeMapBuilder::create() };
-            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes, shapeBld) };
+            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes, pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create())) };
             if (convertedShapeAttr) {
                 if (convertedShapeAttr->hasKey(L"ruleFile") &&
                     convertedShapeAttr->getType(L"ruleFile") == prt::AttributeMap::PT_STRING)
@@ -246,8 +243,7 @@ namespace {
             const pcu::AttributeMapPtr reportOptions{ optionsBuilder->createAttributeMapAndReset() };
             const pcu::AttributeMapPtr printOptions{ optionsBuilder->createAttributeMapAndReset() };
 
-            pcu::AttributeMapBuilderPtr bld{ prt::AttributeMapBuilder::create() };
-            encoderBuilder = std::move(bld);
+            encoderBuilder = std::move(pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create()));
             const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions, encoderBuilder) };
 
             CGAReportOptions = createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions);
@@ -381,8 +377,7 @@ namespace {
             }
 
             // Initial shape attributes
-            pcu::AttributeMapBuilderPtr shapeBld{ prt::AttributeMapBuilder::create() };
-            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes, shapeBld) };
+            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes, pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create())) };
             if (convertedShapeAttr) {
                 if (convertedShapeAttr->hasKey(L"ruleFile") &&
                     convertedShapeAttr->getType(L"ruleFile") == prt::AttributeMap::PT_STRING)
