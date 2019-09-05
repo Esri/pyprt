@@ -30,7 +30,7 @@ public:
     virtual ~IPyCallbacks() override = default;
 
     virtual void addGeometry(
-        const uint32_t initialShapeIndex,
+        const size_t initialShapeIndex,
         const double* vertexCoords,
         const size_t vextexCoordsCount,
         const uint32_t* facesIndices,
@@ -39,7 +39,7 @@ public:
     ) = 0;
 
     virtual void addReports(
-        const uint32_t initialShapeIndex,
+        const size_t initialShapeIndex,
         const wchar_t** stringReportKeys,
         const wchar_t** stringReportValues,
         size_t stringReportCount,
@@ -50,7 +50,5 @@ public:
         const bool* boolReportValues,
         size_t boolReportCount
     ) = 0;
-
-    virtual void addIndex(const uint32_t initialShapeIndex) = 0;
 
 };

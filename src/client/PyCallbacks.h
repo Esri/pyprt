@@ -38,21 +38,24 @@ using BoolMap = std::map<std::wstring, bool>;
 
 class PyCallbacks : public IPyCallbacks {
 private:
-    std::unordered_set<uint32_t> initialShapesIndices;
-    std::map<uint32_t, FloatMap> CGAfloatReportsMap;
-    std::map<uint32_t, StringMap> CGAstringReportsMap;
-    std::map<uint32_t, BoolMap> CGAboolReportsMap;
-    std::map<uint32_t, std::vector<double>> verticesMap;
-    std::map<uint32_t, std::vector<std::vector<uint32_t>>> facesMap;
+    struct Model {
+        FloatMap                            mCGAFloatReport;
+        StringMap                           mCGAStringReport;
+        BoolMap                             mCGABoolReport;
+        std::vector<double>                 mVertices;
+        std::vector<std::vector<uint32_t>>  mFaces;
+    };
+
+    std::vector<Model> mModels;
 
 public:
     
-	PyCallbacks() = default;
+    PyCallbacks(const size_t initialShapeCount) { mModels.resize(initialShapeCount); }
 
 	virtual ~PyCallbacks() = default;
 
     void addGeometry(
-        const uint32_t initialShapeIndex,
+        const size_t initialShapeIndex,
         const double* vertexCoords,
         const size_t vextexCoordsCount,
         const uint32_t* facesIndices,
@@ -61,7 +64,7 @@ public:
     ) override;
 
     void addReports(
-        const uint32_t initialShapeIndex,
+        const size_t initialShapeIndex,
         const wchar_t** stringReportKeys,
         const wchar_t** stringReportValues,
         size_t stringReportCount,
@@ -73,19 +76,17 @@ public:
         size_t boolReportCount
     ) override;
 
-    void addIndex(const uint32_t initialShapeIndex) override;
+    size_t getInitialShapeCount() const { return mModels.size(); }
 
-    uint32_t getInitialShapeIndex(const size_t i) const;
+    std::vector<double> getVertices(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mVertices; }
 
-    std::vector<double> getVertices(const uint32_t idx) const;
+    std::vector<std::vector<uint32_t>> getFaces(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mFaces; }
 
-    std::vector<std::vector<uint32_t>> getFaces(const uint32_t idx) const;
+    FloatMap getFloatReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGAFloatReport; }
 
-    FloatMap getFloatReport(const uint32_t idx) const;
+    StringMap getStringReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGAStringReport; }
 
-    StringMap getStringReport(const uint32_t idx) const;
-
-    BoolMap getBoolReport(const uint32_t idx) const;
+    BoolMap getBoolReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGABoolReport; }
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
 		pybind11::print(L"GENERATE ERROR:", isIndex, status, message);

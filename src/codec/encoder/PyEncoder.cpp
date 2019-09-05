@@ -144,6 +144,7 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
 
         std::vector<prtx::EncodePreparator::FinalizedInstance> finalizedInstances;
         mEncodePreparator->fetchFinalizedInstances(finalizedInstances, ENC_PREP_FLAGS);
+        //size_t vertCoorOffset = 0;
 
         for (const auto& instance : finalizedInstances) {
             const size_t nberMeshes = instance.getGeometry()->getMeshes().size();
@@ -167,8 +168,8 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
     else
         cb->addGeometry(initialShapeIndex, nullptr, 0, nullptr, nullptr, 0);
 
-    if (!(getOptions()->getBool(EO_EMIT_GEOMETRY)) && !(getOptions()->getBool(EO_EMIT_REPORTS)))
-        cb->addIndex(initialShapeIndex);
+    //if (!(getOptions()->getBool(EO_EMIT_GEOMETRY)) && !(getOptions()->getBool(EO_EMIT_REPORTS)))
+        //cb->addIndex(initialShapeIndex);
 }
 
 

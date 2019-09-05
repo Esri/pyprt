@@ -25,56 +25,27 @@
 
 
 void PyCallbacks::addGeometry(
-    const uint32_t initialShapeIndex,
+    const size_t initialShapeIndex,
     const double* vertexCoords,
     const size_t vertexCoordsCount,
     const uint32_t* facesIndices,
     const uint32_t* faceCounts,
     const size_t faceCountsCount) {
 
-    if (vertexCoords != nullptr) {
-        auto it = verticesMap.find(initialShapeIndex);
+    if (vertexCoords != nullptr)
+        mModels[initialShapeIndex].mVertices.insert(mModels[initialShapeIndex].mVertices.end(), vertexCoords, vertexCoords + vertexCoordsCount);
 
-        if (it != verticesMap.end()) {
-            std::vector<double> existVertMat = verticesMap.at(initialShapeIndex);
-            existVertMat.insert(existVertMat.begin(), vertexCoords, vertexCoords + vertexCoordsCount);
-            verticesMap.at(initialShapeIndex) = existVertMat;
-        }
-        else {
-            std::vector<double> vertCoord(vertexCoords, vertexCoords + vertexCoordsCount);
-            initialShapesIndices.insert(initialShapeIndex);
-            verticesMap.insert({ initialShapeIndex, vertCoord });
-        }
-    }
 
     if (facesIndices != nullptr) { // THERE IS A MISTAKE HERE!!!!
-        auto it = facesMap.find(initialShapeIndex);
-
-        if (it != facesMap.end()) {
-            std::vector<std::vector<uint32_t>> existFacesMat = facesMap.at(initialShapeIndex);
-
-            for (uint32_t ind = 0; ind < faceCountsCount; ind++) {
-                std::vector<uint32_t> v(facesIndices, facesIndices + faceCounts[ind]);
-                existFacesMat.insert(existFacesMat.begin(), v);
-            }
-            facesMap.at(initialShapeIndex) = existFacesMat;
-        }
-        else {
-            initialShapesIndices.insert(initialShapeIndex);
-            std::vector<std::vector<uint32_t>> f;
-            f.resize(faceCountsCount);
-
-            for (uint32_t ind = 0; ind < faceCountsCount; ind++) {
-                std::vector<uint32_t> v(facesIndices, facesIndices + faceCounts[ind]);
-                f.emplace_back(v);
-            }
-            facesMap.insert({ initialShapeIndex, f });
+        for (uint32_t ind = 0; ind < faceCountsCount; ind++) {
+            std::vector<uint32_t> v(facesIndices, facesIndices + faceCounts[ind]);
+            mModels[initialShapeIndex].mFaces.insert(mModels[initialShapeIndex].mFaces.end(), v);
         }
     }
 }
 
 void PyCallbacks::addReports(
-    const uint32_t initialShapeIndex,
+    const size_t initialShapeIndex,
     const wchar_t** stringReportKeys,
     const wchar_t** stringReportValues,
     size_t stringReportCount,
@@ -85,8 +56,6 @@ void PyCallbacks::addReports(
     const bool* boolReportValues,
     size_t boolReportCount) {
 
-    initialShapesIndices.insert(initialShapeIndex);
-
     BoolMap boolReport;
     FloatMap floatReport;
     StringMap stringReport;
@@ -94,65 +63,15 @@ void PyCallbacks::addReports(
     for (size_t i = 0; i < boolReportCount; i++) {
         boolReport[boolReportKeys[i]] = boolReportValues[i];
     }
-    CGAboolReportsMap.insert({ initialShapeIndex, boolReport });
+    mModels[initialShapeIndex].mCGABoolReport = boolReport;
 
     for (size_t i = 0; i < floatReportCount; i++) {
         floatReport[floatReportKeys[i]] = floatReportValues[i];
     }
-    CGAfloatReportsMap.insert({ initialShapeIndex, floatReport });
+    mModels[initialShapeIndex].mCGAFloatReport = floatReport;
 
     for (size_t i = 0; i < stringReportCount; i++) {
         stringReport[stringReportKeys[i]] = stringReportValues[i];
     }
-    CGAstringReportsMap.insert({ initialShapeIndex, stringReport });
-}
-
-
-void PyCallbacks::addIndex(const uint32_t initialShapeIndex) {
-    initialShapesIndices.insert(initialShapeIndex);
-}
-
-uint32_t PyCallbacks::getInitialShapeIndex(const size_t i) const {
-    if (initialShapesIndices.empty())
-        return -1;
-
-    auto it = initialShapesIndices.begin();
-    std::advance(it, i);
-    return *it;
-}
-
-
-std::vector<double> PyCallbacks::getVertices(const uint32_t index) const {
-    if ((verticesMap.find(index) == verticesMap.end()) || (verticesMap.empty()))
-        return {};
-    else
-        return verticesMap.at(index);
-}
-
-std::vector<std::vector<uint32_t>> PyCallbacks::getFaces(const uint32_t index) const {
-    if ((facesMap.find(index) == facesMap.end()) || (facesMap.empty()))
-        return {};
-    else
-        return facesMap.at(index);
-}
-
-FloatMap PyCallbacks::getFloatReport(const uint32_t index) const {
-    if ((CGAfloatReportsMap.find(index) == CGAfloatReportsMap.end()) || (CGAfloatReportsMap.empty()))
-        return {};
-    else
-        return CGAfloatReportsMap.at(index);
-}
-
-StringMap PyCallbacks::getStringReport(const uint32_t index) const {
-    if ((CGAstringReportsMap.find(index) == CGAstringReportsMap.end()) || (CGAstringReportsMap.empty()))
-        return {};
-    else
-        return CGAstringReportsMap.at(index);
-}
-
-BoolMap PyCallbacks::getBoolReport(const uint32_t index) const {
-    if ((CGAboolReportsMap.find(index) == CGAboolReportsMap.end()) || (CGAboolReportsMap.empty()))
-        return {};
-    else
-        return CGAboolReportsMap.at(index);
+    mModels[initialShapeIndex].mCGAStringReport = stringReport;
 }

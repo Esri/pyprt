@@ -1,19 +1,9 @@
 # Python utility functions
 import numpy as np
 
-def collect_initial_shape_indices(models):
-    generation_indices = []
-    for m in models:
-        if generation_indices.count(m.get_initial_shape_index()) == 0:
-            generation_indices.append(m.get_initial_shape_index())
-    return generation_indices
-
-
 def visualize_PRT_results(models, printing = False):
-    initial_shape_idx = collect_initial_shape_indices(models)
-
     print("\nNumber of generated geometries (= nber of initial shapes):")
-    print(len(initial_shape_idx))
+    print(len(models))
 
     for m in models:
         if m:
