@@ -36,10 +36,12 @@ void PyCallbacks::addGeometry(
         mModels[initialShapeIndex].mVertices.insert(mModels[initialShapeIndex].mVertices.end(), vertexCoords, vertexCoords + vertexCoordsCount);
 
 
-    if (facesIndices != nullptr) { // THERE IS A MISTAKE HERE!!!!
+    if (facesIndices != nullptr) {
+        size_t vertexIndexBase = 0;
         for (uint32_t ind = 0; ind < faceCountsCount; ind++) {
-            std::vector<uint32_t> v(facesIndices, facesIndices + faceCounts[ind]);
+            std::vector<uint32_t> v(facesIndices + vertexIndexBase, facesIndices + vertexIndexBase + faceCounts[ind]);
             mModels[initialShapeIndex].mFaces.insert(mModels[initialShapeIndex].mFaces.end(), v);
+            vertexIndexBase += faceCounts[ind];
         }
     }
 }

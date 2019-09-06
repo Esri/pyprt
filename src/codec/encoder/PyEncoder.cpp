@@ -144,22 +144,26 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
 
         std::vector<prtx::EncodePreparator::FinalizedInstance> finalizedInstances;
         mEncodePreparator->fetchFinalizedInstances(finalizedInstances, ENC_PREP_FLAGS);
-        //size_t vertCoorOffset = 0;
+        uint32_t vertexIndexBase = 0;
 
         for (const auto& instance : finalizedInstances) {
-            const size_t nberMeshes = instance.getGeometry()->getMeshes().size();
+            const prtx::MeshPtrVector& meshes = instance.getGeometry()->getMeshes();
             std::vector<double> vertexCoords;
             std::vector<uint32_t> faceIndices;
             std::vector<uint32_t> faceCounts;
-
-            for (size_t i = 0; i < nberMeshes; i++) {
-                const prtx::MeshPtr& mesh = instance.getGeometry()->getMeshes()[i];
-                vertexCoords.insert(vertexCoords.end(), mesh->getVertexCoords().begin(), mesh->getVertexCoords().end());
+            
+            for (const auto& mesh : meshes) {
+                const prtx::DoubleVector& verts = mesh->getVertexCoords();
+                vertexCoords.insert(vertexCoords.end(), verts.begin(), verts.end());
 
                 for (uint32_t fi = 0; fi < mesh->getFaceCount(); ++fi) {
-                    faceIndices.insert(faceIndices.end(), mesh->getFaceVertexIndices(fi), mesh->getFaceVertexIndices(fi) + mesh->getFaceVertexCount(fi));
-                    faceCounts.emplace_back(mesh->getFaceVertexCount(fi));
+                    const uint32_t* vtxIdx = mesh->getFaceVertexIndices(fi);
+                    const uint32_t vtxCnt = mesh->getFaceVertexCount(fi);
+                    faceCounts.push_back(vtxCnt);
+                    for (uint32_t vi = 0; vi < vtxCnt; vi++)
+                        faceIndices.push_back(vtxIdx[vi] + vertexIndexBase);
                 }
+                vertexIndexBase += (uint32_t) verts.size() / 3;
             }
 
             cb->addGeometry(instance.getInitialShapeIndex(), vertexCoords.data(), vertexCoords.size(), faceIndices.data(), faceCounts.data(), faceCounts.size());
@@ -167,9 +171,6 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
     }
     else
         cb->addGeometry(initialShapeIndex, nullptr, 0, nullptr, nullptr, 0);
-
-    //if (!(getOptions()->getBool(EO_EMIT_GEOMETRY)) && !(getOptions()->getBool(EO_EMIT_REPORTS)))
-        //cb->addIndex(initialShapeIndex);
 }
 
 

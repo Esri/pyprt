@@ -69,7 +69,7 @@ std::vector<std::vector<double>> convertVerticesIntoPythonStyle(const std::vecto
     vertices.resize(verticesList.size() / 3);
 
     for (size_t i = 0; i < verticesList.size() / 3; i++)
-        vertices[i] = { verticesList[0], verticesList[1], verticesList[2] };
+        vertices[i] = { verticesList[i*3], verticesList[i*3+1], verticesList[i*3+2] };
 
     return vertices;
 }
