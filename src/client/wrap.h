@@ -62,6 +62,19 @@ void copyToCStr(const std::string& str, char* cstr, size_t& cstrSize) {
 	cstrSize = str.length() + 1; // returns the actually needed size including terminating null
 }
 
+// convert a vector of vertices coordinates into a vector of vectors with the x, y,
+// z coordinates of the vertices
+std::vector<std::vector<double>> convertVerticesIntoPythonStyle(const std::vector<double>& verticesList) {
+    std::vector<std::vector<double>> vertices;
+    vertices.resize(verticesList.size() / 3);
+
+    for (size_t i = 0; i < verticesList.size() / 3; i++)
+        vertices[i] = { verticesList[0], verticesList[1], verticesList[2] };
+
+    return vertices;
+}
+
+
 /**
   * custom console logger to redirect PRT log events into the python output
   */
@@ -165,11 +178,9 @@ protected:
 
 class GeneratedGeometry {
 public:
-	GeneratedGeometry(const size_t& initialShapeIdx, const std::vector<double>& vertMatrix, const std::vector<std::vector<uint32_t>>& fMatrix, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep);
+	GeneratedGeometry(const size_t& initialShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep);
 	GeneratedGeometry() { }
 	~GeneratedGeometry() { }
-
-	void convertGeometryIntoPythonStyle();
 
 	const size_t getInitialShapeIndex() const { return mInitialShapeIndex; }
 	const std::vector<std::vector<double>>& getVertices() const { return mVertices; }
@@ -180,7 +191,6 @@ public:
 
 private:
 	size_t                              mInitialShapeIndex;
-	std::vector<double>                 mVerticesVect;
 	std::vector<std::vector<double>>    mVertices;
 	std::vector<std::vector<uint32_t>>  mFaces;
 	FloatMap                            mFloatReport;

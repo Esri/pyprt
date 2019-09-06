@@ -106,20 +106,13 @@ void Geometry::updateGeometry(const std::vector<double>& vert, const size_t& ver
 }
 
 
-GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vector<double>& vert, const std::vector<std::vector<uint32_t>>& face, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep) {
+GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep) {
     mInitialShapeIndex = initShapeIdx;
-    mVerticesVect = vert;
+    mVertices = vert;
     mFaces = face;
     mFloatReport = floatRep;
     mStringReport = stringRep;
     mBoolReport = boolRep;
-}
-
-void GeneratedGeometry::convertGeometryIntoPythonStyle() {
-    mVertices.resize(mVerticesVect.size() / 3);
-
-    for(size_t i = 0; i < mVerticesVect.size() / 3; i++)
-        mVertices[i] = { mVerticesVect[0], mVerticesVect[1], mVerticesVect[2] };
 }
 
 
@@ -294,11 +287,8 @@ namespace {
                     return {};
                 }
 
-                for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++) {
-                    GeneratedGeometry geo(idx, foc->getVertices(idx), foc->getFaces(idx), foc->getFloatReport(idx), foc->getStringReport(idx), foc->getBoolReport(idx));
-                    geo.convertGeometryIntoPythonStyle();
-                    newGeneratedGeo[idx] = geo;
-                }
+                for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++)
+                    newGeneratedGeo[idx] = GeneratedGeometry(idx, convertVerticesIntoPythonStyle(foc->getVertices(idx)), foc->getFaces(idx), foc->getFloatReport(idx), foc->getStringReport(idx), foc->getBoolReport(idx));
             }
             else {
                 // Encoder info, encoder options
@@ -454,12 +444,8 @@ namespace {
                     return {};
                 }
 
-                for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++) {
-                    GeneratedGeometry geo(idx, foc->getVertices(idx), foc->getFaces(idx), foc->getFloatReport(idx), foc->getStringReport(idx), foc->getBoolReport(idx));
-                    geo.convertGeometryIntoPythonStyle();
-                    newGeneratedGeo[idx] = geo;
-                }
-
+                for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++)
+                    newGeneratedGeo[idx] = GeneratedGeometry(idx, convertVerticesIntoPythonStyle(foc->getVertices(idx)), foc->getFaces(idx), foc->getFloatReport(idx), foc->getStringReport(idx), foc->getBoolReport(idx));
             }
             else {
                 allEncoders = { mAllEncodersWS[0].c_str(), mAllEncodersWS[1].c_str(), mAllEncodersWS[2].c_str() };
@@ -535,7 +521,7 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_face_counts_count", &Geometry::getFaceCountsCount);
 
     py::class_<GeneratedGeometry>(m, "GeneratedGeometry")
-        .def(py::init<const size_t&, const std::vector<double>&, const std::vector<std::vector<uint32_t>>&, const FloatMap&, const StringMap&, const BoolMap&>())
+        .def(py::init<const size_t&, const std::vector<std::vector<double>>&, const std::vector<std::vector<uint32_t>>&, const FloatMap&, const StringMap&, const BoolMap&>())
         .def("get_initial_shape_index", &GeneratedGeometry::getInitialShapeIndex)
         .def("get_vertices", &GeneratedGeometry::getVertices)
         .def("get_faces", &GeneratedGeometry::getFaces)
