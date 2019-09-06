@@ -197,30 +197,30 @@ namespace {
 		ModelGenerator(const std::vector<Geometry>& myGeo);
 		~ModelGenerator() { }
 
-		std::vector<GeneratedGeometry> generateModel(const std::string& rulePackagePath, py::dict shapeAttributes, py::dict encoderOptions, const wchar_t* encoderName);
+		std::vector<GeneratedGeometry> generateModel(const std::string& rulePackagePath, py::dict shapeAttributes, py::dict encoderOptions, const std::wstring encoderName);
 		std::vector<GeneratedGeometry> generateAnotherModel(py::dict shapeAttributes, py::dict encoderOptions);
 
 	private:
-		std::string initialShapePath;
-		std::vector<Geometry> initialGeometries;
-		pcu::ResolveMapPtr resolveMap;
-		pcu::CachePtr cache;
+		std::string             mInitialShapePath;
+		std::vector<Geometry>   mInitialGeometries;
+		pcu::ResolveMapPtr      mResolveMap;
+		pcu::CachePtr           mCache;
 
-		pcu::AttributeMapBuilderPtr encoderBuilder;
-		pcu::AttributeMapPtr CGAReportOptions;
-		pcu::AttributeMapPtr CGAPrintOptions;
-		pcu::AttributeMapPtr pyEncoderOptions;
-		std::vector<const prt::AttributeMap*> allEncodersOptions;
-		std::vector<const wchar_t*> allEncoders;
+		pcu::AttributeMapBuilderPtr mEncoderBuilder;
+		pcu::AttributeMapPtr        mCGAReportOptions;
+		pcu::AttributeMapPtr        mCGAPrintOptions;
+		pcu::AttributeMapPtr        mPyEncoderOptions;
 
-		std::vector<pcu::InitialShapeBuilderPtr> initialShapesBuilders;
+		std::vector<pcu::AttributeMapPtr>           mAllEncodersOptionsPtr;
+		std::vector<std::wstring>                   mAllEncodersWS;
+		std::vector<pcu::InitialShapeBuilderPtr>    mInitialShapesBuilders;
 
-		std::wstring ruleFile = L"bin/rule.cgb";
-		std::wstring startRule = L"default$init";
-		int32_t seed = 666;
-		std::wstring shapeName = L"InitialShape";
+		std::wstring    mRuleFile = L"bin/rule.cgb";
+		std::wstring    mStartRule = L"default$init";
+		int32_t         mSeed = 666;
+		std::wstring    mShapeName = L"InitialShape";
 
-		bool valid = true;
+		bool mValid = true;
 	};
 
 } // namespace

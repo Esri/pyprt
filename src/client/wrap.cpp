@@ -55,10 +55,12 @@
   * commonly used constants
   */
 const wchar_t* FILE_CGA_REPORT          = L"CGAReport.txt";
-const wchar_t* ENCODER_ID_CGA_REPORT    = L"com.esri.prt.core.CGAReportEncoder";
-const wchar_t* ENCODER_ID_CGA_PRINT     = L"com.esri.prt.core.CGAPrintEncoder";
-const wchar_t* ENCODER_ID_PYTHON        = L"com.esri.prt.examples.PyEncoder";
 const wchar_t* ENCODER_OPT_NAME         = L"name";
+
+const std::wstring ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
+const std::wstring ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
+const std::wstring ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
+
 pcu::Path executablePath;
 
 
@@ -124,62 +126,62 @@ void GeneratedGeometry::convertGeometryIntoPythonStyle() {
 namespace {
 
     ModelGenerator::ModelGenerator(const std::string& initShapePath) {
-        initialShapePath = initShapePath;
-        initialShapesBuilders.resize(1);
+        mInitialShapePath = initShapePath;
+        mInitialShapesBuilders.resize(1);
 
-        cache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
+        mCache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
 
         // Initial shape initializing
         pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
 
-        if (!pcu::toFileURI(initialShapePath).empty()) {
-            LOG_DBG << "trying to read initial shape geometry from " << pcu::toFileURI(initialShapePath) << std::endl;
-            const prt::Status s = isb->resolveGeometry(pcu::toUTF16FromOSNarrow(pcu::toFileURI(initialShapePath)).c_str(), resolveMap.get(), cache.get());
+        if (!pcu::toFileURI(mInitialShapePath).empty()) {
+            LOG_DBG << "trying to read initial shape geometry from " << pcu::toFileURI(mInitialShapePath) << std::endl;
+            const prt::Status s = isb->resolveGeometry(pcu::toUTF16FromOSNarrow(pcu::toFileURI(mInitialShapePath)).c_str(), mResolveMap.get(), mCache.get());
             if (s != prt::STATUS_OK) {
-                LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(initialShapePath);
-                valid = false;
+                LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(mInitialShapePath);
+                mValid = false;
             }
         }
         else {
             LOG_ERR << "could not read initial shape geometry, unvalid path";
-            valid = false;
+            mValid = false;
         }
 
-        if (valid)
-            initialShapesBuilders[0] = std::move(isb);
+        if (mValid)
+            mInitialShapesBuilders[0] = std::move(isb);
     }
 
     ModelGenerator::ModelGenerator(const std::vector<Geometry>& myGeo) {
-        initialGeometries = myGeo;
-        initialShapesBuilders.resize(myGeo.size());
+        mInitialGeometries = myGeo;
+        mInitialShapesBuilders.resize(myGeo.size());
 
-        cache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
+        mCache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
 
         // Initial shapes initializing
-        for (size_t ind = 0; ind < initialGeometries.size(); ind++) {
+        for (size_t ind = 0; ind < mInitialGeometries.size(); ind++) {
 
             pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
 
             if (isb->setGeometry(
-                initialGeometries[ind].getVertices(), initialGeometries[ind].getVertexCount(),
-                initialGeometries[ind].getIndices(), initialGeometries[ind].getIndexCount(),
-                initialGeometries[ind].getFaceCounts(), initialGeometries[ind].getFaceCountsCount()) != prt::STATUS_OK) {
+                mInitialGeometries[ind].getVertices(), mInitialGeometries[ind].getVertexCount(),
+                mInitialGeometries[ind].getIndices(), mInitialGeometries[ind].getIndexCount(),
+                mInitialGeometries[ind].getFaceCounts(), mInitialGeometries[ind].getFaceCountsCount()) != prt::STATUS_OK) {
 
                 LOG_ERR << "invalid initial geometry";
-                valid = false;
+                mValid = false;
             }
 
-            if (valid)
-                initialShapesBuilders[ind] = std::move(isb);
+            if (mValid)
+                mInitialShapesBuilders[ind] = std::move(isb);
         }
     }
 
     std::vector<GeneratedGeometry> ModelGenerator::generateModel(const std::string& rulePackagePath,
             py::dict shapeAttributes,
             py::dict encoderOptions = {},
-            const wchar_t* encoderName = ENCODER_ID_PYTHON)
+            const std::wstring encoderName = ENCODER_ID_PYTHON)
     {
-        if (!valid) {
+        if (!mValid) {
             LOG_ERR << "invalid ModelGenerator instance";
             return {};
         }
@@ -189,7 +191,7 @@ namespace {
         start = std::clock();
 
         std::vector<GeneratedGeometry> newGeneratedGeo;
-        newGeneratedGeo.resize(initialShapesBuilders.size());
+        newGeneratedGeo.resize(mInitialShapesBuilders.size());
 
         try {
             if (!prtCtx) {
@@ -197,9 +199,8 @@ namespace {
                 return {};
             }
 
-
             // Resolve Map
-            if (!resolveMap) {
+            if (!mResolveMap) {
                 if (!rulePackagePath.empty()) {
                     LOG_INF << "using rule package " << rulePackagePath << std::endl;
 
@@ -207,15 +208,15 @@ namespace {
                     prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
                     try {
                         auto* r = prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status);
-                        resolveMap.reset(r);
+                        mResolveMap.reset(r);
                     }
                     catch (std::exception& e) {
                         pybind11::print("CAUGHT EXCEPTION:", e.what());
                     }
 
 
-                    if (resolveMap && (status == prt::STATUS_OK)) {
-                        LOG_DBG << "resolve map = " << pcu::objectToXML(resolveMap.get()) << std::endl;
+                    if (mResolveMap && (status == prt::STATUS_OK)) {
+                        LOG_DBG << "resolve map = " << pcu::objectToXML(mResolveMap.get()) << std::endl;
                     }
                     else {
                         LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting.";
@@ -224,80 +225,68 @@ namespace {
                 }
             }
 
-
             // Initial shape attributes
             const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes, pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create())) };
             if (convertedShapeAttr) {
                 if (convertedShapeAttr->hasKey(L"ruleFile") &&
                     convertedShapeAttr->getType(L"ruleFile") == prt::AttributeMap::PT_STRING)
-                    ruleFile = convertedShapeAttr->getString(L"ruleFile");
+                    mRuleFile = convertedShapeAttr->getString(L"ruleFile");
                 if (convertedShapeAttr->hasKey(L"startRule") &&
                     convertedShapeAttr->getType(L"startRule") == prt::AttributeMap::PT_STRING)
-                    startRule = convertedShapeAttr->getString(L"startRule");
+                    mStartRule = convertedShapeAttr->getString(L"startRule");
             }
-
-
-            // Encoder info, encoder options
-            const pcu::AttributeMapBuilderPtr optionsBuilder{ prt::AttributeMapBuilder::create() };
-            optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_REPORT);
-            const pcu::AttributeMapPtr reportOptions{ optionsBuilder->createAttributeMapAndReset() };
-            const pcu::AttributeMapPtr printOptions{ optionsBuilder->createAttributeMapAndReset() };
-
-            encoderBuilder = std::move(pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create()));
-            const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions, encoderBuilder) };
-
-            CGAReportOptions = createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions);
-            CGAPrintOptions = createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions);
-            pyEncoderOptions = createValidatedOptions(encoderName, encOptions);
-
-            if (!allEncoders.empty()) { 
-                delete[] allEncoders[0];
-            }
-
-            // Make a copy
-            wchar_t* encoder = new wchar_t[wcslen(encoderName) + 1];
-            wcsncpy(encoder, encoderName, wcslen(encoderName) + 1);
-
-            allEncoders = {
-                    encoder,
-                    ENCODER_ID_CGA_REPORT, // an encoder to redirect CGA report to CGAReport.txt
-                    ENCODER_ID_CGA_PRINT // redirects CGA print output to the callback
-            };
-
-            allEncodersOptions = { pyEncoderOptions.get(), CGAReportOptions.get(), CGAPrintOptions.get() };
-            
 
             // Initial shapes
             std::vector<pcu::InitialShapePtr> initialShapePtrs;
-            initialShapePtrs.reserve(initialShapesBuilders.size());
+            initialShapePtrs.reserve(mInitialShapesBuilders.size());
             std::vector<const prt::InitialShape*> initialShapes;
-            initialShapes.reserve(initialShapesBuilders.size());
+            initialShapes.reserve(mInitialShapesBuilders.size());
 
-            for (size_t ind = 0; ind < initialShapesBuilders.size(); ind++) {
+            for (size_t ind = 0; ind < mInitialShapesBuilders.size(); ind++) {
 
-                initialShapesBuilders[ind]->setAttributes(
-                    ruleFile.c_str(),
-                    startRule.c_str(),
-                    seed,
-                    shapeName.c_str(),
+                mInitialShapesBuilders[ind]->setAttributes(
+                    mRuleFile.c_str(),
+                    mStartRule.c_str(),
+                    mSeed,
+                    mShapeName.c_str(),
                     convertedShapeAttr.get(),
-                    resolveMap.get()
+                    mResolveMap.get()
                 );
 
-                pcu::InitialShapePtr initialShape{ initialShapesBuilders[ind]->createInitialShape() };
+                pcu::InitialShapePtr initialShape{ mInitialShapesBuilders[ind]->createInitialShape() };
 
                 initialShapes.push_back(initialShape.get());
                 initialShapePtrs.push_back(std::move(initialShape));
             }
 
-            if (!std::wcscmp(encoderName, ENCODER_ID_PYTHON)) {
-                pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>(initialShapesBuilders.size()) };
+            // Encoder info, encoder options
+            mEncoderBuilder = std::move(pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create()));
+            const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions, mEncoderBuilder) };
+
+            mPyEncoderOptions = createValidatedOptions(encoderName, encOptions);
+
+            std::vector<const wchar_t*> allEncoders;
+            allEncoders.reserve(3);
+            std::vector<const prt::AttributeMap*> allEncodersOptions;
+            allEncodersOptions.reserve(3);
+
+            if (!std::wcscmp(encoderName.c_str(), ENCODER_ID_PYTHON.c_str())) {
+                if (mAllEncodersWS.size() > 1)
+                    mAllEncodersWS[0] = encoderName;
+                else
+                    mAllEncodersWS.push_back(encoderName);
+
+                allEncoders = { encoderName.c_str()};
+                allEncodersOptions = { mPyEncoderOptions.get()};
+                mAllEncodersOptionsPtr.push_back(std::move(mPyEncoderOptions));
+
+                pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>(mInitialShapesBuilders.size()) };
 
                 // Generate
                 const prt::Status genStat = prt::generate(
                     initialShapes.data(), initialShapes.size(), nullptr,
                     allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
-                    foc.get(), cache.get(), nullptr
+                    foc.get(), mCache.get(), nullptr
                 );
 
                 if (genStat != prt::STATUS_OK) {
@@ -305,14 +294,34 @@ namespace {
                     return {};
                 }
 
-                for (size_t idx = 0; idx < initialShapesBuilders.size(); idx++) {
+                for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++) {
                     GeneratedGeometry geo(idx, foc->getVertices(idx), foc->getFaces(idx), foc->getFloatReport(idx), foc->getStringReport(idx), foc->getBoolReport(idx));
                     geo.convertGeometryIntoPythonStyle();
                     newGeneratedGeo[idx] = geo;
                 }
-
             }
             else {
+                // Encoder info, encoder options
+                const pcu::AttributeMapBuilderPtr optionsBuilder{ prt::AttributeMapBuilder::create() };
+                optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_REPORT);
+                const pcu::AttributeMapPtr reportOptions{ optionsBuilder->createAttributeMapAndReset() };
+                const pcu::AttributeMapPtr printOptions{ optionsBuilder->createAttributeMapAndReset() };
+
+                mCGAReportOptions = createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions);
+                mCGAPrintOptions = createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions);
+
+                mAllEncodersWS = { encoderName, ENCODER_ID_CGA_REPORT, ENCODER_ID_CGA_PRINT };
+                allEncoders = {
+                        encoderName.c_str(),
+                        ENCODER_ID_CGA_REPORT.c_str(), // an encoder to redirect CGA report to CGAReport.txt
+                        ENCODER_ID_CGA_PRINT.c_str() // redirects CGA print output to the callback
+                };
+
+                allEncodersOptions = { mPyEncoderOptions.get(), mCGAReportOptions.get(), mCGAPrintOptions.get() };
+                mAllEncodersOptionsPtr.push_back(std::move(mPyEncoderOptions));
+                mAllEncodersOptionsPtr.push_back(std::move(mCGAReportOptions));
+                mAllEncodersOptionsPtr.push_back(std::move(mCGAPrintOptions));
+
                 const pcu::Path output_path = executablePath.getParent().getParent() / "output";
                 if (!output_path.exists()) {
                     std::filesystem::create_directory(output_path.toStdPath());
@@ -325,7 +334,7 @@ namespace {
                 const prt::Status genStat = prt::generate(
                     initialShapes.data(), initialShapes.size(), nullptr,
                     allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
-                    foc.get(), cache.get(), nullptr
+                    foc.get(), mCache.get(), nullptr
                 );
 
                 if (genStat != prt::STATUS_OK) {
@@ -353,7 +362,7 @@ namespace {
 
     std::vector<GeneratedGeometry> ModelGenerator::generateAnotherModel(py::dict shapeAttributes, py::dict encoderOptions = {})
     {
-        if (!valid) {
+        if (!mValid) {
             LOG_ERR << "invalid ModelGenerator instance";
             return {};
         }
@@ -363,7 +372,7 @@ namespace {
         start = std::clock();
 
         std::vector<GeneratedGeometry> newGeneratedGeo;
-        newGeneratedGeo.resize(initialShapesBuilders.size());
+        newGeneratedGeo.resize(mInitialShapesBuilders.size());
 
         try {
             if (!prtCtx) {
@@ -371,7 +380,7 @@ namespace {
                 return {};
             }
 
-            if (!resolveMap) {
+            if (!mResolveMap) {
                 LOG_ERR << "getting resolve map failed, aborting.";
                 return {};
             }
@@ -381,57 +390,63 @@ namespace {
             if (convertedShapeAttr) {
                 if (convertedShapeAttr->hasKey(L"ruleFile") &&
                     convertedShapeAttr->getType(L"ruleFile") == prt::AttributeMap::PT_STRING)
-                    ruleFile = convertedShapeAttr->getString(L"ruleFile");
+                    mRuleFile = convertedShapeAttr->getString(L"ruleFile");
                 if (convertedShapeAttr->hasKey(L"startRule") &&
                     convertedShapeAttr->getType(L"startRule") == prt::AttributeMap::PT_STRING)
-                    startRule = convertedShapeAttr->getString(L"startRule");
+                    mStartRule = convertedShapeAttr->getString(L"startRule");
             }
 
-
             // Encoder info, encoder options
-            const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions, encoderBuilder) };
+            const pcu::AttributeMapPtr encOptions{pcu::createAttributeMapFromPythonDict(encoderOptions, mEncoderBuilder) };
 
-            pyEncoderOptions = createValidatedOptions(allEncoders[0], encOptions);
-            allEncodersOptions[0] = pyEncoderOptions.get();
+            mPyEncoderOptions = createValidatedOptions(mAllEncodersWS[0].c_str(), encOptions);
+            mAllEncodersOptionsPtr[0] = std::move(mPyEncoderOptions);
 
+            std::vector<const wchar_t*> allEncoders;
+            allEncoders.reserve(3);
+            std::vector<const prt::AttributeMap*> allEncodersOptions;
+            allEncodersOptions.reserve(3);
 
             // Initial Shapes
             std::vector<pcu::InitialShapePtr> initialShapePtrs;
-            initialShapePtrs.reserve(initialShapesBuilders.size());
+            initialShapePtrs.reserve(mInitialShapesBuilders.size());
             std::vector<const prt::InitialShape*> initialShapes;
-            initialShapes.reserve(initialShapesBuilders.size());
+            initialShapes.reserve(mInitialShapesBuilders.size());
 
-            for (size_t ind = 0; ind < initialShapesBuilders.size(); ind++) {
+            for (size_t ind = 0; ind < mInitialShapesBuilders.size(); ind++) {
 
-                if (initialShapesBuilders.empty()) {
+                if (mInitialShapesBuilders.empty()) {
                     LOG_ERR << "initial shape builders empty.";
                     return {};
                 }
 
-                initialShapesBuilders[ind]->setAttributes(
-                    ruleFile.c_str(),
-                    startRule.c_str(),
-                    seed,
-                    shapeName.c_str(),
+                mInitialShapesBuilders[ind]->setAttributes(
+                    mRuleFile.c_str(),
+                    mStartRule.c_str(),
+                    mSeed,
+                    mShapeName.c_str(),
                     convertedShapeAttr.get(),
-                    resolveMap.get()
+                    mResolveMap.get()
                 );
 
-                pcu::InitialShapePtr initialShape{ initialShapesBuilders[ind]->createInitialShape() };
+                pcu::InitialShapePtr initialShape{ mInitialShapesBuilders[ind]->createInitialShape() };
 
                 initialShapes.push_back(initialShape.get());
                 initialShapePtrs.push_back(std::move(initialShape));
             }
 
-            if (!std::wcscmp(allEncoders[0], ENCODER_ID_PYTHON)) {
+            if (!std::wcscmp(mAllEncodersWS[0].c_str(), ENCODER_ID_PYTHON.c_str())) {
 
-                pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>(initialShapesBuilders.size()) };
+                allEncoders.push_back(mAllEncodersWS[0].c_str());
+                allEncodersOptions.push_back(mAllEncodersOptionsPtr[0].get());
+
+                pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>(mInitialShapesBuilders.size()) };
 
                 // Generate
                 const prt::Status genStat = prt::generate(
                     initialShapes.data(), initialShapes.size(), nullptr,
                     allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
-                    foc.get(), cache.get(), nullptr
+                    foc.get(), mCache.get(), nullptr
                 );
 
                 if (genStat != prt::STATUS_OK) {
@@ -439,7 +454,7 @@ namespace {
                     return {};
                 }
 
-                for (size_t idx = 0; idx < initialShapesBuilders.size(); idx++) {
+                for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++) {
                     GeneratedGeometry geo(idx, foc->getVertices(idx), foc->getFaces(idx), foc->getFloatReport(idx), foc->getStringReport(idx), foc->getBoolReport(idx));
                     geo.convertGeometryIntoPythonStyle();
                     newGeneratedGeo[idx] = geo;
@@ -447,6 +462,9 @@ namespace {
 
             }
             else {
+                allEncoders = { mAllEncodersWS[0].c_str(), mAllEncodersWS[1].c_str(), mAllEncodersWS[2].c_str() };
+                allEncodersOptions = { mAllEncodersOptionsPtr[0].get(), mAllEncodersOptionsPtr[1].get(), mAllEncodersOptionsPtr[2].get() };
+
                 const pcu::Path output_path = executablePath.getParent().getParent() / "output";
                 if (!output_path.exists()) {
                     std::filesystem::create_directory(output_path.toStdPath());
@@ -459,7 +477,7 @@ namespace {
                 const prt::Status genStat = prt::generate(
                     initialShapes.data(), initialShapes.size(), nullptr,
                     allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
-                    foc.get(), cache.get(), nullptr
+                    foc.get(), mCache.get(), nullptr
                 );
 
                 if (genStat != prt::STATUS_OK) {
