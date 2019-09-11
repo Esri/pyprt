@@ -91,10 +91,9 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
         prtx::ReportsPtr rep = reportsCollector->getReports();
 
         if (rep) {
-            prtx::Shape::ReportBoolVect& boolReps = rep->mBools;
+            const prtx::Shape::ReportBoolVect& boolReps = rep->mBools;
             const size_t boolRepCount = boolReps.size();
-            std::vector<const wchar_t*> boolRepKeys;
-            boolRepKeys.resize(boolRepCount);
+            std::vector<const wchar_t*> boolRepKeys(boolRepCount);
             std::unique_ptr<bool[]> boolRepValues(new bool[boolRepCount]);
 
             for (size_t i = 0; i < boolRepCount; i++) {
@@ -102,24 +101,20 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
                 boolRepValues[i] = boolReps[i].second;
             }
 
-            prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
+            const prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
             const size_t floatRepCount = floatReps.size();
-            std::vector<const wchar_t*> floatRepKeys;
-            floatRepKeys.resize(floatRepCount);
-            std::vector<double> floatRepValues;
-            floatRepValues.resize(floatRepCount);
+            std::vector<const wchar_t*> floatRepKeys(floatRepCount);
+            std::vector<double> floatRepValues(floatRepCount);
 
             for (size_t i = 0; i < floatRepCount; i++) {
                 floatRepKeys[i] = floatReps[i].first->c_str();
                 floatRepValues[i] = floatReps[i].second;
             }
 
-            prtx::Shape::ReportStringVect&	stringReps = rep->mStrings;
+            const prtx::Shape::ReportStringVect& stringReps = rep->mStrings;
             const size_t stringRepCount = stringReps.size();
-            std::vector<const wchar_t*> stringRepKeys;
-            stringRepKeys.resize(stringRepCount);
-            std::vector<const wchar_t*> stringRepValues;
-            stringRepValues.resize(stringRepCount);
+            std::vector<const wchar_t*> stringRepKeys(stringRepCount);
+            std::vector<const wchar_t*> stringRepValues(stringRepCount);
 
             for (size_t i = 0; i < stringRepCount; i++) {
                 stringRepKeys[i] = stringReps[i].first->c_str();
