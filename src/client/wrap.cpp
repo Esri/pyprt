@@ -248,7 +248,7 @@ namespace {
             std::vector<const prt::AttributeMap*> allEncodersOptions;
             allEncodersOptions.reserve(3);
 
-            if (!std::wcscmp(encoderName.c_str(), ENCODER_ID_PYTHON.c_str())) {
+            if (encoderName == ENCODER_ID_PYTHON) {
                 if (mAllEncodersWS.size() > 1)
                     mAllEncodersWS[0] = encoderName;
                 else
@@ -409,8 +409,7 @@ namespace {
                 initialShapePtrs.push_back(std::move(initialShape));
             }
 
-            if (!std::wcscmp(mAllEncodersWS[0].c_str(), ENCODER_ID_PYTHON.c_str())) {
-
+            if (mAllEncodersWS[0] == ENCODER_ID_PYTHON) {
                 allEncoders.push_back(mAllEncodersWS[0].c_str());
                 allEncodersOptions.push_back(mAllEncodersOptionsPtr[0].get());
 
