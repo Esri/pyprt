@@ -84,35 +84,23 @@ namespace {
 
 namespace py = pybind11;
 
-Geometry::Geometry(const std::vector<double>& vert) {
-    mVertices = vert;
-    mVertexCount = vert.size();
-    mIndexCount = (size_t)(mVertexCount / 3);
-    mIndices.resize(mIndexCount);
-    mFaceCountsCount = 1;
-    mFaceCounts.resize(1);
-
+Geometry::Geometry(const std::vector<double>& vert) :
+    mVertices(vert)
+ {
+    mIndices.resize(vert.size() / 3);
     std::iota(std::begin(mIndices), std::end(mIndices), 0);
-    mFaceCounts[0] = (uint32_t) mIndexCount;
+    mFaceCounts.resize(1, (uint32_t)mIndices.size());
 }
 
-void Geometry::updateGeometry(const std::vector<double>& vert, const size_t& vertCnt, const std::vector<uint32_t>& ind, const size_t& indCnt, const std::vector<uint32_t>& faceCnt, const size_t& faceCntCnt) {
-    mVertices = vert;
-    mVertexCount = vertCnt;
-    mIndices = ind;
-    mIndexCount = indCnt;
-    mFaceCounts = faceCnt;
-    mFaceCountsCount = faceCntCnt;
+Geometry::Geometry(const std::vector<double>& vert, const std::vector<uint32_t>& ind, const std::vector<uint32_t>& faceCnt) :
+    mVertices(vert), mIndices(ind), mFaceCounts(faceCnt)
+{
 }
 
 
-GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep) {
-    mInitialShapeIndex = initShapeIdx;
-    mVertices = vert;
-    mFaces = face;
-    mFloatReport = floatRep;
-    mStringReport = stringRep;
-    mBoolReport = boolRep;
+GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep) :
+    mInitialShapeIndex(initShapeIdx), mVertices(vert), mFaces(face), mFloatReport(floatRep), mStringReport(stringRep), mBoolReport(boolRep)
+{
 }
 
 
@@ -510,9 +498,8 @@ PYBIND11_MODULE(pyprt, m) {
     m.def("shutdown_prt", &shutdownPRT);
 
     py::class_<Geometry>(m, "Geometry")
-        .def(py::init<>())
-        .def(py::init<std::vector<double>>())
-        .def("update_geometry",&Geometry::updateGeometry)
+        .def(py::init<const std::vector<double>&>())
+        .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&>())
         .def("get_vertices", &Geometry::getVertices)
         .def("get_vertex_count", &Geometry::getVertexCount)
         .def("get_indices", &Geometry::getIndices)

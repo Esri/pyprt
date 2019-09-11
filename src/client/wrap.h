@@ -155,24 +155,20 @@ struct PRTContext {
 class Geometry {
 public:
 	Geometry(const std::vector<double>& vert);
-	Geometry() { }
+	Geometry(const std::vector<double>& vert, const std::vector<uint32_t>& ind, const std::vector<uint32_t>& faceCnt); 
 	~Geometry() { }
 
-	void updateGeometry(const std::vector<double>& vert, const size_t& vertCnt, const std::vector<uint32_t>& ind, const size_t& indCnt, const std::vector<uint32_t>& faceCnt, const size_t& faceCntCnt);
 	const double* getVertices() const { return mVertices.data(); }
-	size_t getVertexCount() const { return mVertexCount; }
+	size_t getVertexCount() const { return mVertices.size(); }
 	const uint32_t* getIndices() const { return mIndices.data(); }
-	size_t getIndexCount() const { return mIndexCount; }
+	size_t getIndexCount() const { return mIndices.size(); }
 	const uint32_t* getFaceCounts() const { return mFaceCounts.data(); }
-	size_t getFaceCountsCount() const { return mFaceCountsCount; }
+	size_t getFaceCountsCount() const { return mFaceCounts.size(); }
 
 protected:
 	std::vector<double>     mVertices;
-	size_t                  mVertexCount;
 	std::vector<uint32_t>   mIndices;
-	size_t                  mIndexCount;
 	std::vector<uint32_t>   mFaceCounts;
-	size_t                  mFaceCountsCount;
 };
 
 
