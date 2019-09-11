@@ -19,9 +19,6 @@
 
 #include "PyCallbacks.h"
 
-#include <string>
-#include <vector>
-#include <map>
 
 
 void PyCallbacks::addGeometry(

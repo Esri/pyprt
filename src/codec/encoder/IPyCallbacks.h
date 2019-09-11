@@ -20,9 +20,6 @@
 
 #include "prt/Callbacks.h"
 
-#include <string>
-#include <vector>
-#include <map>
 
 class IPyCallbacks : public prt::Callbacks {
 public:
