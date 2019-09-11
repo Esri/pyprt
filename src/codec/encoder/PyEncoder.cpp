@@ -141,12 +141,17 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
         mEncodePreparator->fetchFinalizedInstances(finalizedInstances, ENC_PREP_FLAGS);
         uint32_t vertexIndexBase = 0;
 
+        std::vector<double> vertexCoords;
+        std::vector<uint32_t> faceIndices;
+        std::vector<uint32_t> faceCounts;
+
         for (const auto& instance : finalizedInstances) {
             const prtx::MeshPtrVector& meshes = instance.getGeometry()->getMeshes();
-            std::vector<double> vertexCoords;
-            std::vector<uint32_t> faceIndices;
-            std::vector<uint32_t> faceCounts;
-            
+
+            vertexCoords.clear();
+            faceIndices.clear();
+            faceCounts.clear();
+
             for (const auto& mesh : meshes) {
                 const prtx::DoubleVector& verts = mesh->getVertexCoords();
                 vertexCoords.insert(vertexCoords.end(), verts.begin(), verts.end());
