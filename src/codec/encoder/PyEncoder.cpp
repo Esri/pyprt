@@ -81,6 +81,8 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
 
 	const prtx::InitialShape* is = context.getInitialShape(initialShapeIndex);
     auto* cb = dynamic_cast<IPyCallbacks*>(getCallbacks());
+    if(cb == nullptr)
+        throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
 
     if (getOptions()->getBool(EO_EMIT_REPORTS)) {
         prtx::ReportsAccumulatorPtr reportsAccumulator{ prtx::SummarizingReportsAccumulator::create() };
