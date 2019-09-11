@@ -123,8 +123,6 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
 
             cb->addReports(initialShapeIndex, stringRepKeys.data(), stringRepValues.data(), stringRepCount, floatRepKeys.data(), floatRepValues.data(), floatRepCount, boolRepKeys.data(), boolRepValues.get(), boolRepCount);
         }
-        else
-            cb->addReports(initialShapeIndex, nullptr, nullptr, 0, nullptr, nullptr, 0, nullptr, nullptr, 0);
     }
 
     if (getOptions()->getBool(EO_EMIT_GEOMETRY)) {
