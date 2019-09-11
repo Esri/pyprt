@@ -78,15 +78,15 @@ public:
 
     size_t getInitialShapeCount() const { return mModels.size(); }
 
-    std::vector<double> getVertices(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mVertices; }
+    const std::vector<double>& getVertices(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mVertices; }
 
-    std::vector<std::vector<uint32_t>> getFaces(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mFaces; }
+    const std::vector<std::vector<uint32_t>>& getFaces(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mFaces; }
 
-    FloatMap getFloatReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGAFloatReport; }
+    const FloatMap& getFloatReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGAFloatReport; }
 
-    StringMap getStringReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGAStringReport; }
+    const StringMap& getStringReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGAStringReport; }
 
-    BoolMap getBoolReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGABoolReport; }
+    const BoolMap& getBoolReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGABoolReport; }
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
 		pybind11::print(L"GENERATE ERROR:", isIndex, status, message);
