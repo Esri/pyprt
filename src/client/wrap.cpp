@@ -171,8 +171,7 @@ namespace {
         double duration;
         start = std::clock();
 
-        std::vector<GeneratedGeometry> newGeneratedGeo;
-        newGeneratedGeo.resize(mInitialShapesBuilders.size());
+        std::vector<GeneratedGeometry> newGeneratedGeo(mInitialShapesBuilders.size());
 
         try {
             if (!prtCtx) {
@@ -188,13 +187,11 @@ namespace {
                     const std::string u8rpkURI = pcu::toFileURI(rulePackagePath);
                     prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
                     try {
-                        auto* r = prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status);
-                        mResolveMap.reset(r);
+                        mResolveMap.reset(prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status));
                     }
                     catch (std::exception& e) {
                         pybind11::print("CAUGHT EXCEPTION:", e.what());
                     }
-
 
                     if (mResolveMap && (status == prt::STATUS_OK)) {
                         LOG_DBG << "resolve map = " << pcu::objectToXML(mResolveMap.get()) << std::endl;
@@ -349,8 +346,7 @@ namespace {
         double duration;
         start = std::clock();
 
-        std::vector<GeneratedGeometry> newGeneratedGeo;
-        newGeneratedGeo.resize(mInitialShapesBuilders.size());
+        std::vector<GeneratedGeometry> newGeneratedGeo(mInitialShapesBuilders.size());
 
         try {
             if (!prtCtx) {
