@@ -58,22 +58,15 @@ void PyCallbacks::addReports(
     const bool* boolReportValues,
     size_t boolReportCount) {
 
-    BoolMap boolReport;
-    FloatMap floatReport;
-    StringMap stringReport;
-
     for (size_t i = 0; i < boolReportCount; i++) {
-        boolReport[boolReportKeys[i]] = boolReportValues[i];
+        mModels[initialShapeIndex].mCGABoolReport[boolReportKeys[i]] = boolReportValues[i];
     }
-    mModels[initialShapeIndex].mCGABoolReport = boolReport;
 
     for (size_t i = 0; i < floatReportCount; i++) {
-        floatReport[floatReportKeys[i]] = floatReportValues[i];
+        mModels[initialShapeIndex].mCGAFloatReport[floatReportKeys[i]] = floatReportValues[i];
     }
-    mModels[initialShapeIndex].mCGAFloatReport = floatReport;
 
     for (size_t i = 0; i < stringReportCount; i++) {
-        stringReport[stringReportKeys[i]] = stringReportValues[i];
+        mModels[initialShapeIndex].mCGAStringReport[stringReportKeys[i]] = stringReportValues[i];
     }
-    mModels[initialShapeIndex].mCGAStringReport = stringReport;
 }
