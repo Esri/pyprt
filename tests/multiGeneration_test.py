@@ -12,7 +12,7 @@ def asset_file(filename):
     return os.path.join(CS_FOLDER, "data", filename)
 
 
-class MainTest(unittest.TestCase):
+class MultiTest(unittest.TestCase):
     def test_multigenerations(self):
         pyprt.initialize_prt(SDK_PATH)
         rpk = asset_file("simple_rule0819.rpk")

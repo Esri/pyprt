@@ -15,7 +15,7 @@ def asset_output_file(filename):
     return os.path.join(CS_FOLDER, "output", filename)
 
 
-class MainTest(unittest.TestCase):
+class ExporterTest(unittest.TestCase):
     def test_slpk(self):
         if os.path.isfile(asset_output_file("Unittest4SLPK.slpk")):
             os.remove(asset_output_file("Unittest4SLPK.slpk"))
@@ -24,7 +24,7 @@ class MainTest(unittest.TestCase):
         shape_geo_from_obj = asset_file("greenbuildingfootprint_0.obj")
         rpk = asset_file("Building_From_Footprint5.rpk")
         attrs = {'ruleFile' : "rules/Buildings/Building_From_Footprint.cgb", 'startRule' : "Default$Generate", 'Reporting' : "All"}
-        SLPKoptions = {'layerTextureEncoding' : ["2"],'layerEnabled' : [True],'layerUID' : ["1"],'layerName' : ["Salut"],'layerTextureQuality' : [1.0],'layerTextureCompression' : [9],'layerTextureScaling': [1.0],'layerTextureMaxDimension' : [2048],'layerFeatureGranularity' : ["0"],'layerBackfaceCulling' : [False], 'baseName' : "Unittest4SLPK"}
+        SLPKoptions = {'layerTextureEncoding' : ["2"],'layerEnabled' : [True],'layerUID' : ["1"],'layerName' : ["Salut"],'layerTextureQuality' : [1.0],'layerTextureCompression' : [9],'layerTextureScaling': [1.0],'layerTextureMaxDimension' : [2048],'layerFeatureGranularity' : ["0"],'layerBackfaceCulling' : [False], 'baseName' : "Unittest4SLPK"}        
         m = pyprt.ModelGenerator(shape_geo_from_obj)
         model = m.generate_model(rpk, attrs, SLPKoptions, "com.esri.prt.codecs.I3SEncoder")
         self.assertTrue(os.path.isfile(asset_output_file("Unittest4SLPK.slpk")))
