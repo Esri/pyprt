@@ -35,15 +35,15 @@ attrs2 = {'report_but_not_display_green' : False}
 
 
 m = pyprt.ModelGenerator(shapeGeo)
-models = m.generate_model(rpk, attrs)
+models = m.generate_model(attrs, {}, "com.esri.prt.examples.PyEncoder", rpk)
 
 visualize_PRT_results(models)
 
-models2 = m.generate_another_model(attrs2, {'emitGeometry' : False})
+models2 = m.generate_model(attrs2, {'emitGeometry' : False})
 
 visualize_PRT_results(models2)
 
-models3 = m.generate_model(rpk, attrs, {}, "com.esri.prt.codecs.OBJEncoder")
+models3 = m.generate_model(attrs, {}, "com.esri.prt.codecs.OBJEncoder", rpk)
 
 pyprt.shutdown_prt()
 print("\nShutdown PRT.")
