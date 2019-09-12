@@ -207,7 +207,6 @@ namespace {
         void ModelGenerator::initializeEncoderData(const std::wstring encName);
         void ModelGenerator::handleEncoderData(std::vector<const wchar_t*>& allEnc, std::vector<const prt::AttributeMap*>& allEncOpt);
         std::vector<GeneratedGeometry> generateModel(py::dict shapeAttributes, py::dict encoderOptions, const std::wstring encoderName, const std::string& rulePackagePath);
-		std::vector<GeneratedGeometry> generateAnotherModel(py::dict shapeAttributes, py::dict encoderOptions);
 
 	private:
 		std::string             mInitialShapePath;

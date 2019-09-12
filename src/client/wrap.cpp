@@ -362,111 +362,7 @@ namespace {
         }
 
         duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
-        std::cout << "Method duration - first model generation: " << duration << std::endl;
-
-        return newGeneratedGeo;
-    }
-
-    std::vector<GeneratedGeometry> ModelGenerator::generateAnotherModel(py::dict shapeAttributes, py::dict encoderOptions = {})
-    {
-        if (!mValid) {
-            LOG_ERR << "invalid ModelGenerator instance";
-            return {};
-        }
-
-        std::clock_t start;
-        double duration;
-        start = std::clock();
-
-        std::vector<GeneratedGeometry> newGeneratedGeo(mInitialShapesBuilders.size());
-
-        try {
-            if (!prtCtx) {
-                LOG_ERR << "prt has not been initialized.";
-                return {};
-            }
-
-            if (!mResolveMap) {
-                LOG_ERR << "getting resolve map failed, aborting.";
-                return {};
-            }
-
-            // Initial shape attributes
-            pcu::AttributeMapPtr convertedShapeAttr;
-            handleMainShapeAttributes(convertedShapeAttr, shapeAttributes, mRuleFile, mStartRule);
-
-            // Initial Shapes
-            std::vector<const prt::InitialShape*> initialShapes(mInitialShapesBuilders.size());
-            std::vector<pcu::InitialShapePtr> initialShapePtrs(mInitialShapesBuilders.size());
-            addInitialShape(convertedShapeAttr, initialShapes, initialShapePtrs);
-
-            // Encoder info, encoder options
-            const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions, mEncoderBuilder) };
-            mPyEncoderOptions = createValidatedOptions(mAllEncodersWS[0].c_str(), encOptions);
-            mAllEncodersOptionsPtr[0] = std::move(mPyEncoderOptions);
-
-            std::vector<const wchar_t*> allEncoders;
-            allEncoders.reserve(3);
-            std::vector<const prt::AttributeMap*> allEncodersOptions;
-            allEncodersOptions.reserve(3);
-
-            handleEncoderData(allEncoders, allEncodersOptions);
-
-            if (mAllEncodersWS[0] == ENCODER_ID_PYTHON) {
-
-                pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>(mInitialShapesBuilders.size()) };
-
-                // Generate
-                const prt::Status genStat = prt::generate(
-                    initialShapes.data(), initialShapes.size(), nullptr,
-                    allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
-                    foc.get(), mCache.get(), nullptr
-                );
-
-                if (genStat != prt::STATUS_OK) {
-                    LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
-                    return {};
-                }
-
-                for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++)
-                    newGeneratedGeo[idx] = GeneratedGeometry(idx, convertVerticesIntoPythonStyle(foc->getVertices(idx)), foc->getFaces(idx), foc->getFloatReport(idx), foc->getStringReport(idx), foc->getBoolReport(idx));
-            }
-            else {
-
-                const pcu::Path output_path = executablePath.getParent().getParent() / "output";
-                if (!output_path.exists()) {
-                    std::filesystem::create_directory(output_path.toStdPath());
-                    LOG_INF << "new output directory created at " << output_path << std::endl;
-                }
-
-                pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
-
-                // Generate
-                const prt::Status genStat = prt::generate(
-                    initialShapes.data(), initialShapes.size(), nullptr,
-                    allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
-                    foc.get(), mCache.get(), nullptr
-                );
-
-                if (genStat != prt::STATUS_OK) {
-                    LOG_ERR << "prt::generate() failed with status: '" << prt::getStatusDescription(genStat) << "' (" << genStat << ")";
-                    return {};
-                }
-
-                return {};
-            }
-        }
-        catch (const std::exception& e) {
-            LOG_ERR << "caught exception: " << e.what();
-            return {};
-        }
-        catch (...) {
-            LOG_ERR << "caught unknown exception.";
-            return {};
-        }
-
-        duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
-        std::cout << "Method duration - second model generation (with other attributes): " << duration << std::endl;
+        std::cout << "Method duration - model generation: " << duration << std::endl;
 
         return newGeneratedGeo;
     }
@@ -484,8 +380,7 @@ PYBIND11_MODULE(pyprt, m) {
     py::class_<ModelGenerator>(m, "ModelGenerator")
         .def(py::init<const std::string&>(), "initShapePath"_a)
         .def(py::init<const std::vector<Geometry>&>(), "initShape"_a)
-        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"), py::arg("encoderOptions") = py::dict(), py::arg("encoderName") = ENCODER_ID_PYTHON, py::arg("rulePackagePath") = "")
-        .def("generate_another_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"), py::arg("encoderOptions") = py::dict());
+        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"), py::arg("encoderOptions") = py::dict(), py::arg("encoderName") = ENCODER_ID_PYTHON, py::arg("rulePackagePath") = "");
 
     m.def("initialize_prt", &initializePRT, "prt_path"_a = "");
     m.def("is_prt_initialized", &isPRTInitialized);
