@@ -203,7 +203,10 @@ namespace {
 		ModelGenerator(const std::vector<Geometry>& myGeo);
 		~ModelGenerator() { }
 
-		std::vector<GeneratedGeometry> generateModel(const std::string& rulePackagePath, py::dict shapeAttributes, py::dict encoderOptions, const std::wstring encoderName);
+        void ModelGenerator::addInitialShape(const pcu::AttributeMapPtr& shapeAttr, std::vector<const prt::InitialShape*>& initShapes, std::vector<pcu::InitialShapePtr>& initShapesPtrs);
+        void ModelGenerator::initializeEncoderData(const std::wstring encName);
+        void ModelGenerator::handleEncoderData(std::vector<const wchar_t*>& allEnc, std::vector<const prt::AttributeMap*>& allEncOpt);
+        std::vector<GeneratedGeometry> generateModel(py::dict shapeAttributes, py::dict encoderOptions, const std::wstring encoderName, const std::string& rulePackagePath);
 		std::vector<GeneratedGeometry> generateAnotherModel(py::dict shapeAttributes, py::dict encoderOptions);
 
 	private:
