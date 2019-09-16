@@ -99,7 +99,7 @@ pcu::Path getExecutablePath() {
 /**
  * Helper function to convert a Python dictionary of "<key>:<value>" into a prt::AttributeMap
  */
-AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, AttributeMapBuilderPtr& bld) {
+AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, prt::AttributeMapBuilder& bld) {
     for (auto a : args) {
 
         const std::wstring key = a.first.cast<std::wstring>();
@@ -117,7 +117,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, AttributeMapBuil
                         v_arr[i] = item;
                     }
 
-                    bld->setBoolArray(key.c_str(), v_arr.get(), count);
+                    bld.setBoolArray(key.c_str(), v_arr.get(), count);
                 }
                 catch(std::exception& e) {
                     std::wcerr << L"cannot set bool array attribute " << key << ": " << e.what() << std::endl;
@@ -132,7 +132,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, AttributeMapBuil
                     	v_arr[i] = item;
                     }
 
-                    bld->setFloatArray(key.c_str(), v_arr.data(), v_arr.size());
+                    bld.setFloatArray(key.c_str(), v_arr.data(), v_arr.size());
                 }
                 catch (std::exception& e) {
                     std::wcerr << L"cannot set float array attribute " << key << ": " << e.what() << std::endl;
@@ -147,7 +147,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, AttributeMapBuil
 						v_arr[i] = item;
                     }
 
-                    bld->setIntArray(key.c_str(), v_arr.data(), v_arr.size());
+                    bld.setIntArray(key.c_str(), v_arr.data(), v_arr.size());
                 }
                 catch (std::exception& e) {
                     std::wcerr << L"cannot set int array attribute " << key << ": " << e.what() << std::endl;
@@ -163,7 +163,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, AttributeMapBuil
                 }
 
 				const auto v_arr_ptrs = toPtrVec(v_arr); // setStringArray requires contiguous array
-                bld->setStringArray(key.c_str(), v_arr_ptrs.data(), v_arr_ptrs.size());
+                bld.setStringArray(key.c_str(), v_arr_ptrs.data(), v_arr_ptrs.size());
             }
             else
                 std::cout << "Unknown array type." << std::endl;
@@ -172,7 +172,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, AttributeMapBuil
             if (py::isinstance<py::bool_>(a.second.ptr())) { // check for boolean first!!
                 try {
                     bool val = a.second.cast<bool>();
-                    bld->setBool(key.c_str(), val);
+                    bld.setBool(key.c_str(), val);
                 }
                 catch (std::exception& e) {
                     std::wcerr << L"cannot set bool attribute " << key << ": " << e.what() << std::endl;
@@ -181,7 +181,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, AttributeMapBuil
             else if (py::isinstance<py::float_>(a.second.ptr())) {
                 try {
                     double val = a.second.cast<double>();
-                    bld->setFloat(key.c_str(), val);
+                    bld.setFloat(key.c_str(), val);
                 }
                 catch (std::exception& e) {
                     std::wcerr << L"cannot set float attribute " << key << ": " << e.what() << std::endl;
@@ -190,7 +190,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, AttributeMapBuil
             else if (py::isinstance<py::int_>(a.second.ptr())) {
                 try {
                     int32_t val = a.second.cast<int32_t>();
-                    bld->setInt(key.c_str(), val);
+                    bld.setInt(key.c_str(), val);
                 }
                 catch (std::exception& e) {
                     std::wcerr << L"cannot set int attribute " << key << ": " << e.what() << std::endl;
@@ -198,13 +198,13 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, AttributeMapBuil
             }
             else if (py::isinstance<py::str>(a.second.ptr())) {
                 std::wstring val = a.second.cast<std::wstring>();
-                bld->setString(key.c_str(), val.c_str());
+                bld.setString(key.c_str(), val.c_str());
             }
             else
                 std::cout << "Unknown type." << std::endl;
         }
     }
-    return AttributeMapPtr{ bld->createAttributeMap() };
+    return AttributeMapPtr{ bld.createAttributeMap() };
 }
 
 

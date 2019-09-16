@@ -219,7 +219,8 @@ namespace {
             }
 
             // Initial shape attributes
-            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes, pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create())) };
+			pcu::AttributeMapBuilderPtr attributeMapBuilder(prt::AttributeMapBuilder::create());
+            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes, *attributeMapBuilder) };
             if (convertedShapeAttr) {
                 if (convertedShapeAttr->hasKey(L"ruleFile") &&
                     convertedShapeAttr->getType(L"ruleFile") == prt::AttributeMap::PT_STRING)
@@ -254,7 +255,7 @@ namespace {
 
             // Encoder info, encoder options
             mEncoderBuilder = std::move(pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create()));
-            const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions, mEncoderBuilder) };
+            const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions, *mEncoderBuilder) };
 
             mPyEncoderOptions = createValidatedOptions(encoderName, encOptions);
 
@@ -376,7 +377,8 @@ namespace {
             }
 
             // Initial shape attributes
-            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes, pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create())) };
+			pcu::AttributeMapBuilderPtr attributeMapBuilder(prt::AttributeMapBuilder::create());
+            const pcu::AttributeMapPtr convertedShapeAttr{ pcu::createAttributeMapFromPythonDict(shapeAttributes, *attributeMapBuilder) };
             if (convertedShapeAttr) {
                 if (convertedShapeAttr->hasKey(L"ruleFile") &&
                     convertedShapeAttr->getType(L"ruleFile") == prt::AttributeMap::PT_STRING)
@@ -387,7 +389,7 @@ namespace {
             }
 
             // Encoder info, encoder options
-            const pcu::AttributeMapPtr encOptions{pcu::createAttributeMapFromPythonDict(encoderOptions, mEncoderBuilder) };
+            const pcu::AttributeMapPtr encOptions{pcu::createAttributeMapFromPythonDict(encoderOptions, *mEncoderBuilder) };
 
             mPyEncoderOptions = createValidatedOptions(mAllEncodersWS[0].c_str(), encOptions);
             mAllEncodersOptionsPtr[0] = std::move(mPyEncoderOptions);

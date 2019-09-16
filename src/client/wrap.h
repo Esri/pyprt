@@ -182,7 +182,7 @@ public:
 	GeneratedGeometry() { }
 	~GeneratedGeometry() { }
 
-	const size_t getInitialShapeIndex() const { return mInitialShapeIndex; }
+	size_t getInitialShapeIndex() const { return mInitialShapeIndex; }
 	const std::vector<std::vector<double>>& getVertices() const { return mVertices; }
 	const std::vector<std::vector<uint32_t>>& getFaces() const { return mFaces; }
 	const FloatMap& getFloatReport() const { return mFloatReport; }
