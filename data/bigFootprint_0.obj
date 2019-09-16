@@ -1,0 +1,18 @@
+# created with CityEngine 2019.0.5403 0409R (based on Esri Procedural Runtime 2.0.5403, build date: Tue 04/09/2019 10:26 AM)
+# creation date: Fri Jun 14 13:47:10 2019
+
+mtllib bigFootprint.mtl
+
+# mesh 'mesh_CityEngineShapeMaterial' from geometry 'mesh_CityEngineShapeMaterial'
+v -50.447 0.000 89.886
+v -50.447 0.000 39.523
+v 34.368 0.000 39.523
+v 34.368 0.000 89.886
+# 4 vertices
+
+g CityEngineShapeMaterial
+s off
+usemtl CityEngineShapeMaterial
+f 2 1 4 3
+# 1 face
+
