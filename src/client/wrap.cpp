@@ -240,10 +240,6 @@ namespace {
             return {};
         }
 
-        std::clock_t start;
-        double duration;
-        start = std::clock();
-
         std::vector<GeneratedGeometry> newGeneratedGeo(mInitialShapesBuilders.size());
 
         try {
@@ -360,9 +356,6 @@ namespace {
 			LOG_ERR << "caught unknown exception.";
             return {};
         }
-
-        duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
-        std::cout << "Method duration - model generation: " << duration << std::endl;
 
         return newGeneratedGeo;
     }
