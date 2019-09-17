@@ -20,7 +20,6 @@ class ExporterTest(unittest.TestCase):
         if os.path.isfile(asset_output_file("Unittest4SLPK.slpk")):
             os.remove(asset_output_file("Unittest4SLPK.slpk"))
 
-        pyprt.initialize_prt(SDK_PATH)
         shape_geo_from_obj = asset_file("greenbuildingfootprint_0.obj")
         rpk = asset_file("Building_From_Footprint5.rpk")
         attrs = {'ruleFile' : "rules/Buildings/Building_From_Footprint.cgb", 'startRule' : "Default$Generate", 'Reporting' : "All"}

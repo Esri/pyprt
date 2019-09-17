@@ -19,9 +19,8 @@ def combine_reports(model):
     combined_dict.update(model.get_bool_report())
     return combined_dict
 
-class MainTest(unittest.TestCase):
+class GeometryTest(unittest.TestCase):
     def test_verticesNber_candler(self):
-        pyprt.initialize_prt(SDK_PATH)
         rpk = asset_file("candler.rpk")
         attrs = {'ruleFile' : "bin/candler.cgb", 'startRule' : "Default$Footprint"}
         shape_geo_from_obj = asset_file("candler_footprint.obj")
@@ -30,7 +29,6 @@ class MainTest(unittest.TestCase):
         self.assertEqual(len(model[0].get_vertices()), 97050)
 
     def test_facesNber_candler(self):
-        pyprt.initialize_prt(SDK_PATH)
         rpk = asset_file("candler.rpk")
         attrs = {'ruleFile' : "bin/candler.cgb", 'startRule' : "Default$Footprint"}
         shape_geo_from_obj = asset_file("candler_footprint.obj")
@@ -39,7 +37,6 @@ class MainTest(unittest.TestCase):
         self.assertEqual(len(model[0].get_faces()), 47202)
 
     def test_report_green(self):
-        pyprt.initialize_prt(SDK_PATH)
         rpk = asset_file("envelope1806.rpk")
         attrs = {'ruleFile' : "rules/typology/envelope.cgb", 'startRule' : "Default$Lot", 'report_but_not_display_green' : True}
         shape_geo_from_obj = asset_file("bigFootprint_0.obj")
@@ -51,7 +48,6 @@ class MainTest(unittest.TestCase):
         self.assertEqual(rep_round, ground_truth_dict)
 
     def test_noReport(self):
-        pyprt.initialize_prt(SDK_PATH)
         rpk = asset_file("simple_rule0819.rpk")
         attrs = {'ruleFile' : "bin/simple_rule2019.cgb", 'startRule' : "Default$Footprint"}
         shape_geo = pyprt.Geometry([-10.0, 0.0, 5.0, -5.0, 0.0, 6.0, 20.0, 0.0, 5.0, 15.0, 0.0, 3.0])
@@ -60,7 +56,6 @@ class MainTest(unittest.TestCase):
         self.assertDictEqual(combine_reports(model[0]),{})
 
     def test_noGeometry(self):
-        pyprt.initialize_prt(SDK_PATH)
         rpk = asset_file("simple_rule0819.rpk")
         attrs = {'ruleFile' : "bin/simple_rule2019.cgb", 'startRule' : "Default$Footprint"}
         shape_geo = pyprt.Geometry([-10.0, 0.0, 5.0, -5.0, 0.0, 6.0, 20.0, 0.0, 5.0, 15.0, 0.0, 3.0])
@@ -69,7 +64,6 @@ class MainTest(unittest.TestCase):
         self.assertListEqual(model[0].get_vertices(),[])
 
     def test_buildingheight(self):
-        pyprt.initialize_prt(SDK_PATH)
         rpk = asset_file("simple_rule0819.rpk")
         attrs = {'ruleFile' : "bin/simple_rule2019.cgb", 'startRule' : "Default$Footprint"}
         attrs2 = {'ruleFile' : "bin/simple_rule2019.cgb", 'startRule' : "Default$Footprint", 'minBuildingHeight' : 23.0, 'maxBuildingHeight' : 23.0}

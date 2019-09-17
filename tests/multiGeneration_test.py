@@ -14,7 +14,6 @@ def asset_file(filename):
 
 class MultiTest(unittest.TestCase):
     def test_multigenerations(self):
-        pyprt.initialize_prt(SDK_PATH)
         rpk = asset_file("simple_rule0819.rpk")
         attrs = {'ruleFile' : "bin/simple_rule2019.cgb", 'startRule' : "Default$Footprint"}
         shape_geo = pyprt.Geometry([-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
@@ -27,8 +26,6 @@ class MultiTest(unittest.TestCase):
         self.assertDictEqual(model1[0].get_float_report(), model3[0].get_float_report())
         self.assertListEqual(model1[0].get_vertices(), model4[0].get_vertices())
         self.assertListEqual(model2[0].get_vertices(), model4[0].get_vertices())
-
-
 
 
 if __name__ == '__main__':
