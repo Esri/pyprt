@@ -10,6 +10,6 @@ setup(
     # packages=find_packages('src'),
     # package_dir={'':'src'},
     ext_modules=[],
-    test_suite='tests',
+    test_suite='tests2',
     zip_safe=False,
 )
