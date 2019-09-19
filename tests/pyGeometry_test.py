@@ -75,8 +75,3 @@ class GeometryTest(unittest.TestCase):
         for z in z_coord:
             if z:
                 self.assertAlmostEqual(abs(z), 23.0)
-
-
-
-if __name__ == '__main__':
-    unittest.main()

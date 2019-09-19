@@ -27,6 +27,3 @@ class MultiTest(unittest.TestCase):
         self.assertListEqual(model1[0].get_vertices(), model4[0].get_vertices())
         self.assertListEqual(model2[0].get_vertices(), model4[0].get_vertices())
 
-
-if __name__ == '__main__':
-    unittest.main()

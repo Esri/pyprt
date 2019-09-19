@@ -28,7 +28,3 @@ class ExporterTest(unittest.TestCase):
         model = m.generate_model(rpk, attrs, SLPKoptions, "com.esri.prt.codecs.I3SEncoder")
         self.assertTrue(os.path.isfile(asset_output_file("Unittest4SLPK.slpk")))
         self.assertGreater(os.stat(asset_output_file("CGAReport.txt")).st_size, 0)
-
-
-if __name__ == '__main__':
-    unittest.main()

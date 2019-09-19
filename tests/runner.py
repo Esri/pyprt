@@ -12,26 +12,35 @@ sys.path.append(SDK_PATH)
 
 import pyprt
 
-def setUpPackage():
-    print("SETUP CALLED!!!!")
-    pyprt.initialize_prt(SDK_PATH)
 
-def tearDownPackage():
-    print("TEARDOWN CALLED!!!!")
-    pyprt.shutdown_prt()
+class PyPRT_TestResult(unittest.TextTestResult):
+    def startTestRun(self):
+        pyprt.initialize_prt(SDK_PATH)
 
-# initialize the test suite
-loader = unittest.TestLoader()
-suite  = unittest.TestSuite()
+    def stopTestRun(self):
+        pyprt.shutdown_prt()
+        print("PRT is shut down.")
 
-# add tests to the test suite
-suite.addTests(loader.loadTestsFromModule(general_test))
-suite.addTests(loader.loadTestsFromModule(multiGeneration_test))
-suite.addTests(loader.loadTestsFromModule(otherExporter_test))
-suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
 
-# initialize a runner, pass it your suite and run it
-runner = unittest.TextTestRunner(verbosity=3)
-setUpPackage()
-result = runner.run(suite)
-tearDownPackage()
+class PyPRT_TestRunner(unittest.TextTestRunner):
+    def _makeResult(self):
+        return PyPRT_TestResult(self.stream, self.descriptions, self.verbosity)
+
+
+def testSuite():
+    loader = unittest.TestLoader()
+    suite = unittest.TestSuite()
+    suite.addTests(loader.loadTestsFromModule(general_test))
+    suite.addTests(loader.loadTestsFromModule(multiGeneration_test))
+    suite.addTests(loader.loadTestsFromModule(otherExporter_test))
+    suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
+    return suite
+
+
+def runTests():
+    runner = PyPRT_TestRunner(verbosity=3)
+    runner.run(testSuite())
+
+
+if __name__ == '__main__':
+    runTests()
