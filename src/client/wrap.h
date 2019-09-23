@@ -207,7 +207,6 @@ namespace {
         std::vector<GeneratedGeometry> generateAnotherModel(const py::dict& shapeAttributes);
 
 	private:
-		std::string             mInitialShapePath;
 		pcu::ResolveMapPtr      mResolveMap;
 		pcu::CachePtr           mCache;
 

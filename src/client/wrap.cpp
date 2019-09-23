@@ -119,7 +119,6 @@ namespace {
     }
 
     ModelGenerator::ModelGenerator(const std::string& initShapePath) {
-        mInitialShapePath = initShapePath;
         mInitialShapesBuilders.resize(1);
 
         mCache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
@@ -127,11 +126,11 @@ namespace {
         // Initial shape initializing
         pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
 
-        if (!pcu::toFileURI(mInitialShapePath).empty()) {
-            LOG_DBG << "trying to read initial shape geometry from " << pcu::toFileURI(mInitialShapePath) << std::endl;
-            const prt::Status s = isb->resolveGeometry(pcu::toUTF16FromOSNarrow(pcu::toFileURI(mInitialShapePath)).c_str(), mResolveMap.get(), mCache.get());
+        if (!pcu::toFileURI(initShapePath).empty()) {
+            LOG_DBG << "trying to read initial shape geometry from " << pcu::toFileURI(initShapePath) << std::endl;
+            const prt::Status s = isb->resolveGeometry(pcu::toUTF16FromOSNarrow(pcu::toFileURI(initShapePath)).c_str(), mResolveMap.get(), mCache.get());
             if (s != prt::STATUS_OK) {
-                LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(mInitialShapePath);
+                LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(initShapePath);
                 mValid = false;
             }
         }
@@ -286,12 +285,12 @@ namespace {
             if (!geometryEncoderName.empty())
                 initializeEncoderData(geometryEncoderName, geometryEncoderOptions);
 
-            std::vector<const wchar_t*> allEncoders;
-            allEncoders.reserve(3);
-            std::vector<const prt::AttributeMap*> allEncodersOptions;
-            allEncodersOptions.reserve(3);
+            std::vector<const wchar_t*> encoders;
+            encoders.reserve(3);
+            std::vector<const prt::AttributeMap*> encodersOptions;
+            encodersOptions.reserve(3);
             
-            getRawEncoderDataPointers(allEncoders, allEncodersOptions);
+            getRawEncoderDataPointers(encoders, encodersOptions);
 
             if (mEncodersNames[0] == ENCODER_ID_PYTHON) {
 
@@ -300,7 +299,7 @@ namespace {
                 // Generate
                 const prt::Status genStat = prt::generate(
                     initialShapes.data(), initialShapes.size(), nullptr,
-                    allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
+                    encoders.data(), encoders.size(), encodersOptions.data(),
                     foc.get(), mCache.get(), nullptr
                 );
 
@@ -326,7 +325,7 @@ namespace {
                 // Generate
                 const prt::Status genStat = prt::generate(
                     initialShapes.data(), initialShapes.size(), nullptr,
-                    allEncoders.data(), allEncoders.size(), allEncodersOptions.data(),
+                    encoders.data(), encoders.size(), encodersOptions.data(),
                     foc.get(), mCache.get(), nullptr
                 );
 
