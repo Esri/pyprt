@@ -203,16 +203,15 @@ namespace {
 		ModelGenerator(const std::vector<Geometry>& myGeo);
 		~ModelGenerator() { }
 
-        std::vector<GeneratedGeometry> generateModel(const py::dict& shapeAttributes, const py::dict& encoderOptions, const std::wstring& encoderName, const std::string& rulePackagePath);
+        std::vector<GeneratedGeometry> generateModel(const py::dict& shapeAttributes, const std::string& rulePackagePath, const std::wstring& geometryEncoderName, const py::dict& geometryEcoderOptions);
+        std::vector<GeneratedGeometry> generateAnotherModel(const py::dict& shapeAttributes);
 
 	private:
 		std::string             mInitialShapePath;
 		pcu::ResolveMapPtr      mResolveMap;
 		pcu::CachePtr           mCache;
 
-		pcu::AttributeMapBuilderPtr mEncoderBuilder;
-		pcu::AttributeMapPtr        mPyEncoderOptions;
-
+		pcu::AttributeMapBuilderPtr                 mEncoderBuilder;
 		std::vector<pcu::AttributeMapPtr>           mEncodersOptionsPtr;
 		std::vector<std::wstring>                   mEncodersNames;
 		std::vector<pcu::InitialShapeBuilderPtr>    mInitialShapesBuilders;
@@ -225,7 +224,7 @@ namespace {
 		bool mValid = true;
 
         void setAndCreatInitialShape(const pcu::AttributeMapPtr& shapeAttr, std::vector<const prt::InitialShape*>& initShapes, std::vector<pcu::InitialShapePtr>& initShapesPtrs);
-        void initializeEncoderData(const std::wstring& encName);
+        void initializeEncoderData(const std::wstring& encName, const py::dict& encOpt);
         void getRawEncoderDataPointers(std::vector<const wchar_t*>& allEnc, std::vector<const prt::AttributeMap*>& allEncOpt);
 	};
 

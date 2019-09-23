@@ -186,12 +186,13 @@ namespace {
         }
     }
 
-    void ModelGenerator::initializeEncoderData(const std::wstring& encName) {
+    void ModelGenerator::initializeEncoderData(const std::wstring& encName, const py::dict& encOpt) {
         mEncodersNames.clear();
         mEncodersOptionsPtr.clear();
 
         mEncodersNames.push_back(encName);
-        mEncodersOptionsPtr.push_back(std::move(mPyEncoderOptions));
+        const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encOpt, mEncoderBuilder) };
+        mEncodersOptionsPtr.push_back(createValidatedOptions(encName.c_str(), encOptions));
 
         if (encName != ENCODER_ID_PYTHON) {
             mEncodersNames.push_back(ENCODER_ID_CGA_REPORT);
@@ -211,9 +212,9 @@ namespace {
     void ModelGenerator::getRawEncoderDataPointers(std::vector<const wchar_t*>& allEnc, std::vector<const prt::AttributeMap*>& allEncOpt) {
         if (mEncodersNames[0] == ENCODER_ID_PYTHON) {
             allEnc.clear();
-            allEnc.push_back(mEncodersNames[0].c_str());
-
             allEncOpt.clear();
+
+            allEnc.push_back(mEncodersNames[0].c_str());
             allEncOpt.push_back(mEncodersOptionsPtr[0].get());
         }
         else {
@@ -230,9 +231,9 @@ namespace {
     }
 
     std::vector<GeneratedGeometry> ModelGenerator::generateModel(const py::dict& shapeAttributes,
-            const py::dict& encoderOptions = {},
-            const std::wstring& encoderName = ENCODER_ID_PYTHON,
-            const std::string& rulePackagePath = "")
+            const std::string& rulePackagePath,
+            const std::wstring& geometryEncoderName,
+            const py::dict& geometryEncoderOptions)
     {
         if (!mValid) {
             LOG_ERR << "invalid ModelGenerator instance";
@@ -248,29 +249,23 @@ namespace {
             }
 
             // Resolve Map
-            if (!mResolveMap) {
-                if (!rulePackagePath.empty()) {
-                    LOG_INF << "using rule package " << rulePackagePath << std::endl;
+            if (!rulePackagePath.empty()) {
+                LOG_INF << "using rule package " << rulePackagePath << std::endl;
 
-                    const std::string u8rpkURI = pcu::toFileURI(rulePackagePath);
-                    prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
-                    try {
-                        mResolveMap.reset(prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status));
-                    }
-                    catch (std::exception& e) {
-                        pybind11::print("CAUGHT EXCEPTION:", e.what());
-                    }
+                const std::string u8rpkURI = pcu::toFileURI(rulePackagePath);
+                prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
+                try {
+                    mResolveMap.reset(prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status));
+                }
+                catch (std::exception& e) {
+                    pybind11::print("CAUGHT EXCEPTION:", e.what());
+                }
 
-                    if (mResolveMap && (status == prt::STATUS_OK)) {
-                        LOG_DBG << "resolve map = " << pcu::objectToXML(mResolveMap.get()) << std::endl;
-                    }
-                    else {
-                        LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting.";
-                        return {};
-                    }
+                if (mResolveMap && (status == prt::STATUS_OK)) {
+                    LOG_DBG << "resolve map = " << pcu::objectToXML(mResolveMap.get()) << std::endl;
                 }
                 else {
-                    LOG_ERR << "getting resolve map failed, aborting.";
+                    LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting.";
                     return {};
                 }
             }
@@ -285,16 +280,11 @@ namespace {
             setAndCreatInitialShape(convertedShapeAttr, initialShapes, initialShapePtrs);
 
             // Encoder info, encoder options
-            if (!rulePackagePath.empty())
+            if (!mEncoderBuilder)
                 mEncoderBuilder.reset(prt::AttributeMapBuilder::create());
 
-            const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions, mEncoderBuilder) };
-            mPyEncoderOptions = createValidatedOptions(encoderName.c_str(), encOptions);
-
-            if (!rulePackagePath.empty())
-                initializeEncoderData(encoderName);
-            else
-                mEncodersOptionsPtr[0] = std::move(mPyEncoderOptions);
+            if (!geometryEncoderName.empty())
+                initializeEncoderData(geometryEncoderName, geometryEncoderOptions);
 
             std::vector<const wchar_t*> allEncoders;
             allEncoders.reserve(3);
@@ -360,6 +350,17 @@ namespace {
         return newGeneratedGeo;
     }
 
+    
+    std::vector<GeneratedGeometry> ModelGenerator::generateAnotherModel(const py::dict& shapeAttributes)
+    {
+        if (!mResolveMap) {
+            LOG_ERR << "generate model with all required parameters";
+            return {};
+        }
+        else
+            return generateModel(shapeAttributes, "", L"", {});
+    }
+
 } // namespace
 
 
@@ -373,7 +374,8 @@ PYBIND11_MODULE(pyprt, m) {
     py::class_<ModelGenerator>(m, "ModelGenerator")
         .def(py::init<const std::string&>(), "initShapePath"_a)
         .def(py::init<const std::vector<Geometry>&>(), "initShape"_a)
-        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"), py::arg("encoderOptions") = py::dict(), py::arg("encoderName") = ENCODER_ID_PYTHON, py::arg("rulePackagePath") = "");
+        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"), py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"))
+        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
 
     m.def("initialize_prt", &initializePRT, "prt_path"_a = "");
     m.def("is_prt_initialized", &isPRTInitialized);
