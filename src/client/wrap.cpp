@@ -333,6 +333,7 @@ namespace {
 
                 pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
 
+
                 // Generate
                 const prt::Status genStat = prt::generate(
                     initialShapes.data(), initialShapes.size(), nullptr,
