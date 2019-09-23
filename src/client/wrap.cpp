@@ -145,20 +145,19 @@ namespace {
     }
 
     ModelGenerator::ModelGenerator(const std::vector<Geometry>& myGeo) {
-        mInitialGeometries = myGeo;
         mInitialShapesBuilders.resize(myGeo.size());
 
         mCache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
 
         // Initial shapes initializing
-        for (size_t ind = 0; ind < mInitialGeometries.size(); ind++) {
+        for (size_t ind = 0; ind < myGeo.size(); ind++) {
 
             pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
 
             if (isb->setGeometry(
-                mInitialGeometries[ind].getVertices(), mInitialGeometries[ind].getVertexCount(),
-                mInitialGeometries[ind].getIndices(), mInitialGeometries[ind].getIndexCount(),
-                mInitialGeometries[ind].getFaceCounts(), mInitialGeometries[ind].getFaceCountsCount()) != prt::STATUS_OK) {
+                myGeo[ind].getVertices(), myGeo[ind].getVertexCount(),
+                myGeo[ind].getIndices(), myGeo[ind].getIndexCount(),
+                myGeo[ind].getFaceCounts(), myGeo[ind].getFaceCountsCount()) != prt::STATUS_OK) {
 
                 LOG_ERR << "invalid initial geometry";
                 mValid = false;
@@ -203,11 +202,8 @@ namespace {
             const pcu::AttributeMapPtr reportOptions{ optionsBuilder->createAttributeMapAndReset() };
             const pcu::AttributeMapPtr printOptions{ optionsBuilder->createAttributeMapAndReset() };
 
-            mCGAReportOptions = createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions);
-            mCGAPrintOptions = createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions);
-
-            mEncodersOptionsPtr.push_back(std::move(mCGAReportOptions));
-            mEncodersOptionsPtr.push_back(std::move(mCGAPrintOptions));
+            mEncodersOptionsPtr.push_back(createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions));
+            mEncodersOptionsPtr.push_back(createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions));
         }
 
     }

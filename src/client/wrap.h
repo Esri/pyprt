@@ -207,13 +207,10 @@ namespace {
 
 	private:
 		std::string             mInitialShapePath;
-		std::vector<Geometry>   mInitialGeometries;
 		pcu::ResolveMapPtr      mResolveMap;
 		pcu::CachePtr           mCache;
 
 		pcu::AttributeMapBuilderPtr mEncoderBuilder;
-		pcu::AttributeMapPtr        mCGAReportOptions;
-		pcu::AttributeMapPtr        mCGAPrintOptions;
 		pcu::AttributeMapPtr        mPyEncoderOptions;
 
 		std::vector<pcu::AttributeMapPtr>           mEncodersOptionsPtr;
