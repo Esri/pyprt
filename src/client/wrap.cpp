@@ -106,7 +106,7 @@ GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vect
 
 namespace {
 
-    void handleMainShapeAttributes(pcu::AttributeMapPtr& convertShapeAttr, const py::dict shapeAttr, std::wstring& ruleFile, std::wstring& startRule) {
+    void extractMainShapeAttributes(const py::dict& shapeAttr, std::wstring& ruleFile, std::wstring& startRule, pcu::AttributeMapPtr& convertShapeAttr) {
         convertShapeAttr = pcu::createAttributeMapFromPythonDict(shapeAttr, pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create()));
         if (convertShapeAttr) {
             if (convertShapeAttr->hasKey(L"ruleFile") &&
@@ -169,7 +169,7 @@ namespace {
         }
     }
 
-    void ModelGenerator::addInitialShape(const pcu::AttributeMapPtr& shapeAttr, std::vector<const prt::InitialShape*>& initShapes, std::vector<pcu::InitialShapePtr>& initShapePtrs)
+    void ModelGenerator::setAndCreatInitialShape(const pcu::AttributeMapPtr& shapeAttr, std::vector<const prt::InitialShape*>& initShapes, std::vector<pcu::InitialShapePtr>& initShapePtrs)
     {
         for (size_t ind = 0; ind < mInitialShapesBuilders.size(); ind++) {
 
@@ -182,23 +182,21 @@ namespace {
                 mResolveMap.get()
             );
 
-            pcu::InitialShapePtr initialShape{ mInitialShapesBuilders[ind]->createInitialShape() };
-
-            initShapes[ind] = initialShape.get();
-            initShapePtrs[ind] = std::move(initialShape);
+            initShapePtrs[ind].reset(mInitialShapesBuilders[ind]->createInitialShape());
+            initShapes[ind] = initShapePtrs[ind].get();
         }
     }
 
-    void ModelGenerator::initializeEncoderData(const std::wstring encName) {
-        mAllEncodersWS.clear();
-        mAllEncodersOptionsPtr.clear();
+    void ModelGenerator::initializeEncoderData(const std::wstring& encName) {
+        mEncodersNames.clear();
+        mEncodersOptionsPtr.clear();
 
-        mAllEncodersWS.push_back(encName);
-        mAllEncodersOptionsPtr.push_back(std::move(mPyEncoderOptions));
+        mEncodersNames.push_back(encName);
+        mEncodersOptionsPtr.push_back(std::move(mPyEncoderOptions));
 
         if (encName != ENCODER_ID_PYTHON) {
-            mAllEncodersWS.push_back(ENCODER_ID_CGA_REPORT);
-            mAllEncodersWS.push_back(ENCODER_ID_CGA_PRINT);
+            mEncodersNames.push_back(ENCODER_ID_CGA_REPORT);
+            mEncodersNames.push_back(ENCODER_ID_CGA_PRINT);
 
             const pcu::AttributeMapBuilderPtr optionsBuilder{ prt::AttributeMapBuilder::create() };
             optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_REPORT);
@@ -208,31 +206,36 @@ namespace {
             mCGAReportOptions = createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions);
             mCGAPrintOptions = createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions);
 
-            mAllEncodersOptionsPtr.push_back(std::move(mCGAReportOptions));
-            mAllEncodersOptionsPtr.push_back(std::move(mCGAPrintOptions));
+            mEncodersOptionsPtr.push_back(std::move(mCGAReportOptions));
+            mEncodersOptionsPtr.push_back(std::move(mCGAPrintOptions));
         }
 
     }
 
-    void ModelGenerator::handleEncoderData(std::vector<const wchar_t*>& allEnc, std::vector<const prt::AttributeMap*>& allEncOpt) {
-        if (mAllEncodersWS[0] == ENCODER_ID_PYTHON) {
-            allEnc = { mAllEncodersWS[0].c_str() };
-            allEncOpt = { mAllEncodersOptionsPtr[0].get() };
+    void ModelGenerator::getRawEncoderDataPointers(std::vector<const wchar_t*>& allEnc, std::vector<const prt::AttributeMap*>& allEncOpt) {
+        if (mEncodersNames[0] == ENCODER_ID_PYTHON) {
+            allEnc.clear();
+            allEnc.push_back(mEncodersNames[0].c_str());
 
+            allEncOpt.clear();
+            allEncOpt.push_back(mEncodersOptionsPtr[0].get());
         }
         else {
-            allEnc = {
-                mAllEncodersWS[0].c_str(),
-                mAllEncodersWS[1].c_str(), // an encoder to redirect CGA report to CGAReport.txt
-                mAllEncodersWS[2].c_str() // redirects CGA print output to the callback
-            };
-            allEncOpt = { mAllEncodersOptionsPtr[0].get(), mAllEncodersOptionsPtr[1].get(), mAllEncodersOptionsPtr[2].get() };
+            allEnc.clear();
+            allEnc.push_back(mEncodersNames[0].c_str());
+            allEnc.push_back(mEncodersNames[1].c_str()); // an encoder to redirect CGA report to CGAReport.txt
+            allEnc.push_back(mEncodersNames[2].c_str()); // redirects CGA print output to the callback
+
+            allEncOpt.clear();
+            allEncOpt.push_back(mEncodersOptionsPtr[0].get());
+            allEncOpt.push_back(mEncodersOptionsPtr[1].get());
+            allEncOpt.push_back(mEncodersOptionsPtr[2].get());
         }
     }
 
-    std::vector<GeneratedGeometry> ModelGenerator::generateModel(py::dict shapeAttributes,
-            py::dict encoderOptions = {},
-            const std::wstring encoderName = ENCODER_ID_PYTHON,
+    std::vector<GeneratedGeometry> ModelGenerator::generateModel(const py::dict& shapeAttributes,
+            const py::dict& encoderOptions = {},
+            const std::wstring& encoderName = ENCODER_ID_PYTHON,
             const std::string& rulePackagePath = "")
     {
         if (!mValid) {
@@ -278,16 +281,16 @@ namespace {
 
             // Initial shape attributes
             pcu::AttributeMapPtr convertedShapeAttr;
-            handleMainShapeAttributes(convertedShapeAttr, shapeAttributes, mRuleFile, mStartRule);
+            extractMainShapeAttributes(shapeAttributes, mRuleFile, mStartRule, convertedShapeAttr);
 
             // Initial shapes
             std::vector<const prt::InitialShape*> initialShapes(mInitialShapesBuilders.size());
             std::vector<pcu::InitialShapePtr> initialShapePtrs(mInitialShapesBuilders.size());
-            addInitialShape(convertedShapeAttr, initialShapes, initialShapePtrs);
+            setAndCreatInitialShape(convertedShapeAttr, initialShapes, initialShapePtrs);
 
             // Encoder info, encoder options
             if (!rulePackagePath.empty())
-                mEncoderBuilder = std::move(pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create()));
+                mEncoderBuilder.reset(prt::AttributeMapBuilder::create());
 
             const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encoderOptions, mEncoderBuilder) };
             mPyEncoderOptions = createValidatedOptions(encoderName.c_str(), encOptions);
@@ -295,16 +298,16 @@ namespace {
             if (!rulePackagePath.empty())
                 initializeEncoderData(encoderName);
             else
-                mAllEncodersOptionsPtr[0] = std::move(mPyEncoderOptions);
+                mEncodersOptionsPtr[0] = std::move(mPyEncoderOptions);
 
             std::vector<const wchar_t*> allEncoders;
             allEncoders.reserve(3);
             std::vector<const prt::AttributeMap*> allEncodersOptions;
             allEncodersOptions.reserve(3);
             
-            handleEncoderData(allEncoders, allEncodersOptions);
+            getRawEncoderDataPointers(allEncoders, allEncodersOptions);
 
-            if (mAllEncodersWS[0] == ENCODER_ID_PYTHON) {
+            if (mEncodersNames[0] == ENCODER_ID_PYTHON) {
 
                 pcu::PyCallbacksPtr foc{ std::make_unique<PyCallbacks>(mInitialShapesBuilders.size()) };
 
