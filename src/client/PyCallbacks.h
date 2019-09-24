@@ -131,4 +131,18 @@ public:
 	prt::Status attrString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const wchar_t* /*value*/) {
 		return prt::STATUS_OK;
 	}
+
+    prt::Status attrBoolArray(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const bool* /*ptr*/, size_t /*size*/) {
+        return prt::STATUS_OK;
+    }
+
+    prt::Status attrFloatArray(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const double* /*ptr*/, size_t /*size*/) {
+        return prt::STATUS_OK;
+    }
+
+
+    prt::Status attrStringArray(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const wchar_t* const* /*ptr*/, size_t /*size*/) {
+        return prt::STATUS_OK;
+    }
+
 };
