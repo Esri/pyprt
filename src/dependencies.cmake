@@ -33,7 +33,7 @@ if(NOT prt_DIR)
 		set(PRT_CC "opt")
 	endif()
 
-	set(PRT_BRANCH  "ce20190")
+	set(PRT_BRANCH  "ce20191")
 	set(PRT_VERSION "LATEST") # latest version within above branch
 	set(PRT_CLS    "${PRT_OS}-${PRT_TC}-x86_64-rel-${PRT_CC}")
 	set(PRT_URL    "http://zrh-nexus.esri.com:8081/nexus/service/local/artifact/maven/content?r=CityEngine&g=prt.${PRT_BRANCH}&v=${PRT_VERSION}&a=ce_sdk&c=${PRT_CLS}&e=zip")

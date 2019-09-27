@@ -19,9 +19,6 @@
 
 #include "PyCallbacks.h"
 
-#include <string>
-#include <vector>
-#include <map>
 
 
 void PyCallbacks::addGeometry(
@@ -35,12 +32,11 @@ void PyCallbacks::addGeometry(
     if (vertexCoords != nullptr)
         mModels[initialShapeIndex].mVertices.insert(mModels[initialShapeIndex].mVertices.end(), vertexCoords, vertexCoords + vertexCoordsCount);
 
-
-    if (facesIndices != nullptr) {
+    if (facesIndices != nullptr && faceCounts != nullptr) {
+        mModels[initialShapeIndex].mFaces.reserve(mModels[initialShapeIndex].mFaces.size() + faceCountsCount);
         size_t vertexIndexBase = 0;
         for (uint32_t ind = 0; ind < faceCountsCount; ind++) {
-            std::vector<uint32_t> v(facesIndices + vertexIndexBase, facesIndices + vertexIndexBase + faceCounts[ind]);
-            mModels[initialShapeIndex].mFaces.insert(mModels[initialShapeIndex].mFaces.end(), v);
+            mModels[initialShapeIndex].mFaces.emplace_back(facesIndices + vertexIndexBase, facesIndices + vertexIndexBase + faceCounts[ind]);
             vertexIndexBase += faceCounts[ind];
         }
     }
@@ -58,22 +54,15 @@ void PyCallbacks::addReports(
     const bool* boolReportValues,
     size_t boolReportCount) {
 
-    BoolMap boolReport;
-    FloatMap floatReport;
-    StringMap stringReport;
-
     for (size_t i = 0; i < boolReportCount; i++) {
-        boolReport[boolReportKeys[i]] = boolReportValues[i];
+        mModels[initialShapeIndex].mCGABoolReport[boolReportKeys[i]] = boolReportValues[i];
     }
-    mModels[initialShapeIndex].mCGABoolReport = boolReport;
 
     for (size_t i = 0; i < floatReportCount; i++) {
-        floatReport[floatReportKeys[i]] = floatReportValues[i];
+        mModels[initialShapeIndex].mCGAFloatReport[floatReportKeys[i]] = floatReportValues[i];
     }
-    mModels[initialShapeIndex].mCGAFloatReport = floatReport;
 
     for (size_t i = 0; i < stringReportCount; i++) {
-        stringReport[stringReportKeys[i]] = stringReportValues[i];
+        mModels[initialShapeIndex].mCGAStringReport[stringReportKeys[i]] = stringReportValues[i];
     }
-    mModels[initialShapeIndex].mCGAStringReport = stringReport;
 }

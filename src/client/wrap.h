@@ -155,24 +155,20 @@ struct PRTContext {
 class Geometry {
 public:
 	Geometry(const std::vector<double>& vert);
-	Geometry() { }
+	Geometry(const std::vector<double>& vert, const std::vector<uint32_t>& ind, const std::vector<uint32_t>& faceCnt); 
 	~Geometry() { }
 
-	void updateGeometry(const std::vector<double>& vert, const size_t& vertCnt, const std::vector<uint32_t>& ind, const size_t& indCnt, const std::vector<uint32_t>& faceCnt, const size_t& faceCntCnt);
 	const double* getVertices() const { return mVertices.data(); }
-	size_t getVertexCount() const { return mVertexCount; }
+	size_t getVertexCount() const { return mVertices.size(); }
 	const uint32_t* getIndices() const { return mIndices.data(); }
-	size_t getIndexCount() const { return mIndexCount; }
+	size_t getIndexCount() const { return mIndices.size(); }
 	const uint32_t* getFaceCounts() const { return mFaceCounts.data(); }
-	size_t getFaceCountsCount() const { return mFaceCountsCount; }
+	size_t getFaceCountsCount() const { return mFaceCounts.size(); }
 
 protected:
 	std::vector<double>     mVertices;
-	size_t                  mVertexCount;
 	std::vector<uint32_t>   mIndices;
-	size_t                  mIndexCount;
 	std::vector<uint32_t>   mFaceCounts;
-	size_t                  mFaceCountsCount;
 };
 
 
@@ -207,22 +203,16 @@ namespace {
 		ModelGenerator(const std::vector<Geometry>& myGeo);
 		~ModelGenerator() { }
 
-		std::vector<GeneratedGeometry> generateModel(const std::string& rulePackagePath, py::dict shapeAttributes, py::dict encoderOptions, const std::wstring encoderName);
-		std::vector<GeneratedGeometry> generateAnotherModel(py::dict shapeAttributes, py::dict encoderOptions);
+        std::vector<GeneratedGeometry> generateModel(const py::dict& shapeAttributes, const std::string& rulePackagePath, const std::wstring& geometryEncoderName, const py::dict& geometryEcoderOptions);
+        std::vector<GeneratedGeometry> generateAnotherModel(const py::dict& shapeAttributes);
 
 	private:
-		std::string             mInitialShapePath;
-		std::vector<Geometry>   mInitialGeometries;
 		pcu::ResolveMapPtr      mResolveMap;
 		pcu::CachePtr           mCache;
 
-		pcu::AttributeMapBuilderPtr mEncoderBuilder;
-		pcu::AttributeMapPtr        mCGAReportOptions;
-		pcu::AttributeMapPtr        mCGAPrintOptions;
-		pcu::AttributeMapPtr        mPyEncoderOptions;
-
-		std::vector<pcu::AttributeMapPtr>           mAllEncodersOptionsPtr;
-		std::vector<std::wstring>                   mAllEncodersWS;
+		pcu::AttributeMapBuilderPtr                 mEncoderBuilder;
+		std::vector<pcu::AttributeMapPtr>           mEncodersOptionsPtr;
+		std::vector<std::wstring>                   mEncodersNames;
 		std::vector<pcu::InitialShapeBuilderPtr>    mInitialShapesBuilders;
 
 		std::wstring    mRuleFile = L"bin/rule.cgb";
@@ -231,6 +221,10 @@ namespace {
 		std::wstring    mShapeName = L"InitialShape";
 
 		bool mValid = true;
+
+        void setAndCreatInitialShape(const pcu::AttributeMapPtr& shapeAttr, std::vector<const prt::InitialShape*>& initShapes, std::vector<pcu::InitialShapePtr>& initShapesPtrs);
+        void initializeEncoderData(const std::wstring& encName, const py::dict& encOpt);
+        void getRawEncoderDataPointers(std::vector<const wchar_t*>& allEnc, std::vector<const prt::AttributeMap*>& allEncOpt);
 	};
 
 } // namespace

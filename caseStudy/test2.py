@@ -23,26 +23,27 @@ pyprt.initialize_prt(SDK_PATH)
 if not pyprt.is_prt_initialized():
     raise Exception("PRT is not initialized")
 
-shapeGeo = asset_file("candler_footprint.obj")
-rpk = asset_file("Building_From_Footprint5.rpk")
-attrs = {'ruleFile' : "rules/Buildings/Building_From_Footprint.cgb", 'startRule' : "Default$Generate", 'Reporting' : "All"}
-attrs2 = {'Reporting' : "None"}
+# shapeGeo = asset_file("candler_footprint.obj")
+# rpk = asset_file("Building_From_Footprint5.rpk")
+# attrs = {'ruleFile' : "rules/Buildings/Building_From_Footprint.cgb", 'startRule' : "Default$Generate", 'Reporting' : "All"}
+# attrs2 = {'Reporting' : "None"}
 
-# shapeGeo = asset_file("greenbuildingfootprint_0.obj")
-# rpk = asset_file("envelope1806.rpk")
-# attrs = {'ruleFile' : "rules/typology/envelope.cgb", 'startRule' : "Default$Lot", 'report_but_not_display_green' : True}
-# attrs2 = {'report_but_not_display_green' : False}
+shapeGeo = asset_file("greenbuildingfootprint_0.obj")
+rpk = asset_file("envelope1806.rpk")
+attrs = {'ruleFile' : "rules/typology/envelope.cgb", 'startRule' : "Default$Lot", 'report_but_not_display_green' : True}
+attrs2 = {'report_but_not_display_green' : False}
+
 
 m = pyprt.ModelGenerator(shapeGeo)
-models = m.generate_model(rpk, attrs)
+models = m.generate_model(attrs, {}, "com.esri.prt.examples.PyEncoder", rpk)
 
 visualize_PRT_results(models)
 
-models2 = m.generate_another_model(attrs2, {'emitGeometry' : False})
+models2 = m.generate_model(attrs2, {'emitGeometry' : False})
 
 visualize_PRT_results(models2)
 
-models3 = m.generate_model(rpk, attrs, {}, "com.esri.prt.codecs.OBJEncoder")
+models3 = m.generate_model(attrs, {}, "com.esri.prt.codecs.OBJEncoder", rpk)
 
 pyprt.shutdown_prt()
 print("\nShutdown PRT.")

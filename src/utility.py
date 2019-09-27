@@ -1,5 +1,5 @@
 # Python utility functions
-import numpy as np
+#import numpy as np
 
 def visualize_PRT_results(models, printing = False):
     print("\nNumber of generated geometries (= nber of initial shapes):")

@@ -81,6 +81,8 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
 
 	const prtx::InitialShape* is = context.getInitialShape(initialShapeIndex);
     auto* cb = dynamic_cast<IPyCallbacks*>(getCallbacks());
+    if(cb == nullptr)
+        throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
 
     if (getOptions()->getBool(EO_EMIT_REPORTS)) {
         prtx::ReportsAccumulatorPtr reportsAccumulator{ prtx::SummarizingReportsAccumulator::create() };
@@ -89,10 +91,9 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
         prtx::ReportsPtr rep = reportsCollector->getReports();
 
         if (rep) {
-            prtx::Shape::ReportBoolVect& boolReps = rep->mBools;
+            const prtx::Shape::ReportBoolVect& boolReps = rep->mBools;
             const size_t boolRepCount = boolReps.size();
-            std::vector<const wchar_t*> boolRepKeys;
-            boolRepKeys.resize(boolRepCount);
+            std::vector<const wchar_t*> boolRepKeys(boolRepCount);
             std::unique_ptr<bool[]> boolRepValues(new bool[boolRepCount]);
 
             for (size_t i = 0; i < boolRepCount; i++) {
@@ -100,24 +101,20 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
                 boolRepValues[i] = boolReps[i].second;
             }
 
-            prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
+            const prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
             const size_t floatRepCount = floatReps.size();
-            std::vector<const wchar_t*> floatRepKeys;
-            floatRepKeys.resize(floatRepCount);
-            std::vector<double> floatRepValues;
-            floatRepValues.resize(floatRepCount);
+            std::vector<const wchar_t*> floatRepKeys(floatRepCount);
+            std::vector<double> floatRepValues(floatRepCount);
 
             for (size_t i = 0; i < floatRepCount; i++) {
                 floatRepKeys[i] = floatReps[i].first->c_str();
                 floatRepValues[i] = floatReps[i].second;
             }
 
-            prtx::Shape::ReportStringVect&	stringReps = rep->mStrings;
+            const prtx::Shape::ReportStringVect& stringReps = rep->mStrings;
             const size_t stringRepCount = stringReps.size();
-            std::vector<const wchar_t*> stringRepKeys;
-            stringRepKeys.resize(stringRepCount);
-            std::vector<const wchar_t*> stringRepValues;
-            stringRepValues.resize(stringRepCount);
+            std::vector<const wchar_t*> stringRepKeys(stringRepCount);
+            std::vector<const wchar_t*> stringRepValues(stringRepCount);
 
             for (size_t i = 0; i < stringRepCount; i++) {
                 stringRepKeys[i] = stringReps[i].first->c_str();
@@ -126,8 +123,6 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
 
             cb->addReports(initialShapeIndex, stringRepKeys.data(), stringRepValues.data(), stringRepCount, floatRepKeys.data(), floatRepValues.data(), floatRepCount, boolRepKeys.data(), boolRepValues.get(), boolRepCount);
         }
-        else
-            cb->addReports(initialShapeIndex, nullptr, nullptr, 0, nullptr, nullptr, 0, nullptr, nullptr, 0);
     }
 
     if (getOptions()->getBool(EO_EMIT_GEOMETRY)) {
@@ -146,12 +141,17 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
         mEncodePreparator->fetchFinalizedInstances(finalizedInstances, ENC_PREP_FLAGS);
         uint32_t vertexIndexBase = 0;
 
+        std::vector<double> vertexCoords;
+        std::vector<uint32_t> faceIndices;
+        std::vector<uint32_t> faceCounts;
+
         for (const auto& instance : finalizedInstances) {
             const prtx::MeshPtrVector& meshes = instance.getGeometry()->getMeshes();
-            std::vector<double> vertexCoords;
-            std::vector<uint32_t> faceIndices;
-            std::vector<uint32_t> faceCounts;
-            
+
+            vertexCoords.clear();
+            faceIndices.clear();
+            faceCounts.clear();
+
             for (const auto& mesh : meshes) {
                 const prtx::DoubleVector& verts = mesh->getVertexCoords();
                 vertexCoords.insert(vertexCoords.end(), verts.begin(), verts.end());
@@ -169,8 +169,6 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
             cb->addGeometry(instance.getInitialShapeIndex(), vertexCoords.data(), vertexCoords.size(), faceIndices.data(), faceCounts.data(), faceCounts.size());
         }
     }
-    else
-        cb->addGeometry(initialShapeIndex, nullptr, 0, nullptr, nullptr, 0);
 }
 
 
