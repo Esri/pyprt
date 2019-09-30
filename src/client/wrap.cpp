@@ -107,7 +107,7 @@ GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vect
 namespace {
 
     void extractMainShapeAttributes(const py::dict& shapeAttr, std::wstring& ruleFile, std::wstring& startRule, pcu::AttributeMapPtr& convertShapeAttr) {
-        convertShapeAttr = pcu::createAttributeMapFromPythonDict(shapeAttr, pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create()));
+        convertShapeAttr = pcu::createAttributeMapFromPythonDict(shapeAttr, *(pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create())));
         if (convertShapeAttr) {
             if (convertShapeAttr->hasKey(L"ruleFile") &&
                 convertShapeAttr->getType(L"ruleFile") == prt::AttributeMap::PT_STRING)
@@ -190,7 +190,7 @@ namespace {
         mEncodersOptionsPtr.clear();
 
         mEncodersNames.push_back(encName);
-        const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encOpt, mEncoderBuilder) };
+        const pcu::AttributeMapPtr encOptions{ pcu::createAttributeMapFromPythonDict(encOpt, *mEncoderBuilder) };
         mEncodersOptionsPtr.push_back(createValidatedOptions(encName.c_str(), encOptions));
 
         if (encName != ENCODER_ID_PYTHON) {
