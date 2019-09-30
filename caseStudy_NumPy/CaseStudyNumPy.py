@@ -1,6 +1,6 @@
 import sys, os
 sys.path.append(os.path.join(os.getcwd(), "src"))
-from utility import visualize_PRT_results, summarize_matrix
+from utility import visualize_PRT_results
 
 SDK_PATH = os.path.join(os.getcwd(), "install", "bin")
 sys.path.append(SDK_PATH)
@@ -82,33 +82,23 @@ if __name__ == '__main__':
     attrs = {'ruleFile' : "bin/simple_rule2019.cgb", 'startRule' : "Default$Footprint"}
 
     mod = pyprt.ModelGenerator([initialGeometry, initialGeometry2])
-    generated_mod = mod.generate_model(rpk, attrs, {})
+    generated_mod = mod.generate_model(attrs, rpk, "com.esri.prt.examples.PyEncoder", {})
     all_vertices = []
     all_faces = []
 
-    if generated_mod:
-        geo = generated_mod.get_vertices()
-        geo_summarized = summarize_matrix(geo)
-        face_geo = generated_mod.get_faces()
-        face_summarized = summarize_matrix(face_geo)
+    for model in generated_mod:
+        if model:
+            geo = model.get_vertices()
+            face_geo = model.get_faces()
 
-        for i in range(0,len(geo_summarized)):
-            temp = []
-            geo_numpy = np.array(geo_summarized[i])
-            geo_numpy_unique, indices = np.unique(np.around(geo_numpy,decimals=3), return_index = True, axis=0)
-
-            for ind in indices:
-                temp.append(geo_summarized[i][ind]) # to avoid duplicates
-
-            all_vertices.append(temp)
-            all_faces.append(face_summarized[i])
-            print("\nSize of the matrix containing all the model vertices:")
-            print(geo_numpy_unique.shape)
-            print(temp)
-            print("\nGenerated Model Faces: ")
-            print(face_summarized)
-    else:
-        print("\nError while instanciating the model generator.")
+            if len(geo) > 0:
+                print("Size of the matrix containing the model vertices: (" + str(len(geo)) + ", 3)")
+                all_vertices.append(geo)
+            if len(face_geo) > 0:
+                print("Size of the matrix containing the model faces: " + str(len(face_geo)))
+                all_faces.append(face_geo)
+        else:
+            print("\nError while instanciating the model generator.")
 
     print("\nShutdown PRT.")
     pyprt.shutdown_prt()
