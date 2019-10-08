@@ -167,7 +167,7 @@ namespace {
         }
     }
 
-    void ModelGenerator::setAndCreatInitialShape(const pcu::AttributeMapPtr& shapeAttr, std::vector<const prt::InitialShape*>& initShapes, std::vector<pcu::InitialShapePtr>& initShapePtrs)
+    void ModelGenerator::setAndCreateInitialShape(const pcu::AttributeMapPtr& shapeAttr, std::vector<const prt::InitialShape*>& initShapes, std::vector<pcu::InitialShapePtr>& initShapePtrs)
     {
         for (size_t ind = 0; ind < mInitialShapesBuilders.size(); ind++) {
 
