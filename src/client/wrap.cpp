@@ -98,21 +98,10 @@ Geometry::Geometry(const std::vector<double>& vert, const std::vector<uint32_t>&
 }
 
 
-GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep) :
-    mInitialShapeIndex(initShapeIdx), mVertices(vert), mFaces(face), mFloatReport(floatRep), mStringReport(stringRep), mBoolReport(boolRep)
+GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const py::dict& rep) :
+    mInitialShapeIndex(initShapeIdx), mVertices(vert), mFaces(face), mReport(rep)
 {
 }
-
-const py::dict GeneratedGeometry::getReport() const {
-    py::dict mergedReport;
-
-    mergedReport.attr("update")(mFloatReport);
-    mergedReport.attr("update")(mBoolReport);
-    mergedReport.attr("update")(mStringReport);
-
-    return mergedReport;
-}
-
 
 namespace {
 
@@ -319,7 +308,7 @@ namespace {
                 }
 
                 for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++)
-                    newGeneratedGeo[idx] = GeneratedGeometry(idx, convertVerticesIntoPythonStyle(foc->getVertices(idx)), foc->getFaces(idx), foc->getFloatReport(idx), foc->getStringReport(idx), foc->getBoolReport(idx));
+                    newGeneratedGeo[idx] = GeneratedGeometry(idx, convertVerticesIntoPythonStyle(foc->getVertices(idx)), foc->getFaces(idx), foc->getReport(idx));
             }
             else {
 
@@ -401,13 +390,10 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_face_counts_count", &Geometry::getFaceCountsCount);
 
     py::class_<GeneratedGeometry>(m, "GeneratedGeometry")
-        .def(py::init<const size_t&, const std::vector<std::vector<double>>&, const std::vector<std::vector<uint32_t>>&, const FloatMap&, const StringMap&, const BoolMap&>())
+        .def(py::init<const size_t&, const std::vector<std::vector<double>>&, const std::vector<std::vector<uint32_t>>&, const py::dict&>())
         .def("get_initial_shape_index", &GeneratedGeometry::getInitialShapeIndex)
         .def("get_vertices", &GeneratedGeometry::getVertices)
         .def("get_faces", &GeneratedGeometry::getFaces)
-        .def("get_float_report", &GeneratedGeometry::getFloatReport)
-        .def("get_string_report", &GeneratedGeometry::getStringReport)
-        .def("get_bool_report", &GeneratedGeometry::getBoolReport)
         .def("get_report", &GeneratedGeometry::getReport);
 
     m.def("print_val", &py_printVal,"Test Python function for value printing.");

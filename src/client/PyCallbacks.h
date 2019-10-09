@@ -24,6 +24,7 @@
 #include "prt/Callbacks.h"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include <string>
 #include <vector>
@@ -31,17 +32,12 @@
 #include <map>
 
 
-using FloatMap = std::map<std::wstring, double>;
-using StringMap = std::map<std::wstring, std::wstring>;
-using BoolMap = std::map<std::wstring, bool>;
-
+namespace py = pybind11;
 
 class PyCallbacks : public IPyCallbacks {
 private:
     struct Model {
-        FloatMap                            mCGAFloatReport;
-        StringMap                           mCGAStringReport;
-        BoolMap                             mCGABoolReport;
+        py::dict                            mCGAReport;
         std::vector<double>                 mVertices;
         std::vector<std::vector<uint32_t>>  mFaces;
     };
@@ -82,11 +78,7 @@ public:
 
     const std::vector<std::vector<uint32_t>>& getFaces(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mFaces; }
 
-    const FloatMap& getFloatReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGAFloatReport; }
-
-    const StringMap& getStringReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGAStringReport; }
-
-    const BoolMap& getBoolReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGABoolReport; }
+    const py::dict& getReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGAReport; }
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
 		pybind11::print(L"GENERATE ERROR:", isIndex, status, message);

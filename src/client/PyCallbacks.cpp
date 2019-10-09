@@ -19,7 +19,10 @@
 
 #include "PyCallbacks.h"
 
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
+namespace py = pybind11;
 
 void PyCallbacks::addGeometry(
     const size_t initialShapeIndex,
@@ -55,14 +58,17 @@ void PyCallbacks::addReports(
     size_t boolReportCount) {
 
     for (size_t i = 0; i < boolReportCount; i++) {
-        mModels[initialShapeIndex].mCGABoolReport[boolReportKeys[i]] = boolReportValues[i];
+        py::object pyKey = py::cast(boolReportKeys[i]);
+        mModels[initialShapeIndex].mCGAReport[pyKey] = boolReportValues[i];
     }
 
     for (size_t i = 0; i < floatReportCount; i++) {
-        mModels[initialShapeIndex].mCGAFloatReport[floatReportKeys[i]] = floatReportValues[i];
+        py::object pyKey = py::cast(floatReportKeys[i]);
+        mModels[initialShapeIndex].mCGAReport[pyKey] = floatReportValues[i];
     }
 
     for (size_t i = 0; i < stringReportCount; i++) {
-        mModels[initialShapeIndex].mCGAStringReport[stringReportKeys[i]] = stringReportValues[i];
+        py::object pyKey = py::cast(stringReportKeys[i]);
+        mModels[initialShapeIndex].mCGAReport[pyKey] = stringReportValues[i];
     }
 }

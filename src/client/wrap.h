@@ -174,25 +174,20 @@ protected:
 
 class GeneratedGeometry {
 public:
-	GeneratedGeometry(const size_t& initialShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const FloatMap& floatRep, const StringMap& stringRep, const BoolMap& boolRep);
+	GeneratedGeometry(const size_t& initialShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const py::dict& rep);
 	GeneratedGeometry() { }
 	~GeneratedGeometry() { }
 
 	size_t getInitialShapeIndex() const { return mInitialShapeIndex; }
 	const std::vector<std::vector<double>>& getVertices() const { return mVertices; }
 	const std::vector<std::vector<uint32_t>>& getFaces() const { return mFaces; }
-	const FloatMap& getFloatReport() const { return mFloatReport; }
-	const StringMap& getStringReport() const { return mStringReport; }
-	const BoolMap& getBoolReport() const { return mBoolReport; }
-    const py::dict getReport() const;
+    const py::dict& getReport() const { return mReport; }
 
 private:
 	size_t                              mInitialShapeIndex;
 	std::vector<std::vector<double>>    mVertices;
 	std::vector<std::vector<uint32_t>>  mFaces;
-	FloatMap                            mFloatReport;
-	StringMap                           mStringReport;
-	BoolMap                             mBoolReport;
+    py::dict                            mReport;
 };
 
 
