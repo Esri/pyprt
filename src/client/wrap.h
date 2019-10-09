@@ -184,6 +184,7 @@ public:
 	const FloatMap& getFloatReport() const { return mFloatReport; }
 	const StringMap& getStringReport() const { return mStringReport; }
 	const BoolMap& getBoolReport() const { return mBoolReport; }
+    const py::dict getReport() const;
 
 private:
 	size_t                              mInitialShapeIndex;

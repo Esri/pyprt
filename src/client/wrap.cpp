@@ -103,6 +103,16 @@ GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vect
 {
 }
 
+const py::dict GeneratedGeometry::getReport() const {
+    py::dict mergedReport;
+
+    mergedReport.attr("update")(mFloatReport);
+    mergedReport.attr("update")(mBoolReport);
+    mergedReport.attr("update")(mStringReport);
+
+    return mergedReport;
+}
+
 
 namespace {
 
@@ -397,15 +407,8 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_faces", &GeneratedGeometry::getFaces)
         .def("get_float_report", &GeneratedGeometry::getFloatReport)
         .def("get_string_report", &GeneratedGeometry::getStringReport)
-        .def("get_bool_report", &GeneratedGeometry::getBoolReport);
+        .def("get_bool_report", &GeneratedGeometry::getBoolReport)
+        .def("get_report", &GeneratedGeometry::getReport);
 
     m.def("print_val", &py_printVal,"Test Python function for value printing.");
-    m.def("merge_reports", [](py::dict& rep1, py::dict& rep2, py::dict& rep3) {
-        py::dict d;
-        d.attr("update")(rep1);
-        d.attr("update")(rep2);
-        d.attr("update")(rep3);
-
-        return d;
-    });
 }
