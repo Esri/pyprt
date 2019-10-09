@@ -276,7 +276,7 @@ namespace {
             // Initial shapes
             std::vector<const prt::InitialShape*> initialShapes(mInitialShapesBuilders.size());
             std::vector<pcu::InitialShapePtr> initialShapePtrs(mInitialShapesBuilders.size());
-            setAndCreatInitialShape(convertedShapeAttr, initialShapes, initialShapePtrs);
+            setAndCreateInitialShape(convertedShapeAttr, initialShapes, initialShapePtrs);
 
             // Encoder info, encoder options
             if (!mEncoderBuilder)
@@ -400,4 +400,12 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_bool_report", &GeneratedGeometry::getBoolReport);
 
     m.def("print_val", &py_printVal,"Test Python function for value printing.");
+    m.def("merge_reports", [](py::dict& rep1, py::dict& rep2, py::dict& rep3) {
+        py::dict d;
+        d.attr("update")(rep1);
+        d.attr("update")(rep2);
+        d.attr("update")(rep3);
+
+        return d;
+    });
 }
