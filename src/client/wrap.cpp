@@ -276,7 +276,7 @@ namespace {
             // Initial shapes
             std::vector<const prt::InitialShape*> initialShapes(mInitialShapesBuilders.size());
             std::vector<pcu::InitialShapePtr> initialShapePtrs(mInitialShapesBuilders.size());
-            setAndCreatInitialShape(convertedShapeAttr, initialShapes, initialShapePtrs);
+            setAndCreateInitialShape(convertedShapeAttr, initialShapes, initialShapePtrs);
 
             // Encoder info, encoder options
             if (!mEncoderBuilder)
