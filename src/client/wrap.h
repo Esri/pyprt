@@ -155,7 +155,7 @@ struct PRTContext {
 class Geometry {
 public:
 	Geometry(const std::vector<double>& vert);
-	Geometry(const std::vector<double>& vert, const std::vector<uint32_t>& ind, const std::vector<uint32_t>& faceCnt); 
+	Geometry(const std::vector<double>& vert, const std::vector<uint32_t>& ind, const std::vector<uint32_t>& faceCnt);
 	~Geometry() { }
 
 	const double* getVertices() const { return mVertices.data(); }
@@ -174,10 +174,10 @@ protected:
 
 class GeneratedGeometry {
 public:
-	GeneratedGeometry(const size_t& initialShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const py::dict& rep);
-	GeneratedGeometry() { }
+    GeneratedGeometry() { }
 	~GeneratedGeometry() { }
 
+    void set(const size_t& initialShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const py::dict& rep);
 	size_t getInitialShapeIndex() const { return mInitialShapeIndex; }
 	const std::vector<std::vector<double>>& getVertices() const { return mVertices; }
 	const std::vector<std::vector<uint32_t>>& getFaces() const { return mFaces; }

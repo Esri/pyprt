@@ -32,6 +32,7 @@
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <pybind11/complex.h>
+#include <pybind11/stl_bind.h>
 
 #include <string>
 #include <vector>
@@ -62,7 +63,7 @@ const std::wstring ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
 const std::wstring ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
 
 pcu::Path executablePath;
-
+PYBIND11_MAKE_OPAQUE(std::vector<GeneratedGeometry>);
 
 namespace {
 
@@ -98,9 +99,11 @@ Geometry::Geometry(const std::vector<double>& vert, const std::vector<uint32_t>&
 }
 
 
-GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const py::dict& rep) :
-    mInitialShapeIndex(initShapeIdx), mVertices(vert), mFaces(face), mReport(rep)
-{
+void GeneratedGeometry::set(const size_t& initShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const py::dict& rep) {
+    mInitialShapeIndex = initShapeIdx;
+    mVertices = vert;
+    mFaces = face;
+    mReport = rep;
 }
 
 namespace {
@@ -307,8 +310,9 @@ namespace {
                     return {};
                 }
 
-                for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++)
-                    newGeneratedGeo[idx] = GeneratedGeometry(idx, convertVerticesIntoPythonStyle(foc->getVertices(idx)), foc->getFaces(idx), foc->getReport(idx));
+                for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++) {
+                    newGeneratedGeo[idx].set(idx, convertVerticesIntoPythonStyle(foc->getVertices(idx)), foc->getFaces(idx), foc->getReport(idx));
+                }
             }
             else {
 
@@ -369,6 +373,8 @@ int py_printVal(int val) {
 using namespace pybind11::literals;
 
 PYBIND11_MODULE(pyprt, m) {
+    py::bind_vector<std::vector<GeneratedGeometry>>(m, "GeneratedGeometryVector", py::module_local(false));
+
     py::class_<ModelGenerator>(m, "ModelGenerator")
         .def(py::init<const std::string&>(), "initShapePath"_a)
         .def(py::init<const std::vector<Geometry>&>(), "initShape"_a)
@@ -390,7 +396,6 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_face_counts_count", &Geometry::getFaceCountsCount);
 
     py::class_<GeneratedGeometry>(m, "GeneratedGeometry")
-        .def(py::init<const size_t&, const std::vector<std::vector<double>>&, const std::vector<std::vector<uint32_t>>&, const py::dict&>())
         .def("get_initial_shape_index", &GeneratedGeometry::getInitialShapeIndex)
         .def("get_vertices", &GeneratedGeometry::getVertices)
         .def("get_faces", &GeneratedGeometry::getFaces)
