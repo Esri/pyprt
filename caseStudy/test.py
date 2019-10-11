@@ -64,7 +64,7 @@ print("\nTEST4")
 shape_geometry_1 = pyprt.Geometry([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0])
 shape_geometry_2 = pyprt.Geometry([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0, 0.5, 0, 0.5])
 
-mod_test4 = pyprt.ModelGenerator([shape_geometry_1,shape_geometry_2])
+mod_test4 = pyprt.ModelGenerator(pyprt.GeometryVector([shape_geometry_1,shape_geometry_2]))
 models_test4 = mod_test4.generate_model(attrs, rpk, "com.esri.prt.examples.PyEncoder", {})
 
 visualize_PRT_results(models_test4)
