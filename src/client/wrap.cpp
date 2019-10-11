@@ -64,6 +64,8 @@ const std::wstring ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
 
 pcu::Path executablePath;
 PYBIND11_MAKE_OPAQUE(std::vector<GeneratedGeometry>);
+PYBIND11_MAKE_OPAQUE(std::vector<Geometry *>);
+
 
 namespace {
 
@@ -145,7 +147,7 @@ namespace {
             mInitialShapesBuilders[0] = std::move(isb);
     }
 
-    ModelGenerator::ModelGenerator(const std::vector<Geometry>& myGeo) {
+    ModelGenerator::ModelGenerator(const std::vector<Geometry *>& myGeo) {
         mInitialShapesBuilders.resize(myGeo.size());
 
         mCache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
@@ -156,9 +158,9 @@ namespace {
             pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
 
             if (isb->setGeometry(
-                myGeo[ind].getVertices(), myGeo[ind].getVertexCount(),
-                myGeo[ind].getIndices(), myGeo[ind].getIndexCount(),
-                myGeo[ind].getFaceCounts(), myGeo[ind].getFaceCountsCount()) != prt::STATUS_OK) {
+                myGeo[ind]->getVertices(), myGeo[ind]->getVertexCount(),
+                myGeo[ind]->getIndices(), myGeo[ind]->getIndexCount(),
+                myGeo[ind]->getFaceCounts(), myGeo[ind]->getFaceCountsCount()) != prt::STATUS_OK) {
 
                 LOG_ERR << "invalid initial geometry";
                 mValid = false;
@@ -374,10 +376,11 @@ using namespace pybind11::literals;
 
 PYBIND11_MODULE(pyprt, m) {
     py::bind_vector<std::vector<GeneratedGeometry>>(m, "GeneratedGeometryVector", py::module_local(false));
+    py::bind_vector<std::vector<Geometry *>>(m, "GeometryVector", py::module_local(false));
 
     py::class_<ModelGenerator>(m, "ModelGenerator")
         .def(py::init<const std::string&>(), "initShapePath"_a)
-        .def(py::init<const std::vector<Geometry>&>(), "initShape"_a)
+        .def(py::init<const std::vector<Geometry *>&>(), "initShape"_a)
         .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"), py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"))
         .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
 

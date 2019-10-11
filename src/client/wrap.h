@@ -156,7 +156,7 @@ class Geometry {
 public:
 	Geometry(const std::vector<double>& vert);
 	Geometry(const std::vector<double>& vert, const std::vector<uint32_t>& ind, const std::vector<uint32_t>& faceCnt);
-	~Geometry() { }
+    ~Geometry() { }
 
 	const double* getVertices() const { return mVertices.data(); }
 	size_t getVertexCount() const { return mVertices.size(); }
@@ -196,7 +196,7 @@ namespace {
 	class ModelGenerator {
 	public:
 		ModelGenerator(const std::string& initShapePath);
-		ModelGenerator(const std::vector<Geometry>& myGeo);
+		ModelGenerator(const std::vector<Geometry *>& myGeo);
 		~ModelGenerator() { }
 
         std::vector<GeneratedGeometry> generateModel(const py::dict& shapeAttributes, const std::string& rulePackagePath, const std::wstring& geometryEncoderName, const py::dict& geometryEcoderOptions);
