@@ -101,12 +101,11 @@ Geometry::Geometry(const std::vector<double>& vert, const std::vector<uint32_t>&
 }
 
 
-void GeneratedGeometry::set(const size_t& initShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const py::dict& rep) {
-    mInitialShapeIndex = initShapeIdx;
-    mVertices = vert;
-    mFaces = face;
-    mReport = rep;
+GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const py::dict& rep) :
+    mInitialShapeIndex(initShapeIdx), mVertices(vert), mFaces(face), mReport(rep)
+{
 }
+
 
 namespace {
 
@@ -243,7 +242,8 @@ namespace {
             return {};
         }
 
-        std::vector<GeneratedGeometry> newGeneratedGeo(mInitialShapesBuilders.size());
+        std::vector<GeneratedGeometry> newGeneratedGeo;
+        newGeneratedGeo.reserve(mInitialShapesBuilders.size());
 
         try {
             if (!prtCtx) {
@@ -313,7 +313,7 @@ namespace {
                 }
 
                 for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++) {
-                    newGeneratedGeo[idx].set(idx, convertVerticesIntoPythonStyle(foc->getVertices(idx)), foc->getFaces(idx), foc->getReport(idx));
+                    newGeneratedGeo.emplace_back(idx, convertVerticesIntoPythonStyle(foc->getVertices(idx)), foc->getFaces(idx), foc->getReport(idx));
                 }
             }
             else {
