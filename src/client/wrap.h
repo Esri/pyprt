@@ -196,7 +196,7 @@ namespace {
 	class ModelGenerator {
 	public:
 		ModelGenerator(const std::string& initShapePath);
-		ModelGenerator(const std::vector<Geometry *>& myGeo);
+		ModelGenerator(const std::vector<Geometry>& myGeo);
 		~ModelGenerator() { }
 
         std::vector<GeneratedGeometry> generateModel(const py::dict& shapeAttributes, const std::string& rulePackagePath, const std::wstring& geometryEncoderName, const py::dict& geometryEcoderOptions);
