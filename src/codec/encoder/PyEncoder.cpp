@@ -43,8 +43,8 @@ namespace {
 const wchar_t*     EO_BASE_NAME      = L"baseName";
 const wchar_t*     EO_ERROR_FALLBACK = L"errorFallback";
 const std::wstring ENCFILE_EXT       = L".txt";
-const wchar_t*     EO_EMIT_REPORTS = L"emitReports";
-const wchar_t*     EO_EMIT_GEOMETRY = L"emitGeometry";
+const wchar_t*     EO_EMIT_REPORT    = L"emitReport";
+const wchar_t*     EO_EMIT_GEOMETRY  = L"emitGeometry";
 
 
 const prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS = prtx::EncodePreparator::PreparationFlags()
@@ -84,7 +84,7 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
     if(cb == nullptr)
         throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
 
-    if (getOptions()->getBool(EO_EMIT_REPORTS)) {
+    if (getOptions()->getBool(EO_EMIT_REPORT)) {
         prtx::ReportsAccumulatorPtr reportsAccumulator{ prtx::SummarizingReportsAccumulator::create() };
         prtx::ReportingStrategyPtr reportsCollector{ prtx::AllShapesReportingStrategy::create(context, initialShapeIndex, reportsAccumulator) };
 
@@ -194,7 +194,7 @@ PyEncoderFactory* PyEncoderFactory::createInstance() {
 	prtx::PRTUtils::AttributeMapBuilderPtr amb(prt::AttributeMapBuilder::create());
 	amb->setString(EO_BASE_NAME, L"enc_default_name"); // required by CityEngine
 	amb->setBool(EO_ERROR_FALLBACK, prtx::PRTX_TRUE); // required by CityEngine
-    amb->setBool(EO_EMIT_REPORTS, prtx::PRTX_TRUE);
+    amb->setBool(EO_EMIT_REPORT, prtx::PRTX_TRUE);
     amb->setBool(EO_EMIT_GEOMETRY, prtx::PRTX_TRUE);
 	encoderInfoBuilder.setDefaultOptions(amb->createAttributeMap());
 

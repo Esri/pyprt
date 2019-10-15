@@ -1,17 +1,14 @@
 # Python utility functions
 #import numpy as np
 
-def visualize_PRT_results(models, printing = False):
+def visualize_PRT_results(models):
     print("\nNumber of generated geometries (= nber of initial shapes):")
     print(len(models))
 
     for m in models:
         if m:
             geometry_vertices = m.get_vertices()
-            rep_float = m.get_float_report()
-            rep_string = m.get_string_report()
-            rep_bool = m.get_bool_report()
-            combined_rep = combine_reports(m)
+            rep = m.get_report()
 
             print()
             print("Initial Shape Index: " + str(m.get_initial_shape_index()))
@@ -28,24 +25,9 @@ def visualize_PRT_results(models, printing = False):
 
                 print("Size of the matrix containing the model faces: " + str(len(m.get_faces())))
 
-            if len(combined_rep) > 0 :
+            if len(rep) > 0 :
                 print()
                 print("Report of the generated model:")
-                print(combined_rep)
-
-                print()
-                if printing :
-                    print("Reports of the generated model (floats report, strings report, bools report):")
-                    print(rep_float)
-                    print(rep_string)
-                    print(rep_bool)
+                print(rep)
         else:
             print("\nError while instanciating the model generator.")
-
-
-def combine_reports(model):
-    combined_dict = {}
-    combined_dict.update(model.get_float_report())
-    combined_dict.update(model.get_string_report())
-    combined_dict.update(model.get_bool_report())
-    return combined_dict
