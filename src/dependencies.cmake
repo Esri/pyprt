@@ -14,7 +14,7 @@ endif()
 
 ### look for the PRT libraries
 
-# prt_DIR must point to the cmake subfolder of the desired SDK installation
+# if prt_DIR is not provided, download PRT from its github home
 if(NOT prt_DIR)
 	if(PYPRT_WINDOWS)
 		set(PRT_OS "win10")
@@ -27,16 +27,8 @@ if(NOT prt_DIR)
 		set(PRT_TC "ac81")
 	endif()
 
-	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-		set(PRT_CC "dbg")
-	else()
-		set(PRT_CC "opt")
-	endif()
-
-	set(PRT_BRANCH  "ce20191")
-	set(PRT_VERSION "LATEST") # latest version within above branch
-	set(PRT_CLS    "${PRT_OS}-${PRT_TC}-x86_64-rel-${PRT_CC}")
-	set(PRT_URL    "http://zrh-nexus.esri.com:8081/nexus/service/local/artifact/maven/content?r=CityEngine&g=prt.${PRT_BRANCH}&v=${PRT_VERSION}&a=ce_sdk&c=${PRT_CLS}&e=zip")
+	set(PRT_VERSION "2.1.5704")
+	set(PRT_URL		"https://github.com/esri/esri-cityengine-sdk/releases/download/${PRT_VERSION}/esri_ce_sdk-${PRT_VERSION}-${PRT_OS}-${PRT_TC}-x86_64-rel-opt.zip")
 
 	FetchContent_Declare(prt URL ${PRT_URL})
 	FetchContent_GetProperties(prt)
