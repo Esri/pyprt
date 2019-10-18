@@ -5,11 +5,13 @@ import sysconfig
 import platform
 import subprocess
 
-from setuptools import setup, Extension, Distribution, find_packages
+from distutils.command.install_data import install_data
+from setuptools import setup, Extension, find_packages #, Distribution
 from setuptools.command.build_ext import build_ext
 from setuptools.command.install_lib import install_lib
 from setuptools.command.install_scripts import install_scripts
 import pathlib
+import shutil
 
 
 class CMakeExtension(Extension):
@@ -42,7 +44,7 @@ class CMakeBuild(build_ext):
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable]
 
-        cfg = 'Release' #'Debug' if self.debug else 'Release'
+        cfg = 'RelWithDebInfo' #'Debug' if self.debug else 'Release'
         build_args = ['--config', cfg]
         #build_args = []
 
@@ -71,42 +73,75 @@ class CMakeBuild(build_ext):
         print()  # Add an empty line for cleaner output
 
 
+class InstallCMakeLibsData(install_data):
+    def run(self):
+        self.outfiles = self.distribution.data_files
+
     
-# class InstallCMakeLibs(install_lib):
-#     def run(self):
-#         self.announce("Moving library files", level=3)
-#         self.skip_build = True
-#         bin_dir = os.path.join(os.getcwd(), "build", "bin")
-#         os.makedirs(bin_dir, exist_ok=True)
+class InstallCMakeLibs(install_lib):
+    def run(self):
+        self.announce("Moving library files", level=3)
+        self.skip_build = True
+        self.install_dir = os.path.join(os.getcwd(), "build", "install")
+        os.makedirs(self.install_dir, exist_ok=True)
+        bin_dir = os.path.join(os.getcwd(), "build", "install", "bin")
+        os.makedirs(bin_dir, exist_ok=True)
+        lib_dir = os.path.join(os.getcwd(), "build", "install", "lib")
+        os.makedirs(lib_dir, exist_ok=True)
 
-#         print("-----INSTALL:" + str(self.install_dir))
-#         print("---- BIN: "+ str(bin_dir))
+        print("-----INSTALL:" + str(self.install_dir))
+        print("---- BIN: "+ str(bin_dir))
+        print("---BUILD:" + str(self.build_dir))
+        print("---LIB:" + str(lib_dir))
 
-#         libs = [os.path.join(bin_dir, _lib) for _lib in 
-#                 os.listdir(bin_dir) if 
-#                 os.path.isfile(os.path.join(bin_dir, _lib)) and 
-#                 os.path.splitext(_lib)[1] in [".dll", ".so"]
-#                 and not (_lib.startswith("python") or _lib.startswith("bpy"))]
+        print(self.distribution.data_files)
 
-#         print(len(libs))
+        src1 = os.path.join(os.getcwd(), "build","temp.win-amd64-3.6","Release","codec","RelWithDebInfo")
+        src2 = os.path.join(os.getcwd(), "build","temp.win-amd64-3.6","Release","_deps","prt-src","bin")
+        src3 = os.path.join(os.getcwd(), "build","temp.win-amd64-3.6","Release","_deps","prt-src","lib")
+        src4 = os.path.join(os.getcwd(), "build","lib.win-amd64-3.6","RelWithDebInfo")
 
-#         for lib in libs:
-#             print("---LIBS: " + str(lib))
-#             #shutil.move(lib, os.path.join(self.build_dir, os.path.basename(lib)))
+        libs = [os.path.join(src1, "pyprt_codec.dll")]
 
-#         #self.distribution.data_files = [os.path.join(self.install_dir, os.path.basename(lib)) for lib in libs]
+        for item in os.listdir(src2):
+            shutil.copyfile(os.path.join(src2, item), os.path.join(bin_dir, item))
 
-#         super().run()
+        for item in os.listdir(src3):
+            shutil.copyfile(os.path.join(src3, item), os.path.join(lib_dir, item))
+
+        for lib in libs:
+            shutil.copyfile(lib, os.path.join(lib_dir, os.path.basename(lib)))
+
+        #self.distribution.data_files = [os.path.join(self.install_dir, os.path.basename(lib)) for lib in libs] # TO DO
+
+        super().run()
 
 
-# class InstallCommand(install):
-#     def run(sefl):
-#         print("**** INSTALL COMMMAND RUNS!")
-#         build_path = os.path.join(os.getcwd(), 'build', 'temp.win-amd64-3.6', 'Release')
-#         print("---------BUILD PATH:" + str(build_path))
-#         if subprocess.call(["nmake", "install"]) != 0:
-#             print("error nmake install!")
-#             #raise EnvironmentError("error calling nmake")
+class InstallCMakeScripts(install_scripts):
+    def run(self):
+        # self.announce("Moving scripts files", level=3)
+        # self.skip_build = True
+
+        # bin_dir = self.distribution.bin_dir
+
+        # scripts_dirs = [os.path.join(bin_dir, _dir) for _dir in
+        #                 os.listdir(bin_dir) if
+        #                 os.path.isdir(os.path.join(bin_dir, _dir))]
+
+        # for scripts_dir in scripts_dirs:
+
+        #     shutil.move(scripts_dir,
+        #                 os.path.join(self.build_dir,
+        #                              os.path.basename(scripts_dir)))
+
+        # Mark the scripts for installation, adding them to 
+        # distribution.scripts seems to ensure that the setuptools' record 
+        # writer appends them to installed-files.txt in the package's egg-info
+
+        # self.distribution.scripts = scripts_dirs
+
+        # super().run()
+
 
 
 # class BinaryDistribution(Distribution):
@@ -124,24 +159,25 @@ setup(
     package_dir={'':'src'},
     scripts=['src/utility.py'],
     #package_dir={'pyprt': 'install'},
-    package_data={
-        'pyprt' : [
-            #'bin/pyprt.cp36-win_amd64.pyd',
-            'glutess.dll',
-            'glutess.lib',
-            'com.esri.prt.core.dll',
-            'com.esri.prt.core.lib',
-            'com.esri.prt.adaptors.dll',
-            'com.esri.prt.alembic.dll',
-            'com.esri.prt.codecs.dll',
-            'pyprt_codec.dll'
-        ]
-    },
+    # package_data={
+    #     'pyprt' : [
+    #         #'bin/pyprt.cp36-win_amd64.pyd',
+    #         'glutess.dll',
+    #         'glutess.lib',
+    #         'com.esri.prt.core.dll',
+    #         'com.esri.prt.core.lib',
+    #         'com.esri.prt.adaptors.dll',
+    #         'com.esri.prt.alembic.dll',
+    #         'com.esri.prt.codecs.dll',
+    #         'pyprt_codec.dll'
+    #     ]
+    # },
     # distclass=BinaryDistribution,
     ext_modules=[CMakeExtension('pyprt')],
     cmdclass={
         'build_ext' : CMakeBuild,
-        # 'install_lib' : InstallCMakeLibs},
+        'install_data' : InstallCMakeLibsData,
+        'install_lib' : InstallCMakeLibs},
     #'install' : InstallCommand},
     test_suite='tests.runner',
     zip_safe=False
