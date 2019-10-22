@@ -17,7 +17,7 @@ import shutil
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
         Extension.__init__(self, name, sources=[])
-        self.sourcedir = os.path.join(os.path.abspath(sourcedir), 'src') #C:\Users\cami9495\Documents\esri-cityengine-sdk-master\examples\py4prt\src
+        self.sourcedir = os.path.join(os.path.abspath(sourcedir), 'src')
 
 
 class InstallCMakeLibsData(install_data):
@@ -30,8 +30,10 @@ class InstallCMakeLibs(install_lib):
         self.announce("Moving library files", level=3)
         self.skip_build = True
 
-        build_bin_dir = self.distribution.bin_dir
-        build_lib_dir = os.path.join(build_bin_dir, '..', 'lib.win-amd64-3.6')
+        build_bin_dir = os.path.join(self.distribution.bin_dir, 'bin')
+        build_lib_dir = os.path.join(self.distribution.bin_dir, 'lib')
+        os.makedirs(build_bin_dir, exist_ok=True)
+        os.makedirs(build_lib_dir, exist_ok=True)
 
         install_dir = os.path.join(os.getcwd(), "install")
         bin_dir = os.path.join(install_dir, "bin")
@@ -80,44 +82,6 @@ class CMakeBuild(build_ext):
         for ext in self.extensions:
             self.build_cmake(ext)
 
-    def build_extension(self, ext):
-        extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-        build_dir = pathlib.Path(self.build_temp)
-
-        print("---EXT: "+str(extdir)) #C:\Users\cami9495\Documents\esri-cityengine-sdk-master\examples\py4prt\build\lib.win-amd64-3.6
-        print("---BUILD: "+str(build_dir)) #build\temp.win-amd64-3.6\Release
-
-        cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
-                      '-DPYTHON_EXECUTABLE=' + sys.executable]
-
-        cfg = 'RelWithDebInfo' #'Debug' if self.debug else 'Release'
-        build_args = ['--config', cfg]
-        #build_args = []
-
-        if platform.system() == "Windows":
-            # cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(
-            #     cfg.upper(),
-            #     extdir)]
-            cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            if sys.maxsize > 2**32:
-                cmake_args += ['-A', 'x64']
-            build_args += ['--', '/m']
-        else:
-            cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            build_args += ['--', '-j2']
-
-        env = os.environ.copy()
-        env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(
-            env.get('CXXFLAGS', ''),
-            self.distribution.get_version())
-        if not os.path.exists(self.build_temp):
-            os.makedirs(self.build_temp)
-        subprocess.check_call(['cmake', ext.sourcedir] + cmake_args,
-                              cwd=self.build_temp, env=env)
-        subprocess.check_call(['cmake', '--build', '.'] + build_args,
-                              cwd=self.build_temp)
-        print()
-
     def build_cmake(self, extension: Extension):
         """
         The steps required to build the extension
@@ -125,8 +89,8 @@ class CMakeBuild(build_ext):
 
         self.announce("Preparing the build environment", level=3)
 
-        build_dir = os.path.join(pathlib.Path(self.build_temp),'..','..') #build\temp.win-amd64-3.6\Release
-        extension_path = pathlib.Path(self.get_ext_fullpath(extension.name)) #build\lib.win-amd64-3.6\pyprt.cp36-win_amd64.pyd
+        build_dir = os.path.join(pathlib.Path(self.build_temp),'..','..')
+        extension_path = pathlib.Path(self.get_ext_fullpath(extension.name))
 
         os.makedirs(pathlib.Path(self.build_temp), exist_ok=True)
         os.makedirs(extension_path.parent.absolute(), exist_ok=True)
@@ -142,23 +106,7 @@ class CMakeBuild(build_ext):
         self.spawn(["cmake", "--build", self.build_temp, "--target", "INSTALL",
                     "--config", "RelWithDebInfo"])
 
-        # self.announce("Moving built python module", level=3)
-
-        build_bin_dir = os.path.join(build_dir, 'bin.win-amd64-3.6') #TO IMPROVE
-        os.makedirs(build_bin_dir, exist_ok=True)
-        self.distribution.bin_dir = build_bin_dir #BEFORE: build\temp.win-amd64-3.6\Release\bin\Release
-        # self.distribution.bin_dir = extension_path.parent.absolute()
-
-        # pyd_path = [os.path.join(bin_dir, _pyd) for _pyd in
-        #             os.listdir(bin_dir) if
-        #             os.path.isfile(os.path.join(bin_dir, _pyd)) and
-        #             os.path.splitext(_pyd)[0].startswith(PACKAGE_NAME) and
-        #             os.path.splitext(_pyd)[1] in [".pyd", ".so"]][0]
-
-        # print(pyd_path)
-
-        # shutil.copy(pyd_path, extension_path)
-
+        self.distribution.bin_dir = extension_path.parent.absolute()
 
 
 # class BinaryDistribution(Distribution):
