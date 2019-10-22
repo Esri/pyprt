@@ -65,9 +65,11 @@ class InstallCMakeScripts(install_scripts):
     def run(self):
         self.announce("Moving scripts files", level=3)
         self.skip_build = True
+        scripts_dir = os.path.join(os.getcwd(), 'install', 'scripts')
+        os.makedirs(scripts_dir, exist_ok=True)
 
         for script in self.distribution.scripts:
-            shutil.copyfile(os.path.join(os.getcwd(), os.path.dirname(script), os.path.basename(script)), os.path.join(os.getcwd(), 'install', os.path.basename(script)))
+            shutil.copyfile(os.path.join(os.getcwd(), os.path.dirname(script), os.path.basename(script)), os.path.join(scripts_dir, os.path.basename(script)))
 
         super().run()
 
@@ -112,9 +114,6 @@ class CMakeBuild(build_ext):
         self.distribution.bin_dir = extension_path.parent.absolute()
 
 
-class BinaryDistribution(Distribution):
-    def has_ext_modules(foo):
-        return True
 
 
 setup(
@@ -127,22 +126,9 @@ setup(
     url='https://devtopia.esri.com/cami9495/py4prt',
     packages=find_packages('src'),
     package_dir={'':'src'},
-    scripts=['src/utility.py'],
-    # package_data={
-    #     'pyprt' : [
-    #         'install/bin/glutess.dll',
-    #         'install/bin/glutess.lib',
-    #         'install/bin/com.esri.prt.core.dll',
-    #         'install/bin/com.esri.prt.core.lib',
-    #         'install/lib/com.esri.prt.adaptors.dll',
-    #         'install/lib/com.esri.prt.alembic.dll',
-    #         'install/lib/com.esri.prt.codecs.dll',
-    #         'install/lib/pyprt_codec.dll'
-    #     ]
-    # },
+    scripts=['scripts/utility.py'],
     include_package_data = True,
     ext_modules=[CMakeExtension('pyprt')],
-    distclass=BinaryDistribution,
     cmdclass={
         'build_ext' : CMakeBuild,
         'install_data' : InstallCMakeLibsData,
