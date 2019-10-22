@@ -1,0 +1,2 @@
+recursive-include install/bin *
+recursive-include install/lib *

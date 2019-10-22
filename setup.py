@@ -112,9 +112,9 @@ class CMakeBuild(build_ext):
         self.distribution.bin_dir = extension_path.parent.absolute()
 
 
-# class BinaryDistribution(Distribution):
-#     def has_ext_modules(foo):
-#         return True
+class BinaryDistribution(Distribution):
+    def has_ext_modules(foo):
+        return True
 
 
 setup(
@@ -140,7 +140,9 @@ setup(
     #         'install/lib/pyprt_codec.dll'
     #     ]
     # },
+    include_package_data = True,
     ext_modules=[CMakeExtension('pyprt')],
+    distclass=BinaryDistribution,
     cmdclass={
         'build_ext' : CMakeBuild,
         'install_data' : InstallCMakeLibsData,
