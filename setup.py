@@ -6,7 +6,7 @@ import platform
 import subprocess
 
 from distutils.command.install_data import install_data
-from setuptools import setup, Extension, find_packages #, Distribution
+from setuptools import setup, Extension, find_packages, Distribution
 from setuptools.command.build_ext import build_ext
 from setuptools.command.install_lib import install_lib
 from setuptools.command.install_scripts import install_scripts
@@ -17,8 +17,54 @@ import shutil
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
         Extension.__init__(self, name, sources=[])
-        self.sourcedir = os.path.join(os.path.abspath(sourcedir), 'src')
-        print("------SOURCE DIR: "+str(self.sourcedir))
+        self.sourcedir = os.path.join(os.path.abspath(sourcedir), 'src') #C:\Users\cami9495\Documents\esri-cityengine-sdk-master\examples\py4prt\src
+
+
+class InstallCMakeLibsData(install_data):
+    def run(self):
+        self.outfiles = self.distribution.data_files
+
+
+class InstallCMakeLibs(install_lib):
+    def run(self):
+        self.announce("Moving library files", level=3)
+        self.skip_build = True
+
+        build_bin_dir = self.distribution.bin_dir
+        build_lib_dir = os.path.join(build_bin_dir, '..', 'lib.win-amd64-3.6')
+
+        install_dir = os.path.join(os.getcwd(), "install")
+        bin_dir = os.path.join(install_dir, "bin")
+        lib_dir = os.path.join(install_dir, "lib")
+
+        libs_bin = [os.path.join(bin_dir, _lib) for _lib in 
+                    os.listdir(bin_dir) if 
+                    os.path.isfile(os.path.join(bin_dir, _lib))]
+
+        libs_lib = [os.path.join(lib_dir, _lib) for _lib in 
+                    os.listdir(lib_dir) if 
+                    os.path.isfile(os.path.join(lib_dir, _lib))]
+
+        self.distribution.data_files = []
+
+        for l in libs_bin:
+            shutil.copyfile(l, os.path.join(build_bin_dir, os.path.basename(l)))
+            self.distribution.data_files.append(os.path.join(build_bin_dir, os.path.basename(l)))
+
+        for l in libs_lib:
+            shutil.copyfile(l, os.path.join(build_lib_dir, os.path.basename(l)))
+            self.distribution.data_files.append(os.path.join(build_lib_dir, os.path.basename(l)))
+
+        self.distribution.run_command("install_data")
+        super().run()
+
+
+# class InstallCMakeScripts(install_scripts):
+#     def run(self):
+#         self.announce("Moving scripts files", level=3)
+#         self.skip_build = True
+
+#         super().run()
 
 
 
@@ -32,7 +78,7 @@ class CMakeBuild(build_ext):
                 ", ".join(e.name for e in self.extensions))
 
         for ext in self.extensions:
-            self.build_extension(ext)
+            self.build_cmake(ext)
 
     def build_extension(self, ext):
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
@@ -70,83 +116,55 @@ class CMakeBuild(build_ext):
                               cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] + build_args,
                               cwd=self.build_temp)
-        print()  # Add an empty line for cleaner output
+        print()
 
+    def build_cmake(self, extension: Extension):
+        """
+        The steps required to build the extension
+        """
 
-class InstallCMakeLibsData(install_data):
-    def run(self):
-        self.outfiles = self.distribution.data_files
+        self.announce("Preparing the build environment", level=3)
 
-    
-class InstallCMakeLibs(install_lib):
-    def run(self):
-        self.announce("Moving library files", level=3)
-        self.skip_build = True
-        self.install_dir = os.path.join(os.getcwd(), "build", "install")
-        os.makedirs(self.install_dir, exist_ok=True)
-        bin_dir = os.path.join(os.getcwd(), "build", "install", "bin")
-        os.makedirs(bin_dir, exist_ok=True)
-        lib_dir = os.path.join(os.getcwd(), "build", "install", "lib")
-        os.makedirs(lib_dir, exist_ok=True)
+        build_dir = os.path.join(pathlib.Path(self.build_temp),'..','..') #build\temp.win-amd64-3.6\Release
+        extension_path = pathlib.Path(self.get_ext_fullpath(extension.name)) #build\lib.win-amd64-3.6\pyprt.cp36-win_amd64.pyd
 
-        print("-----INSTALL:" + str(self.install_dir))
-        print("---- BIN: "+ str(bin_dir))
-        print("---BUILD:" + str(self.build_dir))
-        print("---LIB:" + str(lib_dir))
+        os.makedirs(pathlib.Path(self.build_temp), exist_ok=True)
+        os.makedirs(extension_path.parent.absolute(), exist_ok=True)
 
-        print(self.distribution.data_files)
+        self.announce("Configuring cmake project", level=3)
 
-        src1 = os.path.join(os.getcwd(), "build","temp.win-amd64-3.6","Release","codec","RelWithDebInfo")
-        src2 = os.path.join(os.getcwd(), "build","temp.win-amd64-3.6","Release","_deps","prt-src","bin")
-        src3 = os.path.join(os.getcwd(), "build","temp.win-amd64-3.6","Release","_deps","prt-src","lib")
-        src4 = os.path.join(os.getcwd(), "build","lib.win-amd64-3.6","RelWithDebInfo")
+        self.spawn(['cmake', '-H'+extension.sourcedir, '-B'+self.build_temp,
+                    '-A'+'x64','-DPYTHON_EXECUTABLE='+sys.executable,
+                    '-DCMAKE_BUILD_TYPE="RelWithDebInfo"'])
 
-        libs = [os.path.join(src1, "pyprt_codec.dll")]
+        self.announce("Building binaries", level=3)
 
-        for item in os.listdir(src2):
-            shutil.copyfile(os.path.join(src2, item), os.path.join(bin_dir, item))
+        self.spawn(["cmake", "--build", self.build_temp, "--target", "INSTALL",
+                    "--config", "RelWithDebInfo"])
 
-        for item in os.listdir(src3):
-            shutil.copyfile(os.path.join(src3, item), os.path.join(lib_dir, item))
+        # self.announce("Moving built python module", level=3)
 
-        for lib in libs:
-            shutil.copyfile(lib, os.path.join(lib_dir, os.path.basename(lib)))
+        build_bin_dir = os.path.join(build_dir, 'bin.win-amd64-3.6') #TO IMPROVE
+        os.makedirs(build_bin_dir, exist_ok=True)
+        self.distribution.bin_dir = build_bin_dir #BEFORE: build\temp.win-amd64-3.6\Release\bin\Release
+        # self.distribution.bin_dir = extension_path.parent.absolute()
 
-        #self.distribution.data_files = [os.path.join(self.install_dir, os.path.basename(lib)) for lib in libs] # TO DO
+        # pyd_path = [os.path.join(bin_dir, _pyd) for _pyd in
+        #             os.listdir(bin_dir) if
+        #             os.path.isfile(os.path.join(bin_dir, _pyd)) and
+        #             os.path.splitext(_pyd)[0].startswith(PACKAGE_NAME) and
+        #             os.path.splitext(_pyd)[1] in [".pyd", ".so"]][0]
 
-        super().run()
+        # print(pyd_path)
 
-
-class InstallCMakeScripts(install_scripts):
-    def run(self):
-        # self.announce("Moving scripts files", level=3)
-        # self.skip_build = True
-
-        # bin_dir = self.distribution.bin_dir
-
-        # scripts_dirs = [os.path.join(bin_dir, _dir) for _dir in
-        #                 os.listdir(bin_dir) if
-        #                 os.path.isdir(os.path.join(bin_dir, _dir))]
-
-        # for scripts_dir in scripts_dirs:
-
-        #     shutil.move(scripts_dir,
-        #                 os.path.join(self.build_dir,
-        #                              os.path.basename(scripts_dir)))
-
-        # Mark the scripts for installation, adding them to 
-        # distribution.scripts seems to ensure that the setuptools' record 
-        # writer appends them to installed-files.txt in the package's egg-info
-
-        # self.distribution.scripts = scripts_dirs
-
-        # super().run()
+        # shutil.copy(pyd_path, extension_path)
 
 
 
 # class BinaryDistribution(Distribution):
 #     def has_ext_modules(foo):
 #         return True
+
 
 setup(
     name='PyPRT',
@@ -155,30 +173,28 @@ setup(
     author_email='clechot@esri.com',
     description='Python bindings for CityEngine Procedural Runtime',
     long_description='',
+    url='https://devtopia.esri.com/cami9495/py4prt',
     packages=find_packages('src'),
     package_dir={'':'src'},
     scripts=['src/utility.py'],
-    #package_dir={'pyprt': 'install'},
     # package_data={
     #     'pyprt' : [
-    #         #'bin/pyprt.cp36-win_amd64.pyd',
-    #         'glutess.dll',
-    #         'glutess.lib',
-    #         'com.esri.prt.core.dll',
-    #         'com.esri.prt.core.lib',
-    #         'com.esri.prt.adaptors.dll',
-    #         'com.esri.prt.alembic.dll',
-    #         'com.esri.prt.codecs.dll',
-    #         'pyprt_codec.dll'
+    #         'install/bin/glutess.dll',
+    #         'install/bin/glutess.lib',
+    #         'install/bin/com.esri.prt.core.dll',
+    #         'install/bin/com.esri.prt.core.lib',
+    #         'install/lib/com.esri.prt.adaptors.dll',
+    #         'install/lib/com.esri.prt.alembic.dll',
+    #         'install/lib/com.esri.prt.codecs.dll',
+    #         'install/lib/pyprt_codec.dll'
     #     ]
     # },
-    # distclass=BinaryDistribution,
     ext_modules=[CMakeExtension('pyprt')],
     cmdclass={
         'build_ext' : CMakeBuild,
         'install_data' : InstallCMakeLibsData,
         'install_lib' : InstallCMakeLibs},
-    #'install' : InstallCommand},
+        #'install_scripts' : InstallCMakeScripts},
     test_suite='tests.runner',
     zip_safe=False
 )
