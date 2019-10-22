@@ -35,9 +35,9 @@ class InstallCMakeLibs(install_lib):
         os.makedirs(build_bin_dir, exist_ok=True)
         os.makedirs(build_lib_dir, exist_ok=True)
 
-        install_dir = os.path.join(os.getcwd(), "install")
-        bin_dir = os.path.join(install_dir, "bin")
-        lib_dir = os.path.join(install_dir, "lib")
+        install_dir = os.path.join(os.getcwd(), 'install')
+        bin_dir = os.path.join(install_dir, 'bin')
+        lib_dir = os.path.join(install_dir, 'lib')
 
         libs_bin = [os.path.join(bin_dir, _lib) for _lib in 
                     os.listdir(bin_dir) if 
@@ -61,12 +61,15 @@ class InstallCMakeLibs(install_lib):
         super().run()
 
 
-# class InstallCMakeScripts(install_scripts):
-#     def run(self):
-#         self.announce("Moving scripts files", level=3)
-#         self.skip_build = True
+class InstallCMakeScripts(install_scripts):
+    def run(self):
+        self.announce("Moving scripts files", level=3)
+        self.skip_build = True
 
-#         super().run()
+        for script in self.distribution.scripts:
+            shutil.copyfile(os.path.join(os.getcwd(), os.path.dirname(script), os.path.basename(script)), os.path.join(os.getcwd(), 'install', os.path.basename(script)))
+
+        super().run()
 
 
 
@@ -141,8 +144,9 @@ setup(
     cmdclass={
         'build_ext' : CMakeBuild,
         'install_data' : InstallCMakeLibsData,
-        'install_lib' : InstallCMakeLibs},
-        #'install_scripts' : InstallCMakeScripts},
+        'install_lib' : InstallCMakeLibs,
+        'install_scripts' : InstallCMakeScripts},
     test_suite='tests.runner',
-    zip_safe=False
+    zip_safe=False,
+    python_requires='>=3.6',
 )
