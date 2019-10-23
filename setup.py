@@ -17,7 +17,7 @@ import shutil
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
         Extension.__init__(self, name, sources=[])
-        self.sourcedir = os.path.join(os.path.abspath(sourcedir), 'src')
+        self.sourcedir = os.path.join(os.path.abspath(sourcedir), 'src', 'pyprt')
 
 
 class InstallCMakeLibsData(install_data):
