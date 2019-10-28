@@ -174,7 +174,6 @@ setup(
         'install_lib' : InstallCMakeLibs,
         'install_scripts' : InstallCMakeScripts,
         'test' : CustomTest},
-    test_suite='tests',
     zip_safe=False,
     python_requires='>=3.6',
 )
