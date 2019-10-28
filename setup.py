@@ -10,8 +10,43 @@ from setuptools import setup, Extension, find_packages, Distribution
 from setuptools.command.build_ext import build_ext
 from setuptools.command.install_lib import install_lib
 from setuptools.command.install_scripts import install_scripts
+from setuptools.command.test import test
 import pathlib
 import shutil
+import unittest
+
+from tests import general_test
+from tests import multiGeneration_test
+from tests import otherExporter_test
+from tests import pyGeometry_test
+
+SDK_PATH = os.path.join(os.getcwd(), "install", "bin")
+sys.path.append(SDK_PATH)
+
+import pyprt
+
+class PyPRT_TestResult(unittest.TextTestResult):
+    def startTestRun(self):
+        pyprt.initialize_prt(SDK_PATH)
+
+    def stopTestRun(self):
+        pyprt.shutdown_prt()
+        print("PRT is shut down.")
+
+
+class PyPRT_TestRunner(unittest.TextTestRunner):
+    def _makeResult(self):
+        return PyPRT_TestResult(self.stream, self.descriptions, self.verbosity)
+
+
+def testSuite():
+    loader = unittest.TestLoader()
+    suite = unittest.TestSuite()
+    suite.addTests(loader.loadTestsFromModule(general_test))
+    suite.addTests(loader.loadTestsFromModule(multiGeneration_test))
+    suite.addTests(loader.loadTestsFromModule(otherExporter_test))
+    suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
+    return suite
 
 
 class CMakeExtension(Extension):
@@ -74,7 +109,6 @@ class InstallCMakeScripts(install_scripts):
         super().run()
 
 
-
 class CMakeBuild(build_ext):
     def run(self):
         try:
@@ -114,6 +148,11 @@ class CMakeBuild(build_ext):
         self.distribution.bin_dir = extension_path.parent.absolute()
 
 
+class CustomTest(test):
+    def run_tests(self):
+        runner = PyPRT_TestRunner(verbosity=3)
+        result = runner.run(testSuite())
+
 
 
 setup(
@@ -133,8 +172,9 @@ setup(
         'build_ext' : CMakeBuild,
         'install_data' : InstallCMakeLibsData,
         'install_lib' : InstallCMakeLibs,
-        'install_scripts' : InstallCMakeScripts},
-    test_suite='tests.runner',
+        'install_scripts' : InstallCMakeScripts,
+        'test' : CustomTest},
+    test_suite='tests',
     zip_safe=False,
     python_requires='>=3.6',
 )
