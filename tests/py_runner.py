@@ -2,15 +2,16 @@ import os
 import sys
 import unittest
 
-from tests import general_test
-from tests import multiGeneration_test
-from tests import otherExporter_test
-from tests import pyGeometry_test
+import general_test
+import multiGeneration_test
+import otherExporter_test
+import pyGeometry_test
 
 SDK_PATH = os.path.join(os.getcwd(), "install", "bin")
 sys.path.append(SDK_PATH)
 
 import pyprt
+
 
 class PyPRT_TestResult(unittest.TextTestResult):
     def startTestRun(self):
@@ -26,7 +27,7 @@ class PyPRT_TestRunner(unittest.TextTestRunner):
         return PyPRT_TestResult(self.stream, self.descriptions, self.verbosity)
 
 
-def testSuite():
+def test_suite():
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
     suite.addTests(loader.loadTestsFromModule(general_test))
@@ -34,3 +35,12 @@ def testSuite():
     suite.addTests(loader.loadTestsFromModule(otherExporter_test))
     suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
     return suite
+
+
+def run_tests():
+    runner = PyPRT_TestRunner(verbosity=3)
+    result = runner.run(test_suite())
+
+
+if __name__ == '__main__':
+    run_tests()

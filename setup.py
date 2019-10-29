@@ -14,8 +14,6 @@ from setuptools.command.test import test
 import pathlib
 import shutil
 
-from tests import py_runner
-
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
@@ -90,10 +88,6 @@ class CMakeBuild(build_ext):
             self.build_cmake(ext)
 
     def build_cmake(self, extension: Extension):
-        """
-        The steps required to build the extension
-        """
-
         self.announce("Preparing the build environment", level=3)
 
         build_dir = os.path.join(pathlib.Path(self.build_temp),'..','..')
@@ -116,12 +110,6 @@ class CMakeBuild(build_ext):
         self.distribution.bin_dir = extension_path.parent.absolute()
 
 
-class CustomTest(test):
-    def run_tests(self):
-        runner = py_runner.PyPRT_TestRunner(verbosity=3)
-        result = runner.run(py_runner.testSuite())
-
-
 
 setup(
     name='PyPRT',
@@ -140,8 +128,7 @@ setup(
         'build_ext' : CMakeBuild,
         'install_data' : InstallCMakeLibsData,
         'install_lib' : InstallCMakeLibs,
-        'install_scripts' : InstallCMakeScripts,
-        'test' : CustomTest},
+        'install_scripts' : InstallCMakeScripts},
     zip_safe=False,
     python_requires='>=3.6',
 )
