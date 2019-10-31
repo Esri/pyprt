@@ -9,16 +9,17 @@ from distutils.command.install_data import install_data
 from setuptools import setup, Extension, find_packages, Distribution
 from setuptools.command.build_ext import build_ext
 from setuptools.command.install_lib import install_lib
-from setuptools.command.install_scripts import install_scripts
 from setuptools.command.test import test
 import pathlib
 import shutil
+import builtins
 
+builtins.__PYPRT_SETUP__ = True
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
         Extension.__init__(self, name, sources=[])
-        self.sourcedir = os.path.join(os.path.abspath(sourcedir), 'src', 'pyprt')
+        self.sourcedir = os.path.join(os.path.abspath(sourcedir), 'src')
 
 
 class InstallCMakeLibsData(install_data):
@@ -36,7 +37,7 @@ class InstallCMakeLibs(install_lib):
         os.makedirs(build_bin_dir, exist_ok=True)
         os.makedirs(build_lib_dir, exist_ok=True)
 
-        install_dir = os.path.join(os.getcwd(), 'install')
+        install_dir = os.path.join(os.getcwd(), 'install', 'pyprt')
         bin_dir = os.path.join(install_dir, 'bin')
         lib_dir = os.path.join(install_dir, 'lib')
 
@@ -61,18 +62,6 @@ class InstallCMakeLibs(install_lib):
         self.distribution.run_command("install_data")
         super().run()
 
-
-class InstallCMakeScripts(install_scripts):
-    def run(self):
-        self.announce("Moving scripts files", level=3)
-        self.skip_build = True
-        scripts_dir = os.path.join(os.getcwd(), 'install', 'scripts')
-        os.makedirs(scripts_dir, exist_ok=True)
-
-        for script in self.distribution.scripts:
-            shutil.copyfile(os.path.join(os.getcwd(), os.path.dirname(script), os.path.basename(script)), os.path.join(scripts_dir, os.path.basename(script)))
-
-        super().run()
 
 
 class CMakeBuild(build_ext):
@@ -107,28 +96,27 @@ class CMakeBuild(build_ext):
         self.spawn(["cmake", "--build", self.build_temp, "--target", "INSTALL",
                     "--config", "RelWithDebInfo"])
 
-        self.distribution.bin_dir = extension_path.parent.absolute()
+        self.distribution.bin_dir = os.path.join(extension_path.parent.absolute(), "pyprt")
 
 
 
 setup(
     name='PyPRT',
-    version='0.1.41',
+    version='0.1.42',
     author='Camille Lechot',
     author_email='clechot@esri.com',
     description='Python bindings for CityEngine Procedural Runtime',
-    long_description='',
+    long_description='The goal of this project is to enable the execution of CityEngine rules within Python world. ',
     url='https://devtopia.esri.com/cami9495/py4prt',
-    packages=find_packages('src'),
-    package_dir={'':'src'},
-    scripts=['scripts/utility.py'],
+    platforms = ["Windows", "Linux"],
+    packages=find_packages('PyPRT'),
+    package_dir={'':'PyPRT'},
     include_package_data = True,
     ext_modules=[CMakeExtension('pyprt')],
     cmdclass={
         'build_ext' : CMakeBuild,
         'install_data' : InstallCMakeLibsData,
-        'install_lib' : InstallCMakeLibs,
-        'install_scripts' : InstallCMakeScripts},
+        'install_lib' : InstallCMakeLibs},
     zip_safe=False,
     python_requires='>=3.6',
 )

@@ -1,2 +1,2 @@
-recursive-include install/bin *
-recursive-include install/lib *
+recursive-include install/pyprt/bin *
+recursive-include install/pyprt/lib *
