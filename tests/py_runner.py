@@ -7,7 +7,7 @@ import multiGeneration_test
 import otherExporter_test
 import pyGeometry_test
 
-SDK_PATH = os.path.join(os.getcwd(), "install", "bin")
+SDK_PATH = os.path.join(os.getcwd(), "install", "pyprt", "bin")
 sys.path.append(SDK_PATH)
 
 import pyprt

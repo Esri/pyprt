@@ -3,7 +3,7 @@ import os
 import sys
 
 CS_FOLDER = os.getcwd()
-SDK_PATH = os.path.join(CS_FOLDER, "install", "bin")
+SDK_PATH = os.path.join(CS_FOLDER, "install", "pyprt", "bin")
 sys.path.append(SDK_PATH)
 
 import pyprt

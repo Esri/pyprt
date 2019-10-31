@@ -2,7 +2,7 @@ import unittest
 import os
 import sys
 
-SDK_PATH = os.path.join(os.getcwd(), "install", "bin")
+SDK_PATH = os.path.join(os.getcwd(), "install", "pyprt", "bin")
 sys.path.append(SDK_PATH)
 
 import pyprt

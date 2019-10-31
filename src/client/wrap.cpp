@@ -313,7 +313,7 @@ namespace {
             }
             else {
 
-                const pcu::Path output_path = executablePath.getParent().getParent() / "output";
+                const pcu::Path output_path = executablePath.getParent().getParent().getParent() / "output";
                 if (!output_path.exists()) {
                     std::filesystem::create_directory(output_path.toStdPath());
                     LOG_INF << "new output directory created at " << output_path << std::endl;
