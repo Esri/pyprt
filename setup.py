@@ -54,7 +54,7 @@ class CMakeBuild(build_ext):
     def build_cmake(self, extension: Extension):
         self.announce("Configuring CMake project", level=3)
 
-        cmake_install_prefix = os.path.join(self.build_lib, 'pyprt')
+        cmake_install_prefix = os.path.join(self.build_lib, 'PyPRT', 'pyprt')
 
         cmake_configure_command = [
             cmake_executable,
@@ -91,8 +91,7 @@ setup(
     long_description='The goal of this project is to enable the execution of CityEngine rules within Python world. ',
     url='https://devtopia.esri.com/cami9495/py4prt',
     platforms=["Windows", "Linux"],
-    packages=find_packages('PyPRT'),
-    package_dir={'': 'PyPRT'},
+    packages=find_packages(exclude=["tests"]),
     include_package_data=True,
     ext_modules=[CMakeExtension('pyprt')],
     cmdclass={

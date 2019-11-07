@@ -1,8 +1,7 @@
 import sys, os
 
-import pyprt
-from pyprt import PYPRT_SDK_PATH
-import utility
+from PyPRT import pyprt, utility
+from PyPRT.pyprt import PYPRT_SDK_PATH
 import numpy as np
 
 
