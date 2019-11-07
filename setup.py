@@ -87,7 +87,7 @@ setup(
     version='0.1.42',
     author='Camille Lechot',
     author_email='clechot@esri.com',
-    description='Python bindings for CityEngine Procedural Runtime',
+    description='Python bindings for the "Procedural Runtime SDK" (PRT) of "ArcGIS CityEngine" by Esri.',
     long_description='The goal of this project is to enable the execution of CityEngine rules within Python world. ',
     url='https://devtopia.esri.com/cami9495/py4prt',
     platforms=["Windows", "Linux"],
