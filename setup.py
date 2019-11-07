@@ -16,6 +16,7 @@ import builtins
 
 builtins.__PYPRT_SETUP__ = True
 
+
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
         Extension.__init__(self, name, sources=[])
@@ -63,7 +64,6 @@ class InstallCMakeLibs(install_lib):
         super().run()
 
 
-
 class CMakeBuild(build_ext):
     def run(self):
         try:
@@ -79,7 +79,7 @@ class CMakeBuild(build_ext):
     def build_cmake(self, extension: Extension):
         self.announce("Preparing the build environment", level=3)
 
-        build_dir = os.path.join(pathlib.Path(self.build_temp),'..','..')
+        build_dir = os.path.join(pathlib.Path(self.build_temp), '..', '..')
         extension_path = pathlib.Path(self.get_ext_fullpath(extension.name))
 
         os.makedirs(pathlib.Path(self.build_temp), exist_ok=True)
@@ -92,9 +92,7 @@ class CMakeBuild(build_ext):
                     '-DCMAKE_BUILD_TYPE="RelWithDebInfo"'])
 
         self.announce("Building binaries", level=3)
-
-        self.spawn(["cmake", "--build", self.build_temp, "--target", "INSTALL",
-                    "--config", "RelWithDebInfo"])
+        self.spawn(["cmake", "--build", self.build_temp, "--target", "INSTALL", "--config", "RelWithDebInfo"])
 
         self.distribution.bin_dir = os.path.join(extension_path.parent.absolute(), "pyprt")
 
@@ -108,15 +106,15 @@ setup(
     description='Python bindings for CityEngine Procedural Runtime',
     long_description='The goal of this project is to enable the execution of CityEngine rules within Python world. ',
     url='https://devtopia.esri.com/cami9495/py4prt',
-    platforms = ["Windows", "Linux"],
+    platforms=["Windows", "Linux"],
     packages=find_packages('PyPRT'),
-    package_dir={'':'PyPRT'},
-    include_package_data = True,
+    package_dir={'': 'PyPRT'},
+    include_package_data=True,
     ext_modules=[CMakeExtension('pyprt')],
     cmdclass={
-        'build_ext' : CMakeBuild,
-        'install_data' : InstallCMakeLibsData,
-        'install_lib' : InstallCMakeLibs},
+        'build_ext': CMakeBuild,
+        'install_data': InstallCMakeLibsData,
+        'install_lib': InstallCMakeLibs},
     zip_safe=False,
     python_requires='>=3.6',
 )
