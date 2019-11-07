@@ -1,4 +1,4 @@
-import os
+import sys
 
 try:
     __PYPRT_SETUP__
