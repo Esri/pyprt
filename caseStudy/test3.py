@@ -1,7 +1,6 @@
 import sys, os
 
 from PyPRT import pyprt, utility
-from PyPRT.pyprt import PYPRT_SDK_PATH
 import numpy as np
 
 
@@ -9,13 +8,13 @@ VAL = pyprt.print_val(407)
 print("\nTest Function: it should print 407.")
 print(VAL)
 
-CS_FOLDER = os.getcwd()
+CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
 def asset_datafile(filename):
-    return os.path.join(CS_FOLDER, "data", filename)
+    return os.path.join(os.path.dirname(CS_FOLDER), "data", filename)
 
 print("\nInitializing PRT.")
-pyprt.initialize_prt(PYPRT_SDK_PATH)
+pyprt.initialize_prt()
 
 if not pyprt.is_prt_initialized():
     raise Exception("PRT is not initialized")
