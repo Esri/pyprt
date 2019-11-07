@@ -123,42 +123,6 @@ const uint32_t faceCounts[]    = { 4 };
 const size_t   faceCountsCount = 1;
 }
 
-/**
- * poor man's filesystem abstraction
- */
-
-class Path {
-public:
-	Path() = default;
-	Path(const std::string& p);
-	Path(const Path&) = default;
-	virtual ~Path() = default;
-
-	Path operator/(const std::string& e) const;
-	std::string generic_string() const;
-	std::wstring generic_wstring() const;
-	std::string native_string() const;
-	std::wstring native_wstring() const;
-	Path getParent() const;
-	URI getFileURI() const;
-	bool exists() const;
-
-	// transition to C++17 and std::filesystem
-	std::filesystem::path toStdPath() const { return std::filesystem::path(mPath); }
-private:
-	std::string mPath;
-};
-
-inline std::ostream& operator<<(std::ostream& out, const Path& p) {
-	out << p.generic_string();
-	return out;
-}
-
-inline std::wostream& operator<<(std::wostream& out, const Path& p) {
-	out << p.generic_wstring();
-	return out;
-}
-
-Path getExecutablePath();
+std::filesystem::path getModuleDirectory();
 
 } // namespace pcu

@@ -22,15 +22,17 @@
 #include "prt/StringUtils.h"
 
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include <fstream>
 #include <functional>
 #include <algorithm>
-#include <cstdlib>
 #include <iostream>
-#include <sys/types.h>
-#include <sys/stat.h>
+
+#ifdef _WIN32
+#	include <Windows.h>
+#else
+#	include <dlfcn.h>
+#endif
 
 
 namespace {
@@ -57,44 +59,6 @@ void tokenize(const std::basic_string<C>& str, std::vector<std::basic_string<C>>
 namespace py = pybind11;
 
 namespace pcu {
-
-#if defined(_WIN32)
-#	include <Windows.h>
-#elif defined(__APPLE__)
-#	include <mach-o/dyld.h>
-#elif defined(__linux__)
-#	include <sys/types.h>
-#	include <unistd.h>
-#endif
-
-pcu::Path getExecutablePath() {
-#if defined(_WIN32)
-    HMODULE hModule = GetModuleHandle(nullptr);
-    if (hModule != NULL) {
-    	char path[MAX_PATH];
-    	const auto pathSize = GetModuleFileName(hModule, path, sizeof(path));
-        return (pathSize > 0) ? pcu::Path(std::string(path, path+pathSize)) : pcu::Path();
-    }
-    else
-        return {};
-#elif defined(__APPLE__)
-    char path[1024];
-    uint32_t size = sizeof(path);
-	if (_NSGetExecutablePath(path, &size) == 0)
-    	return (size > 0) ? pcu::Path(std::string(path, path+size)) : pcu::Path();
-	else
-    	return {};
-#elif defined(__linux__)
-	const std::string proc = "/proc/" + std::to_string(getpid()) + "/exe";
-	char path[1024];
-	const size_t len = sizeof(path);
-	const ssize_t bytes = readlink(proc.c_str(), path, len);
-	return (bytes > 0) ? pcu::Path(std::string(path, path+bytes)) : pcu::Path();
-#else
-#	error unsupported build platform
-#endif
-}
-
 
 /**
  * Helper function to convert a Python dictionary of "<key>:<value>" into a prt::AttributeMap
@@ -340,50 +304,41 @@ std::string makeGeneric(const std::string& s) {
     return t;
 }
 
-
-Path::Path(const std::string& p) : mPath(makeGeneric(p)) { }
-
-Path Path::operator/(const std::string& e) const {
-	return {mPath + '/' + makeGeneric(e)};
-}
-
-std::string Path::generic_string() const {
-	return mPath;
-}
-
-std::wstring Path::generic_wstring() const {
-	return pcu::toUTF16FromOSNarrow(mPath);
-}
-
-std::string Path::native_string() const {
-#if defined(_WIN32)
-	std::string native = mPath;
-	std::replace(native.begin(), native.end(), '/', '\\');
-	return native;
-#else
-	return mPath;
+std::filesystem::path getLibraryPath(const void* func) {
+	std::filesystem::path result;
+#ifdef _WIN32
+	HMODULE dllHandle = 0;
+	if(!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCSTR)func, &dllHandle)) {
+		DWORD c = GetLastError();
+		char msg[255];
+		FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM, 0, c, 0, msg, 255, 0);
+		throw std::runtime_error("error while trying to get current module handle': " + std::string(msg));
+	}
+	assert(sizeof(TCHAR) == 1);
+	const size_t PATHMAXSIZE = 4096;
+	TCHAR pathA[PATHMAXSIZE];
+	DWORD pathSize = GetModuleFileName(dllHandle, pathA, PATHMAXSIZE);
+	if(pathSize == 0 || pathSize == PATHMAXSIZE) {
+		DWORD c = GetLastError();
+		char msg[255];
+		FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM, 0, c, 0, msg, 255, 0);
+		throw std::runtime_error("error while trying to get current module path': " + std::string(msg));
+	}
+	result = pathA;
+#else /* macosx or linux */
+	Dl_info dl_info;
+	if(dladdr(func, &dl_info) == 0) {
+		char* error = dlerror();
+		throw std::runtime_error("error while trying to get current module path': " + std::string(error ? error : ""));
+	}
+	result = dl_info.dli_fname;
 #endif
+	return result;
 }
 
-std::wstring Path::native_wstring() const {
-	return pcu::toUTF16FromOSNarrow(native_string());
+std::filesystem::path getModuleDirectory() {
+	const auto p = getLibraryPath(reinterpret_cast<const void*>(getLibraryPath));
+	return p.parent_path();
 }
-
-Path Path::getParent() const {
-	const auto p = mPath.find_last_of('/');
-	if (p != std::string::npos)
-		return {mPath.substr(0, p)};
-	return {};
-}
-
-URI Path::getFileURI() const {
-	return pcu::toFileURI(mPath);
-}
-
-bool Path::exists() const {
-    struct stat info;
-    return (stat(native_string().c_str(), &info) == 0);
-}
-
 
 } // namespace pcu

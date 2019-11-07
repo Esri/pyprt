@@ -49,8 +49,6 @@
 
 namespace py = pybind11;
 
-extern pcu::Path executablePath;
-
 
 // cstr must have space for cstrSize characters
 // cstr will be null-terminated and the actually needed size is placed in cstrSize
@@ -120,17 +118,15 @@ private:
   * Helper struct to manage PRT lifetime (e.g. the prt::init() call)
   */
 struct PRTContext {
-	PRTContext(prt::LogLevel minimalLogLevel, std::string const & sdkPath) {
-		executablePath = sdkPath.empty() ? pcu::getExecutablePath() : sdkPath;
-		const pcu::Path installPath = executablePath.getParent();
-
+	PRTContext(prt::LogLevel minimalLogLevel) {
 		prt::addLogHandler(&mLogHandler);
 
 		// setup paths for plugins, assume standard SDK layout as per README.md
-		const pcu::Path extPath = installPath / "lib";
+		const std::filesystem::path moduleRoot = pcu::getModuleDirectory().parent_path();
+		const auto prtExtensionPath = moduleRoot / "lib";
 
 		// initialize PRT with the path to its extension libraries, the default log level
-		const std::wstring wExtPath = extPath.native_wstring();
+		const std::wstring wExtPath = prtExtensionPath.wstring();
 		const std::array<const wchar_t*, 1> extPaths = { wExtPath.c_str() };
 		mPRTHandle.reset(prt::init(extPaths.data(), extPaths.size(), minimalLogLevel));
 	}
