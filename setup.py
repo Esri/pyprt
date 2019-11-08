@@ -10,8 +10,54 @@ import builtins
 
 builtins.__PYPRT_SETUP__ = True
 
-cmake_executable = 'cmake'
-cmake_build_type = 'RelWithDebInfo'
+
+class CMakeConfig:
+    def __init__(self):
+        self.cmake_build_type = 'RelWithDebInfo'
+        self.cmake_executable = self.detect_cmake()
+        self.make_executable, self.cmake_generator = self.detect_make()
+
+    def detect_cmake(self):
+        cmake_home = os.getenv('CMAKE313_HOME', '')
+        cmake_candidates = [
+            os.path.join(cmake_home, 'cmake'),  # 1. try env var (typically for CI)
+            'cmake'                             # 2. try PATH (typically for devs)
+        ]
+        return self.try_alternatives('cmake', cmake_candidates)
+
+    def detect_make(self):
+        make_home = os.getenv('NINJA_HOME', '')
+        cmake_generator = 'Ninja'
+        make_candidates = [
+            os.path.join(make_home, 'ninja'),  # 1. try env var (CI)
+            'ninja',                           # 2. try PATH (devs)
+            'ninja-build',                     # 3. try alternative name (e.g. used in CentOS)
+            'make'                             # 4. try falling back to make if ninja is not installed
+        ]
+        make_executable = self.try_alternatives('ninja or make', make_candidates)
+        if make_executable == 'make':
+            cmake_generator = 'Unix Makefiles'
+        return make_executable, cmake_generator
+
+    def try_alternatives(self, name, candidates):
+        for c in candidates:
+            if self.try_run([c, '--version']):
+                return c
+        raise RuntimeError('Cannot find executable for {}!'.format(name))
+
+    @staticmethod
+    def try_run(cmd):
+        try:
+            subprocess.check_output(cmd)
+        except OSError:
+            return False
+        return True
+
+    def __str__(self):
+        return """CMake Configuration:
+    cmake           : {}
+    cmake generator : {}
+    make            : {}""".format(self.cmake_executable, self.cmake_generator, self.make_executable)
 
 
 class CMakeExtension(Extension):
@@ -29,9 +75,9 @@ class InstallCMakeLibs(install_lib):
     def run(self):
         self.announce('Installing native extension', level=3)
 
-        cmake_install_command = [cmake_executable, '--build', self.distribution.cmake_build_dir, '--target', 'install']
+        cmake_install_command = [cmake.cmake_executable, '--build', self.distribution.cmake_build_dir, '--target', 'install']
         if sys.platform.startswith('win32'):
-            cmake_install_command.extend(['--config', cmake_build_type])
+            cmake_install_command.extend(['--config', cmake.cmake_build_type])
         self.spawn(cmake_install_command)
 
         self.announce('Installing python modules', level=3)
@@ -41,13 +87,6 @@ class InstallCMakeLibs(install_lib):
 
 class CMakeBuild(build_ext):
     def run(self):
-        try:
-            out = subprocess.check_output(['cmake', '--version'])
-        except OSError:
-            raise RuntimeError(
-                'CMake must be installed to build the following extensions: ' +
-                ', '.join(e.name for e in self.extensions))
-
         for ext in self.extensions:
             self.build_cmake(ext)
 
@@ -57,8 +96,8 @@ class CMakeBuild(build_ext):
         cmake_install_prefix = os.path.join(self.build_lib, 'PyPRT', 'pyprt')
 
         cmake_configure_command = [
-            cmake_executable,
-            '-DCMAKE_BUILD_TYPE={}'.format(cmake_build_type),
+            cmake.cmake_executable,
+            '-DCMAKE_BUILD_TYPE={}'.format(cmake.cmake_build_type),
             '-DCMAKE_INSTALL_PREFIX={}'.format(cmake_install_prefix),
             '-DPYTHON_EXECUTABLE={}'.format(sys.executable),
             '-H{}'.format(extension.sourcedir),
@@ -69,18 +108,22 @@ class CMakeBuild(build_ext):
             cmake_configure_command.append('-Ax64')
         elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
             cmake_configure_command.append('-GNinja')
+            cmake_configure_command.append('-DCMAKE_MAKE_PROGRAM={}'.format(cmake.make_executable))
 
         self.spawn(cmake_configure_command)
 
         self.announce('Building binaries', level=3)
-        cmake_build_command = [cmake_executable, '--build', self.build_temp]
+        cmake_build_command = [cmake.cmake_executable, '--build', self.build_temp]
         if sys.platform.startswith('win32'):
-            cmake_build_command.extend(['--config', cmake_build_type])
+            cmake_build_command.extend(['--config', cmake.cmake_build_type])
         self.spawn(cmake_build_command)
 
         # hack to transport cmake build dir from here to InstallCMakeLibs
         self.distribution.cmake_build_dir = self.build_temp
 
+
+cmake = CMakeConfig()
+print(cmake)
 
 setup(
     name='PyPRT',
