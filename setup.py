@@ -11,7 +11,7 @@ import builtins
 builtins.__PYPRT_SETUP__ = True
 
 cmake_executable = 'cmake'
-cmake_build_type = "RelWithDebInfo"
+cmake_build_type = 'RelWithDebInfo'
 
 
 class CMakeExtension(Extension):
@@ -27,15 +27,15 @@ class InstallCMakeLibsData(install_data):
 
 class InstallCMakeLibs(install_lib):
     def run(self):
-        self.announce("Installing native extension", level=3)
+        self.announce('Installing native extension', level=3)
 
-        cmake_install_command = [cmake_executable, "--build", self.distribution.cmake_build_dir, "--target", "install"]
+        cmake_install_command = [cmake_executable, '--build', self.distribution.cmake_build_dir, '--target', 'install']
         if sys.platform.startswith('win32'):
-            cmake_install_command.append(["--config", cmake_build_type])
+            cmake_install_command.extend(['--config', cmake_build_type])
         self.spawn(cmake_install_command)
 
         self.announce('Installing python modules', level=3)
-        self.distribution.run_command("install_data")
+        self.distribution.run_command('install_data')
         super().run()
 
 
@@ -45,14 +45,14 @@ class CMakeBuild(build_ext):
             out = subprocess.check_output(['cmake', '--version'])
         except OSError:
             raise RuntimeError(
-                "CMake must be installed to build the following extensions: " +
-                ", ".join(e.name for e in self.extensions))
+                'CMake must be installed to build the following extensions: ' +
+                ', '.join(e.name for e in self.extensions))
 
         for ext in self.extensions:
             self.build_cmake(ext)
 
     def build_cmake(self, extension: Extension):
-        self.announce("Configuring CMake project", level=3)
+        self.announce('Configuring CMake project', level=3)
 
         cmake_install_prefix = os.path.join(self.build_lib, 'PyPRT', 'pyprt')
 
@@ -72,10 +72,10 @@ class CMakeBuild(build_ext):
 
         self.spawn(cmake_configure_command)
 
-        self.announce("Building binaries", level=3)
-        cmake_build_command = [cmake_executable, "--build", self.build_temp]
+        self.announce('Building binaries', level=3)
+        cmake_build_command = [cmake_executable, '--build', self.build_temp]
         if sys.platform.startswith('win32'):
-            cmake_build_command.append(["--config", cmake_build_type])
+            cmake_build_command.extend(['--config', cmake_build_type])
         self.spawn(cmake_build_command)
 
         # hack to transport cmake build dir from here to InstallCMakeLibs
@@ -90,8 +90,8 @@ setup(
     description='Python bindings for the "Procedural Runtime SDK" (PRT) of "ArcGIS CityEngine" by Esri.',
     long_description='The goal of this project is to enable the execution of CityEngine rules within Python world. ',
     url='https://devtopia.esri.com/cami9495/py4prt',
-    platforms=["Windows", "Linux"],
-    packages=find_packages(exclude=["tests"]),
+    platforms=['Windows', 'Linux'],
+    packages=find_packages(exclude=['tests']),
     include_package_data=True,
     ext_modules=[CMakeExtension('pyprt')],
     cmdclass={

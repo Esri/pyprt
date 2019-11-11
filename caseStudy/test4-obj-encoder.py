@@ -33,11 +33,7 @@ shape_geometry_2 = pyprt.Geometry([0, 0, 0,  0, 0, -10,  -10, 0, -10,  -10, 0, 0
 ### PRT GENERATION
 m1 = pyprt.ModelGenerator([shape_geometry_2, shape_geometry_1])
 
-encoderOptions = {
-    'outputPath': '/tmp/pyprt_output',
-    'emitReports': False,
-    'emitGeometry': True
-}
+encoderOptions = {'outputPath': '/tmp/pyprt_output'}
 os.makedirs(encoderOptions['outputPath'], exist_ok=True)
 
 mo = m1.generate_model(attrs1, rpk1, "com.esri.prt.codecs.OBJEncoder", encoderOptions)
