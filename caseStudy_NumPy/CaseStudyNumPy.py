@@ -1,11 +1,6 @@
 import sys, os
-sys.path.append(os.path.join(os.getcwd(), "src"))
-from utility import visualize_PRT_results
 
-SDK_PATH = os.path.join(os.getcwd(), "install", "bin")
-sys.path.append(SDK_PATH)
-
-import pyprt
+from PyPRT import pyprt, utility
 
 import numpy as np
 import itertools
@@ -13,9 +8,10 @@ from vispy import app, scene, visuals
 from vispy.color import Color, Colormap
 from vispy.geometry.meshdata import MeshData
 
-CS_FOLDER = os.getcwd()
+CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
+
 def asset_file(filename):
-    return os.path.join(CS_FOLDER, "caseStudy_NumPy", filename)
+    return os.path.join(os.path.dirname(CS_FOLDER), "caseStudy_NumPy", filename)
 
 
 class Canvas(scene.SceneCanvas):
@@ -71,7 +67,7 @@ if __name__ == '__main__':
     print(VAL)
 
     print("\nInitializing PRT.")
-    pyprt.initialize_prt(SDK_PATH)
+    pyprt.initialize_prt()
 
     if not pyprt.is_prt_initialized():
         raise Exception("PRT is not initialized")
