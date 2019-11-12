@@ -89,7 +89,7 @@ setup(
     author_email='clechot@esri.com',
     description='Python bindings for the "Procedural Runtime SDK" (PRT) of "ArcGIS CityEngine" by Esri.',
     long_description='The goal of this project is to enable the execution of CityEngine rules within Python world. ',
-    url='https://devtopia.esri.com/cami9495/py4prt',
+    url='https://devtopia.esri.com/Zurich-R-D-Center/pyprt',
     platforms=['Windows', 'Linux'],
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
