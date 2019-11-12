@@ -110,6 +110,10 @@ class CMakeBuild(build_ext):
             cmake_configure_command.append('-GNinja')
             cmake_configure_command.append('-DCMAKE_MAKE_PROGRAM={}'.format(cmake.make_executable))
 
+        prt_dir = os.getenv('PRT_DIR', '')
+        if prt_dir != '':
+            cmake_configure_command.append('-Dprt_DIR={}'.format(prt_dir))
+
         self.spawn(cmake_configure_command)
 
         self.announce('Building binaries', level=3)
