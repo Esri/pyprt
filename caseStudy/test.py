@@ -99,18 +99,5 @@ print("SLPK file located in the output folder.")
 
 # utility.visualize_PRT_results(models_test7)
 
-def asset_file_data(filename):
-    return os.path.join(os.path.dirname(CS_FOLDER), "data", filename)
-
-rpk = asset_file_data("simple_rule0819.rpk")
-attrs = {'ruleFile' : "bin/simple_rule2019.cgb", 'startRule' : "Default$Footprint"}
-shape_geo = pyprt.Geometry([-10.0, 0.0, 5.0, -5.0, 0.0, 6.0, 20.0, 0.0, 5.0, 15.0, 0.0, 3.0])
-m = pyprt.ModelGenerator([shape_geo])
-model = m.generate_model(attrs, rpk, "com.esri.prt.examples.PyEncoder", {'emitReports' : True})
-print(model[0].get_float_report())
-print(model[0].get_string_report())
-print(model[0].get_bool_report())
-
-
 print("\nShutdown PRT.")
 pyprt.shutdown_prt()

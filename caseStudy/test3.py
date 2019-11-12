@@ -33,7 +33,7 @@ shape_geometry_2 = pyprt.Geometry([0, 0, 0,  0, 0, -10,  -10, 0, -10,  -10, 0, 0
 ### PRT GENERATION
 m1 = pyprt.ModelGenerator([shape_geometry_2, shape_geometry_1])
 
-mo = m1.generate_model(attrs1, rpk1, "com.esri.prt.examples.PyEncoder", {})#, {'emitReports' : False, 'emitGeometry' : False})
+mo = m1.generate_model(attrs1, rpk1, "com.esri.prt.examples.PyEncoder", {})#, {'emitReport' : False, 'emitGeometry' : False})
 utility.visualize_PRT_results(mo)
 
 
