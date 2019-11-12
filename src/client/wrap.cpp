@@ -62,16 +62,14 @@ const std::wstring ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder"
 const std::wstring ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
 const std::wstring ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
 
-pcu::Path executablePath;
 PYBIND11_MAKE_OPAQUE(std::vector<GeneratedGeometry>);
-
 
 namespace {
 
     std::unique_ptr<PRTContext> prtCtx;
 
-    void initializePRT(std::string const & prtPath) {
-	    if (!prtCtx) prtCtx.reset(new PRTContext(prt::LOG_DEBUG, prtPath));
+    void initializePRT() {
+	    if (!prtCtx) prtCtx.reset(new PRTContext(prt::LOG_DEBUG));
     }
 
     bool isPRTInitialized() {
@@ -316,15 +314,17 @@ namespace {
                 }
             }
             else {
+                const std::filesystem::path outputPath = geometryEncoderOptions["outputPath"].cast<std::string>();
+				LOG_DBG << "got outputPath = " << outputPath;
 
-                const pcu::Path output_path = executablePath.getParent().getParent() / "output";
-                if (!output_path.exists()) {
-                    std::filesystem::create_directory(output_path.toStdPath());
-                    LOG_INF << "new output directory created at " << output_path << std::endl;
+                pcu::FileOutputCallbacksPtr foc;
+                if (std::filesystem::is_directory(outputPath) && std::filesystem::exists(outputPath)) {
+                	foc.reset(prt::FileOutputCallbacks::create(outputPath.wstring().c_str()));
                 }
-
-                pcu::FileOutputCallbacksPtr foc{ prt::FileOutputCallbacks::create(output_path.native_wstring().c_str()) };
-
+                else {
+                    LOG_ERR << "The directory specified by 'outputPath' is not valid or does not exist: " << outputPath << std::endl;
+                    return {};
+                }
 
                 // Generate
                 const prt::Status genStat = prt::generate(
@@ -382,7 +382,7 @@ PYBIND11_MODULE(pyprt, m) {
         .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"), py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"))
         .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
 
-    m.def("initialize_prt", &initializePRT, "prt_path"_a = "");
+    m.def("initialize_prt", &initializePRT);
     m.def("is_prt_initialized", &isPRTInitialized);
     m.def("shutdown_prt", &shutdownPRT);
 

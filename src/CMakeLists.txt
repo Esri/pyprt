@@ -20,6 +20,6 @@ add_dependencies(${CLIENT_TARGET} ${CODEC_TARGET})
 ### setup default install location
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/../install" CACHE PATH "default install prefix" FORCE)
+	set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/../install/pyprt" CACHE PATH "default install prefix" FORCE)
 endif()
 message(STATUS "Installing into ${CMAKE_INSTALL_PREFIX}")

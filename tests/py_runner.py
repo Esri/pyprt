@@ -1,13 +1,13 @@
-import unittest
 import os
 import sys
+import unittest
 
 import general_test
 import multiGeneration_test
 import otherExporter_test
 import pyGeometry_test
 
-SDK_PATH = os.path.join(os.getcwd(), "install", "bin")
+SDK_PATH = os.path.join(os.getcwd(), "build", "lib.win-amd64-3.6", "PyPRT", "pyprt", "bin")
 sys.path.append(SDK_PATH)
 
 import pyprt
@@ -15,7 +15,7 @@ import pyprt
 
 class PyPRT_TestResult(unittest.TextTestResult):
     def startTestRun(self):
-        pyprt.initialize_prt(SDK_PATH)
+        pyprt.initialize_prt()
 
     def stopTestRun(self):
         pyprt.shutdown_prt()
@@ -27,7 +27,7 @@ class PyPRT_TestRunner(unittest.TextTestRunner):
         return PyPRT_TestResult(self.stream, self.descriptions, self.verbosity)
 
 
-def testSuite():
+def test_suite():
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
     suite.addTests(loader.loadTestsFromModule(general_test))
@@ -37,10 +37,10 @@ def testSuite():
     return suite
 
 
-def runTests():
+def run_tests():
     runner = PyPRT_TestRunner(verbosity=3)
-    runner.run(testSuite())
+    result = runner.run(test_suite())
 
 
 if __name__ == '__main__':
-    runTests()
+    run_tests()
