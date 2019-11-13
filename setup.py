@@ -94,11 +94,11 @@ class InstallCMakeLibs(install_lib):
 
 
 class CMakeBuild(build_ext):
-    def run(self):
-        for ext in self.extensions:
-            self.build_cmake(ext)
+    def build_extension(self, extension):
+        if not isinstance(extension, CMakeExtension):
+            super().build_extension(extension)
+            return
 
-    def build_cmake(self, extension: Extension):
         self.announce('Configuring CMake project', level=3)
 
         cmake_install_prefix = os.path.join(self.build_lib, 'PyPRT', 'pyprt')
