@@ -106,7 +106,7 @@ GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vect
 
 namespace {
 
-    void extractMainShapeAttributes(const py::dict& shapeAttr, std::wstring& ruleFile, std::wstring& startRule, pcu::AttributeMapPtr& convertShapeAttr) {
+    void extractMainShapeAttributes(const py::dict& shapeAttr, std::wstring& ruleFile, std::wstring& startRule, int32_t& seed, std::wstring& shapeName, pcu::AttributeMapPtr& convertShapeAttr) {
         convertShapeAttr = pcu::createAttributeMapFromPythonDict(shapeAttr, *(pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create())));
         if (convertShapeAttr) {
             if (convertShapeAttr->hasKey(L"ruleFile") &&
@@ -115,6 +115,12 @@ namespace {
             if (convertShapeAttr->hasKey(L"startRule") &&
                 convertShapeAttr->getType(L"startRule") == prt::AttributeMap::PT_STRING)
                 startRule = convertShapeAttr->getString(L"startRule");
+            if (convertShapeAttr->hasKey(L"seed") &&
+                convertShapeAttr->getType(L"seed") == prt::AttributeMap::PT_INT)
+                seed = convertShapeAttr->getInt(L"seed");
+            if (convertShapeAttr->hasKey(L"shapeName") &&
+                convertShapeAttr->getType(L"shapeName") == prt::AttributeMap::PT_STRING)
+                shapeName = convertShapeAttr->getString(L"shapeName");
         }
     }
 
@@ -170,7 +176,7 @@ namespace {
     void ModelGenerator::setAndCreateInitialShape(const pcu::AttributeMapPtr& shapeAttr, std::vector<const prt::InitialShape*>& initShapes, std::vector<pcu::InitialShapePtr>& initShapePtrs)
     {
         for (size_t ind = 0; ind < mInitialShapesBuilders.size(); ind++) {
-
+            
             mInitialShapesBuilders[ind]->setAttributes(
                 mRuleFile.c_str(),
                 mStartRule.c_str(),
@@ -272,7 +278,7 @@ namespace {
 
             // Initial shape attributes
             pcu::AttributeMapPtr convertedShapeAttr;
-            extractMainShapeAttributes(shapeAttributes, mRuleFile, mStartRule, convertedShapeAttr);
+            extractMainShapeAttributes(shapeAttributes, mRuleFile, mStartRule, mSeed, mShapeName, convertedShapeAttr);
 
             // Initial shapes
             std::vector<const prt::InitialShape*> initialShapes(mInitialShapesBuilders.size());
