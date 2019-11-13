@@ -135,7 +135,7 @@ print(cmake)
 
 setup(
     name='PyPRT',
-    version='0.2.0',
+    version='0.2.0',  # keep consistent with __version__ in PyPRT/__init__.py
     author='Camille Lechot',
     author_email='clechot@esri.com',
     description='Python bindings for the "Procedural Runtime SDK" (PRT) of "ArcGIS CityEngine" by Esri.',
