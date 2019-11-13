@@ -27,16 +27,24 @@ class CMakeConfig:
 
     def detect_make(self):
         make_home = os.getenv('NINJA_HOME', '')
-        cmake_generator = 'Ninja'
         make_candidates = [
-            os.path.join(make_home, 'ninja'),  # 1. try env var (CI)
-            'ninja',                           # 2. try PATH (devs)
-            'ninja-build',                     # 3. try alternative name (e.g. used in CentOS)
-            'make'                             # 4. try falling back to make if ninja is not installed
+            os.path.join(make_home, 'ninja'),  # 1. try env var
+            'ninja',                           # 2. try PATH with ninja
+            'ninja-build',                     # 3. try PATH with alternative name (e.g. used in CentOS)
+            'make',                            # 4. try PATH with make (macos, linux)
+            'nmake'                            # 5. try PATH with nmake (windows)
         ]
-        make_executable = self.try_alternatives('ninja or make', make_candidates)
-        if make_executable == 'make':
-            cmake_generator = 'Unix Makefiles'
+        make_executable = self.try_alternatives('ninja or (n)make', make_candidates)
+
+        # derive cmake generator from detected make tool
+        cmake_generator = None
+        if 'ninja' in make_executable:
+            cmake_generator = 'Ninja'
+        elif make_executable == 'make':
+            cmake_generator = '"Unix Makefiles"'
+        elif make_executable == 'nmake':
+            cmake_generator = '"NMake Makefiles"'
+
         return make_executable, cmake_generator
 
     def try_alternatives(self, name, candidates):
@@ -101,14 +109,10 @@ class CMakeBuild(build_ext):
             '-DCMAKE_INSTALL_PREFIX={}'.format(cmake_install_prefix),
             '-DPYTHON_EXECUTABLE={}'.format(sys.executable),
             '-H{}'.format(extension.sourcedir),
-            '-B{}'.format(self.build_temp)
+            '-B{}'.format(self.build_temp),
+            '-G{}'.format(cmake.cmake_generator),
+            '-DCMAKE_MAKE_PROGRAM={}'.format(cmake.make_executable)
         ]
-
-        if sys.platform.startswith('win32'):
-            cmake_configure_command.append('-Ax64')
-        elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
-            cmake_configure_command.append('-GNinja')
-            cmake_configure_command.append('-DCMAKE_MAKE_PROGRAM={}'.format(cmake.make_executable))
 
         prt_dir = os.getenv('PRT_DIR', '')
         if prt_dir != '':
