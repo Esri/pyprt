@@ -7,7 +7,7 @@ import multiGeneration_test
 import otherExporter_test
 import pyGeometry_test
 
-SDK_PATH = os.path.join(os.getcwd(), "build", "lib.win-amd64-3.6", "PyPRT", "pyprt", "bin")
+SDK_PATH = os.path.join(os.getcwd(), 'build', 'lib.win-amd64-3.6', 'PyPRT', 'pyprt', 'bin')
 sys.path.append(SDK_PATH)
 
 import pyprt
@@ -19,7 +19,7 @@ class PyPRT_TestResult(unittest.TextTestResult):
 
     def stopTestRun(self):
         pyprt.shutdown_prt()
-        print("PRT is shut down.")
+        print('PRT is shut down.')
 
 
 class PyPRT_TestRunner(unittest.TextTestRunner):

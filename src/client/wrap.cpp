@@ -60,7 +60,7 @@ const wchar_t* ENCODER_OPT_NAME         = L"name";
 
 const std::wstring ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
 const std::wstring ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
-const std::wstring ENCODER_ID_PYTHON = L"com.esri.prt.examples.PyEncoder";
+const std::wstring ENCODER_ID_PYTHON = L"com.esri.pyprt.PyEncoder";
 
 PYBIND11_MAKE_OPAQUE(std::vector<GeneratedGeometry>);
 

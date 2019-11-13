@@ -11,12 +11,12 @@ from vispy.geometry.meshdata import MeshData
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
 def asset_file(filename):
-    return os.path.join(os.path.dirname(CS_FOLDER), "caseStudy_NumPy", filename)
+    return os.path.join(os.path.dirname(CS_FOLDER), 'caseStudy_NumPy', filename)
 
 
 class Canvas(scene.SceneCanvas):
     def __init__(self, geometries_number, generated_data, generated_data_faces , window_range_xmin, window_range_xmax, window_range_ymin, window_range_ymax, window_range_zmin, window_range_zmax):
-        scene.SceneCanvas.__init__(self, keys='interactive', size=(800, 550), show=True, title="Visualization of the generated model(s)")
+        scene.SceneCanvas.__init__(self, keys='interactive', size=(800, 550), show=True, title='Visualization of the generated model(s)')
 
         self.unfreeze()
         self.view = self.central_widget.add_view()
@@ -63,22 +63,22 @@ class Canvas(scene.SceneCanvas):
 if __name__ == '__main__':
 
     VAL = pyprt.print_val(23)
-    print("\nTest Function: it should print 23.")
+    print('\nTest Function: it should print 23.')
     print(VAL)
 
-    print("\nInitializing PRT.")
+    print('\nInitializing PRT.')
     pyprt.initialize_prt()
 
     if not pyprt.is_prt_initialized():
-        raise Exception("PRT is not initialized")
+        raise Exception('PRT is not initialized')
 
     initialGeometry = pyprt.Geometry(np.array([0, 0, 0,  0, 0, 2,  1, 0, 1,  1, 0, 0],dtype='f'))
     initialGeometry2 = pyprt.Geometry(np.array([4, 0, 0,  4, 0, 2,  5, 0, 1,  5, 0, 0],dtype='f'))
-    rpk = asset_file("simple_rule2019.rpk")
-    attrs = {'ruleFile' : "bin/simple_rule2019.cgb", 'startRule' : "Default$Footprint"}
+    rpk = asset_file('simple_rule2019.rpk')
+    attrs = {'ruleFile' : 'bin/simple_rule2019.cgb', 'startRule' : 'Default$Footprint'}
 
     mod = pyprt.ModelGenerator([initialGeometry, initialGeometry2])
-    generated_mod = mod.generate_model(attrs, rpk, "com.esri.prt.examples.PyEncoder", {})
+    generated_mod = mod.generate_model(attrs, rpk, 'com.esri.pyprt.PyEncoder', {})
     all_vertices = []
     all_faces = []
 
@@ -88,15 +88,15 @@ if __name__ == '__main__':
             face_geo = model.get_faces()
 
             if len(geo) > 0:
-                print("Size of the matrix containing the model vertices: (" + str(len(geo)) + ", 3)")
+                print('Size of the matrix containing the model vertices: (' + str(len(geo)) + ', 3)')
                 all_vertices.append(geo)
             if len(face_geo) > 0:
-                print("Size of the matrix containing the model faces: " + str(len(face_geo)))
+                print('Size of the matrix containing the model faces: ' + str(len(face_geo)))
                 all_faces.append(face_geo)
         else:
-            print("\nError while instanciating the model generator.")
+            print('\nError while instanciating the model generator.')
 
-    print("\nShutdown PRT.")
+    print('\nShutdown PRT.')
     pyprt.shutdown_prt()
 
     # Data

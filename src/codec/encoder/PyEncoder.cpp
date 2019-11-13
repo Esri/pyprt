@@ -57,9 +57,9 @@ const prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS = prtx::EncodePrep
 } // namespace
 
 
-const std::wstring PyEncoder::ID          = L"com.esri.prt.examples.PyEncoder";
-const std::wstring PyEncoder::NAME        = L"Python Geometry Encoder";
-const std::wstring PyEncoder::DESCRIPTION = L"Encodes geometry for Python.";
+const std::wstring PyEncoder::ID          = L"com.esri.pyprt.PyEncoder";
+const std::wstring PyEncoder::NAME        = L"Python Geometry and Report Encoder";
+const std::wstring PyEncoder::DESCRIPTION = L"Encodes geometry and CGA report for Python.";
 
 
 /**

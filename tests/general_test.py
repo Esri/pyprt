@@ -2,7 +2,7 @@ import unittest
 import os
 import sys
 
-SDK_PATH = os.path.join(os.getcwd(), "build", "lib.win-amd64-3.6", "PyPRT", "pyprt", "bin")
+SDK_PATH = os.path.join(os.getcwd(), 'build', 'lib.win-amd64-3.6', 'PyPRT', 'pyprt', 'bin')
 sys.path.append(SDK_PATH)
 
 import pyprt
