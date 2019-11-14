@@ -175,19 +175,22 @@ namespace {
 
     void ModelGenerator::setAndCreateInitialShape(const std::vector<py::dict>& shapesAttr, std::vector<const prt::InitialShape*>& initShapes, std::vector<pcu::InitialShapePtr>& initShapePtrs, std::vector<pcu::AttributeMapPtr>& convertedShapeAttr)
     {
-        py::dict shapeAttr = shapesAttr[0];
-
         for (size_t ind = 0; ind < mInitialShapesBuilders.size(); ind++) {
+            py::dict shapeAttr = shapesAttr[0];
             if (shapesAttr.size() > ind)
                 shapeAttr = shapesAttr[ind];
 
-            extractMainShapeAttributes(shapeAttr, mRuleFile, mStartRule, mSeed, mShapeName, convertedShapeAttr[ind]);
+            std::wstring ruleF = mRuleFile;
+            std::wstring startR = mStartRule;
+            int32_t randomS = mSeed;
+            std::wstring shapeN = mShapeName;
+            extractMainShapeAttributes(shapeAttr, ruleF, startR, randomS, shapeN, convertedShapeAttr[ind]);
             
             mInitialShapesBuilders[ind]->setAttributes(
-                mRuleFile.c_str(),
-                mStartRule.c_str(),
-                mSeed,
-                mShapeName.c_str(),
+                ruleF.c_str(),
+                startR.c_str(),
+                randomS,
+                shapeN.c_str(),
                 convertedShapeAttr[ind].get(),
                 mResolveMap.get()
             );
