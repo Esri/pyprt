@@ -173,16 +173,18 @@ namespace {
         }
     }
 
-    void ModelGenerator::setAndCreateInitialShape(const pcu::AttributeMapPtr& shapeAttr, std::vector<const prt::InitialShape*>& initShapes, std::vector<pcu::InitialShapePtr>& initShapePtrs)
+    void ModelGenerator::setAndCreateInitialShape(const std::vector<py::dict>& shapesAttr, std::vector<const prt::InitialShape*>& initShapes, std::vector<pcu::InitialShapePtr>& initShapePtrs, std::vector<pcu::AttributeMapPtr>& convertedShapeAttr)
     {
+
         for (size_t ind = 0; ind < mInitialShapesBuilders.size(); ind++) {
+            extractMainShapeAttributes(shapesAttr[ind], mRuleFile, mStartRule, mSeed, mShapeName, convertedShapeAttr[ind]);
             
             mInitialShapesBuilders[ind]->setAttributes(
                 mRuleFile.c_str(),
                 mStartRule.c_str(),
                 mSeed,
                 mShapeName.c_str(),
-                shapeAttr.get(),
+                convertedShapeAttr[ind].get(),
                 mResolveMap.get()
             );
 
@@ -235,7 +237,7 @@ namespace {
         }
     }
 
-    std::vector<GeneratedGeometry> ModelGenerator::generateModel(const py::dict& shapeAttributes,
+    std::vector<GeneratedGeometry> ModelGenerator::generateModel(const std::vector<py::dict>& shapeAttributes,
             const std::string& rulePackagePath,
             const std::wstring& geometryEncoderName,
             const py::dict& geometryEncoderOptions)
@@ -276,14 +278,11 @@ namespace {
                 }
             }
 
-            // Initial shape attributes
-            pcu::AttributeMapPtr convertedShapeAttr;
-            extractMainShapeAttributes(shapeAttributes, mRuleFile, mStartRule, mSeed, mShapeName, convertedShapeAttr);
-
             // Initial shapes
             std::vector<const prt::InitialShape*> initialShapes(mInitialShapesBuilders.size());
             std::vector<pcu::InitialShapePtr> initialShapePtrs(mInitialShapesBuilders.size());
-            setAndCreateInitialShape(convertedShapeAttr, initialShapes, initialShapePtrs);
+            std::vector<pcu::AttributeMapPtr> convertedShapeAttrVec(mInitialShapesBuilders.size());
+            setAndCreateInitialShape(shapeAttributes, initialShapes, initialShapePtrs, convertedShapeAttrVec);
 
             // Encoder info, encoder options
             if (!mEncoderBuilder)
@@ -360,7 +359,7 @@ namespace {
     }
 
     
-    std::vector<GeneratedGeometry> ModelGenerator::generateAnotherModel(const py::dict& shapeAttributes)
+    std::vector<GeneratedGeometry> ModelGenerator::generateAnotherModel(const std::vector<py::dict>& shapeAttributes)
     {
         if (!mResolveMap) {
             LOG_ERR << "generate model with all required parameters";
