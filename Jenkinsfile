@@ -80,12 +80,13 @@ def taskBuildPyPRT(cfg) {
 		}
 	}
 
-	final String pkgInfo = readFile(file: "${SOURCE}/PyPRT.egg-info/PKG-INFO")
-	def versionMatcher = (pkgInfo =~ /(?m)^Version: (.*)$/)
-	final String pkgVersion = "${versionMatcher[0][1]}-${env.BUILD_NUMBER}"
-	final String classifier = "py${cfg.python}-${cepl.getArchiveClassifier(cfg)}"
-
-	def versionExtractor = { return pkgVersion }
-	def classifierExtractor = { return classifier }
+	def versionExtractor = { p ->
+		def vers = (p =~ /.*PyPRT-([0-9]+\.[0-9]+\.[0-9]+-[0-9]+)-cp.*/)
+		return vers[0][1]
+	}
+	def classifierExtractor = { p ->
+		def cls = (p =~ /.*PyPRT-[0-9]+\.[0-9]+\.[0-9]+-[0-9]+-(.*)\.whl/)
+		return cls[0][1]
+	}
 	papl.publish('pyprt', env.BRANCH_NAME, "PyPRT-*.whl", versionExtractor, cfg, classifierExtractor)
 }
