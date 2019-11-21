@@ -6,9 +6,6 @@ from distutils.command.install_data import install_data
 from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 from setuptools.command.install_lib import install_lib
-import builtins
-
-builtins.__PYPRT_SETUP__ = True
 
 cmake_executable = 'cmake'
 cmake_build_type = 'RelWithDebInfo'
