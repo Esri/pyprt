@@ -50,13 +50,12 @@
 #	include <direct.h>
 #endif
 
-#include <ctime>
 
 /**
   * commonly used constants
   */
-const wchar_t* FILE_CGA_REPORT          = L"CGAReport.txt";
-const wchar_t* ENCODER_OPT_NAME         = L"name";
+const wchar_t* FILE_CGA_REPORT = L"CGAReport.txt";
+const wchar_t* ENCODER_OPT_NAME = L"name";
 
 const std::wstring ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
 const std::wstring ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
