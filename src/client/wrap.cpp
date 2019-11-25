@@ -249,8 +249,16 @@ namespace {
             const py::dict& geometryEncoderOptions)
     {
         if (!mValid) {
-            LOG_ERR << "invalid ModelGenerator instance";
+            LOG_ERR << "invalid ModelGenerator instance.";
             return {};
+        }
+
+        if (shapeAttributes.size() < mInitialShapesBuilders.size()) {
+            LOG_ERR << "not enough shape attributes dictionaries defined.";
+            return {};
+        }
+        else if(shapeAttributes.size() > mInitialShapesBuilders.size()) {
+            LOG_WRN << "number of shape attributes dictionaries defined greater than number of initial shapes given." << std::endl;
         }
 
         std::vector<GeneratedGeometry> newGeneratedGeo;
