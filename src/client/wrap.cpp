@@ -253,7 +253,7 @@ namespace {
             return {};
         }
 
-        if (shapeAttributes.size() < mInitialShapesBuilders.size()) {
+        if ((shapeAttributes.size() != 1) && (shapeAttributes.size() < mInitialShapesBuilders.size())) { //if one shape attribute dictionary, same apply to all initial shapes.
             LOG_ERR << "not enough shape attributes dictionaries defined.";
             return {};
         }
