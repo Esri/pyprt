@@ -6,6 +6,7 @@ import general_test
 import multiGeneration_test
 import otherExporter_test
 import pyGeometry_test
+import shapeAttributesDict_test
 
 SDK_PATH = os.path.join(os.getcwd(), 'build', 'lib.win-amd64-3.6', 'PyPRT', 'pyprt', 'bin')
 sys.path.append(SDK_PATH)
@@ -34,6 +35,7 @@ def test_suite():
     suite.addTests(loader.loadTestsFromModule(multiGeneration_test))
     suite.addTests(loader.loadTestsFromModule(otherExporter_test))
     suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
+    suite.addTests(loader.loadTestsFromModule(shapeAttributesDict_test))
     return suite
 
 
