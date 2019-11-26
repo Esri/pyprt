@@ -1,12 +1,7 @@
-import sys, os
+import sys
+import os
 
 from PyPRT import pyprt, utility
-import numpy as np
-
-
-VAL = pyprt.print_val(407)
-print('\nTest Function: it should print 407.')
-print(VAL)
 
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
@@ -22,9 +17,9 @@ if not pyprt.is_prt_initialized():
 
 ### DATA
 rpk1 = asset_datafile('test_rule.rpk')
-attrs1 = {'ruleFile' : 'bin/test_rule.cgb', 'startRule' : 'Default$Footprint'}
-attrs2 = {'ruleFile' : 'bin/test_rule.cgb', 'startRule' : 'Default$Footprint', 'minBuildingHeight' : 30.0}
-attrs3 = {'ruleFile' : 'bin/test_rule.cgb', 'startRule' : 'Default$Footprint', 'text' : 'hello'}
+attrs1 = {'ruleFile': 'bin/test_rule.cgb', 'startRule': 'Default$Footprint'}
+attrs2 = {'ruleFile': 'bin/test_rule.cgb', 'startRule': 'Default$Footprint', 'minBuildingHeight': 30.0}
+attrs3 = {'ruleFile': 'bin/test_rule.cgb', 'startRule': 'Default$Footprint', 'text': 'hello'}
 
 ### INITIAL SHAPES
 shape_geometry_1 = pyprt.Geometry([0, 0, 0,  0, 0, 100,  100, 0, 100,  100, 0, 0])
@@ -34,7 +29,7 @@ shape_geometry_2 = pyprt.Geometry([0, 0, 0,  0, 0, -10,  -10, 0, -10,  -10, 0, 0
 ### PRT GENERATION
 m1 = pyprt.ModelGenerator([shape_geometry_2, shape_geometry_1])
 
-mo = m1.generate_model([attrs1, attrs2], rpk1, 'com.esri.pyprt.PyEncoder', {})#, {'emitReport' : False, 'emitGeometry' : False})
+mo = m1.generate_model([attrs1, attrs2], rpk1, 'com.esri.pyprt.PyEncoder', {})
 utility.visualize_PRT_results(mo)
 
 mo2 = m1.generate_model([attrs3])
