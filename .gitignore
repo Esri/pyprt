@@ -3,6 +3,7 @@
 /src/.vs
 /src/.idea
 /src/CMakeSettings.json
+/src/cmake-build*
 /.vs
 /prt
 /output
