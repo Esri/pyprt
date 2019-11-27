@@ -75,7 +75,7 @@ def taskBuildPyPRT(cfg) {
 	dir(path: SOURCE) {
 		withEnv(buildEnvs) {
 			String cmd = toolchain.getSetupCmd(this, cfg)
-			cmd += "\npipenv run python setup.py bdist_wheel --dist-dir=${env.WORKSPACE}/build --build-number=${env.BUILD_NUMBER}"
+			cmd += "\npipenv --bare run python setup.py bdist_wheel --dist-dir=${env.WORKSPACE}/build --build-number=${env.BUILD_NUMBER}"
 			psl.runCmd(cmd)
 		}
 	}
