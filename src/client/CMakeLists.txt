@@ -6,12 +6,16 @@ cmake_policy(SET CMP0015 NEW)
 
 message(STATUS "Python Module Suffix: " ${PYTHON_MODULE_EXTENSION})
 
+if(PYPRT_WINDOWS)
+	set(PYBIND11_CPP_STANDARD "-std:c++17")
+elseif(PYPRT_LINUX)
+	set(PYBIND11_CPP_STANDARD "-std=c++17")
+endif()
+
 pybind11_add_module(${CLIENT_TARGET} MODULE
 		utils.cpp
 		wrap.cpp
 		PyCallbacks.cpp)
-
-set_target_properties(${CLIENT_TARGET} PROPERTIES CXX_STANDARD 17)
 
 if(PYPRT_WINDOWS)
 	# TODO
