@@ -20,19 +20,19 @@ class CMakeConfig:
     def detect_cmake(self):
         cmake_home = os.getenv('CMAKE313_HOME', '')
         cmake_candidates = [
-            os.path.join(cmake_home, 'cmake'),  # 1. try env var (typically for CI)
-            'cmake'                             # 2. try PATH (typically for devs)
+            [os.path.join(cmake_home, 'cmake'), "--version"],  # 1. try env var (typically for CI)
+            ['cmake', '--version']                             # 2. try PATH (typically for devs)
         ]
         return self.try_alternatives('cmake', cmake_candidates)
 
     def detect_make(self):
         make_home = os.getenv('NINJA_HOME', '')
         make_candidates = [
-            os.path.join(make_home, 'ninja'),  # 1. try env var
-            'ninja',                           # 2. try PATH with ninja
-            'ninja-build',                     # 3. try PATH with alternative name (e.g. used in CentOS)
-            'make',                            # 4. try PATH with make (macos, linux)
-            'nmake'                            # 5. try PATH with nmake (windows)
+            [os.path.join(make_home, 'ninja'), "--version"],  # 1. try env var
+            ['ninja', "--version"],                           # 2. try PATH with ninja
+            ['ninja-build', "--version"],                     # 3. try PATH with alternative name (e.g. used in CentOS)
+            ['make', "--version"],                            # 4. try PATH with make (macos, linux)
+            ['nmake', "/?"]                                   # 5. try PATH with nmake (windows)
         ]
         make_executable = self.try_alternatives('ninja or (n)make', make_candidates)
 
@@ -49,8 +49,8 @@ class CMakeConfig:
 
     def try_alternatives(self, name, candidates):
         for c in candidates:
-            if self.try_run([c, '--version']):
-                return c
+            if self.try_run(c):
+                return c[0]
         raise RuntimeError('Cannot find executable for {}!'.format(name))
 
     @staticmethod
