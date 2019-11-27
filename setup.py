@@ -41,9 +41,9 @@ class CMakeConfig:
         if 'ninja' in make_executable:
             cmake_generator = 'Ninja'
         elif make_executable == 'make':
-            cmake_generator = '"Unix Makefiles"'
+            cmake_generator = 'Unix Makefiles'
         elif make_executable == 'nmake':
-            cmake_generator = '"NMake Makefiles"'
+            cmake_generator = 'NMake Makefiles'
 
         return make_executable, cmake_generator
 
