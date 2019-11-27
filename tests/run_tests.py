@@ -17,7 +17,7 @@ import pyGeometry_test
 import shapeAttributesDict_test
 
 
-class PyPRT_TestResult(unittest.TextTestResult):
+class PyPRTTestResult(unittest.TextTestResult):
     def startTestRun(self):
         pyprt.initialize_prt()
 
@@ -26,9 +26,9 @@ class PyPRT_TestResult(unittest.TextTestResult):
         print('PRT is shut down.')
 
 
-class PyPRT_TestRunner(unittest.TextTestRunner):
+class PyPRTTestRunner(unittest.TextTestRunner):
     def _makeResult(self):
-        return PyPRT_TestResult(self.stream, self.descriptions, self.verbosity)
+        return PyPRTTestResult(self.stream, self.descriptions, self.verbosity)
 
 
 def test_suite():
@@ -43,8 +43,8 @@ def test_suite():
 
 
 def run_tests():
-    runner = PyPRT_TestRunner(verbosity=3)
-    result = runner.run(test_suite())
+    runner = PyPRTTestRunner(verbosity=3)
+    runner.run(test_suite())
 
 
 if __name__ == '__main__':
