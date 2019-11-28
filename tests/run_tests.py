@@ -2,18 +2,22 @@ import os
 import sys
 import unittest
 
-import general_test
-import multiGeneration_test
-import otherExporter_test
-import pyGeometry_test
-
-SDK_PATH = os.path.join(os.getcwd(), 'build', 'lib.win-amd64-3.6', 'PyPRT', 'pyprt', 'bin')
+# current test workflow expects the developer to run 'setup.py bdist' first,
+# so we append to the python module path
+pyprt_build_dir = 'lib.win-amd64-3.6' if sys.platform.startswith('win32') else 'lib.linux-x86_64-3.6'
+SDK_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'build', pyprt_build_dir, 'PyPRT', 'pyprt', 'bin')
 sys.path.append(SDK_PATH)
 
 import pyprt
 
+import general_test
+import multiGeneration_test
+import otherExporter_test
+import pyGeometry_test
+import shapeAttributesDict_test
 
-class PyPRT_TestResult(unittest.TextTestResult):
+
+class PyPRTTestResult(unittest.TextTestResult):
     def startTestRun(self):
         pyprt.initialize_prt()
 
@@ -22,9 +26,9 @@ class PyPRT_TestResult(unittest.TextTestResult):
         print('PRT is shut down.')
 
 
-class PyPRT_TestRunner(unittest.TextTestRunner):
+class PyPRTTestRunner(unittest.TextTestRunner):
     def _makeResult(self):
-        return PyPRT_TestResult(self.stream, self.descriptions, self.verbosity)
+        return PyPRTTestResult(self.stream, self.descriptions, self.verbosity)
 
 
 def test_suite():
@@ -34,12 +38,13 @@ def test_suite():
     suite.addTests(loader.loadTestsFromModule(multiGeneration_test))
     suite.addTests(loader.loadTestsFromModule(otherExporter_test))
     suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
+    suite.addTests(loader.loadTestsFromModule(shapeAttributesDict_test))
     return suite
 
 
 def run_tests():
-    runner = PyPRT_TestRunner(verbosity=3)
-    result = runner.run(test_suite())
+    runner = PyPRTTestRunner(verbosity=3)
+    runner.run(test_suite())
 
 
 if __name__ == '__main__':

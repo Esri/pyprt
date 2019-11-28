@@ -1,12 +1,7 @@
-import sys, os
+import sys
+import os
 
 from PyPRT import pyprt, utility
-import numpy as np
-
-
-VAL = pyprt.print_val(407)
-print('\nTest Function: it should print 407.')
-print(VAL)
 
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
@@ -36,7 +31,7 @@ m1 = pyprt.ModelGenerator([shape_geometry_2, shape_geometry_1])
 encoderOptions = {'outputPath': '/tmp/pyprt_output'}
 os.makedirs(encoderOptions['outputPath'], exist_ok=True)
 
-mo = m1.generate_model(attrs1, rpk1, 'com.esri.prt.codecs.OBJEncoder', encoderOptions)
+mo = m1.generate_model([attrs1], rpk1, 'com.esri.prt.codecs.OBJEncoder', encoderOptions)
 utility.visualize_PRT_results(mo)
 
 

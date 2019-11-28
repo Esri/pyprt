@@ -1,11 +1,12 @@
-import sys, os
+import sys
+import os
 
 from PyPRT import pyprt, utility
 
 import numpy as np
 import itertools
 from vispy import app, scene, visuals
-from vispy.color import Color, Colormap
+from vispy.color import Color
 from vispy.geometry.meshdata import MeshData
 
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
@@ -40,7 +41,6 @@ class Canvas(scene.SceneCanvas):
                         k_ind -= len(someColors)
                     fcolor[l] = someColors[k_ind]
 
-                #fcolor[0] = Color('blue').RGBA
                 mdata.set_face_colors(fcolor)
                 edge_v_index = mdata.get_edges()
 
@@ -61,11 +61,6 @@ class Canvas(scene.SceneCanvas):
 
 
 if __name__ == '__main__':
-
-    VAL = pyprt.print_val(23)
-    print('\nTest Function: it should print 23.')
-    print(VAL)
-
     print('\nInitializing PRT.')
     pyprt.initialize_prt()
 
@@ -75,10 +70,10 @@ if __name__ == '__main__':
     initialGeometry = pyprt.Geometry(np.array([0, 0, 0,  0, 0, 2,  1, 0, 1,  1, 0, 0],dtype='f'))
     initialGeometry2 = pyprt.Geometry(np.array([4, 0, 0,  4, 0, 2,  5, 0, 1,  5, 0, 0],dtype='f'))
     rpk = asset_file('simple_rule2019.rpk')
-    attrs = {'ruleFile' : 'bin/simple_rule2019.cgb', 'startRule' : 'Default$Footprint'}
+    attrs = {'ruleFile': 'bin/simple_rule2019.cgb', 'startRule': 'Default$Footprint'}
 
     mod = pyprt.ModelGenerator([initialGeometry, initialGeometry2])
-    generated_mod = mod.generate_model(attrs, rpk, 'com.esri.pyprt.PyEncoder', {})
+    generated_mod = mod.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
     all_vertices = []
     all_faces = []
 
