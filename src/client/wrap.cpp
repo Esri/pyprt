@@ -408,11 +408,8 @@ PYBIND11_MODULE(pyprt, m) {
     py::class_<Geometry>(m, "Geometry")
         .def(py::init<const std::vector<double>&>())
         .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&>())
-        .def("get_vertices", &Geometry::getVertices)
         .def("get_vertex_count", &Geometry::getVertexCount)
-        .def("get_indices", &Geometry::getIndices)
         .def("get_index_count", &Geometry::getIndexCount)
-        .def("get_face_counts", &Geometry::getFaceCounts)
         .def("get_face_counts_count", &Geometry::getFaceCountsCount);
 
     py::class_<GeneratedGeometry>(m, "GeneratedGeometry")
