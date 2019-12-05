@@ -66,9 +66,9 @@ class CMakeConfig:
 
 
 class CMakeExtension(Extension):
-    def __init__(self, name, sourcedir=''):
+    def __init__(self, name, source_dir):
         super().__init__(name, sources=[])
-        self.sourcedir = os.path.join(os.path.abspath(sourcedir), 'src')
+        self.source_dir = source_dir
 
 
 class CMakeBuild(build_ext):
@@ -86,7 +86,7 @@ class CMakeBuild(build_ext):
             '-DCMAKE_BUILD_TYPE={}'.format(cmake.cmake_build_type),
             '-DCMAKE_INSTALL_PREFIX={}'.format(cmake_install_prefix),
             '-DPYTHON_EXECUTABLE={}'.format(sys.executable),
-            '-H{}'.format(extension.sourcedir),
+            '-H{}'.format(extension.source_dir),
             '-B{}'.format(self.build_temp),
             '-G{}'.format(cmake.cmake_generator),
             '-DCMAKE_MAKE_PROGRAM={}'.format(cmake.make_executable)
@@ -104,21 +104,11 @@ class CMakeBuild(build_ext):
             cmake_build_command.extend(['--config', cmake.cmake_build_type])
         self.spawn(cmake_build_command)
 
-        # hack to transport cmake build dir from here to InstallCMakeLibs
-        self.distribution.cmake_build_dir = self.build_temp
-
-
-class InstallCMakeLibs(install_lib):
-    def install(self):
-
-        # let setuptools install the python part of the package
-        super().install()
-
         # now let's do our cmake thing
         self.announce('Installing native extension', level=3)
         cmake_install_command = [
             cmake.cmake_executable,
-            '--build', self.distribution.cmake_build_dir,
+            '--build', self.build_temp,
             '--target', 'install'
         ]
         if sys.platform.startswith('win32'):
@@ -140,10 +130,8 @@ setup(
     platforms=['Windows', 'Linux'],
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
-    ext_modules=[CMakeExtension('pyprt')],
-    cmdclass={
-        'build_ext': CMakeBuild,
-        'install_lib': InstallCMakeLibs},
+    ext_modules=[CMakeExtension('PyPRT.pyprt', 'src')],
+    cmdclass={'build_ext': CMakeBuild},
     zip_safe=False,
     python_requires='>=3.6'
 )
