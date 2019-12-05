@@ -71,29 +71,6 @@ class CMakeExtension(Extension):
         self.sourcedir = os.path.join(os.path.abspath(sourcedir), 'src')
 
 
-class InstallCMakeLibsData(install_data):
-    def run(self):
-        self.outfiles = self.distribution.data_files
-
-
-class InstallCMakeLibs(install_lib):
-    def install(self):
-
-        # let setuptools install the python part of the package
-        super().install()
-
-        # now let's do our cmake thing
-        self.announce('Installing native extension', level=3)
-        cmake_install_command = [
-            cmake.cmake_executable,
-            '--build', self.distribution.cmake_build_dir,
-            '--target', 'install'
-        ]
-        if sys.platform.startswith('win32'):
-            cmake_install_command.extend(['--config', cmake.cmake_build_type])
-        self.spawn(cmake_install_command)
-
-
 class CMakeBuild(build_ext):
     def build_extension(self, extension):
         if not isinstance(extension, CMakeExtension):
@@ -131,6 +108,24 @@ class CMakeBuild(build_ext):
         self.distribution.cmake_build_dir = self.build_temp
 
 
+class InstallCMakeLibs(install_lib):
+    def install(self):
+
+        # let setuptools install the python part of the package
+        super().install()
+
+        # now let's do our cmake thing
+        self.announce('Installing native extension', level=3)
+        cmake_install_command = [
+            cmake.cmake_executable,
+            '--build', self.distribution.cmake_build_dir,
+            '--target', 'install'
+        ]
+        if sys.platform.startswith('win32'):
+            cmake_install_command.extend(['--config', cmake.cmake_build_type])
+        self.spawn(cmake_install_command)
+
+
 cmake = CMakeConfig()
 print(cmake)
 
@@ -148,7 +143,6 @@ setup(
     ext_modules=[CMakeExtension('pyprt')],
     cmdclass={
         'build_ext': CMakeBuild,
-        'install_data': InstallCMakeLibsData,
         'install_lib': InstallCMakeLibs},
     zip_safe=False,
     python_requires='>=3.6'
