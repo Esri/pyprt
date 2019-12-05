@@ -1,5 +1,5 @@
 import unittest
-import pyprt
+from PyPRT import pyprt
 
 
 class MainTest(unittest.TestCase):

@@ -2,13 +2,7 @@ import os
 import sys
 import unittest
 
-# current test workflow expects the developer to run 'setup.py bdist' first,
-# so we append to the python module path
-pyprt_build_dir = 'lib.win-amd64-3.6' if sys.platform.startswith('win32') else 'lib.linux-x86_64-3.6'
-SDK_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'build', pyprt_build_dir, 'PyPRT', 'pyprt', 'bin')
-sys.path.append(SDK_PATH)
-
-import pyprt
+from PyPRT import pyprt
 
 import general_test
 import multiGeneration_test
