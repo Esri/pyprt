@@ -77,17 +77,21 @@ class InstallCMakeLibsData(install_data):
 
 
 class InstallCMakeLibs(install_lib):
-    def run(self):
-        self.announce('Installing native extension', level=3)
+    def install(self):
 
-        cmake_install_command = [cmake.cmake_executable, '--build', self.distribution.cmake_build_dir, '--target', 'install']
+        # let setuptools install the python part of the package
+        super().install()
+
+        # now let's do our cmake thing
+        self.announce('Installing native extension', level=3)
+        cmake_install_command = [
+            cmake.cmake_executable,
+            '--build', self.distribution.cmake_build_dir,
+            '--target', 'install'
+        ]
         if sys.platform.startswith('win32'):
             cmake_install_command.extend(['--config', cmake.cmake_build_type])
         self.spawn(cmake_install_command)
-
-        self.announce('Installing python modules', level=3)
-        self.distribution.run_command('install_data')
-        super().run()
 
 
 class CMakeBuild(build_ext):
