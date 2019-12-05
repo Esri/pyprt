@@ -79,7 +79,7 @@ class CMakeBuild(build_ext):
 
         self.announce('Configuring CMake project', level=3)
 
-        cmake_install_prefix = os.path.join(self.build_lib, 'PyPRT', 'pyprt')
+        cmake_install_prefix = os.path.join(self.build_lib, 'PyPRT')
 
         cmake_configure_command = [
             cmake.cmake_executable,
