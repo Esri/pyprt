@@ -386,10 +386,6 @@ namespace {
 } // namespace
 
 
-int py_printVal(int val) {
-    return val;
-}
-
 using namespace pybind11::literals;
 
 PYBIND11_MODULE(pyprt, m) {
@@ -421,5 +417,4 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_faces", &GeneratedGeometry::getFaces)
         .def("get_report", &GeneratedGeometry::getReport);
 
-    m.def("print_val", &py_printVal,"Test Python function for value printing.");
 }

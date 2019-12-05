@@ -98,7 +98,7 @@ class CMakeBuild(build_ext):
 
         self.announce('Configuring CMake project', level=3)
 
-        cmake_install_prefix = os.path.join(self.build_lib, 'PyPRT', 'pyprt')
+        cmake_install_prefix = os.path.join(self.build_lib, 'pyprt', 'pyprt')
 
         cmake_configure_command = [
             cmake.cmake_executable,
@@ -131,8 +131,8 @@ cmake = CMakeConfig()
 print(cmake)
 
 setup(
-    name='PyPRT',
-    version='0.2.0',  # keep consistent with __version__ in PyPRT/__init__.py
+    name='pyprt',
+    version='0.2.0',  # keep consistent with __version__ in pyprt/__init__.py
     author='Camille Lechot',
     author_email='clechot@esri.com',
     description='Python bindings for the "Procedural Runtime SDK" (PRT) of "ArcGIS CityEngine" by Esri.',

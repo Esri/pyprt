@@ -40,7 +40,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 // -- PIPELINE
 
-stage('PyPRT') {
+stage('pyprt') {
 	cepl.runParallel(getTasks())
 }
 
@@ -55,7 +55,7 @@ Map getTasks() {
 
 Map taskGenPyPRT() {
 	Map tasks = [:]
-	tasks << cepl.generateTasks('PyPRT-py36', this.&taskBuildPyPRT, CONFIGS_PY36)
+	tasks << cepl.generateTasks('pyprt-py36', this.&taskBuildPyPRT, CONFIGS_PY36)
 	return tasks;
 }
 
@@ -81,12 +81,12 @@ def taskBuildPyPRT(cfg) {
 	}
 
 	def versionExtractor = { p ->
-		def vers = (p =~ /.*PyPRT-([0-9]+\.[0-9]+\.[0-9]+-[0-9]+)-cp.*/)
+		def vers = (p =~ /.*pyprt-([0-9]+\.[0-9]+\.[0-9]+-[0-9]+)-cp.*/)
 		return vers[0][1]
 	}
 	def classifierExtractor = { p ->
-		def cls = (p =~ /.*PyPRT-[0-9]+\.[0-9]+\.[0-9]+-[0-9]+-(.*)\.whl/)
+		def cls = (p =~ /.*pyprt-[0-9]+\.[0-9]+\.[0-9]+-[0-9]+-(.*)\.whl/)
 		return cls[0][1]
 	}
-	papl.publish('pyprt', env.BRANCH_NAME, "PyPRT-*.whl", versionExtractor, cfg, classifierExtractor)
+	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-*.whl", versionExtractor, cfg, classifierExtractor)
 }
