@@ -9,3 +9,4 @@ arcgis = "==1.6"
 
 [packages]
 setuptools = "==41.6.0"
+wheel = "==0.33.6"
