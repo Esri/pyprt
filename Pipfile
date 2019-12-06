@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 tox = "==3.14.1"
+arcgis = "==1.6"
 
 [packages]
 setuptools = "==41.6.0"
