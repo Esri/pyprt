@@ -18,3 +18,4 @@ README_linux_osx.md
 .ipynb_checkpoints
 *.egg-info
 /dist
+/.tox/

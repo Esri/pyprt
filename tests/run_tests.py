@@ -14,6 +14,7 @@ import multiGeneration_test
 import otherExporter_test
 import pyGeometry_test
 import shapeAttributesDict_test
+import arcgis_test
 
 
 class PyPRTTestResult(unittest.TextTestResult):
@@ -37,6 +38,7 @@ def test_suite():
     suite.addTests(loader.loadTestsFromModule(otherExporter_test))
     suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
     suite.addTests(loader.loadTestsFromModule(shapeAttributesDict_test))
+    suite.addTests(loader.loadTestsFromModule(arcgis_test))
     return suite
 
 
