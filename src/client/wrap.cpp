@@ -83,7 +83,7 @@ namespace {
 
 namespace py = pybind11;
 
-Geometry::Geometry(const std::vector<double>& vert) :
+InputGeometry::InputGeometry(const std::vector<double>& vert) :
     mVertices(vert)
  {
     mIndices.resize(vert.size() / 3);
@@ -91,7 +91,7 @@ Geometry::Geometry(const std::vector<double>& vert) :
     mFaceCounts.resize(1, (uint32_t)mIndices.size());
 }
 
-Geometry::Geometry(const std::vector<double>& vert, const std::vector<uint32_t>& ind, const std::vector<uint32_t>& faceCnt) :
+InputGeometry::InputGeometry(const std::vector<double>& vert, const std::vector<uint32_t>& ind, const std::vector<uint32_t>& faceCnt) :
     mVertices(vert), mIndices(ind), mFaceCounts(faceCnt)
 {
 }
@@ -148,7 +148,7 @@ namespace {
             mInitialShapesBuilders[0] = std::move(isb);
     }
 
-    ModelGenerator::ModelGenerator(const std::vector<Geometry>& myGeo) {
+    ModelGenerator::ModelGenerator(const std::vector<InputGeometry>& myGeo) {
         mInitialShapesBuilders.resize(myGeo.size());
 
         mCache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
@@ -386,10 +386,6 @@ namespace {
 } // namespace
 
 
-int py_printVal(int val) {
-    return val;
-}
-
 using namespace pybind11::literals;
 
 PYBIND11_MODULE(pyprt, m) {
@@ -397,7 +393,7 @@ PYBIND11_MODULE(pyprt, m) {
 
     py::class_<ModelGenerator>(m, "ModelGenerator")
         .def(py::init<const std::string&>(), "initShapePath"_a)
-        .def(py::init<const std::vector<Geometry>&>(), "initShape"_a)
+        .def(py::init<const std::vector<InputGeometry>&>(), "initShape"_a)
         .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"), py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"))
         .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
 
@@ -405,15 +401,12 @@ PYBIND11_MODULE(pyprt, m) {
     m.def("is_prt_initialized", &isPRTInitialized);
     m.def("shutdown_prt", &shutdownPRT);
 
-    py::class_<Geometry>(m, "Geometry")
+    py::class_<InputGeometry>(m, "InputGeometry")
         .def(py::init<const std::vector<double>&>())
         .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&>())
-        .def("get_vertices", &Geometry::getVertices)
-        .def("get_vertex_count", &Geometry::getVertexCount)
-        .def("get_indices", &Geometry::getIndices)
-        .def("get_index_count", &Geometry::getIndexCount)
-        .def("get_face_counts", &Geometry::getFaceCounts)
-        .def("get_face_counts_count", &Geometry::getFaceCountsCount);
+        .def("get_vertex_count", &InputGeometry::getVertexCount)
+        .def("get_index_count", &InputGeometry::getIndexCount)
+        .def("get_face_counts_count", &InputGeometry::getFaceCountsCount);
 
     py::class_<GeneratedGeometry>(m, "GeneratedGeometry")
         .def("get_initial_shape_index", &GeneratedGeometry::getInitialShapeIndex)
@@ -421,5 +414,4 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_faces", &GeneratedGeometry::getFaces)
         .def("get_report", &GeneratedGeometry::getReport);
 
-    m.def("print_val", &py_printVal,"Test Python function for value printing.");
 }

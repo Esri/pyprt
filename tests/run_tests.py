@@ -2,13 +2,13 @@ import os
 import sys
 import unittest
 
-from PyPRT import pyprt
+from pyprt import pyprt
 
-import general_test
 import multiGeneration_test
 import otherExporter_test
 import pyGeometry_test
 import shapeAttributesDict_test
+import arcgis_test
 
 
 class PyPRTTestResult(unittest.TextTestResult):
@@ -28,11 +28,11 @@ class PyPRTTestRunner(unittest.TextTestRunner):
 def test_suite():
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
-    suite.addTests(loader.loadTestsFromModule(general_test))
     suite.addTests(loader.loadTestsFromModule(multiGeneration_test))
     suite.addTests(loader.loadTestsFromModule(otherExporter_test))
     suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
     suite.addTests(loader.loadTestsFromModule(shapeAttributesDict_test))
+    suite.addTests(loader.loadTestsFromModule(arcgis_test))
     return suite
 
 
