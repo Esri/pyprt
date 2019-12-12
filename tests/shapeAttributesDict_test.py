@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from PyPRT import pyprt
+import pyprt
 
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
@@ -17,11 +17,11 @@ class ShapeAttributesTest(unittest.TestCase):
         attrs_2 = {'ruleFile': 'bin/test_rule.cgb', 'startRule': 'Default$Footprint', 'minBuildingHeight': 30.0}
         attrs_3 = {'ruleFile': 'bin/test_rule.cgb', 'startRule': 'Default$Footprint', 'text': 'hello'}
 
-        shape_geometry_1 = pyprt.Geometry(
+        shape_geometry_1 = pyprt.InputGeometry(
             [0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])
-        shape_geometry_2 = pyprt.Geometry(
+        shape_geometry_2 = pyprt.InputGeometry(
             [0, 0, 0, 0, 0, -10, -10, 0, -10, -10, 0, 0, -5, 0, -5])
-        shape_geometry_3 = pyprt.Geometry(
+        shape_geometry_3 = pyprt.InputGeometry(
             [0, 0, 0, 0, 0, -10, 10, 0, -10, 10, 0, 0, -5, 0, -5])
         m = pyprt.ModelGenerator([shape_geometry_1, shape_geometry_2, shape_geometry_3])
         model = m.generate_model([attrs_1, attrs_2, attrs_3], rpk, 'com.esri.pyprt.PyEncoder',
@@ -31,11 +31,11 @@ class ShapeAttributesTest(unittest.TestCase):
     def test_oneDictForAll(self):
         rpk = asset_file('test_rule.rpk')
         attrs = {'ruleFile': 'bin/test_rule.cgb', 'startRule': 'Default$Footprint', 'text': 'hello'}
-        shape_geometry_1 = pyprt.Geometry(
+        shape_geometry_1 = pyprt.InputGeometry(
             [0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])
-        shape_geometry_2 = pyprt.Geometry(
+        shape_geometry_2 = pyprt.InputGeometry(
             [0, 0, 0, 0, 0, -10, -10, 0, -10, -10, 0, 0, -5, 0, -5])
-        shape_geometry_3 = pyprt.Geometry(
+        shape_geometry_3 = pyprt.InputGeometry(
             [0, 0, 0, 0, 0, -10, 10, 0, -10, 10, 0, 0, -5, 0, -5])
         m = pyprt.ModelGenerator([shape_geometry_1, shape_geometry_2, shape_geometry_3])
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder',
@@ -46,11 +46,11 @@ class ShapeAttributesTest(unittest.TestCase):
         rpk = asset_file('test_rule.rpk')
         attrs_1 = {'ruleFile': 'bin/test_rule.cgb', 'startRule': 'Default$Footprint'}
         attrs_2 = {'ruleFile': 'bin/test_rule.cgb', 'startRule': 'Default$Footprint', 'minBuildingHeight': 30.0}
-        shape_geometry_1 = pyprt.Geometry(
+        shape_geometry_1 = pyprt.InputGeometry(
             [0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])
-        shape_geometry_2 = pyprt.Geometry(
+        shape_geometry_2 = pyprt.InputGeometry(
             [0, 0, 0, 0, 0, -10, -10, 0, -10, -10, 0, 0, -5, 0, -5])
-        shape_geometry_3 = pyprt.Geometry(
+        shape_geometry_3 = pyprt.InputGeometry(
             [0, 0, 0, 0, 0, -10, 10, 0, -10, 10, 0, 0, -5, 0, -5])
         m = pyprt.ModelGenerator([shape_geometry_1, shape_geometry_2, shape_geometry_3])
         model = m.generate_model([attrs_1, attrs_2], rpk, 'com.esri.pyprt.PyEncoder',

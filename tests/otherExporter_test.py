@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from PyPRT import pyprt
+import pyprt
 
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 

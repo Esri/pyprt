@@ -2,7 +2,7 @@ import os
 import sys
 import unittest
 
-from pyprt import pyprt
+import pyprt
 
 import multiGeneration_test
 import otherExporter_test

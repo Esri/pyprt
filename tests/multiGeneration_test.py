@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from PyPRT import pyprt
+import pyprt
 
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
@@ -14,7 +14,7 @@ class MultiTest(unittest.TestCase):
     def test_multiGenerations(self):
         rpk = asset_file('simple_rule0819.rpk')
         attrs = {'ruleFile': 'bin/simple_rule2019.cgb', 'startRule': 'Default$Footprint'}
-        shape_geo = pyprt.Geometry([-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
+        shape_geo = pyprt.InputGeometry([-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
         m = pyprt.ModelGenerator([shape_geo])
         model1 = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
         model2 = m.generate_model([attrs])
