@@ -7,3 +7,4 @@ verify_ssl = true
 setuptools = "==41.6.0"
 tox = "==3.14.1"
 wheel = "==0.33.6"
+arcgis = "==1.6"
