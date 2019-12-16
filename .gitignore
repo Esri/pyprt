@@ -8,6 +8,8 @@
 /prt
 /output
 
+/pyprt/**/*.so
+
 README_linux_osx.md
 
 /.vscode
