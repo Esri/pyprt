@@ -122,7 +122,7 @@ struct PRTContext {
 		prt::addLogHandler(&mLogHandler);
 
 		// setup path for PRT extension libraries
-		const std::filesystem::path moduleRoot = pcu::getModuleDirectory();
+		const std::filesystem::path moduleRoot = pcu::getModuleDirectory().parent_path();
 		const auto prtExtensionPath = moduleRoot / "lib";
 
 		// initialize PRT with the path to its extension libraries, the default log level

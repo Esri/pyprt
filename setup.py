@@ -4,7 +4,6 @@ import subprocess
 
 from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
-from distutils.file_util import copy_file
 from distutils.dir_util import copy_tree
 
 
@@ -79,7 +78,7 @@ class CMakeBuild(build_ext):
 
         self.announce('Configuring CMake project', level=3)
 
-        cmake_install_prefix = os.path.join(self.build_lib, 'pyprt')
+        cmake_install_prefix = os.path.join(self.build_lib, 'pyprt', 'pyprt')
 
         cmake_configure_command = [
             cmake.cmake_executable,
@@ -119,21 +118,13 @@ class CMakeBuild(build_ext):
         build_py = self.get_finalized_command('build_py')
         for ext in self.extensions:
             fullname = self.get_ext_fullname(ext.name)
-            filename = self.get_ext_filename(fullname)
             modpath = fullname.split('.')
             package = '.'.join(modpath[:-1])
             package_dir = build_py.get_package_dir(package)
-            dest_filename = os.path.join(package_dir,
-                                         os.path.basename(filename))
-            src_filename = os.path.join(self.build_lib, filename)
 
             # Always copy, even if source is older than destination, to ensure
             # that the right extensions for the current Python/platform are
             # used.
-            copy_file(
-                src_filename, dest_filename, verbose=self.verbose,
-                dry_run=self.dry_run
-            )
             copy_tree(self.build_lib, os.curdir,
                       verbose=self.verbose, dry_run=self.dry_run)
             if ext._needs_stub:
