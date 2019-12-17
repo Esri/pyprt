@@ -4,8 +4,12 @@ import subprocess
 
 from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
-from distutils.dir_util import copy_tree
+from distutils.command.clean import clean
+from distutils.dir_util import copy_tree, remove_tree
+from distutils import log
 
+
+record_file = 'record_setup_develop_files.txt'
 
 class CMakeConfig:
     def __init__(self):
@@ -78,6 +82,9 @@ class CMakeBuild(build_ext):
 
         self.announce('Configuring CMake project', level=3)
 
+        cmake = CMakeConfig()
+        print(cmake)
+
         cmake_install_prefix = os.path.join(self.build_lib, 'pyprt', 'pyprt')
 
         cmake_configure_command = [
@@ -125,15 +132,34 @@ class CMakeBuild(build_ext):
             # Always copy, even if source is older than destination, to ensure
             # that the right extensions for the current Python/platform are
             # used.
-            copy_tree(self.build_lib, os.curdir,
+            files_record = copy_tree(self.build_lib, os.curdir,
                       verbose=self.verbose, dry_run=self.dry_run)
+            with open(record_file, 'w+') as f:
+                for each_file in files_record:
+                    f.write('%s\n' % each_file)
+            f.close()
+
             if ext._needs_stub:
                 self.write_stub(package_dir or os.curdir, ext, True)
 
 
+class CleanCommand(clean):
+    def run(self):
+        with open(record_file, 'r') as f:
+            for each_file in f:
+                fname = os.path.join(each_file.rstrip())
+                dirname = os.path.dirname(fname)
+                basename = os.path.basename(dirname)
+                if os.path.exists(dirname) and (basename=='bin' or basename=='lib'):
+                    remove_tree(dirname, dry_run=self.dry_run)
+                else:
+                    if os.path.isfile(fname):
+                        os.remove(fname)
+                        log.warn("removing '%s'", fname)
+        os.remove(os.path.join(os.curdir, record_file))
+        log.warn("removing '%s'", record_file)
 
-cmake = CMakeConfig()
-print(cmake)
+
 
 setup(
     name='pyprt',
@@ -147,7 +173,7 @@ setup(
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
     ext_modules=[CMakeExtension('pyprt.pyprt', 'src')], 
-    cmdclass={'build_ext': CMakeBuild},
+    cmdclass={'build_ext': CMakeBuild, 'clean': CleanCommand},
     zip_safe=False,
     python_requires='>=3.6'
 )
