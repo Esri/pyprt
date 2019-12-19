@@ -8,8 +8,8 @@ from distutils.command.clean import clean
 from distutils.dir_util import copy_tree, remove_tree
 from distutils import log
 
-
 record_file = 'record_setup_develop_files.txt'
+
 
 class CMakeConfig:
     def __init__(self):
@@ -133,7 +133,7 @@ class CMakeBuild(build_ext):
             # that the right extensions for the current Python/platform are
             # used.
             files_record = copy_tree(self.build_lib, os.curdir,
-                      verbose=self.verbose, dry_run=self.dry_run)
+                                     verbose=self.verbose, dry_run=self.dry_run)
             with open(record_file, 'w+') as f:
                 for each_file in files_record:
                     f.write('%s\n' % each_file)
@@ -150,7 +150,7 @@ class CleanCommand(clean):
                 fname = os.path.join(each_file.rstrip())
                 dirname = os.path.dirname(fname)
                 basename = os.path.basename(dirname)
-                if os.path.exists(dirname) and (basename=='bin' or basename=='lib'):
+                if os.path.exists(dirname) and (basename == 'bin' or basename == 'lib'):
                     remove_tree(dirname, dry_run=self.dry_run)
                 else:
                     if os.path.isfile(fname):
@@ -158,7 +158,6 @@ class CleanCommand(clean):
                         log.warn("removing '%s'", fname)
         os.remove(os.path.join(os.curdir, record_file))
         log.warn("removing '%s'", record_file)
-
 
 
 setup(
@@ -172,7 +171,7 @@ setup(
     platforms=['Windows', 'Linux'],
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
-    ext_modules=[CMakeExtension('pyprt.pyprt', 'src')], 
+    ext_modules=[CMakeExtension('pyprt.pyprt', 'src')],
     cmdclass={'build_ext': CMakeBuild, 'clean': CleanCommand},
     zip_safe=False,
     python_requires='>=3.6'
