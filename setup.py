@@ -8,7 +8,7 @@ from distutils.command.clean import clean
 from distutils.dir_util import copy_tree, remove_tree
 from distutils import log
 
-record_file = 'record_setup_develop_files.txt'
+record_file = 'pyprt.egg-info\\record_setup_develop_files.txt'
 
 
 class CMakeConfig:
