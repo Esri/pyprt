@@ -145,6 +145,7 @@ class CMakeBuild(build_ext):
 
 class CleanCommand(clean):
     def run(self):
+        clean.run(self)
         with open(record_file, 'r') as f:
             for each_file in f:
                 fname = os.path.join(each_file.rstrip())
