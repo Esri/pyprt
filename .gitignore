@@ -4,16 +4,15 @@
 /src/.idea
 /src/CMakeSettings.json
 /src/cmake-build*
-/.vs
 /prt
 /output
 
-README_linux_osx.md
+/Pipfile.lock
+/pyprt/**/*.so
 
+/.vs
 /.vscode
 /vscode_workspace_py4prt.code-workspace
-
-/Pipfile.lock
 
 .ipynb_checkpoints
 *.egg-info

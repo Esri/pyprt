@@ -121,7 +121,7 @@ struct PRTContext {
 	PRTContext(prt::LogLevel minimalLogLevel) {
 		prt::addLogHandler(&mLogHandler);
 
-		// setup paths for plugins, assume standard SDK layout as per README.md
+		// setup path for PRT extension libraries
 		const std::filesystem::path moduleRoot = pcu::getModuleDirectory().parent_path();
 		const auto prtExtensionPath = moduleRoot / "lib";
 

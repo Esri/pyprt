@@ -12,10 +12,8 @@ class ArcGISAPITest(unittest.TestCase):
         from pyprt.pyprt_arcgis import arcgis_to_pyprt
 
         gis = GIS()
-        item = gis.content.get('b1598d3df2c047ef88251016af5b0f1e')
-        id_list = (105, 129)
-        fset = item.layers[0].query(
-            where='OBJECTID IN'+str(id_list), return_z=True)
+        item = gis.content.get('6ddd4741514d4e47b005c4962f06de58')
+        fset = item.layers[0].query(return_z=True)
 
         initial_geometries = arcgis_to_pyprt(fset)
 

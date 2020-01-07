@@ -1,2 +1,0 @@
-recursive-include install/pyprt/bin *
-recursive-include install/pyprt/lib *

@@ -28,16 +28,29 @@ if(NOT prt_DIR)
 	endif()
 
 	set(PRT_VERSION "2.1.5704")
-	set(PRT_URL		"https://github.com/esri/esri-cityengine-sdk/releases/download/${PRT_VERSION}/esri_ce_sdk-${PRT_VERSION}-${PRT_OS}-${PRT_TC}-x86_64-rel-opt.zip")
+	set(PRT_ARCHIVE "esri_ce_sdk-${PRT_VERSION}-${PRT_OS}-${PRT_TC}-x86_64-rel-opt.zip")
+	set(PRT_URL     "https://github.com/esri/esri-cityengine-sdk/releases/download/${PRT_VERSION}/${PRT_ARCHIVE}")
 
-	FetchContent_Declare(prt URL ${PRT_URL})
+	FetchContent_Declare(prt URL ${PRT_URL} DOWNLOAD_NO_EXTRACT $ENV{PRT_EXTRACTION_WORKAROUND})
 	FetchContent_GetProperties(prt)
 	if(NOT prt_POPULATED)
 		message(STATUS "Fetching PRT from ${PRT_URL}...")
 		FetchContent_Populate(prt)
 	endif()
-
-	set(prt_DIR "${prt_SOURCE_DIR}/cmake")
+	if(prt_POPULATED)
+		if($ENV{PRT_EXTRACTION_WORKAROUND})
+			# on certain (linux only?) systems, "cmake -E tar" on PRT_ARCHIVE results in a corrupted PRT distribution
+			# manually provide PRT_EXTRACTION_WORKAROUND=1 on the cmake cmd line to use this workaround
+			# maybe related to https://bugzilla.redhat.com/show_bug.cgi?id=1526404
+			message(STATUS "Active PRT extraction workaround: ${prt_SOURCE_DIR}/cmake")
+			if (NOT EXISTS "${prt_SOURCE_DIR}/cmake")
+				# yep, relying on cmake implementation details, better look away...
+				set(PRT_LOCAL_ARCHIVE "${prt_SOURCE_DIR}/../prt-subbuild/prt-populate-prefix/src/${PRT_ARCHIVE}")
+				execute_process(COMMAND unzip -q -d ${prt_SOURCE_DIR} ${PRT_LOCAL_ARCHIVE})
+			endif()
+		endif()
+		set(prt_DIR "${prt_SOURCE_DIR}/cmake")
+	endif()
 endif()
 
 find_package(prt CONFIG REQUIRED)

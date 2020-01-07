@@ -26,13 +26,13 @@ def arcgis_to_pyprt(feature_set):
                     coord_fin = np.reshape(coord_add_dim,(1,coord_add_dim.shape[0]*coord_add_dim.shape[1]))
                 elif coord.shape[1] == 3: #need to swap the 1 and 2 columns
                     coord_inverse[:,1] *= -1
-                    coord_swap_dim = coord_inverse
+                    coord_swap_dim = coord_inverse.copy()
                     temp = np.copy(coord_swap_dim[:,1])
                     coord_swap_dim[:,1] = coord_swap_dim[:,2]
                     coord_swap_dim[:,2] = temp
                     coord_fin = np.reshape(coord_swap_dim,(1,coord_swap_dim.shape[0]*coord_swap_dim.shape[1]))
 
-                initial_geometry = pyprt.Geometry(coord_fin.tolist()[0])
+                initial_geometry = pyprt.InputGeometry(coord_fin.tolist()[0])
                 initial_geometries.append(initial_geometry)
         except:
             print("This feature is not valid: ")

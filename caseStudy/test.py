@@ -1,7 +1,8 @@
 import sys
 import os
 
-from PyPRT import pyprt, utility
+import pyprt
+from pyprt.pyprt_utils import visualize_prt_results
 
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
@@ -28,7 +29,7 @@ attrs = {'ruleFile': 'bin/simple_rule2019.cgb', 'startRule': 'Default$Footprint'
 mod_test1 = pyprt.ModelGenerator(shape_geo_fromOBJ)
 models_test1 = mod_test1.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
 
-utility.visualize_PRT_results(models_test1)
+visualize_prt_results(models_test1)
 
 ## TEST 2: initial shape as DAE, simple rule.
 print('\nTEST2')
@@ -37,7 +38,7 @@ shape_geo_fromDAE = asset_file('new_sceneCollada_0.dae')
 mod_test2 = pyprt.ModelGenerator(shape_geo_fromDAE)
 models_test2 = mod_test2.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
 
-utility.visualize_PRT_results(models_test2)
+visualize_prt_results(models_test2)
 
 ## TEST 3: initial shape as OBJ, simple rule, generated geometry outputted as OBJ.
 print('\nTEST3')
@@ -49,13 +50,13 @@ print('Results located in the output folder.')
 
 ## TEST 4: initial shapes as custom geometries, simple rule.
 print('\nTEST4')
-shape_geometry_1 = pyprt.Geometry([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0])
-shape_geometry_2 = pyprt.Geometry([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0, 0.5, 0, 0.5])
+shape_geometry_1 = pyprt.InputGeometry([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0])
+shape_geometry_2 = pyprt.InputGeometry([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0, 0.5, 0, 0.5])
 
 mod_test4 = pyprt.ModelGenerator([shape_geometry_1,shape_geometry_2])
 models_test4 = mod_test4.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
 
-utility.visualize_PRT_results(models_test4)
+visualize_prt_results(models_test4)
 
 ## TEST 5: initial shapes as OBJ, candler rule.
 print('\nTEST5')
@@ -66,7 +67,7 @@ rpk_test5 = asset_file('candler.rpk')
 attrs_test5 = {'ruleFile': 'bin/candler.cgb', 'startRule': 'Default$Footprint'}
 models_test5 = mod_test5.generate_model([attrs_test5], rpk_test5, 'com.esri.pyprt.PyEncoder', {})
 
-utility.visualize_PRT_results(models_test5)
+visualize_prt_results(models_test5)
 
 ## TEST 6: initial shapes as OBJ, candler rule, generated geometry outputted as Scene Layer Package.
 print('\nTEST6')
@@ -87,7 +88,7 @@ print('SLPK file located in the output folder.')
 # mod_test7 = pyprt.ModelGenerator(shape_geo_fromOBJ_test7)
 # models_test7 = mod_test7.generate_model([attrs_test7], rpk_test7, 'com.esri.pyprt.PyEncoder', {})
 
-# utility.visualize_PRT_results(models_test7)
+# visualize_prt_results(models_test7)
 
 print('\nShutdown PRT.')
 pyprt.shutdown_prt()

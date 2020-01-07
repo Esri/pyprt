@@ -2,10 +2,13 @@ import os
 import sys
 import subprocess
 
-from distutils.command.install_data import install_data
 from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
-from setuptools.command.install_lib import install_lib
+from distutils.command.clean import clean
+from distutils.dir_util import copy_tree, remove_tree
+from distutils import log
+
+record_file = 'pyprt.egg-info\\record_setup_develop_files.txt'
 
 
 class CMakeConfig:
@@ -66,28 +69,9 @@ class CMakeConfig:
 
 
 class CMakeExtension(Extension):
-    def __init__(self, name, sourcedir=''):
+    def __init__(self, name, source_dir):
         super().__init__(name, sources=[])
-        self.sourcedir = os.path.join(os.path.abspath(sourcedir), 'src')
-
-
-class InstallCMakeLibsData(install_data):
-    def run(self):
-        self.outfiles = self.distribution.data_files
-
-
-class InstallCMakeLibs(install_lib):
-    def run(self):
-        self.announce('Installing native extension', level=3)
-
-        cmake_install_command = [cmake.cmake_executable, '--build', self.distribution.cmake_build_dir, '--target', 'install']
-        if sys.platform.startswith('win32'):
-            cmake_install_command.extend(['--config', cmake.cmake_build_type])
-        self.spawn(cmake_install_command)
-
-        self.announce('Installing python modules', level=3)
-        self.distribution.run_command('install_data')
-        super().run()
+        self.source_dir = source_dir
 
 
 class CMakeBuild(build_ext):
@@ -98,6 +82,9 @@ class CMakeBuild(build_ext):
 
         self.announce('Configuring CMake project', level=3)
 
+        cmake = CMakeConfig()
+        print(cmake)
+
         cmake_install_prefix = os.path.join(self.build_lib, 'pyprt', 'pyprt')
 
         cmake_configure_command = [
@@ -105,7 +92,7 @@ class CMakeBuild(build_ext):
             '-DCMAKE_BUILD_TYPE={}'.format(cmake.cmake_build_type),
             '-DCMAKE_INSTALL_PREFIX={}'.format(cmake_install_prefix),
             '-DPYTHON_EXECUTABLE={}'.format(sys.executable),
-            '-H{}'.format(extension.sourcedir),
+            '-H{}'.format(extension.source_dir),
             '-B{}'.format(self.build_temp),
             '-G{}'.format(cmake.cmake_generator),
             '-DCMAKE_MAKE_PROGRAM={}'.format(cmake.make_executable)
@@ -123,16 +110,60 @@ class CMakeBuild(build_ext):
             cmake_build_command.extend(['--config', cmake.cmake_build_type])
         self.spawn(cmake_build_command)
 
-        # hack to transport cmake build dir from here to InstallCMakeLibs
-        self.distribution.cmake_build_dir = self.build_temp
+        # now let's do our cmake thing
+        self.announce('Installing native extension', level=3)
+        cmake_install_command = [
+            cmake.cmake_executable,
+            '--build', self.build_temp,
+            '--target', 'install'
+        ]
+        if sys.platform.startswith('win32'):
+            cmake_install_command.extend(['--config', cmake.cmake_build_type])
+        self.spawn(cmake_install_command)
+
+    def copy_extensions_to_source(self):
+        build_py = self.get_finalized_command('build_py')
+        for ext in self.extensions:
+            fullname = self.get_ext_fullname(ext.name)
+            modpath = fullname.split('.')
+            package = '.'.join(modpath[:-1])
+            package_dir = build_py.get_package_dir(package)
+
+            # Always copy, even if source is older than destination, to ensure
+            # that the right extensions for the current Python/platform are
+            # used.
+            files_record = copy_tree(self.build_lib, os.curdir,
+                                     verbose=self.verbose, dry_run=self.dry_run)
+            with open(record_file, 'w+') as f:
+                for each_file in files_record:
+                    f.write('%s\n' % each_file)
+            f.close()
+
+            if ext._needs_stub:
+                self.write_stub(package_dir or os.curdir, ext, True)
 
 
-cmake = CMakeConfig()
-print(cmake)
+class CleanCommand(clean):
+    def run(self):
+        clean.run(self)
+        with open(record_file, 'r') as f:
+            for each_file in f:
+                fname = os.path.join(each_file.rstrip())
+                dirname = os.path.dirname(fname)
+                basename = os.path.basename(dirname)
+                if os.path.exists(dirname) and (basename == 'bin' or basename == 'lib'):
+                    remove_tree(dirname, dry_run=self.dry_run)
+                else:
+                    if os.path.isfile(fname):
+                        os.remove(fname)
+                        log.warn("removing '%s'", fname)
+        os.remove(os.path.join(os.curdir, record_file))
+        log.warn("removing '%s'", record_file)
+
 
 setup(
     name='pyprt',
-    version='0.2.0',  # keep consistent with __version__ in pyprt/__init__.py
+    version='0.3.0',  # keep consistent with __version__ in pyprt/__init__.py
     author='Camille Lechot',
     author_email='clechot@esri.com',
     description='Python bindings for the "Procedural Runtime SDK" (PRT) of "ArcGIS CityEngine" by Esri.',
@@ -141,11 +172,8 @@ setup(
     platforms=['Windows', 'Linux'],
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
-    ext_modules=[CMakeExtension('pyprt')],
-    cmdclass={
-        'build_ext': CMakeBuild,
-        'install_data': InstallCMakeLibsData,
-        'install_lib': InstallCMakeLibs},
+    ext_modules=[CMakeExtension('pyprt.pyprt', 'src')],
+    cmdclass={'build_ext': CMakeBuild, 'clean': CleanCommand},
     zip_safe=False,
     python_requires='>=3.6'
 )
