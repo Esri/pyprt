@@ -1,7 +1,8 @@
 import sys
 import os
 
-from PyPRT import pyprt, utility
+import pyprt
+from pyprt.pyprt_utils import visualize_prt_results
 
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
@@ -21,8 +22,8 @@ attrs1 = {'ruleFile': 'bin/candler.cgb', 'startRule': 'Default$Footprint'}
 
 
 ### INITIAL SHAPES
-shape_geometry_1 = pyprt.Geometry([0, 0, 0,  0, 0, 100,  100, 0, 100,  100, 0, 0])
-shape_geometry_2 = pyprt.Geometry([0, 0, 0,  0, 0, -10,  -10, 0, -10,  -10, 0, 0, -5, 0, -5])
+shape_geometry_1 = pyprt.InputGeometry([0, 0, 0,  0, 0, 100,  100, 0, 100,  100, 0, 0])
+shape_geometry_2 = pyprt.InputGeometry([0, 0, 0,  0, 0, -10,  -10, 0, -10,  -10, 0, 0, -5, 0, -5])
 
 
 ### PRT GENERATION
@@ -32,7 +33,7 @@ encoderOptions = {'outputPath': '/tmp/pyprt_output'}
 os.makedirs(encoderOptions['outputPath'], exist_ok=True)
 
 mo = m1.generate_model([attrs1], rpk1, 'com.esri.prt.codecs.OBJEncoder', encoderOptions)
-utility.visualize_PRT_results(mo)
+visualize_prt_results(mo)
 
 
 ### PRT END

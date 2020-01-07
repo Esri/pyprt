@@ -1,7 +1,8 @@
 import sys
 import os
 
-from PyPRT import pyprt, utility
+import pyprt
+from pyprt.pyprt_utils import visualize_prt_results
 
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
@@ -22,18 +23,18 @@ attrs2 = {'ruleFile': 'bin/test_rule.cgb', 'startRule': 'Default$Footprint', 'mi
 attrs3 = {'ruleFile': 'bin/test_rule.cgb', 'startRule': 'Default$Footprint', 'text': 'hello'}
 
 ### INITIAL SHAPES
-shape_geometry_1 = pyprt.Geometry([0, 0, 0,  0, 0, 100,  100, 0, 100,  100, 0, 0])
-shape_geometry_2 = pyprt.Geometry([0, 0, 0,  0, 0, -10,  -10, 0, -10,  -10, 0, 0, -5, 0, -5])
+shape_geometry_1 = pyprt.InputGeometry([0, 0, 0,  0, 0, 100,  100, 0, 100,  100, 0, 0])
+shape_geometry_2 = pyprt.InputGeometry([0, 0, 0,  0, 0, -10,  -10, 0, -10,  -10, 0, 0, -5, 0, -5])
 
 
 ### PRT GENERATION
 m1 = pyprt.ModelGenerator([shape_geometry_2, shape_geometry_1])
 
 mo = m1.generate_model([attrs1, attrs2], rpk1, 'com.esri.pyprt.PyEncoder', {})
-utility.visualize_PRT_results(mo)
+visualize_prt_results(mo)
 
 mo2 = m1.generate_model([attrs3])
-utility.visualize_PRT_results(mo2)
+visualize_prt_results(mo2)
 
 
 ### PRT END

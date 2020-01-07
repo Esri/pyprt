@@ -1,7 +1,8 @@
 import sys
 import os
 
-from PyPRT import pyprt, utility
+import pyprt
+from pyprt.pyprt_utils import visualize_prt_results
 
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
@@ -31,11 +32,11 @@ attrs2 = {'ruleFile': 'rules/typology/envelope.cgb', 'startRule': 'Default$Lot',
 m = pyprt.ModelGenerator(shapeGeo)
 models = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {'emitGeometry': False})
 
-utility.visualize_PRT_results(models)
+visualize_prt_results(models)
 
 models2 = m.generate_model([attrs2])
 
-utility.visualize_PRT_results(models2)
+visualize_prt_results(models2)
 
 models3 = m.generate_model([attrs], rpk, 'com.esri.prt.codecs.OBJEncoder', encoderOptions)
 
