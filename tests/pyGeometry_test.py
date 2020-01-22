@@ -47,7 +47,7 @@ class GeometryTest(unittest.TestCase):
     def test_noReport(self):
         rpk = asset_file('simple_rule0819.rpk')
         attrs = {'ruleFile': 'bin/simple_rule2019.cgb', 'startRule': 'Default$Footprint'}
-        shape_geo = pyprt.InputGeometry([-10.0, 0.0, 5.0, -5.0, 0.0, 6.0, 20.0, 0.0, 5.0, 15.0, 0.0, 3.0])
+        shape_geo = pyprt.InitialShape([-10.0, 0.0, 5.0, -5.0, 0.0, 6.0, 20.0, 0.0, 5.0, 15.0, 0.0, 3.0])
         m = pyprt.ModelGenerator([shape_geo])
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {'emitReport': False})
         self.assertDictEqual(model[0].get_report(), {})
@@ -55,7 +55,7 @@ class GeometryTest(unittest.TestCase):
     def test_noGeometry(self):
         rpk = asset_file('simple_rule0819.rpk')
         attrs = {'ruleFile': 'bin/simple_rule2019.cgb', 'startRule': 'Default$Footprint'}
-        shape_geo = pyprt.InputGeometry([-10.0, 0.0, 5.0, -5.0, 0.0, 6.0, 20.0, 0.0, 5.0, 15.0, 0.0, 3.0])
+        shape_geo = pyprt.InitialShape([-10.0, 0.0, 5.0, -5.0, 0.0, 6.0, 20.0, 0.0, 5.0, 15.0, 0.0, 3.0])
         m = pyprt.ModelGenerator([shape_geo])
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {'emitGeometry': False})
         self.assertListEqual(model[0].get_vertices(), [])
@@ -65,7 +65,7 @@ class GeometryTest(unittest.TestCase):
         attrs = {'ruleFile': 'bin/simple_rule2019.cgb', 'startRule': 'Default$Footprint'}
         attrs2 = {'ruleFile': 'bin/simple_rule2019.cgb', 'startRule': 'Default$Footprint', 'minBuildingHeight': 23.0,
                   'maxBuildingHeight': 23.0}
-        shape_geo = pyprt.InputGeometry([-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
+        shape_geo = pyprt.InitialShape([-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
         m = pyprt.ModelGenerator([shape_geo])
         m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
         model2 = m.generate_model([attrs2])

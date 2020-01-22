@@ -50,8 +50,8 @@ print('Results located in the output folder.')
 
 ## TEST 4: initial shapes as custom geometries, simple rule.
 print('\nTEST4')
-shape_geometry_1 = pyprt.InputGeometry([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0])
-shape_geometry_2 = pyprt.InputGeometry([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0, 0.5, 0, 0.5])
+shape_geometry_1 = pyprt.InitialShape([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0])
+shape_geometry_2 = pyprt.InitialShape([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0, 0.5, 0, 0.5])
 
 mod_test4 = pyprt.ModelGenerator([shape_geometry_1,shape_geometry_2])
 models_test4 = mod_test4.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})

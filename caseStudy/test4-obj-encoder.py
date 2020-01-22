@@ -22,8 +22,8 @@ attrs1 = {'ruleFile': 'bin/candler.cgb', 'startRule': 'Default$Footprint'}
 
 
 ### INITIAL SHAPES
-shape_geometry_1 = pyprt.InputGeometry([0, 0, 0,  0, 0, 100,  100, 0, 100,  100, 0, 0])
-shape_geometry_2 = pyprt.InputGeometry([0, 0, 0,  0, 0, -10,  -10, 0, -10,  -10, 0, 0, -5, 0, -5])
+shape_geometry_1 = pyprt.InitialShape([0, 0, 0,  0, 0, 100,  100, 0, 100,  100, 0, 0])
+shape_geometry_2 = pyprt.InitialShape([0, 0, 0,  0, 0, -10,  -10, 0, -10,  -10, 0, 0, -5, 0, -5])
 
 
 ### PRT GENERATION
