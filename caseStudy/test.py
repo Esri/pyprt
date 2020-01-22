@@ -7,7 +7,7 @@ from pyprt.pyprt_utils import visualize_prt_results
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
 def asset_file(filename):
-    return os.path.join(os.path.dirname(CS_FOLDER), 'caseStudy', filename)
+    return os.path.join(os.path.dirname(CS_FOLDER), 'data', filename)
 
 encoderOptions = {'outputPath': '/tmp/pyprt_output'}
 os.makedirs(encoderOptions['outputPath'], exist_ok=True)

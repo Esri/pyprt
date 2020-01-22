@@ -6,7 +6,7 @@ from pyprt.pyprt_utils import visualize_prt_results
 
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
-def asset_datafile(filename):
+def asset_file(filename):
     return os.path.join(os.path.dirname(CS_FOLDER), 'data', filename)
 
 print('\nInitializing PRT.')
@@ -17,7 +17,7 @@ if not pyprt.is_prt_initialized():
 
 
 ### DATA
-rpk1 = asset_datafile('candler.rpk')
+rpk1 = asset_file('candler.rpk')
 attrs1 = {'ruleFile': 'bin/candler.cgb', 'startRule': 'Default$Footprint'}
 
 
