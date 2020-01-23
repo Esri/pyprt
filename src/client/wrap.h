@@ -148,11 +148,11 @@ struct PRTContext {
 };
 
 
-class InputGeometry {
+class InitialShape {
 public:
-    InputGeometry(const std::vector<double>& vert);
-    InputGeometry(const std::vector<double>& vert, const std::vector<uint32_t>& ind, const std::vector<uint32_t>& faceCnt);
-    ~InputGeometry() { }
+    InitialShape(const std::vector<double>& vert);
+    InitialShape(const std::vector<double>& vert, const std::vector<uint32_t>& ind, const std::vector<uint32_t>& faceCnt);
+    ~InitialShape() { }
 
 	const double* getVertices() const { return mVertices.data(); }
 	size_t getVertexCount() const { return mVertices.size(); }
@@ -168,11 +168,11 @@ protected:
 };
 
 
-class GeneratedGeometry {
+class GeneratedModel {
 public:
-    GeneratedGeometry(const size_t& initialShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const py::dict& rep);
-    GeneratedGeometry() { }
-	~GeneratedGeometry() { }
+    GeneratedModel(const size_t& initialShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const py::dict& rep);
+    GeneratedModel() { }
+	~GeneratedModel() { }
 
 	size_t getInitialShapeIndex() const { return mInitialShapeIndex; }
 	const std::vector<std::vector<double>>& getVertices() const { return mVertices; }
@@ -192,11 +192,11 @@ namespace {
 	class ModelGenerator {
 	public:
 		ModelGenerator(const std::string& initShapePath);
-		ModelGenerator(const std::vector<InputGeometry>& myGeo);
+		ModelGenerator(const std::vector<InitialShape>& myGeo);
 		~ModelGenerator() { }
 
-        std::vector<GeneratedGeometry> generateModel(const std::vector<py::dict>& shapeAttributes, const std::string& rulePackagePath, const std::wstring& geometryEncoderName, const py::dict& geometryEcoderOptions);
-        std::vector<GeneratedGeometry> generateAnotherModel(const std::vector<py::dict>& shapeAttributes);
+        std::vector<GeneratedModel> generateModel(const std::vector<py::dict>& shapeAttributes, const std::string& rulePackagePath, const std::wstring& geometryEncoderName, const py::dict& geometryEcoderOptions);
+        std::vector<GeneratedModel> generateAnotherModel(const std::vector<py::dict>& shapeAttributes);
 
 	private:
 		pcu::ResolveMapPtr      mResolveMap;

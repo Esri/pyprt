@@ -32,7 +32,7 @@ def arcgis_to_pyprt(feature_set):
                     coord_swap_dim[:,2] = temp
                     coord_fin = np.reshape(coord_swap_dim,(1,coord_swap_dim.shape[0]*coord_swap_dim.shape[1]))
 
-                initial_geometry = pyprt.InputGeometry(coord_fin.tolist()[0])
+                initial_geometry = pyprt.InitialShape(coord_fin.tolist()[0])
                 initial_geometries.append(initial_geometry)
         except:
             print("This feature is not valid: ")

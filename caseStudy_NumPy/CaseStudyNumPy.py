@@ -12,7 +12,7 @@ from vispy.geometry.meshdata import MeshData
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
 def asset_file(filename):
-    return os.path.join(os.path.dirname(CS_FOLDER), 'caseStudy_NumPy', filename)
+    return os.path.join(os.path.dirname(CS_FOLDER), 'data', filename)
 
 
 class Canvas(scene.SceneCanvas):
@@ -67,8 +67,8 @@ if __name__ == '__main__':
     if not pyprt.is_prt_initialized():
         raise Exception('PRT is not initialized')
 
-    initialGeometry = pyprt.InputGeometry(np.array([0, 0, 0,  0, 0, 2,  1, 0, 1,  1, 0, 0],dtype='f'))
-    initialGeometry2 = pyprt.InputGeometry(np.array([4, 0, 0,  4, 0, 2,  5, 0, 1,  5, 0, 0],dtype='f'))
+    initialGeometry = pyprt.InitialShape(np.array([0, 0, 0,  0, 0, 2,  1, 0, 1,  1, 0, 0],dtype='f'))
+    initialGeometry2 = pyprt.InitialShape(np.array([4, 0, 0,  4, 0, 2,  5, 0, 1,  5, 0, 0],dtype='f'))
     rpk = asset_file('simple_rule2019.rpk')
     attrs = {'ruleFile': 'bin/simple_rule2019.cgb', 'startRule': 'Default$Footprint'}
 

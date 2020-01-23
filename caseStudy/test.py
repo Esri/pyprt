@@ -7,7 +7,7 @@ from pyprt.pyprt_utils import visualize_prt_results
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
 def asset_file(filename):
-    return os.path.join(os.path.dirname(CS_FOLDER), 'caseStudy', filename)
+    return os.path.join(os.path.dirname(CS_FOLDER), 'data', filename)
 
 encoderOptions = {'outputPath': '/tmp/pyprt_output'}
 os.makedirs(encoderOptions['outputPath'], exist_ok=True)
@@ -50,8 +50,8 @@ print('Results located in the output folder.')
 
 ## TEST 4: initial shapes as custom geometries, simple rule.
 print('\nTEST4')
-shape_geometry_1 = pyprt.InputGeometry([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0])
-shape_geometry_2 = pyprt.InputGeometry([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0, 0.5, 0, 0.5])
+shape_geometry_1 = pyprt.InitialShape([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0])
+shape_geometry_2 = pyprt.InitialShape([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0, 0.5, 0, 0.5])
 
 mod_test4 = pyprt.ModelGenerator([shape_geometry_1,shape_geometry_2])
 models_test4 = mod_test4.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})

@@ -61,7 +61,7 @@ const std::wstring ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder"
 const std::wstring ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
 const std::wstring ENCODER_ID_PYTHON = L"com.esri.pyprt.PyEncoder";
 
-PYBIND11_MAKE_OPAQUE(std::vector<GeneratedGeometry>);
+PYBIND11_MAKE_OPAQUE(std::vector<GeneratedModel>);
 
 namespace {
 
@@ -83,7 +83,7 @@ namespace {
 
 namespace py = pybind11;
 
-InputGeometry::InputGeometry(const std::vector<double>& vert) :
+InitialShape::InitialShape(const std::vector<double>& vert) :
     mVertices(vert)
  {
     mIndices.resize(vert.size() / 3);
@@ -91,13 +91,13 @@ InputGeometry::InputGeometry(const std::vector<double>& vert) :
     mFaceCounts.resize(1, (uint32_t)mIndices.size());
 }
 
-InputGeometry::InputGeometry(const std::vector<double>& vert, const std::vector<uint32_t>& ind, const std::vector<uint32_t>& faceCnt) :
+InitialShape::InitialShape(const std::vector<double>& vert, const std::vector<uint32_t>& ind, const std::vector<uint32_t>& faceCnt) :
     mVertices(vert), mIndices(ind), mFaceCounts(faceCnt)
 {
 }
 
 
-GeneratedGeometry::GeneratedGeometry(const size_t& initShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const py::dict& rep) :
+GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const py::dict& rep) :
     mInitialShapeIndex(initShapeIdx), mVertices(vert), mFaces(face), mReport(rep)
 {
 }
@@ -148,7 +148,7 @@ namespace {
             mInitialShapesBuilders[0] = std::move(isb);
     }
 
-    ModelGenerator::ModelGenerator(const std::vector<InputGeometry>& myGeo) {
+    ModelGenerator::ModelGenerator(const std::vector<InitialShape>& myGeo) {
         mInitialShapesBuilders.resize(myGeo.size());
 
         mCache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
@@ -243,7 +243,7 @@ namespace {
         }
     }
 
-    std::vector<GeneratedGeometry> ModelGenerator::generateModel(const std::vector<py::dict>& shapeAttributes,
+    std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::dict>& shapeAttributes,
             const std::string& rulePackagePath,
             const std::wstring& geometryEncoderName,
             const py::dict& geometryEncoderOptions)
@@ -261,7 +261,7 @@ namespace {
             LOG_WRN << "number of shape attributes dictionaries defined greater than number of initial shapes given." << std::endl;
         }
 
-        std::vector<GeneratedGeometry> newGeneratedGeo;
+        std::vector<GeneratedModel> newGeneratedGeo;
         newGeneratedGeo.reserve(mInitialShapesBuilders.size());
 
         try {
@@ -373,7 +373,7 @@ namespace {
     }
 
     
-    std::vector<GeneratedGeometry> ModelGenerator::generateAnotherModel(const std::vector<py::dict>& shapeAttributes)
+    std::vector<GeneratedModel> ModelGenerator::generateAnotherModel(const std::vector<py::dict>& shapeAttributes)
     {
         if (!mResolveMap) {
             LOG_ERR << "generate model with all required parameters";
@@ -389,11 +389,11 @@ namespace {
 using namespace pybind11::literals;
 
 PYBIND11_MODULE(pyprt, m) {
-    py::bind_vector<std::vector<GeneratedGeometry>>(m, "GeneratedGeometryVector", py::module_local(false));
+    py::bind_vector<std::vector<GeneratedModel>>(m, "GeneratedModelVector", py::module_local(false));
 
     py::class_<ModelGenerator>(m, "ModelGenerator")
         .def(py::init<const std::string&>(), "initShapePath"_a)
-        .def(py::init<const std::vector<InputGeometry>&>(), "initShape"_a)
+        .def(py::init<const std::vector<InitialShape>&>(), "initShape"_a)
         .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"), py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"))
         .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
 
@@ -401,17 +401,17 @@ PYBIND11_MODULE(pyprt, m) {
     m.def("is_prt_initialized", &isPRTInitialized);
     m.def("shutdown_prt", &shutdownPRT);
 
-    py::class_<InputGeometry>(m, "InputGeometry")
+    py::class_<InitialShape>(m, "InitialShape")
         .def(py::init<const std::vector<double>&>())
         .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&>())
-        .def("get_vertex_count", &InputGeometry::getVertexCount)
-        .def("get_index_count", &InputGeometry::getIndexCount)
-        .def("get_face_counts_count", &InputGeometry::getFaceCountsCount);
+        .def("get_vertex_count", &InitialShape::getVertexCount)
+        .def("get_index_count", &InitialShape::getIndexCount)
+        .def("get_face_counts_count", &InitialShape::getFaceCountsCount);
 
-    py::class_<GeneratedGeometry>(m, "GeneratedGeometry")
-        .def("get_initial_shape_index", &GeneratedGeometry::getInitialShapeIndex)
-        .def("get_vertices", &GeneratedGeometry::getVertices)
-        .def("get_faces", &GeneratedGeometry::getFaces)
-        .def("get_report", &GeneratedGeometry::getReport);
+    py::class_<GeneratedModel>(m, "GeneratedModel")
+        .def("get_initial_shape_index", &GeneratedModel::getInitialShapeIndex)
+        .def("get_vertices", &GeneratedModel::getVertices)
+        .def("get_faces", &GeneratedModel::getFaces)
+        .def("get_report", &GeneratedModel::getReport);
 
 }
