@@ -73,3 +73,14 @@ class GeometryTest(unittest.TestCase):
         for z in z_coord:
             if z:
                 self.assertAlmostEqual(abs(z), 23.0)
+
+    def test_faces_data(self):
+        rpk = asset_file('candler.rpk')
+        attrs = {'ruleFile': 'bin/candler.cgb', 'startRule': 'Default$Footprint'}
+        shape_geo_from_obj = asset_file('candler_footprint.obj')
+        m = pyprt.ModelGenerator(shape_geo_from_obj)
+        model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {'emitReport': False})
+        cnt = 0
+        for f in model[0].get_faces():
+            cnt += f
+        self.assertEqual(cnt, len(model[0].get_indices()))
