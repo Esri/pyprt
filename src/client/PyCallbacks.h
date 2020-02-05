@@ -39,7 +39,8 @@ private:
     struct Model {
         py::dict                            mCGAReport;
         std::vector<double>                 mVertices;
-        std::vector<std::vector<uint32_t>>  mFaces;
+        std::vector<uint32_t>               mIndices;
+        std::vector<uint32_t>               mFaces;
     };
 
     std::vector<Model> mModels;
@@ -55,6 +56,7 @@ public:
         const double* vertexCoords,
         const size_t vextexCoordsCount,
         const uint32_t* facesIndices,
+        const size_t facesIndicesCount,
         const uint32_t* faceCounts,
         const size_t faceCountsCount
     ) override;
@@ -76,7 +78,9 @@ public:
 
     const std::vector<double>& getVertices(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mVertices; }
 
-    const std::vector<std::vector<uint32_t>>& getFaces(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mFaces; }
+    const std::vector<uint32_t>& getIndices(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mIndices; }
+
+    const std::vector<uint32_t>& getFaces(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mFaces; }
 
     const py::dict& getReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGAReport; }
 

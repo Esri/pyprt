@@ -97,8 +97,8 @@ InitialShape::InitialShape(const std::vector<double>& vert, const std::vector<ui
 }
 
 
-GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const std::vector<std::vector<double>>& vert, const std::vector<std::vector<uint32_t>>& face, const py::dict& rep) :
-    mInitialShapeIndex(initShapeIdx), mVertices(vert), mFaces(face), mReport(rep)
+GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const std::vector<double>& vert, const std::vector<uint32_t>& indices, const std::vector<uint32_t>& face, const py::dict& rep) :
+    mInitialShapeIndex(initShapeIdx), mVertices(vert), mIndices(indices), mFaces(face), mReport(rep)
 {
 }
 
@@ -329,7 +329,7 @@ namespace {
                 }
 
                 for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++) {
-                    newGeneratedGeo.emplace_back(idx, convertVerticesIntoPythonStyle(foc->getVertices(idx)), foc->getFaces(idx), foc->getReport(idx));
+                    newGeneratedGeo.emplace_back(idx, foc->getVertices(idx), foc->getIndices(idx), foc->getFaces(idx), foc->getReport(idx));
                 }
             }
             else {
@@ -411,6 +411,7 @@ PYBIND11_MODULE(pyprt, m) {
     py::class_<GeneratedModel>(m, "GeneratedModel")
         .def("get_initial_shape_index", &GeneratedModel::getInitialShapeIndex)
         .def("get_vertices", &GeneratedModel::getVertices)
+        .def("get_indices", &GeneratedModel::getIndices)
         .def("get_faces", &GeneratedModel::getFaces)
         .def("get_report", &GeneratedModel::getReport);
 

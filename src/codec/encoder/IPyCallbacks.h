@@ -31,6 +31,7 @@ public:
         const double* vertexCoords,
         const size_t vextexCoordsCount,
         const uint32_t* facesIndices,
+        const size_t facesIndicesCount,
         const uint32_t* faceCounts,
         const size_t faceCountsCount
     ) = 0;

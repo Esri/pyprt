@@ -166,7 +166,7 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
                 vertexIndexBase += (uint32_t) verts.size() / 3;
             }
 
-            cb->addGeometry(instance.getInitialShapeIndex(), vertexCoords.data(), vertexCoords.size(), faceIndices.data(), faceCounts.data(), faceCounts.size());
+            cb->addGeometry(instance.getInitialShapeIndex(), vertexCoords.data(), vertexCoords.size(), faceIndices.data(), faceIndices.size() , faceCounts.data(), faceCounts.size());
         }
     }
 }
