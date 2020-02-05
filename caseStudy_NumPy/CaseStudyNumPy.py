@@ -2,6 +2,7 @@ import sys
 import os
 
 import pyprt
+from pyprt.pyprt_utils import vertices_vector_to_matrix, faces_indices_vectors_to_matrix
 
 import numpy as np
 import itertools
@@ -78,24 +79,13 @@ if __name__ == '__main__':
     all_faces = []
 
     for model in generated_mod:
-        model_vertices = []
-        model_faces = []
         if model:
             geo = model.get_vertices()
             ind = model.get_indices()
             face_geo = model.get_faces()
 
-            # Convert vertor of vertices into a matrix
-            for count in range(0,int(len(geo)/3)):
-                vector_per_pt = [geo[count*3], geo[count*3+1], geo[count*3+2]]
-                model_vertices.append(vector_per_pt)
-
-            # Convert faces and indices vectors into one matrix
-            offset = 0
-            for f in face_geo:
-                ind_per_face = ind[offset:offset+f]
-                offset += f
-                model_faces.append(ind_per_face)
+            model_vertices = vertices_vector_to_matrix(geo)
+            model_faces = faces_indices_vectors_to_matrix(ind, face_geo)
 
             if len(geo) > 0:
                 print('Size of the matrix containing the model vertices: (' + str(int(len(geo)/3)) + ', 3)')
