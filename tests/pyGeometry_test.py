@@ -14,16 +14,16 @@ class GeometryTest(unittest.TestCase):
     def test_verticesNber_candler(self):
         rpk = asset_file('candler.rpk')
         attrs = {'ruleFile': 'bin/candler.cgb', 'startRule': 'Default$Footprint'}
-        shape_geo_from_obj = asset_file('candler_footprint.obj')
-        m = pyprt.ModelGenerator(shape_geo_from_obj)
+        shape_geo_from_obj = pyprt.InitialShape(asset_file('candler_footprint.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {'emitReport': False, 'emitGeometry': True})
         self.assertEqual(len(model[0].get_vertices()), 97050)
 
     def test_facesNber_candler(self):
         rpk = asset_file('candler.rpk')
         attrs = {'ruleFile': 'bin/candler.cgb', 'startRule': 'Default$Footprint'}
-        shape_geo_from_obj = asset_file('candler_footprint.obj')
-        m = pyprt.ModelGenerator(shape_geo_from_obj)
+        shape_geo_from_obj = pyprt.InitialShape(asset_file('candler_footprint.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {'emitReport': False, 'emitGeometry': True})
         self.assertEqual(len(model[0].get_faces()), 47202)
 
@@ -31,8 +31,8 @@ class GeometryTest(unittest.TestCase):
         rpk = asset_file('envelope1806.rpk')
         attrs = {'ruleFile': 'rules/typology/envelope.cgb', 'startRule': 'Default$Lot',
                  'report_but_not_display_green': True}
-        shape_geo_from_obj = asset_file('bigFootprint_0.obj')
-        m = pyprt.ModelGenerator(shape_geo_from_obj)
+        shape_geo_from_obj = pyprt.InitialShape(asset_file('bigFootprint_0.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {'emitReport': True, 'emitGeometry': False})
         ground_truth_dict = {'Number of trees_avg': 1.0, 'Number of trees_max': 1.0, 'Number of trees_min': 1.0,
                              'Number of trees_n': 168.0, 'Number of trees_sum': 168.0, 'green area_avg': 3.9,
@@ -73,3 +73,19 @@ class GeometryTest(unittest.TestCase):
         for z in z_coord:
             if z:
                 self.assertAlmostEqual(abs(z), 23.0)
+
+    def test_PathAndGeometryInitShapes(self):
+        rpk = asset_file('simple_rule0819.rpk')
+        attrs = {'ruleFile': 'bin/simple_rule2019.cgb', 'startRule': 'Default$Footprint'}
+        shape_geo = pyprt.InitialShape([-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
+        shape_geo_from_obj = pyprt.InitialShape(asset_file('bigFootprint_0.obj'))
+        m1 = pyprt.ModelGenerator([shape_geo])
+        m2 = pyprt.ModelGenerator([shape_geo_from_obj]) 
+        m3 = pyprt.ModelGenerator([shape_geo, shape_geo_from_obj])
+        model1 = m1.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
+        model2 = m2.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
+        model3 = m3.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
+        self.assertEqual(model1[0].get_report(), model3[0].get_report())
+        self.assertEqual(model2[0].get_report(), model3[1].get_report())
+        self.assertListEqual(model1[0].get_vertices(), model3[0].get_vertices())
+        self.assertListEqual(model2[0].get_vertices(), model3[1].get_vertices())
