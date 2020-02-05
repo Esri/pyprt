@@ -14,7 +14,7 @@ def visualize_prt_results(models):
 
             if len(geometry_vertices) > 0:
                 print()
-                print('Size of the matrix containing the model vertices (with possible duplicates): (' + str(len(geometry_vertices)) + ', 3)')
+                print('Size of the matrix containing the model vertices (with possible duplicates): (' + str(int(len(geometry_vertices)/3)) + ', 3)')
 
                 # geo_numpy_unique, indices = np.unique(np.around(geo_numpy,decimals=3), return_index = True, axis=0)
                 # print('Size of the matrix containing the model vertices (no duplicates): ' + str(geo_numpy[indices].shape))

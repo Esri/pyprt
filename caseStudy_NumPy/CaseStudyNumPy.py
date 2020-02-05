@@ -78,16 +78,31 @@ if __name__ == '__main__':
     all_faces = []
 
     for model in generated_mod:
+        model_vertices = []
+        model_faces = []
         if model:
             geo = model.get_vertices()
+            ind = model.get_indices()
             face_geo = model.get_faces()
 
+            # Convert vertor of vertices into a matrix
+            for count in range(0,int(len(geo)/3)):
+                vector_per_pt = [geo[count*3], geo[count*3+1], geo[count*3+2]]
+                model_vertices.append(vector_per_pt)
+
+            # Convert faces and indices vectors into one matrix
+            offset = 0
+            for f in face_geo:
+                ind_per_face = ind[offset:offset+f]
+                offset += f
+                model_faces.append(ind_per_face)
+
             if len(geo) > 0:
-                print('Size of the matrix containing the model vertices: (' + str(len(geo)) + ', 3)')
-                all_vertices.append(geo)
+                print('Size of the matrix containing the model vertices: (' + str(int(len(geo)/3)) + ', 3)')
+                all_vertices.append(model_vertices)
             if len(face_geo) > 0:
                 print('Size of the matrix containing the model faces: ' + str(len(face_geo)))
-                all_faces.append(face_geo)
+                all_faces.append(model_faces)
         else:
             print('\nError while instanciating the model generator.')
 

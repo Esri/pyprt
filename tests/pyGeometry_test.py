@@ -17,7 +17,7 @@ class GeometryTest(unittest.TestCase):
         shape_geo_from_obj = asset_file('candler_footprint.obj')
         m = pyprt.ModelGenerator(shape_geo_from_obj)
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {'emitReport': False, 'emitGeometry': True})
-        self.assertEqual(len(model[0].get_vertices()), 97050)
+        self.assertEqual(len(model[0].get_vertices()), 97050*3)
 
     def test_facesNber_candler(self):
         rpk = asset_file('candler.rpk')
@@ -69,7 +69,7 @@ class GeometryTest(unittest.TestCase):
         m = pyprt.ModelGenerator([shape_geo])
         m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
         model2 = m.generate_model([attrs2])
-        z_coord = [round(b, 1) for a, b, c in model2[0].get_vertices()]
+        z_coord = [round(b, 1) for b in model2[0].get_vertices()[1:-1:3]]
         for z in z_coord:
             if z:
                 self.assertAlmostEqual(abs(z), 23.0)
