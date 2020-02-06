@@ -22,7 +22,7 @@ import pyprt
 pyprt.initialize_prt()
 ​
 //Initial Shape
-shape_geometry = pyprt.InputGeometry([0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])
+shape_geometry = pyprt.InitialShape([0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])
 ​
 //ModelGenerator Instance
 m = pyprt.ModelGenerator([shape_geometry])
