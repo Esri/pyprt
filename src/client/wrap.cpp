@@ -391,12 +391,6 @@ using namespace pybind11::literals;
 PYBIND11_MODULE(pyprt, m) {
     py::bind_vector<std::vector<GeneratedModel>>(m, "GeneratedModelVector", py::module_local(false));
 
-    py::class_<ModelGenerator>(m, "ModelGenerator")
-        .def(py::init<const std::string&>(), "initShapePath"_a)
-        .def(py::init<const std::vector<InitialShape>&>(), "initShape"_a)
-        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"), py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"))
-        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
-
     m.def("initialize_prt", &initializePRT);
     m.def("is_prt_initialized", &isPRTInitialized);
     m.def("shutdown_prt", &shutdownPRT);
@@ -408,10 +402,15 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_index_count", &InitialShape::getIndexCount)
         .def("get_face_counts_count", &InitialShape::getFaceCountsCount);
 
+    py::class_<ModelGenerator>(m, "ModelGenerator")
+        .def(py::init<const std::string&>(), "initShapePath"_a)
+        .def(py::init<const std::vector<InitialShape>&>(), "initShape"_a)
+        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"), py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"))
+        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
+
     py::class_<GeneratedModel>(m, "GeneratedModel")
         .def("get_initial_shape_index", &GeneratedModel::getInitialShapeIndex)
         .def("get_vertices", &GeneratedModel::getVertices)
         .def("get_faces", &GeneratedModel::getFaces)
         .def("get_report", &GeneratedModel::getReport);
-
 }
