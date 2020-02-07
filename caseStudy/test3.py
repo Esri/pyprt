@@ -6,8 +6,10 @@ from pyprt.pyprt_utils import visualize_prt_results
 
 CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
+
 def asset_file(filename):
     return os.path.join(os.path.dirname(CS_FOLDER), 'data', filename)
+
 
 print('\nInitializing PRT.')
 pyprt.initialize_prt()
@@ -16,18 +18,22 @@ if not pyprt.is_prt_initialized():
     raise Exception('PRT is not initialized')
 
 
-### DATA
+# DATA
 rpk1 = asset_file('test_rule.rpk')
 attrs1 = {'ruleFile': 'bin/test_rule.cgb', 'startRule': 'Default$Footprint'}
-attrs2 = {'ruleFile': 'bin/test_rule.cgb', 'startRule': 'Default$Footprint', 'minBuildingHeight': 30.0}
-attrs3 = {'ruleFile': 'bin/test_rule.cgb', 'startRule': 'Default$Footprint', 'text': 'hello'}
+attrs2 = {'ruleFile': 'bin/test_rule.cgb',
+          'startRule': 'Default$Footprint', 'minBuildingHeight': 30.0}
+attrs3 = {'ruleFile': 'bin/test_rule.cgb',
+          'startRule': 'Default$Footprint', 'text': 'hello'}
 
-### INITIAL SHAPES
-shape_geometry_1 = pyprt.InitialShape([0, 0, 0,  0, 0, 100,  100, 0, 100,  100, 0, 0])
-shape_geometry_2 = pyprt.InitialShape([0, 0, 0,  0, 0, -10,  -10, 0, -10,  -10, 0, 0, -5, 0, -5])
+# INITIAL SHAPES
+shape_geometry_1 = pyprt.InitialShape(
+    [0, 0, 0,  0, 0, 100,  100, 0, 100,  100, 0, 0])
+shape_geometry_2 = pyprt.InitialShape(
+    [0, 0, 0,  0, 0, -10,  -10, 0, -10,  -10, 0, 0, -5, 0, -5])
 
 
-### PRT GENERATION
+# PRT GENERATION
 m1 = pyprt.ModelGenerator([shape_geometry_2, shape_geometry_1])
 
 mo = m1.generate_model([attrs1, attrs2], rpk1, 'com.esri.pyprt.PyEncoder', {})
@@ -37,6 +43,6 @@ mo2 = m1.generate_model([attrs3])
 visualize_prt_results(mo2)
 
 
-### PRT END
+# PRT END
 pyprt.shutdown_prt()
 print('\nShutdown PRT.')
