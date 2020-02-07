@@ -19,7 +19,8 @@ class ExporterTest(unittest.TestCase):
         if os.path.isfile(asset_output_file('Unittest4SLPK.slpk')):
             os.remove(asset_output_file('Unittest4SLPK.slpk'))
 
-        encoder_options = {'outputPath': os.path.dirname(asset_output_file(''))}
+        encoder_options = {
+            'outputPath': os.path.dirname(asset_output_file(''))}
         os.makedirs(encoder_options['outputPath'], exist_ok=True)
 
         shape_geo_from_obj = asset_file('greenbuildingfootprint_0.obj')
@@ -32,6 +33,9 @@ class ExporterTest(unittest.TestCase):
                         'layerFeatureGranularity': ['0'], 'layerBackfaceCulling': [False], 'baseName': 'Unittest4SLPK'}
         slpk_options.update(encoder_options)
         m = pyprt.ModelGenerator(shape_geo_from_obj)
-        m.generate_model([attrs], rpk, 'com.esri.prt.codecs.I3SEncoder', slpk_options)
-        self.assertTrue(os.path.isfile(asset_output_file('Unittest4SLPK.slpk')))
-        self.assertGreater(os.stat(asset_output_file('CGAReport.txt')).st_size, 0)
+        m.generate_model(
+            [attrs], rpk, 'com.esri.prt.codecs.I3SEncoder', slpk_options)
+        self.assertTrue(os.path.isfile(
+            asset_output_file('Unittest4SLPK.slpk')))
+        self.assertGreater(
+            os.stat(asset_output_file('CGAReport.txt')).st_size, 0)

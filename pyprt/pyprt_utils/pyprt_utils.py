@@ -1,5 +1,6 @@
 #import numpy as np
 
+
 def visualize_prt_results(models):
     print('\nNumber of generated geometries (= nber of initial shapes):')
     print(len(models))
@@ -14,7 +15,8 @@ def visualize_prt_results(models):
 
             if len(geometry_vertices) > 0:
                 print()
-                print('Size of the matrix containing the model vertices (with possible duplicates): (' + str(len(geometry_vertices)) + ', 3)')
+                print('Size of the matrix containing the model vertices (with possible duplicates): (' +
+                      str(len(geometry_vertices)) + ', 3)')
 
                 # geo_numpy_unique, indices = np.unique(np.around(geo_numpy,decimals=3), return_index = True, axis=0)
                 # print('Size of the matrix containing the model vertices (no duplicates): ' + str(geo_numpy[indices].shape))
@@ -22,9 +24,10 @@ def visualize_prt_results(models):
                 # geo_unique = [x for x in geometry_vertices if tuple(x) not in temp and (temp.add(tuple(x)) or True)]
                 # print(len(geo_unique))
 
-                print('Size of the matrix containing the model faces: ' + str(len(m.get_faces())))
+                print('Size of the matrix containing the model faces: ' +
+                      str(len(m.get_faces())))
 
-            if len(rep) > 0 :
+            if len(rep) > 0:
                 print()
                 print('Report of the generated model:')
                 print(rep)

@@ -20,21 +20,29 @@ class CMakeConfig:
     def detect_cmake(self):
         cmake_home = os.getenv('CMAKE313_HOME', '')
         cmake_candidates = [
-            [os.path.join(cmake_home, 'cmake'), '--version'],  # 1. try env var (typically for CI)
-            ['cmake', '--version']                             # 2. try PATH (typically for devs)
+            # 1. try env var (typically for CI)
+            [os.path.join(cmake_home, 'cmake'), '--version'],
+            # 2. try PATH (typically for devs)
+            ['cmake', '--version']
         ]
         return self.try_alternatives('cmake', cmake_candidates)
 
     def detect_make(self):
         make_home = os.getenv('NINJA_HOME', '')
         make_candidates = [
-            [os.path.join(make_home, 'ninja'), '--version'],  # 1. try env var
-            ['ninja', '--version'],                           # 2. try PATH with ninja
-            ['ninja-build', '--version'],                     # 3. try PATH with alternative name (e.g. used in CentOS)
-            ['make', '--version'],                            # 4. try PATH with make (macos, linux)
-            ['nmake', '/?']                                   # 5. try PATH with nmake (windows)
+            # 1. try env var
+            [os.path.join(make_home, 'ninja'), '--version'],
+            # 2. try PATH with ninja
+            ['ninja', '--version'],
+            # 3. try PATH with alternative name (e.g. used in CentOS)
+            ['ninja-build', '--version'],
+            # 4. try PATH with make (macos, linux)
+            ['make', '--version'],
+            # 5. try PATH with nmake (windows)
+            ['nmake', '/?']
         ]
-        make_executable = self.try_alternatives('ninja or (n)make', make_candidates)
+        make_executable = self.try_alternatives(
+            'ninja or (n)make', make_candidates)
 
         # derive cmake generator from detected make tool
         cmake_generator = None
@@ -105,7 +113,8 @@ class CMakeBuild(build_ext):
         self.spawn(cmake_configure_command)
 
         self.announce('Building binaries', level=3)
-        cmake_build_command = [cmake.cmake_executable, '--build', self.build_temp]
+        cmake_build_command = [
+            cmake.cmake_executable, '--build', self.build_temp]
         if sys.platform.startswith('win32'):
             cmake_build_command.extend(['--config', cmake.cmake_build_type])
         self.spawn(cmake_build_command)
