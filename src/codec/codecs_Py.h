@@ -1,5 +1,5 @@
 /**
- * Esri CityEngine SDK Geometry Encoder for Python
+ * ArcGIS CityEngine SDK Geometry Encoder for Python
  *
  * Copyright (c) 2012-2020 Esri R&D Center Zurich
  *
@@ -18,11 +18,8 @@
 
 #pragma once
 
-
 #ifdef _WIN32
 #	define PYENC_EXPORTS_API __declspec(dllexport)
 #else
-#	define PYENC_EXPORTS_API __attribute__ ((visibility ("default")))
+#	define PYENC_EXPORTS_API __attribute__((visibility("default")))
 #endif
-
-
