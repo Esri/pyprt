@@ -1,5 +1,5 @@
 /**
- * Esri CityEngine SDK Geometry Encoder for Python
+ * ArcGIS CityEngine SDK Geometry Encoder for Python
  *
  * Copyright (c) 2012-2020 Esri R&D Center Zurich
  *
