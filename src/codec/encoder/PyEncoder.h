@@ -18,17 +18,16 @@
 
 #pragma once
 
-#include "prtx/prtx.h"
-#include "prtx/Encoder.h"
 #include "prtx/EncodePreparator.h"
+#include "prtx/Encoder.h"
 #include "prtx/EncoderFactory.h"
 #include "prtx/Singleton.h"
+#include "prtx/prtx.h"
 
 #include "prt/AttributeMap.h"
 #include "prt/Callbacks.h"
 
 #include <string>
-
 
 // forward declare some classes to reduce header inclusion
 namespace prtx {
@@ -37,39 +36,40 @@ class GenerateContext;
 
 class PyEncoder : public prtx::GeometryEncoder {
 public:
-	static const std::wstring ID;
-	static const std::wstring NAME;
-	static const std::wstring DESCRIPTION;
+  static const std::wstring ID;
+  static const std::wstring NAME;
+  static const std::wstring DESCRIPTION;
 
-	using prtx::GeometryEncoder::GeometryEncoder;
+  using prtx::GeometryEncoder::GeometryEncoder;
 
-    PyEncoder(const PyEncoder&) = delete;
-    PyEncoder(PyEncoder&&) = delete;
-    PyEncoder& operator=(PyEncoder&) = delete;
-	virtual ~PyEncoder() = default;
+  PyEncoder(const PyEncoder &) = delete;
+  PyEncoder(PyEncoder &&) = delete;
+  PyEncoder &operator=(PyEncoder &) = delete;
+  virtual ~PyEncoder() = default;
 
-	virtual void init(prtx::GenerateContext& context) override;
-	virtual void encode(prtx::GenerateContext& context, size_t initialShapeIndex) override;
-	virtual void finish(prtx::GenerateContext& context) override;
+  virtual void init(prtx::GenerateContext &context) override;
+  virtual void encode(prtx::GenerateContext &context,
+                      size_t initialShapeIndex) override;
+  virtual void finish(prtx::GenerateContext &context) override;
 
 private:
-	prtx::DefaultNamePreparator mNamePreparator;
-	prtx::EncodePreparatorPtr   mEncodePreparator;
+  prtx::DefaultNamePreparator mNamePreparator;
+  prtx::EncodePreparatorPtr mEncodePreparator;
 };
 
-
-class PyEncoderFactory : public prtx::EncoderFactory, public prtx::Singleton<PyEncoderFactory> {
+class PyEncoderFactory : public prtx::EncoderFactory,
+                         public prtx::Singleton<PyEncoderFactory> {
 public:
-	static PyEncoderFactory* createInstance();
+  static PyEncoderFactory *createInstance();
 
-    PyEncoderFactory(const prt::EncoderInfo* info) : prtx::EncoderFactory(info) { }
-    PyEncoderFactory(const PyEncoderFactory&) = delete;
-    PyEncoderFactory(PyEncoderFactory&&) = delete;
-    PyEncoderFactory& operator=(PyEncoderFactory&) = delete;
-	virtual ~PyEncoderFactory() = default;
+  PyEncoderFactory(const prt::EncoderInfo *info) : prtx::EncoderFactory(info) {}
+  PyEncoderFactory(const PyEncoderFactory &) = delete;
+  PyEncoderFactory(PyEncoderFactory &&) = delete;
+  PyEncoderFactory &operator=(PyEncoderFactory &) = delete;
+  virtual ~PyEncoderFactory() = default;
 
-	virtual PyEncoder* create(const prt::AttributeMap* defaultOptions, prt::Callbacks* callbacks) const override {
-		return new PyEncoder(getID(), defaultOptions, callbacks);
-	}
-
+  virtual PyEncoder *create(const prt::AttributeMap *defaultOptions,
+                            prt::Callbacks *callbacks) const override {
+    return new PyEncoder(getID(), defaultOptions, callbacks);
+  }
 };
