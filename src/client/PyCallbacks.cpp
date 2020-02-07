@@ -23,50 +23,42 @@
 
 namespace py = pybind11;
 
-void PyCallbacks::addGeometry(const size_t initialShapeIndex,
-                              const double *vertexCoords,
-                              const size_t vertexCoordsCount,
-                              const uint32_t *facesIndices,
-                              const uint32_t *faceCounts,
+void PyCallbacks::addGeometry(const size_t initialShapeIndex, const double* vertexCoords,
+                              const size_t vertexCoordsCount, const uint32_t* facesIndices, const uint32_t* faceCounts,
                               const size_t faceCountsCount) {
 
-  if (vertexCoords != nullptr)
-    mModels[initialShapeIndex].mVertices.insert(
-        mModels[initialShapeIndex].mVertices.end(), vertexCoords,
-        vertexCoords + vertexCoordsCount);
+	if (vertexCoords != nullptr)
+		mModels[initialShapeIndex].mVertices.insert(mModels[initialShapeIndex].mVertices.end(), vertexCoords,
+		                                            vertexCoords + vertexCoordsCount);
 
-  if (facesIndices != nullptr && faceCounts != nullptr) {
-    mModels[initialShapeIndex].mFaces.reserve(
-        mModels[initialShapeIndex].mFaces.size() + faceCountsCount);
-    size_t vertexIndexBase = 0;
-    for (uint32_t ind = 0; ind < faceCountsCount; ind++) {
-      mModels[initialShapeIndex].mFaces.emplace_back(
-          facesIndices + vertexIndexBase,
-          facesIndices + vertexIndexBase + faceCounts[ind]);
-      vertexIndexBase += faceCounts[ind];
-    }
-  }
+	if (facesIndices != nullptr && faceCounts != nullptr) {
+		mModels[initialShapeIndex].mFaces.reserve(mModels[initialShapeIndex].mFaces.size() + faceCountsCount);
+		size_t vertexIndexBase = 0;
+		for (uint32_t ind = 0; ind < faceCountsCount; ind++) {
+			mModels[initialShapeIndex].mFaces.emplace_back(facesIndices + vertexIndexBase,
+			                                               facesIndices + vertexIndexBase + faceCounts[ind]);
+			vertexIndexBase += faceCounts[ind];
+		}
+	}
 }
 
-void PyCallbacks::addReports(
-    const size_t initialShapeIndex, const wchar_t **stringReportKeys,
-    const wchar_t **stringReportValues, size_t stringReportCount,
-    const wchar_t **floatReportKeys, const double *floatReportValues,
-    size_t floatReportCount, const wchar_t **boolReportKeys,
-    const bool *boolReportValues, size_t boolReportCount) {
+void PyCallbacks::addReports(const size_t initialShapeIndex, const wchar_t** stringReportKeys,
+                             const wchar_t** stringReportValues, size_t stringReportCount,
+                             const wchar_t** floatReportKeys, const double* floatReportValues, size_t floatReportCount,
+                             const wchar_t** boolReportKeys, const bool* boolReportValues, size_t boolReportCount) {
 
-  for (size_t i = 0; i < boolReportCount; i++) {
-    py::object pyKey = py::cast(boolReportKeys[i]);
-    mModels[initialShapeIndex].mCGAReport[pyKey] = boolReportValues[i];
-  }
+	for (size_t i = 0; i < boolReportCount; i++) {
+		py::object pyKey = py::cast(boolReportKeys[i]);
+		mModels[initialShapeIndex].mCGAReport[pyKey] = boolReportValues[i];
+	}
 
-  for (size_t i = 0; i < floatReportCount; i++) {
-    py::object pyKey = py::cast(floatReportKeys[i]);
-    mModels[initialShapeIndex].mCGAReport[pyKey] = floatReportValues[i];
-  }
+	for (size_t i = 0; i < floatReportCount; i++) {
+		py::object pyKey = py::cast(floatReportKeys[i]);
+		mModels[initialShapeIndex].mCGAReport[pyKey] = floatReportValues[i];
+	}
 
-  for (size_t i = 0; i < stringReportCount; i++) {
-    py::object pyKey = py::cast(stringReportKeys[i]);
-    mModels[initialShapeIndex].mCGAReport[pyKey] = stringReportValues[i];
-  }
+	for (size_t i = 0; i < stringReportCount; i++) {
+		py::object pyKey = py::cast(stringReportKeys[i]);
+		mModels[initialShapeIndex].mCGAReport[pyKey] = stringReportValues[i];
+	}
 }

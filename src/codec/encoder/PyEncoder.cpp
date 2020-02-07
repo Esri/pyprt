@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#include "PyEncoder.h"
 #include "IPyCallbacks.h"
+#include "PyEncoder.h"
 
 #include "prtx/Attributable.h"
 #include "prtx/EncodeOptions.h"
@@ -39,188 +39,176 @@
 
 namespace {
 
-const wchar_t *EO_BASE_NAME = L"baseName";
-const wchar_t *EO_ERROR_FALLBACK = L"errorFallback";
+const wchar_t* EO_BASE_NAME = L"baseName";
+const wchar_t* EO_ERROR_FALLBACK = L"errorFallback";
 const std::wstring ENCFILE_EXT = L".txt";
-const wchar_t *EO_EMIT_REPORT = L"emitReport";
-const wchar_t *EO_EMIT_GEOMETRY = L"emitGeometry";
+const wchar_t* EO_EMIT_REPORT = L"emitReport";
+const wchar_t* EO_EMIT_GEOMETRY = L"emitGeometry";
 
 const prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS =
-    prtx::EncodePreparator::PreparationFlags()
-        .instancing(false)
-        .triangulate(false)
-        .mergeVertices(false)
-        .cleanupUVs(false)
-        .cleanupVertexNormals(false)
-        .mergeByMaterial(true); // if false, generation takes ages... 40 sec
-                                // instead of 1.5 sec
+        prtx::EncodePreparator::PreparationFlags()
+                .instancing(false)
+                .triangulate(false)
+                .mergeVertices(false)
+                .cleanupUVs(false)
+                .cleanupVertexNormals(false)
+                .mergeByMaterial(true); // if false, generation takes ages... 40 sec
+                                        // instead of 1.5 sec
 } // namespace
 
 const std::wstring PyEncoder::ID = L"com.esri.pyprt.PyEncoder";
 const std::wstring PyEncoder::NAME = L"Python Geometry and Report Encoder";
-const std::wstring PyEncoder::DESCRIPTION =
-    L"Encodes geometry and CGA report for Python.";
+const std::wstring PyEncoder::DESCRIPTION = L"Encodes geometry and CGA report for Python.";
 
 /**
  * Setup two namespaces for mesh and material objects and initialize the encode
  * preprator. The namespaces are used to create unique names for all mesh and
  * material objects.
  */
-void PyEncoder::init(prtx::GenerateContext & /*context*/) {
-  prtx::NamePreparator::NamespacePtr nsMaterials =
-      mNamePreparator.newNamespace();
-  prtx::NamePreparator::NamespacePtr nsMeshes = mNamePreparator.newNamespace();
-  mEncodePreparator = prtx::EncodePreparator::create(true, mNamePreparator,
-                                                     nsMeshes, nsMaterials);
+void PyEncoder::init(prtx::GenerateContext& /*context*/) {
+	prtx::NamePreparator::NamespacePtr nsMaterials = mNamePreparator.newNamespace();
+	prtx::NamePreparator::NamespacePtr nsMeshes = mNamePreparator.newNamespace();
+	mEncodePreparator = prtx::EncodePreparator::create(true, mNamePreparator, nsMeshes, nsMaterials);
 }
 
 /**
  * During encoding we collect the resulting shapes and reports with the encode
  * preparator. In case the shape generation fails, we collect the initial shape.
  */
-void PyEncoder::encode(prtx::GenerateContext &context,
-                       size_t initialShapeIndex) {
+void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex) {
 
-  const prtx::InitialShape *is = context.getInitialShape(initialShapeIndex);
-  auto *cb = dynamic_cast<IPyCallbacks *>(getCallbacks());
-  if (cb == nullptr)
-    throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
+	const prtx::InitialShape* is = context.getInitialShape(initialShapeIndex);
+	auto* cb = dynamic_cast<IPyCallbacks*>(getCallbacks());
+	if (cb == nullptr)
+		throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
 
-  if (getOptions()->getBool(EO_EMIT_REPORT)) {
-    prtx::ReportsAccumulatorPtr reportsAccumulator{
-        prtx::SummarizingReportsAccumulator::create()};
-    prtx::ReportingStrategyPtr reportsCollector{
-        prtx::AllShapesReportingStrategy::create(context, initialShapeIndex,
-                                                 reportsAccumulator)};
+	if (getOptions()->getBool(EO_EMIT_REPORT)) {
+		prtx::ReportsAccumulatorPtr reportsAccumulator{prtx::SummarizingReportsAccumulator::create()};
+		prtx::ReportingStrategyPtr reportsCollector{
+		        prtx::AllShapesReportingStrategy::create(context, initialShapeIndex, reportsAccumulator)};
 
-    prtx::ReportsPtr rep = reportsCollector->getReports();
+		prtx::ReportsPtr rep = reportsCollector->getReports();
 
-    if (rep) {
-      const prtx::Shape::ReportBoolVect &boolReps = rep->mBools;
-      const size_t boolRepCount = boolReps.size();
-      std::vector<const wchar_t *> boolRepKeys(boolRepCount);
-      std::unique_ptr<bool[]> boolRepValues(new bool[boolRepCount]);
+		if (rep) {
+			const prtx::Shape::ReportBoolVect& boolReps = rep->mBools;
+			const size_t boolRepCount = boolReps.size();
+			std::vector<const wchar_t*> boolRepKeys(boolRepCount);
+			std::unique_ptr<bool[]> boolRepValues(new bool[boolRepCount]);
 
-      for (size_t i = 0; i < boolRepCount; i++) {
-        boolRepKeys[i] = boolReps[i].first->c_str();
-        boolRepValues[i] = boolReps[i].second;
-      }
+			for (size_t i = 0; i < boolRepCount; i++) {
+				boolRepKeys[i] = boolReps[i].first->c_str();
+				boolRepValues[i] = boolReps[i].second;
+			}
 
-      const prtx::Shape::ReportFloatVect &floatReps = rep->mFloats;
-      const size_t floatRepCount = floatReps.size();
-      std::vector<const wchar_t *> floatRepKeys(floatRepCount);
-      std::vector<double> floatRepValues(floatRepCount);
+			const prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
+			const size_t floatRepCount = floatReps.size();
+			std::vector<const wchar_t*> floatRepKeys(floatRepCount);
+			std::vector<double> floatRepValues(floatRepCount);
 
-      for (size_t i = 0; i < floatRepCount; i++) {
-        floatRepKeys[i] = floatReps[i].first->c_str();
-        floatRepValues[i] = floatReps[i].second;
-      }
+			for (size_t i = 0; i < floatRepCount; i++) {
+				floatRepKeys[i] = floatReps[i].first->c_str();
+				floatRepValues[i] = floatReps[i].second;
+			}
 
-      const prtx::Shape::ReportStringVect &stringReps = rep->mStrings;
-      const size_t stringRepCount = stringReps.size();
-      std::vector<const wchar_t *> stringRepKeys(stringRepCount);
-      std::vector<const wchar_t *> stringRepValues(stringRepCount);
+			const prtx::Shape::ReportStringVect& stringReps = rep->mStrings;
+			const size_t stringRepCount = stringReps.size();
+			std::vector<const wchar_t*> stringRepKeys(stringRepCount);
+			std::vector<const wchar_t*> stringRepValues(stringRepCount);
 
-      for (size_t i = 0; i < stringRepCount; i++) {
-        stringRepKeys[i] = stringReps[i].first->c_str();
-        stringRepValues[i] = stringReps[i].second->c_str();
-      }
+			for (size_t i = 0; i < stringRepCount; i++) {
+				stringRepKeys[i] = stringReps[i].first->c_str();
+				stringRepValues[i] = stringReps[i].second->c_str();
+			}
 
-      cb->addReports(initialShapeIndex, stringRepKeys.data(),
-                     stringRepValues.data(), stringRepCount,
-                     floatRepKeys.data(), floatRepValues.data(), floatRepCount,
-                     boolRepKeys.data(), boolRepValues.get(), boolRepCount);
-    }
-  }
+			cb->addReports(initialShapeIndex, stringRepKeys.data(), stringRepValues.data(), stringRepCount,
+			               floatRepKeys.data(), floatRepValues.data(), floatRepCount, boolRepKeys.data(),
+			               boolRepValues.get(), boolRepCount);
+		}
+	}
 
-  if (getOptions()->getBool(EO_EMIT_GEOMETRY)) {
-    try {
-      const prtx::LeafIteratorPtr li =
-          prtx::LeafIterator::create(context, initialShapeIndex);
+	if (getOptions()->getBool(EO_EMIT_GEOMETRY)) {
+		try {
+			const prtx::LeafIteratorPtr li = prtx::LeafIterator::create(context, initialShapeIndex);
 
-      for (prtx::ShapePtr shape = li->getNext(); shape.get() != nullptr;
-           shape = li->getNext()) {
-        mEncodePreparator->add(context.getCache(), shape,
-                               is->getAttributeMap());
-      }
-    } catch (...) {
-      mEncodePreparator->add(context.getCache(), *is, initialShapeIndex);
-    }
+			for (prtx::ShapePtr shape = li->getNext(); shape.get() != nullptr; shape = li->getNext()) {
+				mEncodePreparator->add(context.getCache(), shape, is->getAttributeMap());
+			}
+		}
+		catch (...) {
+			mEncodePreparator->add(context.getCache(), *is, initialShapeIndex);
+		}
 
-    std::vector<prtx::EncodePreparator::FinalizedInstance> finalizedInstances;
-    mEncodePreparator->fetchFinalizedInstances(finalizedInstances,
-                                               ENC_PREP_FLAGS);
-    uint32_t vertexIndexBase = 0;
+		std::vector<prtx::EncodePreparator::FinalizedInstance> finalizedInstances;
+		mEncodePreparator->fetchFinalizedInstances(finalizedInstances, ENC_PREP_FLAGS);
+		uint32_t vertexIndexBase = 0;
 
-    std::vector<double> vertexCoords;
-    std::vector<uint32_t> faceIndices;
-    std::vector<uint32_t> faceCounts;
+		std::vector<double> vertexCoords;
+		std::vector<uint32_t> faceIndices;
+		std::vector<uint32_t> faceCounts;
 
-    for (const auto &instance : finalizedInstances) {
-      const prtx::MeshPtrVector &meshes = instance.getGeometry()->getMeshes();
+		for (const auto& instance : finalizedInstances) {
+			const prtx::MeshPtrVector& meshes = instance.getGeometry()->getMeshes();
 
-      vertexCoords.clear();
-      faceIndices.clear();
-      faceCounts.clear();
+			vertexCoords.clear();
+			faceIndices.clear();
+			faceCounts.clear();
 
-      for (const auto &mesh : meshes) {
-        const prtx::DoubleVector &verts = mesh->getVertexCoords();
-        vertexCoords.insert(vertexCoords.end(), verts.begin(), verts.end());
+			for (const auto& mesh : meshes) {
+				const prtx::DoubleVector& verts = mesh->getVertexCoords();
+				vertexCoords.insert(vertexCoords.end(), verts.begin(), verts.end());
 
-        for (uint32_t fi = 0; fi < mesh->getFaceCount(); ++fi) {
-          const uint32_t *vtxIdx = mesh->getFaceVertexIndices(fi);
-          const uint32_t vtxCnt = mesh->getFaceVertexCount(fi);
-          faceCounts.push_back(vtxCnt);
-          for (uint32_t vi = 0; vi < vtxCnt; vi++)
-            faceIndices.push_back(vtxIdx[vi] + vertexIndexBase);
-        }
-        vertexIndexBase += (uint32_t)verts.size() / 3;
-      }
+				for (uint32_t fi = 0; fi < mesh->getFaceCount(); ++fi) {
+					const uint32_t* vtxIdx = mesh->getFaceVertexIndices(fi);
+					const uint32_t vtxCnt = mesh->getFaceVertexCount(fi);
+					faceCounts.push_back(vtxCnt);
+					for (uint32_t vi = 0; vi < vtxCnt; vi++)
+						faceIndices.push_back(vtxIdx[vi] + vertexIndexBase);
+				}
+				vertexIndexBase += (uint32_t)verts.size() / 3;
+			}
 
-      cb->addGeometry(instance.getInitialShapeIndex(), vertexCoords.data(),
-                      vertexCoords.size(), faceIndices.data(),
-                      faceCounts.data(), faceCounts.size());
-    }
-  }
+			cb->addGeometry(instance.getInitialShapeIndex(), vertexCoords.data(), vertexCoords.size(),
+			                faceIndices.data(), faceCounts.data(), faceCounts.size());
+		}
+	}
 }
 
-void PyEncoder::finish(prtx::GenerateContext & /*context*/) {}
+void PyEncoder::finish(prtx::GenerateContext& /*context*/) {}
 
 /**
  * Create the encoder factory singleton and define the default options.
  */
-PyEncoderFactory *PyEncoderFactory::createInstance() {
-  prtx::EncoderInfoBuilder encoderInfoBuilder;
+PyEncoderFactory* PyEncoderFactory::createInstance() {
+	prtx::EncoderInfoBuilder encoderInfoBuilder;
 
-  encoderInfoBuilder.setID(PyEncoder::ID);
-  encoderInfoBuilder.setName(PyEncoder::NAME);
-  encoderInfoBuilder.setDescription(PyEncoder::DESCRIPTION);
-  encoderInfoBuilder.setType(prt::CT_GEOMETRY);
-  encoderInfoBuilder.setExtension(ENCFILE_EXT);
+	encoderInfoBuilder.setID(PyEncoder::ID);
+	encoderInfoBuilder.setName(PyEncoder::NAME);
+	encoderInfoBuilder.setDescription(PyEncoder::DESCRIPTION);
+	encoderInfoBuilder.setType(prt::CT_GEOMETRY);
+	encoderInfoBuilder.setExtension(ENCFILE_EXT);
 
-  // optionally we could setup a validator
-  // encoderInfoBuilder.setValidator(prtx::EncodeOptionsValidatorPtr(new
-  // MyOptionsValidator()));
+	// optionally we could setup a validator
+	// encoderInfoBuilder.setValidator(prtx::EncodeOptionsValidatorPtr(new
+	// MyOptionsValidator()));
 
-  prtx::PRTUtils::AttributeMapBuilderPtr amb(
-      prt::AttributeMapBuilder::create());
-  amb->setString(EO_BASE_NAME, L"enc_default_name"); // required by CityEngine
-  amb->setBool(EO_ERROR_FALLBACK, prtx::PRTX_TRUE);  // required by CityEngine
-  amb->setBool(EO_EMIT_REPORT, prtx::PRTX_TRUE);
-  amb->setBool(EO_EMIT_GEOMETRY, prtx::PRTX_TRUE);
-  encoderInfoBuilder.setDefaultOptions(amb->createAttributeMap());
+	prtx::PRTUtils::AttributeMapBuilderPtr amb(prt::AttributeMapBuilder::create());
+	amb->setString(EO_BASE_NAME, L"enc_default_name"); // required by CityEngine
+	amb->setBool(EO_ERROR_FALLBACK, prtx::PRTX_TRUE);  // required by CityEngine
+	amb->setBool(EO_EMIT_REPORT, prtx::PRTX_TRUE);
+	amb->setBool(EO_EMIT_GEOMETRY, prtx::PRTX_TRUE);
+	encoderInfoBuilder.setDefaultOptions(amb->createAttributeMap());
 
-  // CityEngine requires the following annotations to create an UI for an
-  // option: label, order, group and description
-  prtx::EncodeOptionsAnnotator eoa(encoderInfoBuilder);
-  eoa.option(EO_BASE_NAME)
-      .setLabel(L"Base Name")
-      .setOrder(0.0)
-      .setGroup(L"General Settings", 0.0)
-      .setDescription(L"Sets the base name of the written file.");
+	// CityEngine requires the following annotations to create an UI for an
+	// option: label, order, group and description
+	prtx::EncodeOptionsAnnotator eoa(encoderInfoBuilder);
+	eoa.option(EO_BASE_NAME)
+	        .setLabel(L"Base Name")
+	        .setOrder(0.0)
+	        .setGroup(L"General Settings", 0.0)
+	        .setDescription(L"Sets the base name of the written file.");
 
-  // Hide the error fallback option in the CityEngine UI.
-  eoa.option(EO_ERROR_FALLBACK).flagAsHidden();
+	// Hide the error fallback option in the CityEngine UI.
+	eoa.option(EO_ERROR_FALLBACK).flagAsHidden();
 
-  return new PyEncoderFactory(encoderInfoBuilder.create());
+	return new PyEncoderFactory(encoderInfoBuilder.create());
 }

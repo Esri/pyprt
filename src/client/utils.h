@@ -37,69 +37,55 @@ namespace py = pybind11;
 
 namespace pcu {
 
-enum class RunStatus : uint8_t {
-  DONE = EXIT_SUCCESS,
-  FAILED = EXIT_FAILURE,
-  CONTINUE = 2
-};
+enum class RunStatus : uint8_t { DONE = EXIT_SUCCESS, FAILED = EXIT_FAILURE, CONTINUE = 2 };
 
 /**
  * helpers for prt object management
  */
 struct PRTDestroyer {
-  void operator()(const prt::Object *p) const {
-    if (p)
-      p->destroy();
-  }
+	void operator()(const prt::Object* p) const {
+		if (p)
+			p->destroy();
+	}
 };
 
 using ObjectPtr = std::unique_ptr<const prt::Object, PRTDestroyer>;
 using CachePtr = std::unique_ptr<prt::CacheObject, PRTDestroyer>;
 using ResolveMapPtr = std::unique_ptr<const prt::ResolveMap, PRTDestroyer>;
 using InitialShapePtr = std::unique_ptr<const prt::InitialShape, PRTDestroyer>;
-using InitialShapeBuilderPtr =
-    std::unique_ptr<prt::InitialShapeBuilder, PRTDestroyer>;
+using InitialShapeBuilderPtr = std::unique_ptr<prt::InitialShapeBuilder, PRTDestroyer>;
 using AttributeMapPtr = std::unique_ptr<const prt::AttributeMap, PRTDestroyer>;
-using AttributeMapBuilderPtr =
-    std::unique_ptr<prt::AttributeMapBuilder, PRTDestroyer>;
-using FileOutputCallbacksPtr =
-    std::unique_ptr<prt::FileOutputCallbacks, PRTDestroyer>;
-using ConsoleLogHandlerPtr =
-    std::unique_ptr<prt::ConsoleLogHandler, PRTDestroyer>;
+using AttributeMapBuilderPtr = std::unique_ptr<prt::AttributeMapBuilder, PRTDestroyer>;
+using FileOutputCallbacksPtr = std::unique_ptr<prt::FileOutputCallbacks, PRTDestroyer>;
+using ConsoleLogHandlerPtr = std::unique_ptr<prt::ConsoleLogHandler, PRTDestroyer>;
 using FileLogHandlerPtr = std::unique_ptr<prt::FileLogHandler, PRTDestroyer>;
 using EncoderInfoPtr = std::unique_ptr<const prt::EncoderInfo, PRTDestroyer>;
 using DecoderInfoPtr = std::unique_ptr<const prt::DecoderInfo, PRTDestroyer>;
-using SimpleOutputCallbacksPtr =
-    std::unique_ptr<prt::SimpleOutputCallbacks, PRTDestroyer>;
+using SimpleOutputCallbacksPtr = std::unique_ptr<prt::SimpleOutputCallbacks, PRTDestroyer>;
 using PyCallbacksPtr = std::unique_ptr<PyCallbacks>;
 
 /**
  * prt encoder options helpers
  */
-AttributeMapPtr createAttributeMapFromPythonDict(py::dict args,
-                                                 prt::AttributeMapBuilder &bld);
-AttributeMapPtr
-createValidatedOptions(const std::wstring &encID,
-                       const AttributeMapPtr &unvalidatedOptions);
+AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, prt::AttributeMapBuilder& bld);
+AttributeMapPtr createValidatedOptions(const std::wstring& encID, const AttributeMapPtr& unvalidatedOptions);
 
 /**
  * prt specific conversion functions
  */
 
 template <typename C>
-std::vector<const C *> toPtrVec(const std::vector<std::basic_string<C>> &sv) {
-  std::vector<const C *> pv(sv.size());
-  std::transform(sv.begin(), sv.end(), pv.begin(),
-                 [](const auto &s) { return s.c_str(); });
-  return pv;
+std::vector<const C*> toPtrVec(const std::vector<std::basic_string<C>>& sv) {
+	std::vector<const C*> pv(sv.size());
+	std::transform(sv.begin(), sv.end(), pv.begin(), [](const auto& s) { return s.c_str(); });
+	return pv;
 }
 
 template <typename C, typename D>
-std::vector<const C *> toPtrVec(const std::vector<std::unique_ptr<C, D>> &sv) {
-  std::vector<const C *> pv(sv.size());
-  std::transform(sv.begin(), sv.end(), pv.begin(),
-                 [](const std::unique_ptr<C, D> &s) { return s.get(); });
-  return pv;
+std::vector<const C*> toPtrVec(const std::vector<std::unique_ptr<C, D>>& sv) {
+	std::vector<const C*> pv(sv.size());
+	std::transform(sv.begin(), sv.end(), pv.begin(), [](const std::unique_ptr<C, D>& s) { return s.get(); });
+	return pv;
 }
 
 /**
@@ -107,18 +93,18 @@ std::vector<const C *> toPtrVec(const std::vector<std::unique_ptr<C, D>> &sv) {
  */
 using URI = std::string;
 
-std::string toOSNarrowFromUTF16(const std::wstring &osWString);
-std::wstring toUTF16FromOSNarrow(const std::string &osString);
-std::wstring toUTF16FromUTF8(const std::string &utf8String);
-std::string toUTF8FromOSNarrow(const std::string &osString);
-std::string percentEncode(const std::string &utf8String);
-URI toFileURI(const std::string &p);
+std::string toOSNarrowFromUTF16(const std::wstring& osWString);
+std::wstring toUTF16FromOSNarrow(const std::string& osString);
+std::wstring toUTF16FromUTF8(const std::string& utf8String);
+std::string toUTF8FromOSNarrow(const std::string& osString);
+std::string percentEncode(const std::string& utf8String);
+URI toFileURI(const std::string& p);
 
 /**
  * XML helpers
  */
-std::string objectToXML(const prt::Object *obj);
-RunStatus codecInfoToXML(const std::string &infoFilePath);
+std::string objectToXML(const prt::Object* obj);
+RunStatus codecInfoToXML(const std::string& infoFilePath);
 
 /**
  * default initial shape geometry (a quad)
