@@ -20,9 +20,64 @@ PyPRT allows generating 3D models on multiple initial geometries. Different inpu
 
 ## Downloads
 
+| ![Linux](images/linux.png)   | PyPRT 1.0, PRT 2.0 |
+| ![Windows](images/win32.png) | PyPRT 1.0, PRT 2.0 |
 
 ## Examples
 
+<table>
+
+<tr><td colspan="2"><h3>3D Model Optimization</h3></td></tr>
+<tr>
+	<td width="420px">
+		<a href="images/green_building_parameters.jpg"><img src="images/green_building_parameters.jpg" width="400" /></a>
+	</td>
+	<td>
+		<p>In this example, we want to answer the following question:
+		given the architectural design of a building (defined by the CGA rule) and the parcel, which value of the building parameters should we choose in order to maximize the building green potential?
+		The Jupyter Notebook goes through different steps:
+		<ol>
+			<li>Specify the desired CGA rule package and parcel to build on.</li>
+			<li>Greenery optimization: optimize the total green area reported by taking into account the shape of the building, the lot coverage and the height of the building first tier.</li>
+			<li>Multi-objectives optimization: optimize the total green area and the floor area in a O-shape building, by taking into account the lot coverage and the height of the building first tier.</li>
+			<li>Visualize the results.</li>
+		</ol>
+		Link to the example notebook.
+		</p>
+	</td>
+</tr>
+
+<tr><td colspan="2"><h3>3D GIS Content Creation</h3></td></tr>
+<tr>
+	<td>
+		<a href="images/generated_trees.png"><img src="images/generated_trees.png" width="400" /></a>
+	</td>
+	<td>
+		<p>This example presents a possible worklow consisting of collecting and selecting city parcels, and populating them with procedurally generated trees. To do so, PyPRT is used in combination with other Python libraries, e.g. the ArcGIS API for Python.
+		The Jupyter Notebook goes through different steps:
+		<ol>
+			<li>Get buildings parcels from ArcGIS Online and show them on a map.</li>
+			<li>Select parcels to redevelop.</li>
+			<li>PRT generation using the GreenspaceConstruction CGA rule package and export as a Scene Layer Package (SLPK).</li>
+			<li>Upload and publish the generated SLPK on ArcGIS Online.</li>
+			<li>Visualize the results.</li>
+		</ol>
+		Link to the example notebook.
+		</p>
+	</td>
+</tr>
+
+<tr><td colspan="2"><h3>Other Examples</h3></td></tr>
+<tr>
+	<td>
+	</td>
+	<td>
+		<p>Other examples of PyPRT usage are located in the "pyprt-samples" Github repo. Ready-to-use rule packages and initial shapes are available there.
+	</p>
+	</td>
+</tr>
+
+</table>
 
 ## Licensing
 
