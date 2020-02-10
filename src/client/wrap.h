@@ -161,8 +161,8 @@ public:
 	size_t getIndexCount() const { return mIndices.size(); }
 	const uint32_t* getFaceCounts() const { return mFaceCounts.data(); }
 	size_t getFaceCountsCount() const { return mFaceCounts.size(); }
-    const std::string getPath() const { return mPath; }
-    const bool getPathFlag() const { return mPathFlag; }
+    const std::string& getPath() const { return mPath; }
+    bool getPathFlag() const { return mPathFlag; }
 
 protected:
 	const std::vector<double>     mVertices;
