@@ -30,7 +30,7 @@ PyPRT allows generating 3D models on multiple initial geometries. Different inpu
 <tr><td colspan="2"><h3>3D Model Optimization</h3></td></tr>
 <tr>
 	<td width="420px">
-		<a href="images/green_building_parameters.jpg"><img src="images/green_building_parameters.jpg" width="400" /></a>
+		<a href="images/greenbuildingparameters.jpg"><img src="images/greenbuildingparameters.jpg" width="400" /></a>
 	</td>
 	<td>
 		<p>In this example, we want to answer the following question:
@@ -50,7 +50,7 @@ PyPRT allows generating 3D models on multiple initial geometries. Different inpu
 <tr><td colspan="2"><h3>3D GIS Content Creation</h3></td></tr>
 <tr>
 	<td>
-		<a href="images/generated_trees.png"><img src="images/generated_trees.png" width="400" /></a>
+		<a href="images/generatedtrees.png"><img src="images/generatedtrees.png" width="400" /></a>
 	</td>
 	<td>
 		<p>This example presents a possible worklow consisting of collecting and selecting city parcels, and populating them with procedurally generated trees. To do so, PyPRT is used in combination with other Python libraries, e.g. the ArcGIS API for Python.
@@ -72,7 +72,7 @@ PyPRT allows generating 3D models on multiple initial geometries. Different inpu
 	<td>
 	</td>
 	<td>
-		<p>Other examples of PyPRT usage are located in the "pyprt-samples" Github repo. Ready-to-use rule packages and initial shapes are available there.
+		<p>Other examples of PyPRT usage are located in the "[pyprt-examples](https://github.com/Esri/pyprt-examples)" Github repo. Ready-to-use rule packages and initial shapes are available there.
 	</p>
 	</td>
 </tr>
