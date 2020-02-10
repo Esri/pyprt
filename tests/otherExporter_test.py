@@ -22,7 +22,7 @@ class ExporterTest(unittest.TestCase):
         encoder_options = {'outputPath': os.path.dirname(asset_output_file(''))}
         os.makedirs(encoder_options['outputPath'], exist_ok=True)
 
-        shape_geo_from_obj = asset_file('greenbuildingfootprint_0.obj')
+        shape_geo_from_obj = pyprt.InitialShape(asset_file('greenbuildingfootprint_0.obj'))
         rpk = asset_file('Building_From_FootprintSMALL.rpk')
         attrs = {'ruleFile': 'bin/Building_From_FootprintSMALL.cgb', 'startRule': 'Default$Generate',
                  'Reporting': 'All'}
@@ -31,7 +31,7 @@ class ExporterTest(unittest.TestCase):
                         'layerTextureScaling': [1.0], 'layerTextureMaxDimension': [2048],
                         'layerFeatureGranularity': ['0'], 'layerBackfaceCulling': [False], 'baseName': 'Unittest4SLPK'}
         slpk_options.update(encoder_options)
-        m = pyprt.ModelGenerator(shape_geo_from_obj)
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
         m.generate_model([attrs], rpk, 'com.esri.prt.codecs.I3SEncoder', slpk_options)
         self.assertTrue(os.path.isfile(asset_output_file('Unittest4SLPK.slpk')))
         self.assertGreater(os.stat(asset_output_file('CGAReport.txt')).st_size, 0)

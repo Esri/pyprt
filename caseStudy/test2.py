@@ -23,13 +23,13 @@ if not pyprt.is_prt_initialized():
 # attrs = {'ruleFile': 'rules/Buildings/Building_From_Footprint.cgb', 'startRule': 'Default$Generate', 'Reporting': 'All'}
 # attrs2 = {'Reporting': 'None'}
 
-shapeGeo = asset_file('greenbuildingfootprint_0.obj')
+shapeGeo = pyprt.InitialShape(asset_file('greenbuildingfootprint_0.obj'))
 rpk = asset_file('envelope1806.rpk')
 attrs = {'ruleFile': 'rules/typology/envelope.cgb', 'startRule': 'Default$Lot', 'report_but_not_display_green': True}
 attrs2 = {'ruleFile': 'rules/typology/envelope.cgb', 'startRule': 'Default$Lot', 'report_but_not_display_green': False}
 
 
-m = pyprt.ModelGenerator(shapeGeo)
+m = pyprt.ModelGenerator([shapeGeo])
 models = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {'emitGeometry': False})
 
 visualize_prt_results(models)

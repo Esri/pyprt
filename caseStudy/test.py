@@ -20,22 +20,32 @@ if not pyprt.is_prt_initialized():
     raise Exception('PRT is not initialized')
 
 # Python bindings PRT generation tests
+## TEST 0: rule does nothing, only initial shape format conversion.
+print('\nTEST0')
+shape_geo_fromOBJ = pyprt.InitialShape(asset_file('simple_scene_0.obj'))
+rpk0 = asset_file('noRule.rpk')
+attrs_test0 = {'ruleFile': 'bin/noRule.cgb', 'startRule': 'Default$Lot'}
+
+mod_test0 = pyprt.ModelGenerator([shape_geo_fromOBJ])
+models_test0 = mod_test0.generate_model([attrs_test0], rpk0, 'com.esri.pyprt.PyEncoder', {})
+
+visualize_prt_results(models_test0)
+
 ## TEST 1: initial shape as OBJ, simple rule.
 print('\nTEST1')
-shape_geo_fromOBJ = asset_file('simple_scene_0.obj')
 rpk = asset_file('simple_rule2019.rpk')
 attrs = {'ruleFile': 'bin/simple_rule2019.cgb', 'startRule': 'Default$Footprint'}
 
-mod_test1 = pyprt.ModelGenerator(shape_geo_fromOBJ)
+mod_test1 = pyprt.ModelGenerator([shape_geo_fromOBJ])
 models_test1 = mod_test1.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
 
 visualize_prt_results(models_test1)
 
 ## TEST 2: initial shape as DAE, simple rule.
 print('\nTEST2')
-shape_geo_fromDAE = asset_file('new_sceneCollada_0.dae')
+shape_geo_fromDAE = pyprt.InitialShape(asset_file('new_sceneCollada_0.dae'))
 
-mod_test2 = pyprt.ModelGenerator(shape_geo_fromDAE)
+mod_test2 = pyprt.ModelGenerator([shape_geo_fromDAE])
 models_test2 = mod_test2.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
 
 visualize_prt_results(models_test2)
@@ -44,7 +54,7 @@ visualize_prt_results(models_test2)
 print('\nTEST3')
 OBJ_exporter = 'com.esri.prt.codecs.OBJEncoder'
 
-mod_test3 = pyprt.ModelGenerator(shape_geo_fromOBJ)
+mod_test3 = pyprt.ModelGenerator([shape_geo_fromOBJ])
 models_test3 = mod_test3.generate_model([attrs], rpk, OBJ_exporter, encoderOptions)
 print('Results located in the output folder.')
 
@@ -53,15 +63,23 @@ print('\nTEST4')
 shape_geometry_1 = pyprt.InitialShape([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0])
 shape_geometry_2 = pyprt.InitialShape([0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0, 0.5, 0, 0.5])
 
-mod_test4 = pyprt.ModelGenerator([shape_geometry_1,shape_geometry_2])
+mod_test4 = pyprt.ModelGenerator([shape_geometry_1, shape_geometry_2])
 models_test4 = mod_test4.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
 
 visualize_prt_results(models_test4)
 
+## TEST 4b: initial shapes as OBJ and geometries, simple rule.
+print('\nTEST4b')
+mod_test4b = pyprt.ModelGenerator([shape_geometry_1, shape_geo_fromOBJ, shape_geometry_2])
+
+models_test4b = mod_test4b.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
+
+visualize_prt_results(models_test4b)
+
 ## TEST 5: initial shapes as OBJ, candler rule.
 print('\nTEST5')
-shape_geo_fromOBJ_test5 = asset_file('candler_footprint.obj')
-mod_test5 = pyprt.ModelGenerator(shape_geo_fromOBJ_test5)
+shape_geo_fromOBJ_test5 = pyprt.InitialShape(asset_file('candler_footprint.obj'))
+mod_test5 = pyprt.ModelGenerator([shape_geo_fromOBJ_test5])
 
 rpk_test5 = asset_file('candler.rpk')
 attrs_test5 = {'ruleFile': 'bin/candler.cgb', 'startRule': 'Default$Footprint'}
@@ -71,7 +89,7 @@ visualize_prt_results(models_test5)
 
 ## TEST 6: initial shapes as OBJ, candler rule, generated geometry outputted as Scene Layer Package.
 print('\nTEST6')
-mod_test6 = pyprt.ModelGenerator(shape_geo_fromOBJ_test5)
+mod_test6 = pyprt.ModelGenerator([shape_geo_fromOBJ_test5])
 enc_optionsSLPK = {'layerTextureEncoding': ['2'], 'layerEnabled': [True], 'layerUID': ['1'], 'layerName': ['TheLayer'], 'layerTextureQuality': [1.0], 'layerTextureCompression': [9], 'layerTextureScaling': [1.0], 'layerTextureMaxDimension': [2048], 'layerFeatureGranularity': ['0'], 'layerBackfaceCulling': [False]}
 enc_optionsSLPK.update(encoderOptions)
 
