@@ -50,7 +50,7 @@ pyprt.shutdown_prt()
 ## Documentation
 
 * [Project and API Description]
-* [Examples]
+* [Examples](https://github.com/Esri/pyprt-examples)
 * [CityEngine SDK API Reference](https://esri.github.io/esri-cityengine-sdk/html/index.html)
 
 ## Development
