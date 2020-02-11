@@ -33,14 +33,16 @@ void PyCallbacks::addGeometry(
     const uint32_t* faceCounts,
     const size_t faceCountsCount) {
 
+    Model& currentModel = mModels[initialShapeIndex];
+
     if (vertexCoords != nullptr)
-        mModels[initialShapeIndex].mVertices.insert(mModels[initialShapeIndex].mVertices.end(), vertexCoords, vertexCoords + vertexCoordsCount);
+        currentModel.mVertices.insert(currentModel.mVertices.end(), vertexCoords, vertexCoords + vertexCoordsCount);
 
     if (faceIndices != nullptr)
-        mModels[initialShapeIndex].mIndices.insert(mModels[initialShapeIndex].mIndices.end(), faceIndices, faceIndices + faceIndicesCount);
+        currentModel.mIndices.insert(currentModel.mIndices.end(), faceIndices, faceIndices + faceIndicesCount);
 
     if (faceCounts != nullptr)
-        mModels[initialShapeIndex].mFaces.insert(mModels[initialShapeIndex].mFaces.end(), faceCounts, faceCounts + faceCountsCount);  
+        currentModel.mFaces.insert(currentModel.mFaces.end(), faceCounts, faceCounts + faceCountsCount);
 }
 
 void PyCallbacks::addReports(
@@ -55,18 +57,20 @@ void PyCallbacks::addReports(
     const bool* boolReportValues,
     size_t boolReportCount) {
 
+    Model& currentModel = mModels[initialShapeIndex];
+
     for (size_t i = 0; i < boolReportCount; i++) {
         py::object pyKey = py::cast(boolReportKeys[i]);
-        mModels[initialShapeIndex].mCGAReport[pyKey] = boolReportValues[i];
+        currentModel.mCGAReport[pyKey] = boolReportValues[i];
     }
 
     for (size_t i = 0; i < floatReportCount; i++) {
         py::object pyKey = py::cast(floatReportKeys[i]);
-        mModels[initialShapeIndex].mCGAReport[pyKey] = floatReportValues[i];
+        currentModel.mCGAReport[pyKey] = floatReportValues[i];
     }
 
     for (size_t i = 0; i < stringReportCount; i++) {
         py::object pyKey = py::cast(stringReportKeys[i]);
-        mModels[initialShapeIndex].mCGAReport[pyKey] = stringReportValues[i];
+        currentModel.mCGAReport[pyKey] = stringReportValues[i];
     }
 }
