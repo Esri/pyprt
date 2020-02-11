@@ -28,21 +28,21 @@ void PyCallbacks::addGeometry(
     const size_t initialShapeIndex,
     const double* vertexCoords,
     const size_t vertexCoordsCount,
-    const uint32_t* facesIndices,
+    const uint32_t* faceIndices,
+    const size_t faceIndicesCount,
     const uint32_t* faceCounts,
     const size_t faceCountsCount) {
 
-    if (vertexCoords != nullptr)
-        mModels[initialShapeIndex].mVertices.insert(mModels[initialShapeIndex].mVertices.end(), vertexCoords, vertexCoords + vertexCoordsCount);
+    Model& currentModel = mModels[initialShapeIndex];
 
-    if (facesIndices != nullptr && faceCounts != nullptr) {
-        mModels[initialShapeIndex].mFaces.reserve(mModels[initialShapeIndex].mFaces.size() + faceCountsCount);
-        size_t vertexIndexBase = 0;
-        for (uint32_t ind = 0; ind < faceCountsCount; ind++) {
-            mModels[initialShapeIndex].mFaces.emplace_back(facesIndices + vertexIndexBase, facesIndices + vertexIndexBase + faceCounts[ind]);
-            vertexIndexBase += faceCounts[ind];
-        }
-    }
+    if (vertexCoords != nullptr)
+        currentModel.mVertices.insert(currentModel.mVertices.end(), vertexCoords, vertexCoords + vertexCoordsCount);
+
+    if (faceIndices != nullptr)
+        currentModel.mIndices.insert(currentModel.mIndices.end(), faceIndices, faceIndices + faceIndicesCount);
+
+    if (faceCounts != nullptr)
+        currentModel.mFaces.insert(currentModel.mFaces.end(), faceCounts, faceCounts + faceCountsCount);
 }
 
 void PyCallbacks::addReports(
@@ -57,18 +57,20 @@ void PyCallbacks::addReports(
     const bool* boolReportValues,
     size_t boolReportCount) {
 
+    Model& currentModel = mModels[initialShapeIndex];
+
     for (size_t i = 0; i < boolReportCount; i++) {
         py::object pyKey = py::cast(boolReportKeys[i]);
-        mModels[initialShapeIndex].mCGAReport[pyKey] = boolReportValues[i];
+        currentModel.mCGAReport[pyKey] = boolReportValues[i];
     }
 
     for (size_t i = 0; i < floatReportCount; i++) {
         py::object pyKey = py::cast(floatReportKeys[i]);
-        mModels[initialShapeIndex].mCGAReport[pyKey] = floatReportValues[i];
+        currentModel.mCGAReport[pyKey] = floatReportValues[i];
     }
 
     for (size_t i = 0; i < stringReportCount; i++) {
         py::object pyKey = py::cast(stringReportKeys[i]);
-        mModels[initialShapeIndex].mCGAReport[pyKey] = stringReportValues[i];
+        currentModel.mCGAReport[pyKey] = stringReportValues[i];
     }
 }

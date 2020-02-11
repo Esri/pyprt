@@ -39,7 +39,8 @@ private:
     struct Model {
         py::dict                            mCGAReport;
         std::vector<double>                 mVertices;
-        std::vector<std::vector<uint32_t>>  mFaces;
+        std::vector<uint32_t>               mIndices;
+        std::vector<uint32_t>               mFaces;
     };
 
     std::vector<Model> mModels;
@@ -54,7 +55,8 @@ public:
         const size_t initialShapeIndex,
         const double* vertexCoords,
         const size_t vextexCoordsCount,
-        const uint32_t* facesIndices,
+        const uint32_t* faceIndices,
+        const size_t faceIndicesCount,
         const uint32_t* faceCounts,
         const size_t faceCountsCount
     ) override;
@@ -74,11 +76,33 @@ public:
 
     size_t getInitialShapeCount() const { return mModels.size(); }
 
-    const std::vector<double>& getVertices(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mVertices; }
+    const std::vector<double>& getVertices(const size_t initialShapeIdx) const {
+        if (initialShapeIdx >= mModels.size())
+            throw std::out_of_range("initial shape index is out of range.");
 
-    const std::vector<std::vector<uint32_t>>& getFaces(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mFaces; }
+        return mModels[initialShapeIdx].mVertices;
+    }
 
-    const py::dict& getReport(const size_t initialShapeIdx) const { return mModels[initialShapeIdx].mCGAReport; }
+    const std::vector<uint32_t>& getIndices(const size_t initialShapeIdx) const {
+        if (initialShapeIdx >= mModels.size())
+            throw std::out_of_range("initial shape index is out of range.");
+
+        return mModels[initialShapeIdx].mIndices;
+    }
+
+    const std::vector<uint32_t>& getFaces(const size_t initialShapeIdx) const {
+        if (initialShapeIdx >= mModels.size())
+            throw std::out_of_range("initial shape index is out of range.");
+
+        return mModels[initialShapeIdx].mFaces;
+    }
+
+    const py::dict& getReport(const size_t initialShapeIdx) const {
+        if (initialShapeIdx >= mModels.size())
+            throw std::out_of_range("initial shape index is out of range.");
+
+        return mModels[initialShapeIdx].mCGAReport;
+    }
 
 	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
 		pybind11::print(L"GENERATE ERROR:", isIndex, status, message);

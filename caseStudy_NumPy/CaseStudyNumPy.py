@@ -2,6 +2,7 @@ import sys
 import os
 
 import pyprt
+from pyprt.pyprt_utils import vertices_vector_to_matrix, faces_indices_vectors_to_matrix
 
 import numpy as np
 import itertools
@@ -80,14 +81,18 @@ if __name__ == '__main__':
     for model in generated_mod:
         if model:
             geo = model.get_vertices()
+            ind = model.get_indices()
             face_geo = model.get_faces()
 
+            model_vertices = vertices_vector_to_matrix(geo)
+            model_faces = faces_indices_vectors_to_matrix(ind, face_geo)
+
             if len(geo) > 0:
-                print('Size of the matrix containing the model vertices: (' + str(len(geo)) + ', 3)')
-                all_vertices.append(geo)
+                print('Size of the matrix containing the model vertices: (' + str(int(len(geo)/3)) + ', 3)')
+                all_vertices.append(model_vertices)
             if len(face_geo) > 0:
                 print('Size of the matrix containing the model faces: ' + str(len(face_geo)))
-                all_faces.append(face_geo)
+                all_faces.append(model_faces)
         else:
             print('\nError while instanciating the model generator.')
 
