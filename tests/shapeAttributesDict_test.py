@@ -7,17 +7,17 @@ CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
 
 def asset_file(filename):
-    return os.path.join(os.path.dirname(CS_FOLDER), 'data', filename)
+    return os.path.join(os.path.dirname(CS_FOLDER), 'tests', 'data', filename)
 
 
 class ShapeAttributesTest(unittest.TestCase):
     def test_correctExecution(self):
-        rpk = asset_file('test_rule.rpk')
-        attrs_1 = {'ruleFile': 'bin/test_rule.cgb',
+        rpk = asset_file('extrusion_rule.rpk')
+        attrs_1 = {'ruleFile': 'bin/extrusion_rule.cgb',
                    'startRule': 'Default$Footprint'}
-        attrs_2 = {'ruleFile': 'bin/test_rule.cgb',
+        attrs_2 = {'ruleFile': 'bin/extrusion_rule.cgb',
                    'startRule': 'Default$Footprint', 'minBuildingHeight': 30.0}
-        attrs_3 = {'ruleFile': 'bin/test_rule.cgb',
+        attrs_3 = {'ruleFile': 'bin/extrusion_rule.cgb',
                    'startRule': 'Default$Footprint', 'text': 'hello'}
 
         shape_geometry_1 = pyprt.InitialShape(
@@ -33,8 +33,8 @@ class ShapeAttributesTest(unittest.TestCase):
         self.assertEqual(len(model), 3)
 
     def test_oneDictForAll(self):
-        rpk = asset_file('test_rule.rpk')
-        attrs = {'ruleFile': 'bin/test_rule.cgb',
+        rpk = asset_file('extrusion_rule.rpk')
+        attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
                  'startRule': 'Default$Footprint', 'text': 'hello'}
         shape_geometry_1 = pyprt.InitialShape(
             [0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])
@@ -49,10 +49,10 @@ class ShapeAttributesTest(unittest.TestCase):
         self.assertEqual(len(model), 3)
 
     def test_wrongNumberOfDict(self):
-        rpk = asset_file('test_rule.rpk')
-        attrs_1 = {'ruleFile': 'bin/test_rule.cgb',
+        rpk = asset_file('extrusion_rule.rpk')
+        attrs_1 = {'ruleFile': 'bin/extrusion_rule.cgb',
                    'startRule': 'Default$Footprint'}
-        attrs_2 = {'ruleFile': 'bin/test_rule.cgb',
+        attrs_2 = {'ruleFile': 'bin/extrusion_rule.cgb',
                    'startRule': 'Default$Footprint', 'minBuildingHeight': 30.0}
         shape_geometry_1 = pyprt.InitialShape(
             [0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])

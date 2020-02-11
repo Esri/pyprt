@@ -13,7 +13,7 @@ CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
 
 def asset_file(filename):
-    return os.path.join(os.path.dirname(CS_FOLDER), 'data', filename)
+    return os.path.join(os.path.dirname(CS_FOLDER), 'examples', 'data', filename)
 
 
 class Canvas(scene.SceneCanvas):
@@ -76,8 +76,8 @@ if __name__ == '__main__':
         np.array([0, 0, 0,  0, 0, 2,  1, 0, 1,  1, 0, 0], dtype='f'))
     initialGeometry2 = pyprt.InitialShape(
         np.array([4, 0, 0,  4, 0, 2,  5, 0, 1,  5, 0, 0], dtype='f'))
-    rpk = asset_file('simple_rule2019.rpk')
-    attrs = {'ruleFile': 'bin/simple_rule2019.cgb',
+    rpk = asset_file('extrusion_rule.rpk')
+    attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
              'startRule': 'Default$Footprint'}
 
     mod = pyprt.ModelGenerator([initialGeometry, initialGeometry2])

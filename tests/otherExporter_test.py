@@ -7,7 +7,7 @@ CS_FOLDER = os.path.dirname(os.path.realpath(__file__))
 
 
 def asset_file(filename):
-    return os.path.join(os.path.dirname(CS_FOLDER), 'data', filename)
+    return os.path.join(os.path.dirname(CS_FOLDER), 'tests', 'data', filename)
 
 
 def asset_output_file(filename):
@@ -23,10 +23,10 @@ class ExporterTest(unittest.TestCase):
             'outputPath': os.path.dirname(asset_output_file(''))}
         os.makedirs(encoder_options['outputPath'], exist_ok=True)
 
-        shape_geo_from_obj = asset_file('greenbuildingfootprint_0.obj')
-        rpk = asset_file('Building_From_FootprintSMALL.rpk')
-        attrs = {'ruleFile': 'bin/Building_From_FootprintSMALL.cgb', 'startRule': 'Default$Generate',
-                 'Reporting': 'All'}
+        shape_geo_from_obj = asset_file('building_parcel.obj')
+        rpk = asset_file('envelope0110.rpk')
+        attrs = {'ruleFile': 'rules/typology/envelope0110.cgb', 'startRule': 'Default$Lot',
+                 'report_but_not_display_green': True}
         slpk_options = {'layerTextureEncoding': ['2'], 'layerEnabled': [True], 'layerUID': ['1'],
                         'layerName': ['Salut'], 'layerTextureQuality': [1.0], 'layerTextureCompression': [9],
                         'layerTextureScaling': [1.0], 'layerTextureMaxDimension': [2048],
