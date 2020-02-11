@@ -32,7 +32,7 @@ rpk = 'some_rule.rpk'
 shape_attributes = {'ruleFile': 'rules/typology/some_rule.cgb', 'startRule':'Default$Footprint',
 	'shapeName': 'myShape', 'seed': 555}
 encoder = 'com.esri.pyprt.PyEncoder'
-encoder_options = {'emitReports': False, 'emitGeometry': True}
+encoder_options = {'emitReport': False, 'emitGeometry': True}
 ​
 //PRT Generation
 generated_models = m.generate_model([shape_attributes], rpk, encoder, encoder_options)
