@@ -77,8 +77,8 @@ class GeometryTest(unittest.TestCase):
     def test_faces_data(self):
         rpk = asset_file('candler.rpk')
         attrs = {'ruleFile': 'bin/candler.cgb', 'startRule': 'Default$Footprint'}
-        shape_geo_from_obj = asset_file('candler_footprint.obj')
-        m = pyprt.ModelGenerator(shape_geo_from_obj)
+        shape_geo_from_obj = pyprt.InitialShape(asset_file('candler_footprint.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {'emitReport': False})
         cnt = 0
         for f in model[0].get_faces():
