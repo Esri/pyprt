@@ -55,8 +55,8 @@ public:
         const size_t initialShapeIndex,
         const double* vertexCoords,
         const size_t vextexCoordsCount,
-        const uint32_t* facesIndices,
-        const size_t facesIndicesCount,
+        const uint32_t* faceIndices,
+        const size_t faceIndicesCount,
         const uint32_t* faceCounts,
         const size_t faceCountsCount
     ) override;

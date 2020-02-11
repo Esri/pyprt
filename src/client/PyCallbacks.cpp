@@ -28,16 +28,16 @@ void PyCallbacks::addGeometry(
     const size_t initialShapeIndex,
     const double* vertexCoords,
     const size_t vertexCoordsCount,
-    const uint32_t* facesIndices,
-    const size_t facesIndicesCount,
+    const uint32_t* faceIndices,
+    const size_t faceIndicesCount,
     const uint32_t* faceCounts,
     const size_t faceCountsCount) {
 
     if (vertexCoords != nullptr)
         mModels[initialShapeIndex].mVertices.insert(mModels[initialShapeIndex].mVertices.end(), vertexCoords, vertexCoords + vertexCoordsCount);
 
-    if (facesIndices != nullptr)
-        mModels[initialShapeIndex].mIndices.insert(mModels[initialShapeIndex].mIndices.end(), facesIndices, facesIndices + facesIndicesCount);
+    if (faceIndices != nullptr)
+        mModels[initialShapeIndex].mIndices.insert(mModels[initialShapeIndex].mIndices.end(), faceIndices, faceIndices + faceIndicesCount);
 
     if (faceCounts != nullptr)
         mModels[initialShapeIndex].mFaces.insert(mModels[initialShapeIndex].mFaces.end(), faceCounts, faceCounts + faceCountsCount);  
