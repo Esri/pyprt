@@ -84,7 +84,7 @@ namespace {
 namespace py = pybind11;
 
 InitialShape::InitialShape(const std::vector<double>& vert) :
-    mVertices(vert)
+    mVertices(vert), mPathFlag(false)
  {
     mIndices.resize(vert.size() / 3);
     std::iota(std::begin(mIndices), std::end(mIndices), 0);
@@ -92,7 +92,12 @@ InitialShape::InitialShape(const std::vector<double>& vert) :
 }
 
 InitialShape::InitialShape(const std::vector<double>& vert, const std::vector<uint32_t>& ind, const std::vector<uint32_t>& faceCnt) :
-    mVertices(vert), mIndices(ind), mFaceCounts(faceCnt)
+    mVertices(vert), mIndices(ind), mFaceCounts(faceCnt), mPathFlag(false)
+{
+}
+
+InitialShape::InitialShape(const std::string& initShapePath) :
+    mPath(initShapePath), mPathFlag(true)
 {
 }
 
@@ -123,31 +128,6 @@ namespace {
         }
     }
 
-    ModelGenerator::ModelGenerator(const std::string& initShapePath) {
-        mInitialShapesBuilders.resize(1);
-
-        mCache = (pcu::CachePtr) prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
-
-        // Initial shape initializing
-        pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
-
-        if (!pcu::toFileURI(initShapePath).empty()) {
-            LOG_DBG << "trying to read initial shape geometry from " << pcu::toFileURI(initShapePath) << std::endl;
-            const prt::Status s = isb->resolveGeometry(pcu::toUTF16FromOSNarrow(pcu::toFileURI(initShapePath)).c_str(), mResolveMap.get(), mCache.get());
-            if (s != prt::STATUS_OK) {
-                LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(initShapePath);
-                mValid = false;
-            }
-        }
-        else {
-            LOG_ERR << "could not read initial shape geometry, unvalid path";
-            mValid = false;
-        }
-
-        if (mValid)
-            mInitialShapesBuilders[0] = std::move(isb);
-    }
-
     ModelGenerator::ModelGenerator(const std::vector<InitialShape>& myGeo) {
         mInitialShapesBuilders.resize(myGeo.size());
 
@@ -157,14 +137,30 @@ namespace {
         for (size_t ind = 0; ind < myGeo.size(); ind++) {
 
             pcu::InitialShapeBuilderPtr isb{ prt::InitialShapeBuilder::create() };
+            
+            if (myGeo[ind].getPathFlag()) {
+                if (!pcu::toFileURI(myGeo[ind].getPath()).empty()) {
+                    LOG_DBG << "trying to read initial shape geometry from " << pcu::toFileURI(myGeo[ind].getPath()) << std::endl;
+                    const prt::Status s = isb->resolveGeometry(pcu::toUTF16FromOSNarrow(pcu::toFileURI(myGeo[ind].getPath())).c_str(), mResolveMap.get(), mCache.get());
+                    if (s != prt::STATUS_OK) {
+                        LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(myGeo[ind].getPath());
+                        mValid = false;
+                    }
+                }
+                else {
+                    LOG_ERR << "could not read initial shape geometry, unvalid path";
+                    mValid = false;
+                }
+            }
+            else {
+                if (isb->setGeometry(
+                    myGeo[ind].getVertices(), myGeo[ind].getVertexCount(),
+                    myGeo[ind].getIndices(), myGeo[ind].getIndexCount(),
+                    myGeo[ind].getFaceCounts(), myGeo[ind].getFaceCountsCount()) != prt::STATUS_OK) {
 
-            if (isb->setGeometry(
-                myGeo[ind].getVertices(), myGeo[ind].getVertexCount(),
-                myGeo[ind].getIndices(), myGeo[ind].getIndexCount(),
-                myGeo[ind].getFaceCounts(), myGeo[ind].getFaceCountsCount()) != prt::STATUS_OK) {
-
-                LOG_ERR << "invalid initial geometry";
-                mValid = false;
+                    LOG_ERR << "invalid initial geometry";
+                    mValid = false;
+                }
             }
 
             if (mValid)
@@ -392,7 +388,6 @@ PYBIND11_MODULE(pyprt, m) {
     py::bind_vector<std::vector<GeneratedModel>>(m, "GeneratedModelVector", py::module_local(false));
 
     py::class_<ModelGenerator>(m, "ModelGenerator")
-        .def(py::init<const std::string&>(), "initShapePath"_a)
         .def(py::init<const std::vector<InitialShape>&>(), "initShape"_a)
         .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"), py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"))
         .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
@@ -404,9 +399,11 @@ PYBIND11_MODULE(pyprt, m) {
     py::class_<InitialShape>(m, "InitialShape")
         .def(py::init<const std::vector<double>&>())
         .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&>())
+        .def(py::init<const std::string&>())
         .def("get_vertex_count", &InitialShape::getVertexCount)
         .def("get_index_count", &InitialShape::getIndexCount)
-        .def("get_face_counts_count", &InitialShape::getFaceCountsCount);
+        .def("get_face_counts_count", &InitialShape::getFaceCountsCount)
+        .def("get_path", &InitialShape::getPath);
 
     py::class_<GeneratedModel>(m, "GeneratedModel")
         .def("get_initial_shape_index", &GeneratedModel::getInitialShapeIndex)
@@ -414,5 +411,4 @@ PYBIND11_MODULE(pyprt, m) {
         .def("get_indices", &GeneratedModel::getIndices)
         .def("get_faces", &GeneratedModel::getFaces)
         .def("get_report", &GeneratedModel::getReport);
-
 }
