@@ -15,18 +15,20 @@ class GeometryTest(unittest.TestCase):
         rpk = asset_file('candler.rpk')
         attrs = {'ruleFile': 'bin/candler.cgb',
                  'startRule': 'Default$Footprint'}
-        shape_geo_from_obj = asset_file('candler_footprint.obj')
-        m = pyprt.ModelGenerator(shape_geo_from_obj)
+        shape_geo_from_obj = pyprt.InitialShape(
+            asset_file('candler_footprint.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
                                  'emitReport': False, 'emitGeometry': True})
-        self.assertEqual(len(model[0].get_vertices()), 97050)
+        self.assertEqual(len(model[0].get_vertices()), 97050*3)
 
     def test_facesNber_candler(self):
         rpk = asset_file('candler.rpk')
         attrs = {'ruleFile': 'bin/candler.cgb',
                  'startRule': 'Default$Footprint'}
-        shape_geo_from_obj = asset_file('candler_footprint.obj')
-        m = pyprt.ModelGenerator(shape_geo_from_obj)
+        shape_geo_from_obj = pyprt.InitialShape(
+            asset_file('candler_footprint.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
                                  'emitReport': False, 'emitGeometry': True})
         self.assertEqual(len(model[0].get_faces()), 47202)
@@ -35,8 +37,9 @@ class GeometryTest(unittest.TestCase):
         rpk = asset_file('envelope0110.rpk')
         attrs = {'ruleFile': 'rules/typology/envelope0110.cgb', 'startRule': 'Default$Lot',
                  'report_but_not_display_green': True}
-        shape_geo_from_obj = asset_file('building_parcel.obj')
-        m = pyprt.ModelGenerator(shape_geo_from_obj)
+        shape_geo_from_obj = pyprt.InitialShape(
+            asset_file('building_parcel.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
                                  'emitReport': True, 'emitGeometry': False})
         ground_truth_dict = {'Floor area_n': 20.0, 'Greenery Area_n': 574.0, 'Number of trees_n': 114.0, 'green area_n': 460.0, 'total report for optimisation_n': 20.0, 'Floor area_sum': 10099.37, 'Floor area_avg': 504.97, 'Greenery Area_sum': 2123.40, 'Greenery Area_avg': 3.70, 'Number of trees_sum': 114.0, 'Number of trees_avg': 1.0, 'green area_sum': 1553.40, 'green area_avg': 3.38, 'total report for optimisation_sum': 807.95,
@@ -78,7 +81,45 @@ class GeometryTest(unittest.TestCase):
         m = pyprt.ModelGenerator([shape_geo])
         m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
         model2 = m.generate_model([attrs2])
-        z_coord = [round(b, 1) for a, b, c in model2[0].get_vertices()]
+        z_coord = [round(b, 1) for b in model2[0].get_vertices()[1:-1:3]]
         for z in z_coord:
             if z:
                 self.assertAlmostEqual(abs(z), 23.0)
+
+    def test_faces_data(self):
+        rpk = asset_file('candler.rpk')
+        attrs = {'ruleFile': 'bin/candler.cgb',
+                 'startRule': 'Default$Footprint'}
+        shape_geo_from_obj = pyprt.InitialShape(
+            asset_file('candler_footprint.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
+        model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
+                                 'emitReport': False})
+        cnt = 0
+        for f in model[0].get_faces():
+            cnt += f
+        self.assertEqual(cnt, len(model[0].get_indices()))
+
+    def test_path_geometry_initshapes(self):
+        rpk = asset_file('extrusion_rule.rpk')
+        attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
+                 'startRule': 'Default$Footprint'}
+        shape_geo = pyprt.InitialShape(
+            [-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
+        shape_geo_from_obj = pyprt.InitialShape(
+            asset_file('building_parcel.obj'))
+        m1 = pyprt.ModelGenerator([shape_geo])
+        m2 = pyprt.ModelGenerator([shape_geo_from_obj])
+        m3 = pyprt.ModelGenerator([shape_geo, shape_geo_from_obj])
+        model1 = m1.generate_model(
+            [attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
+        model2 = m2.generate_model(
+            [attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
+        model3 = m3.generate_model(
+            [attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
+        self.assertEqual(model1[0].get_report(), model3[0].get_report())
+        self.assertEqual(model2[0].get_report(), model3[1].get_report())
+        self.assertListEqual(model1[0].get_vertices(),
+                             model3[0].get_vertices())
+        self.assertListEqual(model2[0].get_vertices(),
+                             model3[1].get_vertices())

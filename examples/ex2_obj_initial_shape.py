@@ -34,11 +34,11 @@ model1 = m1.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
 visualize_prt_results(model1)
 
 # STEP 2: Initial Shape (OBJ file)
-initial_shape2 = asset_file('building_parcel.obj')
+initial_shape2 = pyprt.InitialShape(asset_file('building_parcel.obj'))
 
 # PRT Generation
 print('\nSecond Generation:\n')
-m2 = pyprt.ModelGenerator(initial_shape2)
+m2 = pyprt.ModelGenerator([initial_shape2])
 model2 = m2.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
 visualize_prt_results(model2)
 

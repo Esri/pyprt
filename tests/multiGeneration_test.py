@@ -29,3 +29,19 @@ class MultiTest(unittest.TestCase):
                              model2[0].get_vertices())
         self.assertListEqual(model3[0].get_vertices(),
                              model4[0].get_vertices())
+
+    def test_PathAndGeometryInitShapes(self):
+        rpk = asset_file('extrusion_rule.rpk')
+        attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
+                 'startRule': 'Default$Footprint'}
+        shape_geo = pyprt.InitialShape(
+            [-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
+        shape_geo_from_obj = pyprt.InitialShape(
+            asset_file('building_parcel.obj'))
+        m = pyprt.ModelGenerator([shape_geo, shape_geo_from_obj])
+        model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
+        modelb = m.generate_model([attrs])
+        self.assertEqual(model[0].get_report(), modelb[0].get_report())
+        self.assertEqual(model[1].get_report(), modelb[1].get_report())
+        self.assertListEqual(model[0].get_vertices(), modelb[0].get_vertices())
+        self.assertListEqual(model[1].get_vertices(), modelb[1].get_vertices())

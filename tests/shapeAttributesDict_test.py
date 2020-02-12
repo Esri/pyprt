@@ -65,3 +65,19 @@ class ShapeAttributesTest(unittest.TestCase):
         model = m.generate_model([attrs_1, attrs_2], rpk, 'com.esri.pyprt.PyEncoder',
                                  {'emitReport': False, 'emitGeometry': True})
         self.assertEqual(len(model), 0)
+
+    def test_oneDictPerInitialShapeType(self):
+        rpk = asset_file('extrusion_rule.rpk')
+        attrs_1 = {'ruleFile': 'bin/extrusion_rule.cgb',
+                   'startRule': 'Default$Footprint'}
+        attrs_2 = {'ruleFile': 'bin/extrusion_rule.cgb',
+                   'startRule': 'Default$Footprint', 'minBuildingHeight': 30.0}
+        shape_geometry_1 = pyprt.InitialShape(
+            [-7.666, 0.0, -0.203, -7.666, 0.0, 44.051, 32.557, 0.0, 44.051, 32.557, 0.0, -0.203])
+        shape_geometry_2 = pyprt.InitialShape(
+            asset_file('building_parcel.obj'))
+        m = pyprt.ModelGenerator([shape_geometry_1, shape_geometry_2])
+        model = m.generate_model(
+            [attrs_1, attrs_2], rpk, 'com.esri.pyprt.PyEncoder', {})
+        self.assertNotEqual(model[0].get_report()[
+                            'Min Height.0_avg'], model[1].get_report()['Min Height.0_avg'])

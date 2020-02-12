@@ -59,18 +59,6 @@ void copyToCStr(const std::string& str, char* cstr, size_t& cstrSize) {
 	cstrSize = str.length() + 1; // returns the actually needed size including terminating null
 }
 
-// convert a vector of vertices coordinates into a vector of vectors with the x,
-// y, z coordinates of the vertices
-std::vector<std::vector<double>> convertVerticesIntoPythonStyle(const std::vector<double>& verticesList) {
-	std::vector<std::vector<double>> vertices;
-	vertices.resize(verticesList.size() / 3);
-
-	for (size_t i = 0; i < verticesList.size() / 3; i++)
-		vertices[i] = {verticesList[i * 3], verticesList[i * 3 + 1], verticesList[i * 3 + 2]};
-
-	return vertices;
-}
-
 /**
  * custom console logger to redirect PRT log events into the python output
  */
@@ -151,6 +139,7 @@ public:
 	InitialShape(const std::vector<double>& vert);
 	InitialShape(const std::vector<double>& vert, const std::vector<uint32_t>& ind,
 	             const std::vector<uint32_t>& faceCnt);
+	InitialShape(const std::string& path);
 	~InitialShape() {}
 
 	const double* getVertices() const {
@@ -171,27 +160,38 @@ public:
 	size_t getFaceCountsCount() const {
 		return mFaceCounts.size();
 	}
+	const std::string& getPath() const {
+		return mPath;
+	}
+	bool getPathFlag() const {
+		return mPathFlag;
+	}
 
 protected:
-	std::vector<double> mVertices;
+	const std::vector<double> mVertices;
 	std::vector<uint32_t> mIndices;
 	std::vector<uint32_t> mFaceCounts;
+	const std::string mPath;
+	const bool mPathFlag;
 };
 
 class GeneratedModel {
 public:
-	GeneratedModel(const size_t& initialShapeIdx, const std::vector<std::vector<double>>& vert,
-	               const std::vector<std::vector<uint32_t>>& face, const py::dict& rep);
+	GeneratedModel(const size_t& initialShapeIdx, const std::vector<double>& vert, const std::vector<uint32_t>& indices,
+	               const std::vector<uint32_t>& face, const py::dict& rep);
 	GeneratedModel() {}
 	~GeneratedModel() {}
 
 	size_t getInitialShapeIndex() const {
 		return mInitialShapeIndex;
 	}
-	const std::vector<std::vector<double>>& getVertices() const {
+	const std::vector<double>& getVertices() const {
 		return mVertices;
 	}
-	const std::vector<std::vector<uint32_t>>& getFaces() const {
+	const std::vector<uint32_t>& getIndices() const {
+		return mIndices;
+	}
+	const std::vector<uint32_t>& getFaces() const {
 		return mFaces;
 	}
 	const py::dict& getReport() const {
@@ -200,8 +200,9 @@ public:
 
 private:
 	size_t mInitialShapeIndex;
-	std::vector<std::vector<double>> mVertices;
-	std::vector<std::vector<uint32_t>> mFaces;
+	std::vector<double> mVertices;
+	std::vector<uint32_t> mIndices;
+	std::vector<uint32_t> mFaces;
 	py::dict mReport;
 };
 
@@ -209,7 +210,6 @@ namespace {
 
 class ModelGenerator {
 public:
-	ModelGenerator(const std::string& initShapePath);
 	ModelGenerator(const std::vector<InitialShape>& myGeo);
 	~ModelGenerator() {}
 

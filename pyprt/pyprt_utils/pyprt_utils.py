@@ -1,6 +1,3 @@
-#import numpy as np
-
-
 def visualize_prt_results(models):
     print('\nNumber of generated geometries (= nber of initial shapes):')
     print(len(models))
@@ -16,14 +13,7 @@ def visualize_prt_results(models):
             if len(geometry_vertices) > 0:
                 print()
                 print('Size of the matrix containing the model vertices (with possible duplicates): (' +
-                      str(len(geometry_vertices)) + ', 3)')
-
-                # geo_numpy_unique, indices = np.unique(np.around(geo_numpy,decimals=3), return_index = True, axis=0)
-                # print('Size of the matrix containing the model vertices (no duplicates): ' + str(geo_numpy[indices].shape))
-                # temp = set()
-                # geo_unique = [x for x in geometry_vertices if tuple(x) not in temp and (temp.add(tuple(x)) or True)]
-                # print(len(geo_unique))
-
+                      str(int(len(geometry_vertices)/3)) + ', 3)')
                 print('Size of the matrix containing the model faces: ' +
                       str(len(m.get_faces())))
 
@@ -33,3 +23,22 @@ def visualize_prt_results(models):
                 print(rep)
         else:
             print('\nError while instanciating the model generator.')
+
+
+def vertices_vector_to_matrix(vertices):
+    vertices_as_matrix = []
+    for count in range(0, int(len(vertices)/3)):
+        vector_per_pt = [vertices[count*3],
+                         vertices[count*3+1], vertices[count*3+2]]
+        vertices_as_matrix.append(vector_per_pt)
+    return vertices_as_matrix
+
+
+def faces_indices_vectors_to_matrix(indices, faces):
+    faces_as_matrix = []
+    offset = 0
+    for f in faces:
+        ind_per_face = indices[offset:offset+f]
+        offset += f
+        faces_as_matrix.append(ind_per_face)
+    return faces_as_matrix

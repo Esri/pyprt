@@ -23,7 +23,8 @@ class ExporterTest(unittest.TestCase):
             'outputPath': os.path.dirname(asset_output_file(''))}
         os.makedirs(encoder_options['outputPath'], exist_ok=True)
 
-        shape_geo_from_obj = asset_file('building_parcel.obj')
+        shape_geo_from_obj = pyprt.InitialShape(
+            asset_file('building_parcel.obj'))
         rpk = asset_file('envelope0110.rpk')
         attrs = {'ruleFile': 'rules/typology/envelope0110.cgb', 'startRule': 'Default$Lot',
                  'report_but_not_display_green': True}
@@ -32,7 +33,7 @@ class ExporterTest(unittest.TestCase):
                         'layerTextureScaling': [1.0], 'layerTextureMaxDimension': [2048],
                         'layerFeatureGranularity': ['0'], 'layerBackfaceCulling': [False], 'baseName': 'Unittest4SLPK'}
         slpk_options.update(encoder_options)
-        m = pyprt.ModelGenerator(shape_geo_from_obj)
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
         m.generate_model(
             [attrs], rpk, 'com.esri.prt.codecs.I3SEncoder', slpk_options)
         self.assertTrue(os.path.isfile(
