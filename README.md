@@ -15,35 +15,35 @@ PyPRT is a Python binding for PRT (ArcGIS CityEngine Procedural Runtime). It ena
 Simply run `pip install pyprt` in your desired Python environment or `conda install pyprt` in a Conda environment. Then use `import pyprt` in your scripts. See [here] for API reference.
 
 ## Minimal Usage
-```
+```python
 import pyprt
 ​
-//PRT Initialization
+# PRT Initialization
 pyprt.initialize_prt()
 ​
-//Initial Shape
+# Initial Shape
 shape_geometry = pyprt.InitialShape([0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])
 ​
-//ModelGenerator Instance
+# ModelGenerator Instance
 m = pyprt.ModelGenerator([shape_geometry])
 ​
-//Variables Definition
+# Model Generation Arguments Setup
 rpk = 'some_rule.rpk'
 shape_attributes = {'ruleFile': 'rules/typology/some_rule.cgb', 'startRule':'Default$Footprint',
 	'shapeName': 'myShape', 'seed': 555}
 encoder = 'com.esri.pyprt.PyEncoder'
 encoder_options = {'emitReport': False, 'emitGeometry': True}
 ​
-//PRT Generation
+# PRT Generation
 generated_models = m.generate_model([shape_attributes], rpk, encoder, encoder_options)
 ​
-//Info Collection
+# Info Collection
 for model in generated_models:
     id = model.get_initial_shape_index()
     cga_report = model.get_report()
     vertices_coordinates = model.get_vertices()
 ​
-//PRT Shutdown
+# PRT Shutdown
 pyprt.shutdown_prt()
 ```
 
