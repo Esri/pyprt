@@ -72,7 +72,7 @@ PyPRT allows generating 3D models on multiple initial geometries. Different inpu
 	<td>
 	</td>
 	<td>
-		<p>Other examples of PyPRT usage are located in the "[pyprt-examples](https://github.com/Esri/pyprt-examples)" Github repo. Ready-to-use rule packages and initial shapes are available there.
+		<p>Other examples of PyPRT usage are located in the [pyprt-examples](https://github.com/Esri/pyprt-examples) Github repo. Ready-to-use rule packages and initial shapes are available there.
 	</p>
 	</td>
 </tr>
