@@ -11,6 +11,7 @@ verify_ssl = true
 [packages]
 pyprt = "*"
 arcgis = "==1.7.1"
+notebook = "*"
 vispy = "*"
 PyQT5 = "*"
 scipy = "*"
