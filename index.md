@@ -62,6 +62,7 @@ PyPRT allows generating 3D models on multiple initial geometries. Different inpu
 			<li>Upload and publish the generated SLPK on ArcGIS Online.</li>
 			<li>Visualize the results.</li>
 		</ol>
+		(The steps 4 and 5 require having an ArcGIS Online account.)
 		Link to the example notebook.
 		</p>
 	</td>
