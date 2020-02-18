@@ -4,7 +4,7 @@ PyPRT is a Python binding for PRT (CityEngine Procedural Runtime). It enables th
 
 This repo contains examples of PyPRT usage. You can find the source code in the main [pyprt](https://github.com/Esri/pyprt) repository. More detailed information is available there.
 
-![Generated geometry exported as OBJ (ex7)](images/building.png) ![Generated parks and trees (ex8)](images/generated_trees.png)
+![Generated geometry exported as OBJ (ex7)](images/building.png | height=24) ![Generated parks and trees (ex8)](images/generated_trees.png)
 
 ## Table of Contents
 
@@ -43,9 +43,9 @@ Simply run `pip install pyprt` in your desired Python environment or `conda inst
     <td> </td>
   </tr>
   <tr>
-    <th>ex4_multi_generations.py</th>
-    <th>This example shows the two ways of calling the generate_model function in case of multiple successive geometry generations.</th> 
-    <th> </th>
+    <td>ex4_multi_generations.py</th>
+    <td>This example shows the two ways of calling the generate_model function in case of multiple successive geometry generations.</th> 
+    <td> </th>
   </tr>
   <tr>
     <td>ex5_dataset_collection.ipynb</td>
@@ -83,4 +83,5 @@ PyPRT is under the same license as the included [CityEngine SDK](https://github.
 An exception is the PyPRT source code (without CityEngine SDK, binaries, or object code), which is licensed under the Apache License, Version 2.0 (the “License”); you may not use this work except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
 
 [Back to top](#table-of-contents)
+
 [Go to source code](https://github.com/Esri/pyprt)
