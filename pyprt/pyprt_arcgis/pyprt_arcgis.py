@@ -2,13 +2,13 @@ import os
 import sys
 
 import numpy as np
+import pyprt
 
 try:
     from arcgis.geometry import Geometry
 except ModuleNotFoundError:
     sys.exit("This module can be imported only if arcgis package is installed.")
 
-from .. import pyprt
 
 def arcgis_to_pyprt(feature_set):
     initial_geometries = []
@@ -18,19 +18,21 @@ def arcgis_to_pyprt(feature_set):
             if geo.type is 'Polygon':
                 coord = geo.coordinates()[0]
                 coord_remove_last = coord[:-1]
-                coord_inverse = np.flip(coord_remove_last,axis=0)
+                coord_inverse = np.flip(coord_remove_last, axis=0)
 
-                if coord.shape[1] == 2: #we have to add a dimension
-                    coord_inverse[:,1] *= -1
+                if coord.shape[1] == 2:  # we have to add a dimension
+                    coord_inverse[:, 1] *= -1
                     coord_add_dim = np.insert(coord_inverse, 1, 0, axis=1)
-                    coord_fin = np.reshape(coord_add_dim,(1,coord_add_dim.shape[0]*coord_add_dim.shape[1]))
-                elif coord.shape[1] == 3: #need to swap the 1 and 2 columns
-                    coord_inverse[:,1] *= -1
+                    coord_fin = np.reshape(
+                        coord_add_dim, (1, coord_add_dim.shape[0]*coord_add_dim.shape[1]))
+                elif coord.shape[1] == 3:  # need to swap the 1 and 2 columns
+                    coord_inverse[:, 1] *= -1
                     coord_swap_dim = coord_inverse.copy()
-                    temp = np.copy(coord_swap_dim[:,1])
-                    coord_swap_dim[:,1] = coord_swap_dim[:,2]
-                    coord_swap_dim[:,2] = temp
-                    coord_fin = np.reshape(coord_swap_dim,(1,coord_swap_dim.shape[0]*coord_swap_dim.shape[1]))
+                    temp = np.copy(coord_swap_dim[:, 1])
+                    coord_swap_dim[:, 1] = coord_swap_dim[:, 2]
+                    coord_swap_dim[:, 2] = temp
+                    coord_fin = np.reshape(
+                        coord_swap_dim, (1, coord_swap_dim.shape[0]*coord_swap_dim.shape[1]))
 
                 initial_geometry = pyprt.InitialShape(coord_fin.tolist()[0])
                 initial_geometries.append(initial_geometry)

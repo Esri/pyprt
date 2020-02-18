@@ -1,7 +1,7 @@
 /**
- * Esri CityEngine SDK Geometry Encoder for Python
+ * ArcGIS CityEngine SDK Geometry Encoder for Python
  *
- * Copyright 2014-2019 Esri R&D Zurich and VRBN
+ * Copyright (c) 2012-2020 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,33 +20,16 @@
 
 #include "prt/Callbacks.h"
 
-
 class IPyCallbacks : public prt::Callbacks {
 public:
+	virtual ~IPyCallbacks() override = default;
 
-    virtual ~IPyCallbacks() override = default;
+	virtual void addGeometry(const size_t initialShapeIndex, const double* vertexCoords, const size_t vextexCoordsCount,
+	                         const uint32_t* faceIndices, const size_t faceIndicesCount, const uint32_t* faceCounts,
+	                         const size_t faceCountsCount) = 0;
 
-    virtual void addGeometry(
-        const size_t initialShapeIndex,
-        const double* vertexCoords,
-        const size_t vextexCoordsCount,
-        const uint32_t* faceIndices,
-        const size_t faceIndicesCount,
-        const uint32_t* faceCounts,
-        const size_t faceCountsCount
-    ) = 0;
-
-    virtual void addReports(
-        const size_t initialShapeIndex,
-        const wchar_t** stringReportKeys,
-        const wchar_t** stringReportValues,
-        size_t stringReportCount,
-        const wchar_t** floatReportKeys,
-        const double* floatReportValues,
-        size_t floatReportCount,
-        const wchar_t** boolReportKeys,
-        const bool* boolReportValues,
-        size_t boolReportCount
-    ) = 0;
-
+	virtual void addReports(const size_t initialShapeIndex, const wchar_t** stringReportKeys,
+	                        const wchar_t** stringReportValues, size_t stringReportCount,
+	                        const wchar_t** floatReportKeys, const double* floatReportValues, size_t floatReportCount,
+	                        const wchar_t** boolReportKeys, const bool* boolReportValues, size_t boolReportCount) = 0;
 };

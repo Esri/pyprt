@@ -6,8 +6,9 @@
 /src/cmake-build*
 /prt
 /output
+/examples/output
 
-/Pipfile.lock
+/**/Pipfile.lock
 /pyprt/**/*.so
 
 /.vs

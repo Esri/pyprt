@@ -1,22 +1,14 @@
 /**
- * Esri CityEngine SDK Basic Geometry Encoder
+ * ArcGIS CityEngine SDK Geometry Encoder for Python
  *
- * This example demonstrates the usage of the PRTX interface
- * to write custom encoders.
- *
- * See README.md in http://github.com/ArcGIS/esri-cityengine-sdk for build instructions.
- *
- * Written by Simon Haegler
- * Modified by Camille Lechot
- * Esri R&D Center Zurich, Switzerland
- *
- * Copyright 2012-2017 (c) Esri R&D Center Zurich
+ * Copyright (c) 2012-2020 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,17 +18,16 @@
 
 #pragma once
 
-#include "prtx/prtx.h"
-#include "prtx/Encoder.h"
 #include "prtx/EncodePreparator.h"
+#include "prtx/Encoder.h"
 #include "prtx/EncoderFactory.h"
 #include "prtx/Singleton.h"
+#include "prtx/prtx.h"
 
 #include "prt/AttributeMap.h"
 #include "prt/Callbacks.h"
 
 #include <string>
-
 
 // forward declare some classes to reduce header inclusion
 namespace prtx {
@@ -51,9 +42,9 @@ public:
 
 	using prtx::GeometryEncoder::GeometryEncoder;
 
-    PyEncoder(const PyEncoder&) = delete;
-    PyEncoder(PyEncoder&&) = delete;
-    PyEncoder& operator=(PyEncoder&) = delete;
+	PyEncoder(const PyEncoder&) = delete;
+	PyEncoder(PyEncoder&&) = delete;
+	PyEncoder& operator=(PyEncoder&) = delete;
 	virtual ~PyEncoder() = default;
 
 	virtual void init(prtx::GenerateContext& context) override;
@@ -62,22 +53,20 @@ public:
 
 private:
 	prtx::DefaultNamePreparator mNamePreparator;
-	prtx::EncodePreparatorPtr   mEncodePreparator;
+	prtx::EncodePreparatorPtr mEncodePreparator;
 };
-
 
 class PyEncoderFactory : public prtx::EncoderFactory, public prtx::Singleton<PyEncoderFactory> {
 public:
 	static PyEncoderFactory* createInstance();
 
-    PyEncoderFactory(const prt::EncoderInfo* info) : prtx::EncoderFactory(info) { }
-    PyEncoderFactory(const PyEncoderFactory&) = delete;
-    PyEncoderFactory(PyEncoderFactory&&) = delete;
-    PyEncoderFactory& operator=(PyEncoderFactory&) = delete;
+	PyEncoderFactory(const prt::EncoderInfo* info) : prtx::EncoderFactory(info) {}
+	PyEncoderFactory(const PyEncoderFactory&) = delete;
+	PyEncoderFactory(PyEncoderFactory&&) = delete;
+	PyEncoderFactory& operator=(PyEncoderFactory&) = delete;
 	virtual ~PyEncoderFactory() = default;
 
 	virtual PyEncoder* create(const prt::AttributeMap* defaultOptions, prt::Callbacks* callbacks) const override {
 		return new PyEncoder(getID(), defaultOptions, callbacks);
 	}
-
 };

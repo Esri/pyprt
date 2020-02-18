@@ -1,7 +1,7 @@
 /**
- * Esri CityEngine SDK Geometry Encoder for Python
+ * ArcGIS CityEngine SDK Geometry Encoder for Python
  *
- * Copyright 2014-2019 Esri R&D Zurich and VRBN
+ * Copyright (c) 2012-2020 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,10 @@
 
 #include "prt/API.h"
 
-#include <string>
 #include <iostream>
-#include <sstream>
 #include <iterator>
-
+#include <sstream>
+#include <string>
 
 /**
  * helper classes to redirect log events
@@ -32,38 +31,63 @@
 
 namespace logging {
 
-struct Logger { };
+struct Logger {};
 
-const std::wstring LEVELS[] = { L"trace", L"debug", L"info", L"warning", L"error", L"fatal" };
+const std::wstring LEVELS[] = {L"trace", L"debug", L"info", L"warning", L"error", L"fatal"};
 
 // log to std streams
-template<prt::LogLevel L>
+template <prt::LogLevel L>
 struct StreamLogger : public Logger {
-	explicit StreamLogger(std::wostream& out = std::wcout) : Logger(), mOut(out) { mOut << prefix(); }
-	virtual ~StreamLogger() { mOut << std::endl; }
-	StreamLogger<L>& operator<<(std::wostream&(*x)(std::wostream&)) { mOut << x; return *this; }
-	StreamLogger<L>& operator<<(const std::string& x) { std::copy(x.begin(), x.end(), std::ostream_iterator<char, wchar_t>(mOut)); return *this; }
-	template<typename T> StreamLogger<L>& operator<<(const T& x) { mOut << x; return *this; }
-	static std::wstring prefix() { return L"[" + LEVELS[L] + L"] "; }
+	explicit StreamLogger(std::wostream& out = std::wcout) : Logger(), mOut(out) {
+		mOut << prefix();
+	}
+	virtual ~StreamLogger() {
+		mOut << std::endl;
+	}
+	StreamLogger<L>& operator<<(std::wostream& (*x)(std::wostream&)) {
+		mOut << x;
+		return *this;
+	}
+	StreamLogger<L>& operator<<(const std::string& x) {
+		std::copy(x.begin(), x.end(), std::ostream_iterator<char, wchar_t>(mOut));
+		return *this;
+	}
+	template <typename T>
+	StreamLogger<L>& operator<<(const T& x) {
+		mOut << x;
+		return *this;
+	}
+	static std::wstring prefix() {
+		return L"[" + LEVELS[L] + L"] ";
+	}
 	std::wostream& mOut;
 };
 
 // log through the prt logger
-template<prt::LogLevel L>
+template <prt::LogLevel L>
 struct PRTLogger : public Logger {
-	PRTLogger() : Logger() { }
-	virtual ~PRTLogger() { prt::log(wstr.str().c_str(), L); }
-	PRTLogger<L>& operator<<(std::wostream&(*x)(std::wostream&)) { wstr << x;  return *this; }
+	PRTLogger() : Logger() {}
+	virtual ~PRTLogger() {
+		prt::log(wstr.str().c_str(), L);
+	}
+	PRTLogger<L>& operator<<(std::wostream& (*x)(std::wostream&)) {
+		wstr << x;
+		return *this;
+	}
 	PRTLogger<L>& operator<<(const std::string& x) {
 		std::copy(x.begin(), x.end(), std::ostream_iterator<char, wchar_t>(wstr));
 		return *this;
 	}
-	template<typename T> PRTLogger<L>& operator<<(const T& x) { wstr << x; return *this; }
+	template <typename T>
+	PRTLogger<L>& operator<<(const T& x) {
+		wstr << x;
+		return *this;
+	}
 	std::wostringstream wstr;
 };
 
 // choose your logger (PRTLogger or StreamLogger)
-template<prt::LogLevel L>
+template <prt::LogLevel L>
 using LT = PRTLogger<L>;
 
 using _LOG_DBG = LT<prt::LOG_DEBUG>;

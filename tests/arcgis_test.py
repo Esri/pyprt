@@ -8,7 +8,6 @@ class ArcGISAPITest(unittest.TestCase):
     def test_import(self):
 
         from arcgis.gis import GIS
-        from arcgis.geometry import Geometry
         from pyprt.pyprt_arcgis import arcgis_to_pyprt
 
         gis = GIS()

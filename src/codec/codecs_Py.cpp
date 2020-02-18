@@ -1,7 +1,7 @@
 /**
- * Esri CityEngine SDK Geometry Encoder for Python
+ * ArcGIS CityEngine SDK Geometry Encoder for Python
  *
- * Copyright 2014-2019 Esri R&D Zurich and VRBN
+ * Copyright (c) 2012-2020 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-
 #include "codecs_Py.h"
 
 #include "encoder/PyEncoder.h"
@@ -25,33 +24,28 @@
 
 #include <iostream>
 
-
 extern "C" {
-
 
 PYENC_EXPORTS_API void registerExtensionFactories(prtx::ExtensionManager* manager) {
 	try {
 		manager->addFactory(PyEncoderFactory::instance());
-	} catch (std::exception& e) {
-		std::cerr << __FUNCTION__ << " caught exception: " <<  e.what() << std::endl;
-	} catch (...) {
+	}
+	catch (std::exception& e) {
+		std::cerr << __FUNCTION__ << " caught exception: " << e.what() << std::endl;
+	}
+	catch (...) {
 		std::cerr << __FUNCTION__ << " caught unknown exception: " << std::endl;
 	}
 }
 
-
-PYENC_EXPORTS_API void unregisterExtensionFactories(prtx::ExtensionManager* /*manager*/) {
-}
-
+PYENC_EXPORTS_API void unregisterExtensionFactories(prtx::ExtensionManager* /*manager*/) {}
 
 PYENC_EXPORTS_API int getVersionMajor() {
 	return PRT_VERSION_MAJOR;
 }
 
-
 PYENC_EXPORTS_API int getVersionMinor() {
 	return PRT_VERSION_MINOR;
 }
-
 
 } // extern "C"
