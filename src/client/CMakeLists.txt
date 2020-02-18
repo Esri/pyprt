@@ -28,7 +28,7 @@ elseif(PYPRT_LINUX)
 			-Wl,--exclude-libs,ALL
 			-Wall -Wextra -Wunused-parameter)
 
-	set_target_properties(${PROJECT_NAME} PROPERTIES
+	set_target_properties(${CLIENT_TARGET} PROPERTIES
 			INSTALL_RPATH "\$ORIGIN"
 			INSTALL_RPATH_USE_LINK_PATH FALSE
 			SKIP_RPATH FALSE
