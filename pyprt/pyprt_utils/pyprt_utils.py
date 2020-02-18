@@ -12,9 +12,10 @@ def visualize_prt_results(models):
 
             if len(geometry_vertices) > 0:
                 print()
-                print('Size of the matrix containing the model vertices (with possible duplicates): (' +
-                      str(int(len(geometry_vertices)/3)) + ', 3)')
-                print('Size of the matrix containing the model faces: ' +
+                print('Size of the model vertices vector: ' +
+                      str(len(geometry_vertices)))
+                print('Number of model vertices: ' + str(int(len(geometry_vertices)/3)))
+                print('Size of the model faces vector: ' +
                       str(len(m.get_faces())))
 
             if len(rep) > 0:
