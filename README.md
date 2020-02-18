@@ -1,6 +1,8 @@
 # PyPRT - Python Bindings for CityEngine SDK
 
-PyPRT is a Python binding for PRT (ArcGIS CityEngine Procedural Runtime). It enables the execution of CityEngine CGA rules within Python. PyPRT allows to easily and efficiently generate 3D geometries.
+PyPRT is a Python binding for PRT (CityEngine Procedural Runtime). It enables the execution of CityEngine CGA rules within Python. PyPRT allows to easily and efficiently generate 3D geometries.
+
+![Procedural Generation of 3D Models](images/procedural_diagram.png)
 
 ## Table of Contents
 
@@ -28,11 +30,11 @@ shape_geometry = pyprt.InitialShape([0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0]
 m = pyprt.ModelGenerator([shape_geometry])
 ​
 # Model Generation Arguments Setup
-rpk = 'some_rule.rpk'
-shape_attributes = {'ruleFile': 'rules/typology/some_rule.cgb', 'startRule':'Default$Footprint',
+rpk = 'extrusion_rule.rpk'
+shape_attributes = {'ruleFile': 'bin/extrusion_rule.cgb', 'startRule':'Default$Footprint',
 	'shapeName': 'myShape', 'seed': 555}
 encoder = 'com.esri.pyprt.PyEncoder'
-encoder_options = {'emitReport': False, 'emitGeometry': True}
+encoder_options = {'emitReport': True, 'emitGeometry': True}
 ​
 # PRT Generation
 generated_models = m.generate_model([shape_attributes], rpk, encoder, encoder_options)
@@ -105,3 +107,5 @@ The `setup.py clean` call mentioned above will also clean out the native extensi
 PyPRT is under the same license as the included [CityEngine SDK](https://github.com/Esri/esri-cityengine-sdk#licensing).
 
 An exception is the PyPRT source code (without CityEngine SDK, binaries, or object code), which is licensed under the Apache License, Version 2.0 (the “License”); you may not use this work except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
+
+[Back to top](#table-of-contents)
