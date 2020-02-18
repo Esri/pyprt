@@ -4,7 +4,7 @@ PyPRT is a Python binding for PRT (CityEngine Procedural Runtime). It enables th
 
 This repo contains examples of PyPRT usage. You can find the source code in the main [pyprt](https://github.com/Esri/pyprt) repository. More detailed information is available there.
 
-![Generated geometry exported as OBJ (ex7)](images/building.png | height=24) ![Generated parks and trees (ex8)](images/generated_trees.png)
+![Generated geometry exported as OBJ (ex7)](images/building.png) ![Generated parks and trees (ex8)](images/generated_trees.png)
 
 ## Table of Contents
 
@@ -24,7 +24,7 @@ Simply run `pip install pyprt` in your desired Python environment or `conda inst
 <table style="width:100%">
   <tr>
     <th>Name</th>
-    <th>Feature</th> 
+    <th>Features</th> 
     <th>Notes</th>
   </tr>
   <tr>
