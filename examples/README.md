@@ -72,7 +72,7 @@ Simply run `pip install pyprt` in your desired Python environment or `conda inst
 
 ## Usage
 
-In the Python environment where PyPRT is installed, run `python examples\ex1_python_encoder.py` to execute the corresponding Python script.
+In the Python environment where PyPRT is installed, run `python examples/ex1_python_encoder.py` to execute the corresponding Python script.
 Concerning the Jupyter Notebooks, first run `jupyter notebook` and open the desired example notebook. 
 
 
