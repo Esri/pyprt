@@ -2,13 +2,12 @@ import os
 import sys
 
 import numpy as np
+import pyprt
 
 try:
     from arcgis.geometry import Geometry
 except ModuleNotFoundError:
     sys.exit("This module can be imported only if arcgis package is installed.")
-
-from .. import pyprt
 
 
 def arcgis_to_pyprt(feature_set):
