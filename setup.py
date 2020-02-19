@@ -172,7 +172,7 @@ class CleanCommand(clean):
 
 setup(
     name='pyprt',
-    version='0.3.0',  # keep consistent with __version__ in pyprt/__init__.py
+    version='1.0.0b1',  # keep consistent with __version__ in pyprt/__init__.py
     author='Camille Lechot',
     author_email='clechot@esri.com',
     description='Python bindings for the "Procedural Runtime SDK" (PRT) of "ArcGIS CityEngine" by Esri.',
