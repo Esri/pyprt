@@ -173,11 +173,12 @@ class CleanCommand(clean):
 setup(
     name='pyprt',
     version='1.0.0b1',  # keep consistent with __version__ in pyprt/__init__.py
-    author='Camille Lechot',
-    author_email='clechot@esri.com',
-    description='Python bindings for the "Procedural Runtime SDK" (PRT) of "ArcGIS CityEngine" by Esri.',
-    long_description='The goal of this project is to enable the execution of CityEngine rules within Python world. ',
-    url='https://devtopia.esri.com/Zurich-R-D-Center/pyprt',
+    author='Esri R&D Center Zurich',
+    description='Python bindings for the "Procedural Runtime" (PRT) of CityEngine by Esri.',
+    long_description='This API enables the execution of CityEngine rules from within Python applications. It consumes '
+                     'Rule Packages (RPK) authored in CityEngine and writes out the resulting geometry according to a '
+                     'specific file format.',
+    url='https://github.com/Esri/pyprt',
     platforms=['Windows', 'Linux'],
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
