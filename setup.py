@@ -156,19 +156,20 @@ class CMakeBuild(build_ext):
 class CleanCommand(clean):
     def run(self):
         clean.run(self)
-        with open(record_file, 'r') as f:
-            for each_file in f:
-                fname = os.path.join(each_file.rstrip())
-                dirname = os.path.dirname(fname)
-                basename = os.path.basename(dirname)
-                if os.path.exists(dirname) and (basename == 'bin' or basename == 'lib'):
-                    remove_tree(dirname, dry_run=self.dry_run)
-                else:
-                    if os.path.isfile(fname):
-                        os.remove(fname)
-                        log.warn("removing '%s'", fname)
-        os.remove(os.path.join(os.curdir, record_file))
-        log.warn("removing '%s'", record_file)
+        if os.path.isfile(record_file):
+            with open(record_file, 'r') as f:
+                for each_file in f:
+                    fname = os.path.join(each_file.rstrip())
+                    dirname = os.path.dirname(fname)
+                    basename = os.path.basename(dirname)
+                    if os.path.exists(dirname) and (basename == 'bin' or basename == 'lib'):
+                        remove_tree(dirname, dry_run=self.dry_run)
+                    else:
+                        if os.path.isfile(fname):
+                            os.remove(fname)
+                            log.warn("removing '%s'", fname)
+            os.remove(os.path.join(os.curdir, record_file))
+            log.warn("removing '%s'", record_file)
 
 
 setup(
