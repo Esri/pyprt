@@ -81,11 +81,11 @@ def taskBuildPyPRT(cfg) {
 	}
 
 	def versionExtractor = { p ->
-		def vers = (p =~ /.*pyprt-([0-9]+\.[0-9]+\.[0-9]+-[0-9]+)-cp.*/)
+		def vers = (p =~ /.*pyprt-([0-9]+\.[0-9]+\.[0-9abpr]+-[0-9]+)-cp.*/)
 		return vers[0][1]
 	}
 	def classifierExtractor = { p ->
-		def cls = (p =~ /.*pyprt-[0-9]+\.[0-9]+\.[0-9]+-[0-9]+-(.*)\.whl/)
+		def cls = (p =~ /.*pyprt-[0-9]+\.[0-9]+\.[0-9abpr]+-[0-9]+-(.*)\.whl/)
 		return cls[0][1]
 	}
 	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-*.whl", versionExtractor, cfg, classifierExtractor)
