@@ -34,8 +34,8 @@ class GeometryTest(unittest.TestCase):
         self.assertEqual(len(model[0].get_faces()), 47202)
 
     def test_report_green(self):
-        rpk = asset_file('envelope0110.rpk')
-        attrs = {'ruleFile': 'rules/typology/envelope0110.cgb', 'startRule': 'Default$Lot',
+        rpk = asset_file('envelope2002.rpk')
+        attrs = {'ruleFile': 'rules/typology/envelope2002.cgb', 'startRule': 'Default$Lot',
                  'report_but_not_display_green': True}
         shape_geo_from_obj = pyprt.InitialShape(
             asset_file('building_parcel.obj'))
