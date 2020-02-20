@@ -1,9 +1,4 @@
 [[source]]
-name = "pypi testing"
-url = "https://test.pypi.org/simple"
-verify_ssl = true
-
-[[source]]
 name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
@@ -16,3 +11,6 @@ vispy = "*"
 PyQT5 = "*"
 scipy = "*"
 PyGEL3D = "*"
+
+[pipenv]
+allow_prereleases = true
