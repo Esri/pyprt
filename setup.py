@@ -8,7 +8,8 @@ from distutils.command.clean import clean
 from distutils.dir_util import copy_tree, remove_tree
 from distutils import log
 
-record_file = 'pyprt.egg-info\\record_setup_develop_files.txt'
+record_file = os.path.join(os.curdir, 'pyprt.egg-info',
+                           'record_setup_develop_files.txt')
 
 
 class CMakeConfig:
@@ -155,29 +156,31 @@ class CMakeBuild(build_ext):
 class CleanCommand(clean):
     def run(self):
         clean.run(self)
-        with open(record_file, 'r') as f:
-            for each_file in f:
-                fname = os.path.join(each_file.rstrip())
-                dirname = os.path.dirname(fname)
-                basename = os.path.basename(dirname)
-                if os.path.exists(dirname) and (basename == 'bin' or basename == 'lib'):
-                    remove_tree(dirname, dry_run=self.dry_run)
-                else:
-                    if os.path.isfile(fname):
-                        os.remove(fname)
-                        log.warn("removing '%s'", fname)
-        os.remove(os.path.join(os.curdir, record_file))
-        log.warn("removing '%s'", record_file)
+        if os.path.isfile(record_file):
+            with open(record_file, 'r') as f:
+                for each_file in f:
+                    fname = os.path.join(each_file.rstrip())
+                    dirname = os.path.dirname(fname)
+                    basename = os.path.basename(dirname)
+                    if os.path.exists(dirname) and (basename == 'bin' or basename == 'lib'):
+                        remove_tree(dirname, dry_run=self.dry_run)
+                    else:
+                        if os.path.isfile(fname):
+                            os.remove(fname)
+                            log.warn("removing '%s'", fname)
+            os.remove(os.path.join(os.curdir, record_file))
+            log.warn("removing '%s'", record_file)
 
 
 setup(
     name='pyprt',
-    version='0.3.0',  # keep consistent with __version__ in pyprt/__init__.py
-    author='Camille Lechot',
-    author_email='clechot@esri.com',
-    description='Python bindings for the "Procedural Runtime SDK" (PRT) of "ArcGIS CityEngine" by Esri.',
-    long_description='The goal of this project is to enable the execution of CityEngine rules within Python world. ',
-    url='https://devtopia.esri.com/Zurich-R-D-Center/pyprt',
+    version='1.0.0b1',  # keep consistent with __version__ in pyprt/__init__.py
+    author='Esri R&D Center Zurich',
+    description='Python bindings for the "Procedural Runtime" (PRT) of CityEngine by Esri.',
+    long_description='This API enables the execution of CityEngine rules from within Python applications. It consumes '
+                     'Rule Packages (RPK) authored in CityEngine and writes out the resulting geometry according to a '
+                     'specific file format.',
+    url='https://github.com/Esri/pyprt',
     platforms=['Windows', 'Linux'],
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
