@@ -10,7 +10,7 @@ This repo contains examples of PyPRT usage. You can find the source code in the 
 
 * [Installation](#installation)
 * [Examples](#examples)
-* [Usage](#usage)
+* [Running the examples](#running-the-examples)
 * [License](#license)
 
 
@@ -70,10 +70,14 @@ Simply run `pip install pyprt` in your desired Python environment or `conda inst
 </table>
 
 
-## Usage
+## Running the examples
 
-In the Python environment where PyPRT is installed, run `python examples/ex1_python_encoder.py` to execute the corresponding Python script.
-Concerning the Jupyter Notebooks, first run `jupyter notebook` and open the desired example notebook. 
+To run the examples please follow these steps:
+1. Open a terminal and change to the directory where you checked out this repository.
+1. Ensure you have a working Python 3.6 64bit installation. For other Python versions, please [build](https://github.com/Esri/pyprt) PyPRT yourself at the moment.
+1. Run `pipenv --python 3.6 install` to install PyPRT and all dependencies for the examples. This will download a number of Python packages (including PyPRT) from PyPI.
+1. Change into the virtual python environment: `pipenv shell`
+1. Now run e.g. `python ex1_python_encoder.py` to execute the corresponding Python script. For the examples based on Jupyter Notebooks, first run `jupyter notebook` and open the desired example notebook in the opening browser page. 
 
 
 ## License
