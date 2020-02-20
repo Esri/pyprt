@@ -97,12 +97,12 @@ if __name__ == '__main__':
             model_faces = faces_indices_vectors_to_matrix(ind, face_geo)
 
             if len(geo) > 0:
-                print('Size of the matrix containing the model vertices: (' +
-                      str(int(len(geo)/3)) + ', 3)')
+                print('Size of the model vertices matrix: (' +
+                      str(len(model_vertices)) + ', 3)')
                 all_vertices.append(model_vertices)
             if len(face_geo) > 0:
-                print('Size of the matrix containing the model faces: ' +
-                      str(len(face_geo)))
+                print('Size (first dimension) of the model faces matrix: ' +
+                      str(len(model_faces)))
                 all_faces.append(model_faces)
         else:
             print('\nError while instanciating the model generator.')
