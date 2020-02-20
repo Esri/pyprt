@@ -60,12 +60,12 @@ Simply run `pip install pyprt` in your desired Python environment or `conda inst
   <tr>
     <td>ex7_building_modeling_optimization.ipynb</td>
     <td>This example is about optimizing the attributes of a building generated on a parcel considering the green area of the building. SciPy is used as the optimization library.</td>
-    <td>PyGEL3D is used as a visualization tool in this example. Linux users will have to use another library.</td>
+    <td><a href="https://pypi.org/project/PyGEL3D">PyGEL3D</a> is used as a visualization tool in this example. Unfortunately the pre-built package of PyGEL3D on PyPI is broken for Linux (you can <a href="https://github.com/janba/GEL">try</a> to build it locally).</td>
   </tr>
   <tr>
     <td>ex8_3d_gis_content_generation.ipynb</td>
-    <td>This example demonstrates how PyPRT can be used with the ArcGIS API for Python in order to collect data from ArcGIS Online, generate 3D content and publish the content back to ArcGIS Online.</td>
-    <td>In order to publish and visualize the generated trees, the user needs an ArcGIS Online account. If this is the case, the user will have to check that the published item has a non existing name.</td>
+    <td>This example demonstrates how PyPRT can be used with the <a href="https://developers.arcgis.com/python">ArcGIS API for Python</a> in order to collect data from <a href="https://www.esri.com/en-us/arcgis/products/arcgis-online/overview">ArcGIS Online</a>, generate 3D content and publish the content back to ArcGIS Online.</td>
+    <td>Please note that in order to publish and visualize the generated models, the user needs an <a href="https://www.esri.com/en-us/arcgis/products/create-account">ArcGIS Online account</a>. Also, the published item needs to be manually deleted from the ArcGIS online account before the example script can be run again (we do not want to delete things from your account).</td>
   </tr>
 </table>
 
