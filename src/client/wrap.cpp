@@ -375,32 +375,36 @@ std::vector<GeneratedModel> ModelGenerator::generateAnotherModel(const std::vect
 using namespace pybind11::literals;
 
 PYBIND11_MODULE(pyprt, m) {
+	/*py::options options;
+	options.disable_function_signatures();*/
+
 	py::bind_vector<std::vector<GeneratedModel>>(m, "GeneratedModelVector", py::module_local(false));
 
-	m.def("initialize_prt", &initializePRT);
-	m.def("is_prt_initialized", &isPRTInitialized);
-	m.def("shutdown_prt", &shutdownPRT);
+	m.def("initialize_prt", &initializePRT, "Initialization of PRT.");
+	m.def("is_prt_initialized", &isPRTInitialized, "This function returns *True* if PRT is initialized, *False* otherwise.");
+	m.def("shutdown_prt", &shutdownPRT, "Shutdown of PRT. This function can be called only once per session/script.");
 
-	py::class_<InitialShape>(m, "InitialShape")
-	        .def(py::init<const std::vector<double>&>(), py::arg("vertCoordinates"))
+	py::class_<InitialShape>(m, "InitialShape", "The initial shape corresponds to the geometry on which the CGA rule will be applied.")
+	        .def(py::init<const std::vector<double>&>(), py::arg("vertCoordinates"), "InitialShape constructor using a vector of geometry vertices coordinates. The geometry contains one face with no hole.")
 	        .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&>(),
-	             py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"))
-	        .def(py::init<const std::string&>(), py::arg("initialShapePath"))
-	        .def("get_vertex_count", &InitialShape::getVertexCount)
-	        .def("get_index_count", &InitialShape::getIndexCount)
-	        .def("get_face_counts_count", &InitialShape::getFaceCountsCount)
-	        .def("get_path", &InitialShape::getPath);
+	             py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"),
+	             "InitialShape constructor using a vector of geometry vertices coordinates, the vertices indices for each face and the indices count per face.")
+	        .def(py::init<const std::string&>(), py::arg("initialShapePath"), "InitialShape constructor using the path to the shape file. This can be an OBJ file, Collada, etc.")
+	        .def("get_vertex_count", &InitialShape::getVertexCount, "Returns the number of vertices coordinates the initial shape contains.")
+	        .def("get_index_count", &InitialShape::getIndexCount, "Returns the lenght of the vector containing the vertices indices of the shape.")
+	        .def("get_face_counts_count", &InitialShape::getFaceCountsCount, "Returns the number of faces the initial shape contains.")
+	        .def("get_path", &InitialShape::getPath, "Returns the initial shape file path.");
 
-	py::class_<ModelGenerator>(m, "ModelGenerator")
-	        .def(py::init<const std::vector<InitialShape>&>(), py::arg("initialShapes"))
-	        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"),
+	py::class_<ModelGenerator>(m, "ModelGenerator", "The ModelGenerator class will host the data required to procedurally generate the 3D model on a given initial shape.")
+	        .def(py::init<const std::vector<InitialShape>&>(), py::arg("initialShapes"), "ModelGenerator constructor using a list of InitialShape instances.")
+	        .def("generate_model", &ModelGenerator::generateModel, "This function does the procedural generation of the models. It outputs a list of GeneratedModel instances.", py::arg("shapeAttributes"),
 	             py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"))
-	        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
+	        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"), "This function can only be used once the previous ModelGenerator::generate_model method has been called. It is useful to specify different shape attribues but use the same CGA rule package on the same initial shapes, the same encoder and encoder options.");
 
-	py::class_<GeneratedModel>(m, "GeneratedModel")
-	        .def("get_initial_shape_index", &GeneratedModel::getInitialShapeIndex)
-	        .def("get_vertices", &GeneratedModel::getVertices)
-	        .def("get_indices", &GeneratedModel::getIndices)
-	        .def("get_faces", &GeneratedModel::getFaces)
-	        .def("get_report", &GeneratedModel::getReport);
+	py::class_<GeneratedModel>(m, "GeneratedModel", "The GeneratedModel instance contains the generated 3D geometry. This class is only employed if the *com.esri.pyprt.PyEncoder* encoder is used in the ModelGenerator instance.")
+	        .def("get_initial_shape_index", &GeneratedModel::getInitialShapeIndex, "Returns the index of the initial shape on which the generated geometry has been built.")
+	        .def("get_vertices", &GeneratedModel::getVertices, "Returns the generated 3D geometry vertices coordinates. If the *emitGeometry* entry of the encoder options dictionary has been set to *False*, this function returns an empty vector.")
+	        .def("get_indices", &GeneratedModel::getIndices, "Returns the generated 3D geometry vertices indices. If the *emitGeometry* entry of the encoder options dictionary has been set to *False*, this function returns an empty vector.")
+	        .def("get_faces", &GeneratedModel::getFaces, "Returns the generated 3D geometry vertices indices per face. If the *emitGeometry* entry of the encoder options dictionary has been set to *False*, this function returns an empty vector.")
+	        .def("get_report", &GeneratedModel::getReport, "Returns the generated 3D geometry CGA report. This report dictionary can be empty if the CGA rule file employed does not output any report or if the *emitReport* entry of the encoder options dictionary has been set to *False*.");
 }
