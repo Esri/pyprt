@@ -4,7 +4,7 @@ title: PyPRT - Python Bindings for the CityEngine SDK
 
 <table>
 <tr>
-	<td style="font-size:22pt;text-align:center;vertical-align:bottom"><a href="#downloads"><img src="images/cog.png" width="100px" /> Downloads</a></td>
+	<td style="font-size:22pt;text-align:center;vertical-align:bottom"><a href="#installation"><img src="images/cog.png" width="100px" /> Installation</a></td>
 	<td style="font-size:22pt;text-align:center;vertical-align:bottom"><a href="#examples"><img src="images/bldg3d.png" width="100px" /> Examples</a></td>
 	<td style="font-size:22pt;text-align:center;vertical-align:bottom"><a href="https://github.com/Esri/pyprt/blob/master/README.md#documentation"><img src="images/docs.png" width="100px" /> Documentation</a></td>
 </tr>
@@ -18,10 +18,9 @@ PyPRT allows generating 3D models on multiple initial geometries. Different inpu
 
 *PyPRT is free for non-commercial use.* Commercial use requires at least one commercial license of the latest CityEngine version installed in the organization. No redistribution is allowed. Please refer to the licensing section below for more detailed licensing information.
 
-## Downloads
+## Installation
 
-| ![Linux](images/linux.png)   | PyPRT 1.0, PRT 2.0 |
-| ![Windows](images/win32.png) | PyPRT 1.0, PRT 2.0 |
+Simply run `pip install pyprt` in your desired Python environment or `conda install pyprt` in a Conda environment. Then use `import pyprt` in your scripts.
 
 ## Examples
 
