@@ -6,9 +6,15 @@
 Welcome to PyPRT's documentation!
 =================================
 
+PyPRT is a Python binding for PRT (CityEngine Procedural Runtime). It enables the execution of CityEngine CGA rules within Python. PyPRT allows to easily and efficiently generate 3D geometries.
+
+Check out `PyPRT front page <https://esri.github.io/pyprt/>`__.
+
+The source code, installation information and quickstart are available in the `PyPRT Github repo <https://github.com/Esri/pyprt>`__. Examples of PyPRT usages can be found in the `pyprt-examples Github repo <https://github.com/Esri/pyprt-examples>`__
+
 .. toctree::
    :maxdepth: 4
-   :caption: Contents:
+   :caption: API Documentation Contents:
 
    pyprt
    
@@ -18,7 +24,7 @@ Welcome to PyPRT's documentation!
    :members:
    
 .. automodule:: pyprt.pyprt_arcgis
-   :members: arcgis_to_pyprt
+   :members:
 
 
 Indices and tables
