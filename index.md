@@ -42,7 +42,7 @@ PyPRT allows generating 3D models on multiple initial geometries. Different inpu
 			<li>Multi-objectives optimization: optimize the total green area and the floor area in a O-shape building, by taking into account the lot coverage and the height of the building first tier.</li>
 			<li>Visualize the results.</li>
 		</ol>
-		Link to the example notebook.
+		<a href="https://github.com/Esri/pyprt-examples/blob/master/ex7_building_modeling_optimization.ipynb">Link to the example notebook</a>.
 		</p>
 	</td>
 </tr>
@@ -63,7 +63,7 @@ PyPRT allows generating 3D models on multiple initial geometries. Different inpu
 			<li>Visualize the results.</li>
 		</ol>
 		(The steps 4 and 5 require having an ArcGIS Online account.)
-		Link to the example notebook.
+		<br><a href="https://github.com/Esri/pyprt-examples/blob/master/ex8_3d_gis_content_generation.ipynb">Link to the example notebook</a>.
 		</p>
 	</td>
 </tr>
