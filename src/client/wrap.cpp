@@ -382,16 +382,17 @@ PYBIND11_MODULE(pyprt, m) {
 	m.def("shutdown_prt", &shutdownPRT);
 
 	py::class_<InitialShape>(m, "InitialShape")
-	        .def(py::init<const std::vector<double>&>())
-	        .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&>())
-	        .def(py::init<const std::string&>())
+	        .def(py::init<const std::vector<double>&>(), py::arg("vertCoordinates"))
+	        .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&>(),
+	             py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"))
+	        .def(py::init<const std::string&>(), py::arg("initialShapePath"))
 	        .def("get_vertex_count", &InitialShape::getVertexCount)
 	        .def("get_index_count", &InitialShape::getIndexCount)
 	        .def("get_face_counts_count", &InitialShape::getFaceCountsCount)
 	        .def("get_path", &InitialShape::getPath);
 
 	py::class_<ModelGenerator>(m, "ModelGenerator")
-	        .def(py::init<const std::vector<InitialShape>&>(), "initShape"_a)
+	        .def(py::init<const std::vector<InitialShape>&>(), py::arg("initialShapes"))
 	        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"),
 	             py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"))
 	        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
