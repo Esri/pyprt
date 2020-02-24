@@ -375,67 +375,172 @@ std::vector<GeneratedModel> ModelGenerator::generateAnotherModel(const std::vect
 using namespace pybind11::literals;
 
 PYBIND11_MODULE(pyprt, m) {
-	/*py::options options;
-	options.disable_function_signatures();*/
+	py::options options;
+	options.disable_function_signatures();
 
 	py::bind_vector<std::vector<GeneratedModel>>(m, "GeneratedModelVector", py::module_local(false));
 
 	m.def("initialize_prt", &initializePRT, "Initialization of PRT.");
-	m.def("is_prt_initialized", &isPRTInitialized,
-	      "This function returns *True* if PRT is initialized, *False* otherwise.");
+	m.def("is_prt_initialized", &isPRTInitialized, R"mydelimiter(
+        is_prt_initialized() -> bool
+
+        This function returns *True* if PRT is initialized, *False* otherwise.
+
+        :Returns:
+            bool
+    )mydelimiter");
 	m.def("shutdown_prt", &shutdownPRT, "Shutdown of PRT. This function can be called only once per session/script.");
 
-	py::class_<InitialShape>(m, "InitialShape",
-	                         "The initial shape corresponds to the geometry on which the CGA rule will be applied.")
-	        .def(py::init<const std::vector<double>&>(), py::arg("vertCoordinates"),
-	             "InitialShape constructor using a vector of geometry vertices coordinates. The geometry contains one "
-	             "face with no hole.")
-	        .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&>(),
-	             py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"),
-	             "InitialShape constructor using a vector of geometry vertices coordinates, the vertices indices for "
-	             "each face and the indices count per face.")
-	        .def(py::init<const std::string&>(), py::arg("initialShapePath"),
-	             "InitialShape constructor using the path to the shape file. This can be an OBJ file, Collada, etc.")
-	        .def("get_vertex_count", &InitialShape::getVertexCount,
-	             "Returns the number of vertices coordinates the initial shape contains.")
-	        .def("get_index_count", &InitialShape::getIndexCount,
-	             "Returns the lenght of the vector containing the vertices indices of the shape.")
-	        .def("get_face_counts_count", &InitialShape::getFaceCountsCount,
-	             "Returns the number of faces the initial shape contains.")
-	        .def("get_path", &InitialShape::getPath, "Returns the initial shape file path.");
+	py::class_<InitialShape>(m, "InitialShape", R"mydelimiter(
+        __init__(*args, **kwargs)
+
+        The initial shape corresponds to the geometry on which the CGA rule will be applied.
+        )mydelimiter")
+	                .def(py::init<const std::vector<double>&>(), py::arg("vertCoordinates"), R"mydelimiter(
+        **__init__** (*vert_coordinates*)
+
+        InitialShape constructor using a vector of geometry vertices coordinates. The geometry contains 
+        one face with no hole.
+
+        :Parameters:
+            **vert_coordinates** -- List[float]
+        )mydelimiter")
+	                .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&,
+	                              const std::vector<uint32_t>&>(),
+	                     py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"),
+	                     R"mydelimiter(
+        **__init__** (*vert_coordinates*, *face_indices*, *face_count*)
+
+        InitialShape constructor using a vector of geometry vertices coordinates, the vertices indices for 
+        each face and the indices count per face.
+
+        :Parameters:
+            - **vert_coordinates** -- List[float]
+            - **face_indices** -- List[int]
+            - **face_count** -- List[int]
+        )mydelimiter")
+	                .def(py::init<const std::string&>(), py::arg("initialShapePath"), R"mydelimiter(
+        **__init__** (*init_shape_path*)
+
+        InitialShape constructor using the path to the shape file. This can be an OBJ file, Collada, etc.
+
+        :Parameters:
+            **initialShapePath** -- str
+        )mydelimiter")
+	                .def("get_vertex_count", &InitialShape::getVertexCount, R"mydelimiter(
+        get_vertex_count() -> int
+        Returns the number of vertices coordinates the initial shape contains.
+
+        :Returns:
+            int
+        )mydelimiter")
+	                .def("get_index_count", &InitialShape::getIndexCount, R"mydelimiter(
+        get_index_count() -> int
+        Returns the length of the vector containing the vertices indices of the shape.
+
+        :Returns:
+            int
+        )mydelimiter")
+	                .def("get_face_counts_count", &InitialShape::getFaceCountsCount, R"mydelimiter(
+        get_face_counts_count() -> int
+        Returns the number of faces the initial shape contains.
+
+        :Returns:
+            int
+        )mydelimiter")
+	                .def("get_path", &InitialShape::getPath, R"mydelimiter(
+        get_path() -> str
+        Returns the initial shape file path.
+
+        :Returns:
+            str
+        )mydelimiter");
 
 	py::class_<ModelGenerator>(m, "ModelGenerator",
 	                           "The ModelGenerator class will host the data required to procedurally generate the 3D "
 	                           "model on a given initial shape.")
-	        .def(py::init<const std::vector<InitialShape>&>(), py::arg("initialShapes"),
-	             "ModelGenerator constructor using a list of InitialShape instances.")
-	        .def("generate_model", &ModelGenerator::generateModel,
-	             "This function does the procedural generation of the models. It outputs a list of GeneratedModel "
-	             "instances.",
-	             py::arg("shapeAttributes"), py::arg("rulePackagePath"), py::arg("geometryEncoderName"),
-	             py::arg("geometryEncoderOptions"))
-	        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"),
-	             "This function can only be used once the previous ModelGenerator::generate_model method has been "
-	             "called. It is useful to specify different shape attribues but use the same CGA rule package on the "
-	             "same initial shapes, the same encoder and encoder options.");
+	        .def(py::init<const std::vector<InitialShape>&>(), py::arg("initialShapes"), R"mydelimiter(
+        __init__(init_shapes)
+
+        ModelGenerator constructor using a list of InitialShape instances.
+
+        :Parameters:
+            **init_shapes** -- List[InitialShape]
+
+        )mydelimiter")
+	        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"),
+	             py::arg("rulePackagePath"), py::arg("geometryEncoderName"),
+	             py::arg("geometryEncoderOptions"), R"mydelimiter(
+        generate_model(*args, **kwargs) -> List[GeneratedModel]
+
+        This function does the procedural generation of the models. It outputs a list of GeneratedModel instances.
+
+        :Parameters:
+            - **shape_attributes** -- List[dict]
+            - **rule_package_path** -- str
+            - **geometry_encoder** -- str
+            - **encoder_options** -- dict
+
+        :Returns:
+            List[GeneratedModel]
+        )mydelimiter")
+	        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"), R"mydelimiter(
+        This function can only be used once the previous ModelGenerator::generate_model method has been 
+        called. It is useful to specify different shape attribues but use the same CGA rule package on the
+        same initial shapes, the same encoder and encoder options.
+
+        :Parameters:
+            **shape_attributes** -- List[dict]
+
+        :Returns:
+            List[GeneratedModel]
+
+        )mydelimiter");
 
 	py::class_<GeneratedModel>(
 	        m, "GeneratedModel",
 	        "The GeneratedModel instance contains the generated 3D geometry. This class is only employed if the "
 	        "*com.esri.pyprt.PyEncoder* encoder is used in the ModelGenerator instance.")
-	        .def("get_initial_shape_index", &GeneratedModel::getInitialShapeIndex,
-	             "Returns the index of the initial shape on which the generated geometry has been built.")
-	        .def("get_vertices", &GeneratedModel::getVertices,
-	             "Returns the generated 3D geometry vertices coordinates. If the *emitGeometry* entry of the encoder "
-	             "options dictionary has been set to *False*, this function returns an empty vector.")
-	        .def("get_indices", &GeneratedModel::getIndices,
-	             "Returns the generated 3D geometry vertices indices. If the *emitGeometry* entry of the encoder "
-	             "options dictionary has been set to *False*, this function returns an empty vector.")
-	        .def("get_faces", &GeneratedModel::getFaces,
-	             "Returns the generated 3D geometry vertices indices per face. If the *emitGeometry* entry of the "
-	             "encoder options dictionary has been set to *False*, this function returns an empty vector.")
-	        .def("get_report", &GeneratedModel::getReport,
-	             "Returns the generated 3D geometry CGA report. This report dictionary can be empty if the CGA rule "
-	             "file employed does not output any report or if the *emitReport* entry of the encoder options "
-	             "dictionary has been set to *False*.");
+	        .def("get_initial_shape_index", &GeneratedModel::getInitialShapeIndex, R"mydelimiter(
+        get_initial_shape_index() -> int
+        Returns the index of the initial shape on which the generated geometry has been built.
+
+        :Returns:
+            int
+        )mydelimiter")
+	        .def("get_vertices", &GeneratedModel::getVertices, R"mydelimiter(
+        get_vertices() -> List[float]
+
+        Returns the generated 3D geometry vertices coordinates. If the *emitGeometry* entry of the encoder 
+        options dictionary has been set to *False*, this function returns an empty vector.
+
+        :Returns:
+            List[float]
+        )mydelimiter")
+	        .def("get_indices", &GeneratedModel::getIndices, R"mydelimiter(
+        get_indices() -> List[int]
+        
+        Returns the generated 3D geometry vertices indices. If the *emitGeometry* entry of the encoder
+        options dictionary has been set to *False*, this function returns an empty vector.
+
+        :Returns:
+            List[int]
+        )mydelimiter")
+	        .def("get_faces", &GeneratedModel::getFaces, R"mydelimiter(
+        get_faces() -> List[int]
+        Returns the generated 3D geometry vertices indices per face. If the *emitGeometry* entry of the
+        encoder options dictionary has been set to *False*, this function returns an empty vector.
+
+        :Returns:
+            List[int]
+        )mydelimiter")
+	        .def("get_report", &GeneratedModel::getReport, R"mydelimiter(
+        get_report() -> dict
+        Returns the generated 3D geometry CGA report. This report dictionary can be empty if the CGA rule
+        file employed does not output any report or if the *emitReport* entry of the encoder options
+        dictionary has been set to *False*.
+
+        :Returns:
+            dict
+        )mydelimiter");
 }

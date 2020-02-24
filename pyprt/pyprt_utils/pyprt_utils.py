@@ -1,7 +1,10 @@
 def visualize_prt_results(models):
-    """
+    """visualize_prt_results(models)
     This helper function is used to output the geometry and report information of a 
     vector of GeneratedModel.
+
+    Parameters:
+        models: List[GeneratedModel]
     """
     print('\nNumber of generated geometries (= nber of initial shapes):')
     print(len(models))
@@ -32,10 +35,21 @@ def visualize_prt_results(models):
 
 
 def vertices_vector_to_matrix(vertices):
-    """
-    PyPRT outputs the GeneratedModel vertices information as a 1D vector. The vector 
+    """vertices_vector_to_matrix(vertices) -> List[float]
+    PyPRT outputs the GeneratedModel vertices coordinates as a 1D vector. The vector 
     contains the x, y, z coordinates of all the vertices. This function converts the 
-    vertices vector into a vector of vertex coordinates vectors.
+    vertices vector into a vector of N vertex coordinates vectors (with N, the number 
+    of geometry vertices).
+
+    Parameters:
+        vertices: List[float]
+
+    Returns:
+        List[List[float]]
+
+    Example:
+        [x1, y1, z1, x2, y2, z2, ..., xN, yN, zN] --> [[x1, y1, z1], [x2, y2, z2], ..., 
+        [xN, yN, zN]]
     """
     vertices_as_matrix = []
     for count in range(0, int(len(vertices)/3)):
@@ -46,10 +60,17 @@ def vertices_vector_to_matrix(vertices):
 
 
 def faces_indices_vectors_to_matrix(indices, faces):
-    """
+    """faces_indices_vectors_to_matrix(indices, faces) -> List[List[int]]
     PyPRT outputs the GeneratedModel faces information as a vector of vertices indices 
     and face indices count. This function converts these two vectors into one vector of 
-    vertex indices vector per face.
+    vectors containing the vertex indices per face.
+
+    Parameters:
+        indices: List[int]
+        faces: List[int]
+
+    Returns:
+        List[List[int]]
     """
     faces_as_matrix = []
     offset = 0

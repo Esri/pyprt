@@ -11,7 +11,16 @@ except ModuleNotFoundError:
 
 
 def arcgis_to_pyprt(feature_set):
-    """This function allows converting an ArcGIS FeatureSet into a vector of InitialShape instances."""
+    """arcgis_to_pyprt(feature_set) -> List[InitialShapes]
+    This function allows converting an ArcGIS FeatureSet into a vector of PyPRT InitialShape instances.
+
+    Parameters:
+        feature_set: FeatureSet
+
+    Returns:
+        List[InitialShape]
+
+    """
     initial_geometries = []
     for feature in feature_set.features:
         try:

@@ -10,7 +10,7 @@ PyPRT is a Python binding for PRT (CityEngine Procedural Runtime). It enables th
 
 Check out `PyPRT front page <https://esri.github.io/pyprt/>`__.
 
-The source code, installation information and quickstart are available in the `PyPRT Github repo <https://github.com/Esri/pyprt>`__. Examples of PyPRT usages can be found in the `pyprt-examples Github repo <https://github.com/Esri/pyprt-examples>`__
+The source code, installation information and quickstart are available in the `PyPRT Github repo <https://github.com/Esri/pyprt>`__. Examples of PyPRT usages can be found in the `pyprt-examples Github repo <https://github.com/Esri/pyprt-examples>`__.
 
 .. toctree::
    :maxdepth: 4
