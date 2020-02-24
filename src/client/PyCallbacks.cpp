@@ -1,5 +1,5 @@
 /**
- * ArcGIS CityEngine SDK Geometry Encoder for Python
+ * CityEngine SDK Geometry Encoder for Python
  *
  * Copyright (c) 2012-2020 Esri R&D Center Zurich
  *
@@ -14,6 +14,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * A copy of the license is available in the repository's LICENSE file.
  */
 
 #include "PyCallbacks.h"
