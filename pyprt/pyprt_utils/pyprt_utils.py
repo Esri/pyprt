@@ -35,10 +35,10 @@ def visualize_prt_results(models):
 
 
 def vertices_vector_to_matrix(vertices):
-    """vertices_vector_to_matrix(vertices) -> List[float]
-    PyPRT outputs the GeneratedModel vertices coordinates as a 1D vector. The vector 
+    """vertices_vector_to_matrix(vertices) -> List[List[float]]
+    PyPRT outputs the GeneratedModel vertex coordinates as a 1D vector. The vector 
     contains the x, y, z coordinates of all the vertices. This function converts the 
-    vertices vector into a vector of N vertex coordinates vectors (with N, the number 
+    vertex vector into a vector of N vertex coordinates vectors (with N, the number 
     of geometry vertices).
 
     Parameters:
@@ -48,8 +48,9 @@ def vertices_vector_to_matrix(vertices):
         List[List[float]]
 
     Example:
-        [x1, y1, z1, x2, y2, z2, ..., xN, yN, zN] --> [[x1, y1, z1], [x2, y2, z2], ..., 
-        [xN, yN, zN]]
+        ``[[-10.0, 0.0, 10.0], [-10.0, 0.0, 0.0], [10.0, 0.0, 0.0], [10.0, 0.0, 10.0]] 
+        = vertices_vector_to_matrix([-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 
+        10.0, 0.0, 10.0])``
     """
     vertices_as_matrix = []
     for count in range(0, int(len(vertices)/3)):
@@ -61,9 +62,9 @@ def vertices_vector_to_matrix(vertices):
 
 def faces_indices_vectors_to_matrix(indices, faces):
     """faces_indices_vectors_to_matrix(indices, faces) -> List[List[int]]
-    PyPRT outputs the GeneratedModel faces information as a vector of vertices indices 
-    and face indices count. This function converts these two vectors into one vector of 
-    vectors containing the vertex indices per face.
+    PyPRT outputs the GeneratedModel face information as a vector of vertex indices 
+    and a vector of face indices count. This function converts these two vectors into 
+    one vector of vectors containing the vertex indices per face.
 
     Parameters:
         indices: List[int]
@@ -71,6 +72,11 @@ def faces_indices_vectors_to_matrix(indices, faces):
 
     Returns:
         List[List[int]]
+
+    Example:
+        ``[[1, 0, 3, 2], [4, 5, 6, 7], [0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7]] 
+        = faces_indices_vectors_to_matrix(([1, 0, 3, 2, 4, 5, 6, 7, 0, 1, 5, 4, 1, 2, 6, 5, 
+        2, 3, 7, 6, 3, 0, 4, 7],[4, 4, 4, 4, 4, 4]))``
     """
     faces_as_matrix = []
     offset = 0
