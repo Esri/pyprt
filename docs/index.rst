@@ -3,14 +3,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to PyPRT's documentation!
-=================================
+PyPRT API Documentation
+=======================
 
-PyPRT is a Python binding for PRT (CityEngine Procedural Runtime). It enables the execution of CityEngine CGA rules within Python. PyPRT allows to easily and efficiently generate 3D geometries.
+PyPRT provides Python bindings for PRT (CityEngine Procedural Runtime). It enables the execution of CityEngine CGA rules within Python.
 
-Check out `PyPRT front page <https://esri.github.io/pyprt/>`__.
+To get started, please visit the `home page of PyPRT <https://esri.github.io/pyprt/>`__.
 
-The source code, installation information and quickstart are available in the `PyPRT Github repo <https://github.com/Esri/pyprt>`__. Examples of PyPRT usages can be found in the `pyprt-examples Github repo <https://github.com/Esri/pyprt-examples>`__.
 
 .. toctree::
    :maxdepth: 4

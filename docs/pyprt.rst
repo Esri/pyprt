@@ -1,9 +1,6 @@
 pyprt package
 =============
 
-Subpackages
------------
-
 .. toctree::
 
    pyprt.pyprt
