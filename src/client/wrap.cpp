@@ -380,7 +380,7 @@ PYBIND11_MODULE(pyprt, m) {
 
 	py::bind_vector<std::vector<GeneratedModel>>(m, "GeneratedModelVector", py::module_local(false));
 
-	m.def("initialize_prt", &initializePRT, "Initialization of PRT. PyPRT is blocked until the initialization is done.");
+	m.def("initialize_prt", &initializePRT, "Initialization of PRT. PyPRT functionalities are blocked until the initialization is done.");
 	m.def("is_prt_initialized", &isPRTInitialized, R"mydelimiter(
         is_prt_initialized() -> bool
 
@@ -389,7 +389,7 @@ PYBIND11_MODULE(pyprt, m) {
         :Returns:
             bool
     )mydelimiter");
-	m.def("shutdown_prt", &shutdownPRT, "Shutdown of PRT. This function can be called only once per session/script.");
+	m.def("shutdown_prt", &shutdownPRT, "Shutdown of PRT. The PRT initialization process can be done only once per session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.");
 
 	py::class_<InitialShape>(m, "InitialShape", R"mydelimiter(
         __init__(*args, **kwargs)
@@ -399,8 +399,8 @@ PYBIND11_MODULE(pyprt, m) {
 	                .def(py::init<const std::vector<double>&>(), py::arg("vertCoordinates"), R"mydelimiter(
         1. **__init__** (*vert_coordinates*)
 
-        InitialShape constructor using a vector of geometry vertex coordinates. The geometry contains 
-        one face with no hole.
+        Constructs an InitialShape with one polygon by accepting a list of direct vertex coordinates. The 
+        vertex order is expected to be counter-clockwise.
 
         :Parameters:
             **vert_coordinates** -- List[float]
@@ -412,8 +412,9 @@ PYBIND11_MODULE(pyprt, m) {
 	                     R"mydelimiter(
         2. **__init__** (*vert_coordinates*, *face_indices*, *face_count*)
 
-        InitialShape constructor using a vector of geometry vertex coordinates, the vertex indices for 
-        each face and the indices count per face.
+        Constructs an InitialShape by accepting a list of direct vertex coordinates, a list of the vertex
+        indices for each faces and a list of the indices count per face. The vertex order is expected to 
+        be counter-clockwise.
 
         :Parameters:
             - **vert_coordinates** -- List[float]
@@ -424,7 +425,7 @@ PYBIND11_MODULE(pyprt, m) {
 	                .def(py::init<const std::string&>(), py::arg("initialShapePath"), R"mydelimiter(
         3. **__init__** (*init_shape_path*)
 
-        InitialShape constructor using the path to the shape file. This can be an OBJ file, Collada, etc.
+        Constructs an InitialShape by accepting the path to a shape file. This can be an OBJ file, Collada, etc.
 
         :Parameters:
             **initialShapePath** -- str
@@ -432,31 +433,31 @@ PYBIND11_MODULE(pyprt, m) {
         )mydelimiter")
 	                .def("get_vertex_count", &InitialShape::getVertexCount, R"mydelimiter(
         get_vertex_count() -> int
-        Returns the number of vertex coordinates the initial shape contains (only if the InitialShape 
-        constructors 1 or 2 have been used).
+        Returns the number of vertex coordinates of the initial shape, only if the InitialShape has been 
+        initialized from a list of vertex coordinates.
 
         :Returns:
             int
         )mydelimiter")
 	                .def("get_index_count", &InitialShape::getIndexCount, R"mydelimiter(
         get_index_count() -> int
-        Returns the length of the vector containing the vertex indices of the shape (only if the InitialShape 
-        constructors 1 or 2 have been used).
+        Returns the length of the vector containing the vertex indices of the initial shape, only if the 
+        InitialShape has been initialized from a list of vertex coordinates.
 
         :Returns:
             int
         )mydelimiter")
 	                .def("get_face_counts_count", &InitialShape::getFaceCountsCount, R"mydelimiter(
         get_face_counts_count() -> int
-        Returns the number of faces the initial shape contains (only if the InitialShape 
-        constructors 1 or 2 have been used).
+        Returns the number of faces of the initial shape, only if the InitialShape has been initialized from a
+        list of vertex coordinates.
 
         :Returns:
             int
         )mydelimiter")
 	                .def("get_path", &InitialShape::getPath, R"mydelimiter(
         get_path() -> str
-        Returns the initial shape file path, if the InitialShape constructor 3 has been used. Empty string otherwise.
+        Returns the initial shape file path, if the InitialShape has been initialized from a file. Empty otherwise.
 
         :Returns:
             str
@@ -481,19 +482,20 @@ PYBIND11_MODULE(pyprt, m) {
 
         This function does the procedural generation of the models. It outputs a list of GeneratedModel instances. 
         You need to provide one shape attribute dictionary per initial shape or one dictionary that will be applied 
-        to all initial shapes. A shape attribute dictionary **must** contain at least a ``'ruleFile'`` and ``'startRule'``
-        keys. The rule file value is a string indicating where the CGB file is located in the Rule Package. The start 
-        rule value is also a string and refers to the *@StartRule* annotation in the CGA rule file. The shape attribute 
-        dictionary only contains either string, float or bool values, **EXCEPT** the ``'seed'`` value, which has to be 
-        an integer (default value equals to *666*). The ``'shapeName'`` is another non-mandatory entry (default value 
-        equals to *"InitialShape"*). In addition to the rule file, the start rule, the seed and the shape name keys, the 
-        shape attribute dictionary will contain the CGA input attributes specific to the CGA file you are using. Concerning 
-        the encoder, you can use the ``'com.esri.pyprt.PyEncoder'`` or any other geometry encoder. The PyEncoder has two 
-        options: ``'emitGeometry'`` and ``'emitReport'`` whose value is a boolean. The complete list of the other geometry 
-        encoders can be found `here <https://esri.github.io/esri-cityengine-sdk/html/esri_prt_codecs.html>`__. In case you 
-        are using another geometry encoder than the PyEncoder, you can add an ``'outputPath'`` entry to the shape attribute
-        dictionary to specify where the generated 3D geometry will be outputted. In this case, the return value of this 
-        *generate_model* function will be an empty list.
+        to all initial shapes. A shape attribute dictionary **must** contain at least the ``'ruleFile'`` and  the 
+        ``'startRule'`` keys. The rule file value is a string indicating where the CGB file is located in the Rule 
+        Package. The start rule value is also a string and refers to the *@StartRule* annotation in the CGA rule 
+        file. The shape attribute dictionary only contains either string, float or bool values, **except** the 
+        ``'seed'`` value, which has to be an integer (default value equals to *666*). The ``'shapeName'`` is 
+        another non-mandatory entry (default value equals to *"InitialShape"*). In addition to the rule file, the 
+        start rule, the seed and the shape name keys, the shape attribute dictionary will contain the CGA input 
+        attributes specific to the CGA file you are using. Concerning the encoder, you can use the 
+        ``'com.esri.pyprt.PyEncoder'`` or any other geometry encoder. The PyEncoder has two options: 
+        ``'emitGeometry'`` and ``'emitReport'`` whose value is a boolean. The complete list of the other geometry 
+        encoders can be found `here <https://esri.github.io/esri-cityengine-sdk/html/esri_prt_codecs.html>`__. In 
+        case you are using another geometry encoder than the PyEncoder, you can add an ``'outputPath'`` entry to 
+        the shape attribute dictionary to specify where the generated 3D geometry will be outputted. In this case, 
+        the return value of this *generate_model* function will be an empty list.
 
         :Parameters:
             - **shape_attributes** -- List[dict]
@@ -541,7 +543,7 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def("get_vertices", &GeneratedModel::getVertices, R"mydelimiter(
         get_vertices() -> List[float]
 
-        Returns the generated 3D geometry vertex coordinates as a serie of (x, y, z) triplets. Its size is 3 x the 
+        Returns the generated 3D geometry vertex coordinates as a series of (x, y, z) triplets. Its size is 3 x the 
         number of vertices. If the ``'emitGeometry'`` entry of the encoder options dictionary has been set to *False*, 
         this function returns an empty vector.
 
