@@ -486,7 +486,7 @@ PYBIND11_MODULE(pyprt, m) {
         ``'startRule'`` keys. The rule file value is a string indicating where the CGB file is located in the Rule 
         Package. The start rule value is also a string and refers to the *@StartRule* annotation in the CGA rule 
         file. The shape attribute dictionary only contains either string, float or bool values, **except** the 
-        ``'seed'`` value, which has to be an integer (default value equals to *666*). The ``'shapeName'`` is 
+        ``'seed'`` value, which has to be an integer (default value equals to *0*). The ``'shapeName'`` is 
         another non-mandatory entry (default value equals to *"InitialShape"*). In addition to the rule file, the 
         start rule, the seed and the shape name keys, the shape attribute dictionary will contain the CGA input 
         attributes specific to the CGA file you are using. Concerning the encoder, you can use the 
