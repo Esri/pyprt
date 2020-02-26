@@ -25,9 +25,6 @@ sys.path.append(os.path.join(os.path.abspath(
 project = 'PyPRT'
 copyright = '2012-2020, Esri R&D Center Zurich'
 
-# The full version, including alpha/beta/rc tags
-release = '1.0.0b1'
-
 
 # -- General configuration ---------------------------------------------------
 
