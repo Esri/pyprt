@@ -18,6 +18,7 @@ Simply run `pip install pyprt` in your desired Python environment or `conda inst
 
 ## Minimal Usage
 ```python
+import os
 import pyprt
 ​
 # PRT Initialization
@@ -30,7 +31,7 @@ shape_geometry = pyprt.InitialShape([0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0]
 m = pyprt.ModelGenerator([shape_geometry])
 ​
 # Model Generation Arguments Setup
-rpk = 'extrusion_rule.rpk'
+rpk = os.path.join(os.getcwd(), 'extrusion_rule.rpk')
 shape_attributes = {'ruleFile': 'bin/extrusion_rule.cgb', 'startRule':'Default$Footprint',
 	'shapeName': 'myShape', 'seed': 555}
 encoder = 'com.esri.pyprt.PyEncoder'
