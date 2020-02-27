@@ -425,6 +425,7 @@ PYBIND11_MODULE(pyprt, m) {
         )mydelimiter";
 	const char* docIsGetV = R"mydelimiter(
         get_vertex_count() -> int
+
         Returns the number of vertex coordinates of the initial shape, only if the InitialShape has been 
         initialized from a list of vertex coordinates.
 
@@ -433,6 +434,7 @@ PYBIND11_MODULE(pyprt, m) {
         )mydelimiter";
 	const char* docIsGetI = R"mydelimiter(
         get_index_count() -> int
+
         Returns the length of the vector containing the vertex indices of the initial shape, only if the 
         InitialShape has been initialized from a list of vertex coordinates.
 
@@ -441,6 +443,7 @@ PYBIND11_MODULE(pyprt, m) {
         )mydelimiter";
 	const char* docIsGetF = R"mydelimiter(
         get_face_counts_count() -> int
+
         Returns the number of faces of the initial shape, only if the InitialShape has been initialized from a
         list of vertex coordinates.
 
@@ -449,6 +452,7 @@ PYBIND11_MODULE(pyprt, m) {
         )mydelimiter";
 	const char* docIsGetP = R"mydelimiter(
         get_path() -> str
+
         Returns the initial shape file path, if the InitialShape has been initialized from a file. Empty otherwise.
 
         :Returns:
@@ -520,7 +524,9 @@ PYBIND11_MODULE(pyprt, m) {
 	                    "if the *com.esri.pyprt.PyEncoder* encoder is used in the ModelGenerator instance.";
 	const char* docGmGetInd = R"mydelimiter(
         get_initial_shape_index() -> int
-        Returns the index of the initial shape on which the generated geometry has been built.
+
+        Returns the index of the initial shape on which the generated geometry has been built. The ModelGenerator class (documented below)
+        is instanciated by specifying a list of InitialShape instances. This index indicates the corresponding InitialShape instance of that list.
 
         :Returns:
             int
@@ -546,6 +552,7 @@ PYBIND11_MODULE(pyprt, m) {
         )mydelimiter";
 	const char* docGmGetF = R"mydelimiter(
         get_faces() -> List[int]
+
         Returns the vertex indices count per face of the generated 3D geometry. If the ``'emitGeometry'`` entry of the
         encoder options dictionary has been set to *False*, this function returns an empty vector.
 
@@ -554,6 +561,7 @@ PYBIND11_MODULE(pyprt, m) {
         )mydelimiter";
 	const char* docGmGetR = R"mydelimiter(
         get_report() -> dict
+
         Returns the CGA report of the generated 3D geometry. This report dictionary is empty if the CGA rule
         file employed does not output any report or if the ``'emitReport'`` entry of the encoder options
         dictionary has been set to *False*.
