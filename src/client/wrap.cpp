@@ -375,28 +375,23 @@ std::vector<GeneratedModel> ModelGenerator::generateAnotherModel(const std::vect
 using namespace pybind11::literals;
 
 PYBIND11_MODULE(pyprt, m) {
-	py::options options;
-	options.disable_function_signatures();
-
-	py::bind_vector<std::vector<GeneratedModel>>(m, "GeneratedModelVector", py::module_local(false));
-
-	m.def("initialize_prt", &initializePRT, "Initialization of PRT. PyPRT functionalities are blocked until the initialization is done.");
-	m.def("is_prt_initialized", &isPRTInitialized, R"mydelimiter(
+	const char* docInit = "Initialization of PRT. PyPRT functionalities are blocked until the initialization is done.";
+	const char* docIsInit = R"mydelimiter(
         is_prt_initialized() -> bool
 
         This function returns *True* if PRT is initialized, *False* otherwise.
 
         :Returns:
             bool
-    )mydelimiter");
-	m.def("shutdown_prt", &shutdownPRT, "Shutdown of PRT. The PRT initialization process can be done only once per session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.");
-
-	py::class_<InitialShape>(m, "InitialShape", R"mydelimiter(
+    )mydelimiter";
+	const char* docShutdown = "Shutdown of PRT. The PRT initialization process can be done only once per "
+	                          "session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.";
+	const char* docIs = R"mydelimiter(
         __init__(*args, **kwargs)
 
         The initial shape corresponds to the geometry on which the CGA rule will be applied.
-        )mydelimiter")
-	                .def(py::init<const std::vector<double>&>(), py::arg("vertCoordinates"), R"mydelimiter(
+        )mydelimiter";
+	const char* docIsInitV = R"mydelimiter(
         1. **__init__** (*vert_coordinates*)
 
         Constructs an InitialShape with one polygon by accepting a list of direct vertex coordinates. The 
@@ -405,11 +400,8 @@ PYBIND11_MODULE(pyprt, m) {
         :Parameters:
             **vert_coordinates** -- List[float]
         :Example: ``shape1 = pyprt.InitialShape([0, 0, 0, 0, 0, 10, 10, 0, 10, 10, 0, 0])``
-        )mydelimiter")
-	                .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&,
-	                              const std::vector<uint32_t>&>(),
-	                     py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"),
-	                     R"mydelimiter(
+        )mydelimiter";
+	const char* docIsInitVI = R"mydelimiter(
         2. **__init__** (*vert_coordinates*, *face_indices*, *face_count*)
 
         Constructs an InitialShape by accepting a list of direct vertex coordinates, a list of the vertex
@@ -421,8 +413,8 @@ PYBIND11_MODULE(pyprt, m) {
             - **face_indices** -- List[int]
             - **face_count** -- List[int]
         :Example: ``shape2 = pyprt.InitialShape([0, 0, 0, 0, 0, 10, 10, 0, 10, 10, 0, 0], [0, 1, 2, 3], [4])``
-        )mydelimiter")
-	                .def(py::init<const std::string&>(), py::arg("initialShapePath"), R"mydelimiter(
+        )mydelimiter";
+	const char* docIsInitP = R"mydelimiter(
         3. **__init__** (*init_shape_path*)
 
         Constructs an InitialShape by accepting the path to a shape file. This can be an OBJ file, Collada, etc.
@@ -430,43 +422,41 @@ PYBIND11_MODULE(pyprt, m) {
         :Parameters:
             **initialShapePath** -- str
         :Example: ``shape3 = pyprt.InitialShape(os.path.join(os.getcwd(), 'myInitialShape.obj'))``
-        )mydelimiter")
-	                .def("get_vertex_count", &InitialShape::getVertexCount, R"mydelimiter(
+        )mydelimiter";
+	const char* docIsGetV = R"mydelimiter(
         get_vertex_count() -> int
         Returns the number of vertex coordinates of the initial shape, only if the InitialShape has been 
         initialized from a list of vertex coordinates.
 
         :Returns:
             int
-        )mydelimiter")
-	                .def("get_index_count", &InitialShape::getIndexCount, R"mydelimiter(
+        )mydelimiter";
+	const char* docIsGetI = R"mydelimiter(
         get_index_count() -> int
         Returns the length of the vector containing the vertex indices of the initial shape, only if the 
         InitialShape has been initialized from a list of vertex coordinates.
 
         :Returns:
             int
-        )mydelimiter")
-	                .def("get_face_counts_count", &InitialShape::getFaceCountsCount, R"mydelimiter(
+        )mydelimiter";
+	const char* docIsGetF = R"mydelimiter(
         get_face_counts_count() -> int
         Returns the number of faces of the initial shape, only if the InitialShape has been initialized from a
         list of vertex coordinates.
 
         :Returns:
             int
-        )mydelimiter")
-	                .def("get_path", &InitialShape::getPath, R"mydelimiter(
+        )mydelimiter";
+	const char* docIsGetP = R"mydelimiter(
         get_path() -> str
         Returns the initial shape file path, if the InitialShape has been initialized from a file. Empty otherwise.
 
         :Returns:
             str
-        )mydelimiter");
-
-	py::class_<ModelGenerator>(m, "ModelGenerator",
-	                           "The ModelGenerator class will host the data required to procedurally generate the 3D "
-	                           "model on a given initial shape.")
-	        .def(py::init<const std::vector<InitialShape>&>(), py::arg("initialShapes"), R"mydelimiter(
+        )mydelimiter";
+	const char* docMg = "The ModelGenerator class will host the data required to procedurally generate the 3D model on "
+	                    "a given initial shape.";
+	const char* docMgInit = R"mydelimiter(
         __init__(init_shapes)
 
         The ModelGenerator constructor takes a list of InitialShape instances as parameter.
@@ -474,10 +464,8 @@ PYBIND11_MODULE(pyprt, m) {
         :Parameters:
             **init_shapes** -- List[InitialShape]
 
-        )mydelimiter")
-	        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"),
-	             py::arg("rulePackagePath"), py::arg("geometryEncoderName"),
-	             py::arg("geometryEncoderOptions"), R"mydelimiter(
+        )mydelimiter";
+	const char* docMgGen = R"mydelimiter(
         generate_model(*args, **kwargs) -> List[GeneratedModel]
 
         This function does the procedural generation of the models. It outputs a list of GeneratedModel instances. 
@@ -515,8 +503,8 @@ PYBIND11_MODULE(pyprt, m) {
             ``attrs2 = {'ruleFile': 'bin/extrusion_rule.cgb', 'startRule': 'Default$Footprint', 'shapeName': 'myShape2', 'seed': 777, 'minBuildingHeight': 25.0}``
 
             ``models1 = m.generate_model([attrs1, attrs2], rpk, 'com.esri.pyprt.PyEncoder', {'emitReport': True, 'emitGeometry': True})``
-        )mydelimiter")
-	        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"), R"mydelimiter(
+        )mydelimiter";
+	const char* docMgGen2 = R"mydelimiter(
         This overloaded *generate_model* function can only be used once the previous *ModelGenerator::generate_model* method has been 
         called. It is useful to specify different shape attribues but use the same CGA rule package on the
         same initial shapes, the same encoder and encoder options.
@@ -527,20 +515,17 @@ PYBIND11_MODULE(pyprt, m) {
         :Returns:
             List[GeneratedModel]
         :Example: ``models2 = m.generate_model([attrs3, attrs4])``
-        )mydelimiter");
-
-	py::class_<GeneratedModel>(
-	        m, "GeneratedModel",
-	        "The GeneratedModel instance contains the generated 3D geometry. This class is only employed if the "
-	        "*com.esri.pyprt.PyEncoder* encoder is used in the ModelGenerator instance.")
-	        .def("get_initial_shape_index", &GeneratedModel::getInitialShapeIndex, R"mydelimiter(
+        )mydelimiter";
+	const char* docGm = "The GeneratedModel instance contains the generated 3D geometry. This class is only employed "
+	                    "if the *com.esri.pyprt.PyEncoder* encoder is used in the ModelGenerator instance.";
+	const char* docGmGetInd = R"mydelimiter(
         get_initial_shape_index() -> int
         Returns the index of the initial shape on which the generated geometry has been built.
 
         :Returns:
             int
-        )mydelimiter")
-	        .def("get_vertices", &GeneratedModel::getVertices, R"mydelimiter(
+        )mydelimiter";
+	const char* docGmGetV = R"mydelimiter(
         get_vertices() -> List[float]
 
         Returns the generated 3D geometry vertex coordinates as a series of (x, y, z) triplets. Its size is 3 x the 
@@ -549,8 +534,8 @@ PYBIND11_MODULE(pyprt, m) {
 
         :Returns:
             List[float]
-        )mydelimiter")
-	        .def("get_indices", &GeneratedModel::getIndices, R"mydelimiter(
+        )mydelimiter";
+	const char* docGmGetI = R"mydelimiter(
         get_indices() -> List[int]
         
         Returns the vertex indices of the generated 3D geometry, for all faces. If the ``'emitGeometry'`` entry of the encoder
@@ -558,16 +543,16 @@ PYBIND11_MODULE(pyprt, m) {
 
         :Returns:
             List[int]
-        )mydelimiter")
-	        .def("get_faces", &GeneratedModel::getFaces, R"mydelimiter(
+        )mydelimiter";
+	const char* docGmGetF = R"mydelimiter(
         get_faces() -> List[int]
         Returns the vertex indices count per face of the generated 3D geometry. If the ``'emitGeometry'`` entry of the
         encoder options dictionary has been set to *False*, this function returns an empty vector.
 
         :Returns:
             List[int]
-        )mydelimiter")
-	        .def("get_report", &GeneratedModel::getReport, R"mydelimiter(
+        )mydelimiter";
+	const char* docGmGetR = R"mydelimiter(
         get_report() -> dict
         Returns the CGA report of the generated 3D geometry. This report dictionary is empty if the CGA rule
         file employed does not output any report or if the ``'emitReport'`` entry of the encoder options
@@ -575,5 +560,38 @@ PYBIND11_MODULE(pyprt, m) {
 
         :Returns:
             dict
-        )mydelimiter");
+        )mydelimiter";
+
+	py::options options;
+	options.disable_function_signatures();
+
+	py::bind_vector<std::vector<GeneratedModel>>(m, "GeneratedModelVector", py::module_local(false));
+
+	m.def("initialize_prt", &initializePRT, docInit);
+	m.def("is_prt_initialized", &isPRTInitialized, docIsInit);
+	m.def("shutdown_prt", &shutdownPRT, docShutdown);
+
+	py::class_<InitialShape>(m, "InitialShape", docIs)
+	        .def(py::init<const std::vector<double>&>(), py::arg("vertCoordinates"), docIsInitV)
+	        .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&>(),
+	             py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"), docIsInitVI)
+	        .def(py::init<const std::string&>(), py::arg("initialShapePath"), docIsInitP)
+	        .def("get_vertex_count", &InitialShape::getVertexCount, docIsGetV)
+	        .def("get_index_count", &InitialShape::getIndexCount, docIsGetI)
+	        .def("get_face_counts_count", &InitialShape::getFaceCountsCount, docIsGetF)
+	        .def("get_path", &InitialShape::getPath, docIsGetP);
+
+	py::class_<ModelGenerator>(m, "ModelGenerator", docMg)
+	        .def(py::init<const std::vector<InitialShape>&>(), py::arg("initialShapes"), docMgInit)
+	        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"),
+	             py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"),
+	             docMgGen)
+	        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"), docMgGen2);
+
+	py::class_<GeneratedModel>(m, "GeneratedModel", docGm)
+	        .def("get_initial_shape_index", &GeneratedModel::getInitialShapeIndex, docGmGetInd)
+	        .def("get_vertices", &GeneratedModel::getVertices, docGmGetV)
+	        .def("get_indices", &GeneratedModel::getIndices, docGmGetI)
+	        .def("get_faces", &GeneratedModel::getFaces, docGmGetF)
+	        .def("get_report", &GeneratedModel::getReport, docGmGetR);
 }
