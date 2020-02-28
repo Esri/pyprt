@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#include "IPyCallbacks.h"
 #include "PyEncoder.h"
+#include "IPyCallbacks.h"
 
 #include "prtx/Attributable.h"
 #include "prtx/EncodeOptions.h"

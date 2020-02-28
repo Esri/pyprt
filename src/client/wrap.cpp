@@ -18,10 +18,10 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
+#include "wrap.h"
 #include "PyCallbacks.h"
 #include "logging.h"
 #include "utils.h"
-#include "wrap.h"
 
 #include "prt/API.h"
 #include "prt/ContentType.h"
