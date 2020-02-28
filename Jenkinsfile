@@ -29,7 +29,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 // -- GLOBAL DEFINITIONS
 
-@Field final String REPO   = 'git@devtopia.esri.com:Zurich-R-D-Center/pyprt.git'
+@Field final String REPO   = 'git@github.com:esri/pyprt.git'
 @Field final String SOURCE = 'pyprt.git'
 
 @Field final List CONFIGS_PY36 = [
