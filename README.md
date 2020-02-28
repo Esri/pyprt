@@ -104,6 +104,12 @@ The `setup.py clean` call mentioned above will also clean out the native extensi
 1. First time only: run `pipenv install` to get all required Python packages.
 1. Run `pipenv run tox`.
 
+#### Build the API documentation
+
+1. Install PyPRT in development mode as described [above](#iterative-python-development).
+1. Run `python setup.py build_doc`, this will output the html files in the `build/sphinx` directory.
+1. Leave development mode also as described [above](#iterative-python-development).
+
 ## License
 
 PyPRT is under the same license as the included [CityEngine SDK](https://github.com/Esri/esri-cityengine-sdk#licensing).
