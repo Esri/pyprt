@@ -417,8 +417,9 @@ PYBIND11_MODULE(pyprt, m) {
 	const char* docIsInitP = R"mydelimiter(
         3. **__init__** (*init_shape_path*)
 
-        Constructs an InitialShape by accepting the path to a shape file. This can be an OBJ file, Collada, etc. The file formats accepted 
-        can be found in the list of the `PRT geometry encoders <https://esri.github.io/esri-cityengine-sdk/html/esri_prt_codecs.html>`_.
+        Constructs an InitialShape by accepting the path to a shape file. This can be an OBJ file, Collada, etc. A list
+		of supported file formats can be found at `PRT geometry encoders
+		<https://esri.github.io/esri-cityengine-sdk/html/esri_prt_codecs.html>`_.
 
         :Parameters:
             **initialShapePath** -- str
@@ -511,7 +512,7 @@ PYBIND11_MODULE(pyprt, m) {
         )mydelimiter";
 	const char* docMgGen2 = R"mydelimiter(
         This overloaded *generate_model* function can only be used once the previous *ModelGenerator::generate_model* method has been 
-        called. It is useful to specify different shape attribues but use the same CGA rule package on the
+        called. It is useful to specify different shape attributes but use the same CGA rule package on the
         same initial shapes, the same encoder and encoder options.
 
         :Parameters:
