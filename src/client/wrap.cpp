@@ -417,7 +417,8 @@ PYBIND11_MODULE(pyprt, m) {
 	const char* docIsInitP = R"mydelimiter(
         3. **__init__** (*init_shape_path*)
 
-        Constructs an InitialShape by accepting the path to a shape file. This can be an OBJ file, Collada, etc.
+        Constructs an InitialShape by accepting the path to a shape file. This can be an OBJ file, Collada, etc. The file formats accepted 
+        can be found in the list of the `PRT geometry encoders <https://esri.github.io/esri-cityengine-sdk/html/esri_prt_codecs.html>`_.
 
         :Parameters:
             **initialShapePath** -- str
@@ -525,8 +526,8 @@ PYBIND11_MODULE(pyprt, m) {
 	const char* docGmGetInd = R"mydelimiter(
         get_initial_shape_index() -> int
 
-        Returns the index of the initial shape on which the generated geometry has been built. The ModelGenerator class 
-        (:py:class:`documented below <pyprt.pyprt.bin.pyprt.ModelGenerator>`) is instantiated by specifying a list of 
+        Returns the index of the initial shape on which the generated geometry has been built. The 
+        :py:class:`ModelGenerator class <pyprt.pyprt.bin.pyprt.ModelGenerator>` is instantiated by specifying a list of 
         InitialShape instances. This index indicates the corresponding InitialShape instance of that list.
 
         :Returns:
