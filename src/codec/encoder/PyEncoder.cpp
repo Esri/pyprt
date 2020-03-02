@@ -17,8 +17,8 @@
  * A copy of the license is available in the repository's LICENSE file.
  */
 
-#include "IPyCallbacks.h"
 #include "PyEncoder.h"
+#include "IPyCallbacks.h"
 
 #include "prtx/Attributable.h"
 #include "prtx/EncodeOptions.h"

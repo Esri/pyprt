@@ -14,10 +14,11 @@ PyPRT is a Python binding for PRT (CityEngine Procedural Runtime). It enables th
 
 ## Installation
 
-Simply run `pip install pyprt` in your desired Python environment or `conda install pyprt` in a Conda environment. Then use `import pyprt` in your scripts. See [here] for API reference.
+Simply run `pip install pyprt` in your desired Python environment or `conda install pyprt` in a Conda environment. Then use `import pyprt` in your scripts.
 
 ## Minimal Usage
 ```python
+import os
 import pyprt
 ​
 # PRT Initialization
@@ -30,7 +31,7 @@ shape_geometry = pyprt.InitialShape([0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0]
 m = pyprt.ModelGenerator([shape_geometry])
 ​
 # Model Generation Arguments Setup
-rpk = 'extrusion_rule.rpk'
+rpk = os.path.join(os.getcwd(), 'extrusion_rule.rpk')
 shape_attributes = {'ruleFile': 'bin/extrusion_rule.cgb', 'startRule':'Default$Footprint',
 	'shapeName': 'myShape', 'seed': 555}
 encoder = 'com.esri.pyprt.PyEncoder'
@@ -51,7 +52,8 @@ pyprt.shutdown_prt()
 
 ## Documentation
 
-* [Project and API Description]
+* [API Reference]
+* [Authoring of Rule Packages](https://doc.arcgis.com/en/cityengine/latest/help/help-rule-package.htm#ESRI_SECTION1_F9D4CCCE0EC74E5FB646A8BD141A38F9)
 * [Examples](https://github.com/Esri/pyprt-examples)
 * [CityEngine SDK API Reference](https://esri.github.io/esri-cityengine-sdk/html/index.html)
 
@@ -101,6 +103,12 @@ The `setup.py clean` call mentioned above will also clean out the native extensi
 1. In the PyPRT git root, open a shell and activate correct C++ compiler (`vcvarsall.bat` on Windows or `source /opt/rh/devtoolset-8/enable` on RHEL-based Linux).
 1. First time only: run `pipenv install` to get all required Python packages.
 1. Run `pipenv run tox`.
+
+#### Build the API documentation
+
+1. Install PyPRT in development mode as described [above](#iterative-python-development).
+1. Run `python setup.py build_doc`, this will output the html files in the `build/sphinx` directory.
+1. Leave development mode also as described [above](#iterative-python-development).
 
 ## License
 

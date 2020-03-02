@@ -15,6 +15,13 @@
 
 
 def visualize_prt_results(models):
+    """visualize_prt_results(models)
+    This helper function is used to output the geometry and report information of a 
+    list of GeneratedModel instances.
+
+    Parameters:
+        models: List[GeneratedModel]
+    """
     print('\nNumber of generated geometries (= nber of initial shapes):')
     print(len(models))
 
@@ -44,6 +51,23 @@ def visualize_prt_results(models):
 
 
 def vertices_vector_to_matrix(vertices):
+    """vertices_vector_to_matrix(vertices) -> List[List[float]]
+    PyPRT outputs the GeneratedModel vertex coordinates as a list. The list 
+    contains the x, y, z coordinates of all the vertices. This function converts the 
+    vertex list into a list of N vertex coordinates lists (with N, the number 
+    of geometry vertices).
+
+    Parameters:
+        vertices: List[float]
+
+    Returns:
+        List[List[float]]
+
+    Example:
+        ``[[-10.0, 0.0, 10.0], [-10.0, 0.0, 0.0], [10.0, 0.0, 0.0], [10.0, 0.0, 10.0]] 
+        = vertices_vector_to_matrix([-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 
+        10.0, 0.0, 10.0])``
+    """
     vertices_as_matrix = []
     for count in range(0, int(len(vertices)/3)):
         vector_per_pt = [vertices[count*3],
@@ -53,6 +77,23 @@ def vertices_vector_to_matrix(vertices):
 
 
 def faces_indices_vectors_to_matrix(indices, faces):
+    """faces_indices_vectors_to_matrix(indices, faces) -> List[List[int]]
+    PyPRT outputs the GeneratedModel face information as a list of vertex indices 
+    and a list of face indices count. This function converts these two lists into 
+    one list of lists containing the vertex indices per face.
+
+    Parameters:
+        indices: List[int]
+        faces: List[int]
+
+    Returns:
+        List[List[int]]
+
+    Example:
+        ``[[1, 0, 3, 2], [4, 5, 6, 7], [0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7]] 
+        = faces_indices_vectors_to_matrix(([1, 0, 3, 2, 4, 5, 6, 7, 0, 1, 5, 4, 1, 2, 6, 5, 
+        2, 3, 7, 6, 3, 0, 4, 7],[4, 4, 4, 4, 4, 4]))``
+    """
     faces_as_matrix = []
     offset = 0
     for f in faces:

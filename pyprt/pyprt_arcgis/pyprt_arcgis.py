@@ -26,6 +26,17 @@ except ModuleNotFoundError:
 
 
 def arcgis_to_pyprt(feature_set):
+    """arcgis_to_pyprt(feature_set) -> List[InitialShape]
+    This function allows converting an ArcGIS FeatureSet into a list of PyPRT InitialShape instances.
+    You then typically call the ModelGenerator constructor with the return value if this function as parameter.
+
+    Parameters:
+        feature_set: FeatureSet
+
+    Returns:
+        List[InitialShape]
+
+    """
     initial_geometries = []
     for feature in feature_set.features:
         try:
