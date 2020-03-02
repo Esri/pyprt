@@ -525,8 +525,9 @@ PYBIND11_MODULE(pyprt, m) {
 	const char* docGmGetInd = R"mydelimiter(
         get_initial_shape_index() -> int
 
-        Returns the index of the initial shape on which the generated geometry has been built. The ModelGenerator class (documented below)
-        is instanciated by specifying a list of InitialShape instances. This index indicates the corresponding InitialShape instance of that list.
+        Returns the index of the initial shape on which the generated geometry has been built. The ModelGenerator class 
+        (:py:class:`documented below <pyprt.pyprt.bin.pyprt.ModelGenerator>`) is instantiated by specifying a list of 
+        InitialShape instances. This index indicates the corresponding InitialShape instance of that list.
 
         :Returns:
             int
