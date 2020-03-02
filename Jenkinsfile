@@ -74,8 +74,19 @@ def taskBuildPyPRT(cfg) {
 	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
 	dir(path: SOURCE) {
 		withEnv(buildEnvs) {
+			psl.runCmd("pipenv --python ${cfg.python} install")
+			venv = psl.runCmd("pipenv --venv", true) // get the created virtualenv so we can manually activate it below
+
 			String cmd = toolchain.getSetupCmd(this, cfg)
-			cmd += "\npipenv --python ${cfg.python} --bare run python setup.py bdist_wheel --dist-dir=${env.WORKSPACE}/build --build-number=${env.BUILD_NUMBER}"
+
+			// cannot use 'pipenv shell' here
+			if (isUnix())
+				cmd += "\nsource ${venv}/bin/activate"
+			else
+				cmd += "\ncall ${venv}\\Scripts\\activate"
+
+			cmd += "\npip list"
+			cmd += "\npython setup.py bdist_wheel --dist-dir=${env.WORKSPACE}/build --build-number=${env.BUILD_NUMBER}"
 			psl.runCmd(cmd)
 		}
 	}
