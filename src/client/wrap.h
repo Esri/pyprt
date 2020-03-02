@@ -231,7 +231,7 @@ private:
 
 	std::wstring mRuleFile = L"bin/rule.cgb";
 	std::wstring mStartRule = L"default$init";
-	int32_t mSeed = 666;
+	int32_t mSeed = 0;
 	std::wstring mShapeName = L"InitialShape";
 
 	bool mValid = true;

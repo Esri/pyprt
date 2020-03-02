@@ -51,7 +51,7 @@ class GeometryTest(unittest.TestCase):
     def test_report_green(self):
         rpk = asset_file('envelope2002.rpk')
         attrs = {'ruleFile': 'rules/typology/envelope2002.cgb', 'startRule': 'Default$Lot',
-                 'report_but_not_display_green': True}
+                 'report_but_not_display_green': True, 'seed': 666}
         shape_geo_from_obj = pyprt.InitialShape(
             asset_file('building_parcel.obj'))
         m = pyprt.ModelGenerator([shape_geo_from_obj])

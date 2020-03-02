@@ -14,7 +14,7 @@ PyPRT is a Python binding for PRT (CityEngine Procedural Runtime). It enables th
 
 ## Installation
 
-Simply run `pip install pyprt` in your desired Python environment or `conda install pyprt` in a Conda environment. Then use `import pyprt` in your scripts. See [here] for API reference.
+Simply run `pip install pyprt` in your desired Python environment or `conda install pyprt` in a Conda environment. Then use `import pyprt` in your scripts.
 
 ## Minimal Usage
 ```python
@@ -52,7 +52,8 @@ pyprt.shutdown_prt()
 
 ## Documentation
 
-* [Project and API Description]
+* [API Reference]
+* [Authoring of Rule Packages](https://doc.arcgis.com/en/cityengine/latest/help/help-rule-package.htm#ESRI_SECTION1_F9D4CCCE0EC74E5FB646A8BD141A38F9)
 * [Examples](https://github.com/Esri/pyprt-examples)
 * [CityEngine SDK API Reference](https://esri.github.io/esri-cityengine-sdk/html/index.html)
 
@@ -102,6 +103,12 @@ The `setup.py clean` call mentioned above will also clean out the native extensi
 1. In the PyPRT git root, open a shell and activate correct C++ compiler (`vcvarsall.bat` on Windows or `source /opt/rh/devtoolset-8/enable` on RHEL-based Linux).
 1. First time only: run `pipenv install` to get all required Python packages.
 1. Run `pipenv run tox`.
+
+#### Build the API documentation
+
+1. Install PyPRT in development mode as described [above](#iterative-python-development).
+1. Run `python setup.py build_doc`, this will output the html files in the `build/sphinx` directory.
+1. Leave development mode also as described [above](#iterative-python-development).
 
 ## License
 
