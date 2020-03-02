@@ -37,6 +37,10 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 	[ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC142, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64, python: '3.6' ],
 ]
 
+@Field final List CONFIGS_DOC = [
+	[ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC83, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64, python: '3.6' ],
+]
+
 
 // -- PIPELINE
 
@@ -56,6 +60,7 @@ Map getTasks() {
 Map taskGenPyPRT() {
 	Map tasks = [:]
 	tasks << cepl.generateTasks('pyprt-py36', this.&taskBuildPyPRT, CONFIGS_PY36)
+	tasks << cepl.generateTasks('pyprt-doc', this.&taskBuildDoc, CONFIGS_DOC)
 	return tasks;
 }
 
@@ -100,4 +105,36 @@ def taskBuildPyPRT(cfg) {
 		return cls[0][1]
 	}
 	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-*.whl", versionExtractor, cfg, classifierExtractor)
+}
+
+def taskBuildDoc(cfg) {
+	List deps = []
+	List defs = []
+
+	cepl.cleanCurrentDir()
+	papl.checkout(REPO, env.BRANCH_NAME)
+
+	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
+	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
+	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
+	dir(path: SOURCE) {
+		withEnv(buildEnvs) {
+			psl.runCmd("pipenv --python ${cfg.python} install")
+			venv = psl.runCmd("pipenv --venv", true) // get the created virtualenv so we can manually activate it below
+
+			String cmd = toolchain.getSetupCmd(this, cfg)
+
+			if (isUnix())
+				cmd += "\nsource ${venv}/bin/activate"
+			else
+				cmd += "\ncall ${venv}\\Scripts\\activate"
+
+            final String build_lib = pwd(tmp: true)
+            echo("build_lib = " + build_lib)
+
+			cmd += "\npython setup.py build --build-lib=${build_lib}"
+			cmd += "\nPYPRT_PACKAGE_LOCATION=${build_lib} python setup.py build_doc"
+			psl.runCmd(cmd)
+		}
+	}
 }
