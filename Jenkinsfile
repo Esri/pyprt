@@ -68,9 +68,6 @@ Map taskGenPyPRT() {
 // -- TASK BUILDERS
 
 def taskBuildPyPRT(cfg) {
-	List deps = []
-	List defs = []
-
 	cepl.cleanCurrentDir()
 	papl.checkout(REPO, env.BRANCH_NAME)
 
@@ -78,33 +75,25 @@ def taskBuildPyPRT(cfg) {
 	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
 	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
 	dir(path: SOURCE) {
-		withEnv(buildEnvs) {
-			psl.runCmd("pipenv --python ${cfg.python} install")
-			venv = psl.runCmd("pipenv --venv", true) // get the created virtualenv so we can manually activate it below
+		withEnv(buildEnvs + ["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
+			psl.runCmd("pipenv install")
 
 			String cmd = toolchain.getSetupCmd(this, cfg)
-
-			// cannot use 'pipenv shell' here
-			if (isUnix())
-				cmd += "\nsource ${venv}/bin/activate"
-			else
-				cmd += "\ncall ${venv}\\Scripts\\activate"
-
-			cmd += "\npip list"
-			cmd += "\npython setup.py bdist_wheel --dist-dir=${env.WORKSPACE}/build --build-number=${env.BUILD_NUMBER}"
+			cmd += "\npipenv run pip list"
+			cmd += "\npipenv run python setup.py bdist_wheel --dist-dir=${env.WORKSPACE}/build --build-number=${env.BUILD_NUMBER}"
 			psl.runCmd(cmd)
 		}
 	}
 
 	def versionExtractor = { p ->
-		def vers = (p =~ /.*pyprt-([0-9]+\.[0-9]+\.[0-9abpr]+-[0-9]+)-cp.*/)
+		def vers = (p =~ /.*PyPRT-([0-9]+\.[0-9]+\.[0-9abpr]+-[0-9]+)-cp.*/)
 		return vers[0][1]
 	}
 	def classifierExtractor = { p ->
-		def cls = (p =~ /.*pyprt-[0-9]+\.[0-9]+\.[0-9abpr]+-[0-9]+-(.*)\.whl/)
+		def cls = (p =~ /.*PyPRT-[0-9]+\.[0-9]+\.[0-9abpr]+-[0-9]+-(.*)\.whl/)
 		return cls[0][1]
 	}
-	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-*.whl", versionExtractor, cfg, classifierExtractor)
+	papl.publish('pyprt', env.BRANCH_NAME, "PyPRT-*.whl", versionExtractor, cfg, classifierExtractor)
 }
 
 def taskBuildDoc(cfg) {
@@ -120,31 +109,15 @@ def taskBuildDoc(cfg) {
 	dir(path: SOURCE) {
 		withEnv(buildEnvs + ["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
 			psl.runCmd("pipenv install")
-			venv = psl.runCmd("pipenv --venv", true) // get the created virtualenv so we can manually activate it below
-
-			String cmd = toolchain.getSetupCmd(this, cfg)
-
-			if (isUnix())
-				cmd += "\nsource ${venv}/bin/activate"
-			else
-				cmd += "\ncall ${venv}\\Scripts\\activate"
 
 			final String buildLib = pwd(tmp: true)
-			echo("buildLib = " + buildLib)
 
-			cmd += "\npython setup.py build --build-lib=${buildLib}"
-			cmd += "\nPYPRT_PACKAGE_LOCATION=${buildLib} python setup.py build_doc --build-dir=${sphinxOutput}"
+			String cmd = toolchain.getSetupCmd(this, cfg)
+			cmd += "\npipenv run python setup.py build --build-lib=${buildLib}"
+			cmd += "\nPYPRT_PACKAGE_LOCATION=${buildLib} pipenv run python setup.py build_doc --build-dir=${sphinxOutput}"
 			psl.runCmd(cmd)
 
-			String cmdVer
-			if (isUnix())
-				cmdVer = "\nsource ${venv}/bin/activate"
-			else
-				cmdVer = "\ncall ${venv}\\Scripts\\activate"
-			cmdVer += "\npython get_pkg_version.py"
-			echo("cmdVer = ${cmdVer}")
-			pkgVer = psl.runCmd(cmdVer, true)
-			echo("pkgVer = ${pkgVer}")
+			pkgVer = psl.runCmd('pipenv run python get_pkg_version.py', true)
 		}
 	}
 
@@ -152,5 +125,6 @@ def taskBuildDoc(cfg) {
 		zip(zipFile: "pyprt-doc.zip", dir: "html")
 	}
 
+	assert pkgVer != null
 	papl.publish('pyprt-doc', env.BRANCH_NAME, "pyprt-doc.zip", { return "${pkgVer}-${env.BUILD_NUMBER}" }, cfg)
 }
