@@ -112,14 +112,14 @@ def taskBuildDoc(cfg) {
 	papl.checkout(REPO, env.BRANCH_NAME)
 
 	final String sphinxOutput = "${env.WORKSPACE}/build"
-	Map pkgInfo = null
+	String pkgVer
 
 	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
 	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
 	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
 	dir(path: SOURCE) {
-		withEnv(buildEnvs) {
-			psl.runCmd("pipenv --python ${cfg.python} install")
+		withEnv(buildEnvs + ["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
+			psl.runCmd("pipenv install")
 			venv = psl.runCmd("pipenv --venv", true) // get the created virtualenv so we can manually activate it below
 
 			String cmd = toolchain.getSetupCmd(this, cfg)
@@ -135,6 +135,16 @@ def taskBuildDoc(cfg) {
 			cmd += "\npython setup.py build --build-lib=${buildLib}"
 			cmd += "\nPYPRT_PACKAGE_LOCATION=${buildLib} python setup.py build_doc --build-dir=${sphinxOutput}"
 			psl.runCmd(cmd)
+
+			String cmdVer
+			if (isUnix())
+				cmdVer = "\nsource ${venv}/bin/activate"
+			else
+				cmdVer = "\ncall ${venv}\\Scripts\\activate"
+			cmdVer += "\npython get_pkg_version.py"
+			echo("cmdVer = ${cmdVer}")
+			pkgVer = psl.runCmd(cmdVer, true)
+			echo("pkgVer = ${pkgVer}")
 		}
 	}
 
@@ -142,5 +152,5 @@ def taskBuildDoc(cfg) {
 		zip(zipFile: "pyprt-doc.zip", dir: "html")
 	}
 
-	papl.publish('pyprt-doc', env.BRANCH_NAME, "pyprt-doc.zip", { return "1.0.0b1" }, cfg)
+	papl.publish('pyprt-doc', env.BRANCH_NAME, "pyprt-doc.zip", { return "${pkgVer}-${env.BUILD_NUMBER}" }, cfg)
 }
