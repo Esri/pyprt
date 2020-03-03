@@ -108,11 +108,11 @@ def taskBuildPyPRT(cfg) {
 }
 
 def taskBuildDoc(cfg) {
-	List deps = []
-	List defs = []
-
 	cepl.cleanCurrentDir()
 	papl.checkout(REPO, env.BRANCH_NAME)
+
+	final String sphinxOutput = "${env.WORKSPACE}/build"
+	Map pkgInfo = null
 
 	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
 	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
@@ -129,12 +129,18 @@ def taskBuildDoc(cfg) {
 			else
 				cmd += "\ncall ${venv}\\Scripts\\activate"
 
-            final String build_lib = pwd(tmp: true)
-            echo("build_lib = " + build_lib)
+			final String buildLib = pwd(tmp: true)
+			echo("buildLib = " + buildLib)
 
-			cmd += "\npython setup.py build --build-lib=${build_lib}"
-			cmd += "\nPYPRT_PACKAGE_LOCATION=${build_lib} python setup.py build_doc"
+			cmd += "\npython setup.py build --build-lib=${buildLib}"
+			cmd += "\nPYPRT_PACKAGE_LOCATION=${buildLib} python setup.py build_doc --build-dir=${sphinxOutput}"
 			psl.runCmd(cmd)
 		}
 	}
+
+	dir(path: sphinxOutput) {
+		zip(zipFile: "pyprt-doc.zip", dir: "html")
+	}
+
+	papl.publish('pyprt-doc', env.BRANCH_NAME, "pyprt-doc.zip", { return "1.0.0b1" }, cfg)
 }
