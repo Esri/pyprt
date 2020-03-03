@@ -18,11 +18,6 @@ pyprt_package_location = os.path.abspath(os.environ.get('PYPRT_PACKAGE_LOCATION'
 print("pyprt_package_location: ", pyprt_package_location)
 sys.path.insert(0, pyprt_package_location)
 
-# -- Project information -----------------------------------------------------
-
-project = 'PyPRT'
-copyright = '2012-2020, Esri R&D Center Zurich'
-
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be

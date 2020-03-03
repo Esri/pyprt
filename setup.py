@@ -27,7 +27,10 @@ from sphinx.setup_command import BuildDoc
 record_file = os.path.join(os.curdir, 'pyprt.egg-info',
                            'record_setup_develop_files.txt')
 
-version = '1.0.0b1'  # keep consistent with __version__ in pyprt/__init__.py
+pyprt_name = 'PyPRT'
+pyprt_author = 'Esri R&D Center Zurich'
+pyprt_copyright = '(c) 2020, ' + pyprt_author
+pyprt_version = '1.0.0b1'  # keep consistent with __version__ in pyprt/__init__.py
 
 
 class CMakeConfig:
@@ -191,9 +194,9 @@ class CleanCommand(clean):
 
 
 setup(
-    name='pyprt',
-    version=version,
-    author='Esri R&D Center Zurich',
+    name=pyprt_name,
+    version=pyprt_version,
+    author=pyprt_author,
     description='Python bindings for the "Procedural Runtime" (PRT) of CityEngine by Esri.',
     long_description='This API enables the execution of CityEngine rules from within Python applications. It consumes '
                      'Rule Packages (RPK) authored in CityEngine and writes out the resulting geometry according to a '
@@ -209,7 +212,9 @@ setup(
     python_requires='>=3.6',
     command_options={
         'build_doc': {
-            'version': ('setup.py', version),
-            'release': ('setup.py', version),
+            'project': ('setup.py', pyprt_name),
+            'copyright': ('setup.py', pyprt_copyright),
+            'version': ('setup.py', pyprt_version),
+            'release': ('setup.py', pyprt_version),
             'source_dir': ('setup.py', 'docs')}},
 )
