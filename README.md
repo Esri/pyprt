@@ -53,6 +53,7 @@ pyprt.shutdown_prt()
 ## Documentation
 
 * [API Reference]
+* [Changelog](CHANGELOG.md)
 * [Authoring of Rule Packages](https://doc.arcgis.com/en/cityengine/latest/help/help-rule-package.htm#ESRI_SECTION1_F9D4CCCE0EC74E5FB646A8BD141A38F9)
 * [Examples](https://github.com/Esri/pyprt-examples)
 * [CityEngine SDK API Reference](https://esri.github.io/esri-cityengine-sdk/html/index.html)
