@@ -13,8 +13,9 @@
 import os
 import sys
 
-# by default we make setup the module path for development mode
-pyprt_package_location = os.path.abspath(os.environ.get('PYPRT_PACKAGE_LOCATION', os.pardir))
+# by default we setup the module path for development mode
+pyprt_package_location = os.path.abspath(
+    os.environ.get('PYPRT_PACKAGE_LOCATION', os.pardir))
 print("pyprt_package_location: ", pyprt_package_location)
 sys.path.insert(0, pyprt_package_location)
 
