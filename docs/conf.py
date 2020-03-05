@@ -9,22 +9,14 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
+
 import os
 import sys
 
-sys.path.append(os.path.join(os.path.abspath(os.pardir)))
-sys.path.append(os.path.join(os.path.abspath(os.pardir), 'pyprt'))
-sys.path.append(os.path.join(os.path.abspath(
-    os.pardir), 'pyprt', 'pyprt_utils'))
-sys.path.append(os.path.join(os.path.abspath(
-    os.pardir), 'pyprt', 'pyprt_arcgis'))
-
-
-# -- Project information -----------------------------------------------------
-
-project = 'PyPRT'
-copyright = '2012-2020, Esri R&D Center Zurich'
-
+# by default we make setup the module path for development mode
+pyprt_package_location = os.path.abspath(os.environ.get('PYPRT_PACKAGE_LOCATION', os.pardir))
+print("pyprt_package_location: ", pyprt_package_location)
+sys.path.insert(0, pyprt_package_location)
 
 # -- General configuration ---------------------------------------------------
 
@@ -60,7 +52,6 @@ add_module_names = False
 
 autoclass_content = 'both'
 
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -72,7 +63,6 @@ html_theme = 'nature'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-
 
 # -- Extension configuration -------------------------------------------------
 

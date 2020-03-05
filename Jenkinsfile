@@ -29,12 +29,16 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 // -- GLOBAL DEFINITIONS
 
-@Field final String REPO   = 'git@devtopia.esri.com:Zurich-R-D-Center/pyprt.git'
+@Field final String REPO   = 'git@github.com:esri/pyprt.git'
 @Field final String SOURCE = 'pyprt.git'
 
 @Field final List CONFIGS_PY36 = [
 	[ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC83, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64, python: '3.6' ],
 	[ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC142, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64, python: '3.6' ],
+]
+
+@Field final List CONFIGS_DOC = [
+	[ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC83, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64, python: '3.6' ],
 ]
 
 
@@ -56,6 +60,7 @@ Map getTasks() {
 Map taskGenPyPRT() {
 	Map tasks = [:]
 	tasks << cepl.generateTasks('pyprt-py36', this.&taskBuildPyPRT, CONFIGS_PY36)
+	tasks << cepl.generateTasks('pyprt-doc', this.&taskBuildDoc, CONFIGS_DOC)
 	return tasks;
 }
 
@@ -63,9 +68,6 @@ Map taskGenPyPRT() {
 // -- TASK BUILDERS
 
 def taskBuildPyPRT(cfg) {
-	List deps = []
-	List defs = []
-
 	cepl.cleanCurrentDir()
 	papl.checkout(REPO, env.BRANCH_NAME)
 
@@ -73,20 +75,56 @@ def taskBuildPyPRT(cfg) {
 	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
 	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
 	dir(path: SOURCE) {
-		withEnv(buildEnvs) {
+		withEnv(buildEnvs + ["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
+			psl.runCmd("pipenv install")
+
 			String cmd = toolchain.getSetupCmd(this, cfg)
-			cmd += "\npipenv --python ${cfg.python} --bare run python setup.py bdist_wheel --dist-dir=${env.WORKSPACE}/build --build-number=${env.BUILD_NUMBER}"
+			cmd += "\npipenv run pip list"
+			cmd += "\npipenv run python setup.py bdist_wheel --dist-dir=${env.WORKSPACE}/build --build-number=${env.BUILD_NUMBER}"
 			psl.runCmd(cmd)
 		}
 	}
 
 	def versionExtractor = { p ->
-		def vers = (p =~ /.*pyprt-([0-9]+\.[0-9]+\.[0-9abpr]+-[0-9]+)-cp.*/)
+		def vers = (p =~ /.*PyPRT-([0-9]+\.[0-9]+\.[0-9abpr]+-[0-9]+)-cp.*/)
 		return vers[0][1]
 	}
 	def classifierExtractor = { p ->
-		def cls = (p =~ /.*pyprt-[0-9]+\.[0-9]+\.[0-9abpr]+-[0-9]+-(.*)\.whl/)
+		def cls = (p =~ /.*PyPRT-[0-9]+\.[0-9]+\.[0-9abpr]+-[0-9]+-(.*)\.whl/)
 		return cls[0][1]
 	}
-	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-*.whl", versionExtractor, cfg, classifierExtractor)
+	papl.publish('pyprt', env.BRANCH_NAME, "PyPRT-*.whl", versionExtractor, cfg, classifierExtractor)
+}
+
+def taskBuildDoc(cfg) {
+	cepl.cleanCurrentDir()
+	papl.checkout(REPO, env.BRANCH_NAME)
+
+	final String sphinxOutput = "${env.WORKSPACE}/build"
+	String pkgVer
+
+	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
+	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
+	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
+	dir(path: SOURCE) {
+		withEnv(buildEnvs + ["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
+			psl.runCmd("pipenv install")
+
+			final String buildLib = pwd(tmp: true)
+
+			String cmd = toolchain.getSetupCmd(this, cfg)
+			cmd += "\npipenv run python setup.py build --build-lib=${buildLib}"
+			cmd += "\nPYPRT_PACKAGE_LOCATION=${buildLib} pipenv run python setup.py build_doc --build-dir=${sphinxOutput}"
+			psl.runCmd(cmd)
+
+			pkgVer = psl.runCmd('pipenv run python get_pkg_version.py', true)
+		}
+	}
+
+	dir(path: sphinxOutput) {
+		zip(zipFile: "pyprt-doc.zip", dir: "html")
+	}
+
+	assert pkgVer != null
+	papl.publish('pyprt-doc', env.BRANCH_NAME, "pyprt-doc.zip", { return "${pkgVer}-${env.BUILD_NUMBER}" }, cfg)
 }

@@ -4,9 +4,9 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-setuptools = "==41.6.0"
-tox = "==3.14.1"
-wheel = "==0.33.6"
+tox = "*"
+wheel = "*"
 arcgis = "==1.6"
 twine = "*"
 sphinx = "*"
+pkginfo = "*"
