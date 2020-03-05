@@ -232,7 +232,7 @@ setup(
     ext_modules=[CMakeExtension('pyprt.pyprt', 'src')],
     cmdclass={'build_ext': CMakeBuild,
               'clean': CleanCommand, 'build_doc': BuildDoc},
-    license="PyPRT is free for non-commercial use. An exception is the PyPRT source code which is licensed under the Apache License, Version 2.0; you may not use this work except in compliance with the License.",
+    license="PyPRT is under the same license as the included CityEngine SDK. An exception is the PyPRT source code, which is licensed under the Apache License, Version 2.0.",
     classifiers=['Development Status :: 4 - Beta',
                  'License :: Free for non-commercial use',
                  'License :: OSI Approved :: Apache Software License',
