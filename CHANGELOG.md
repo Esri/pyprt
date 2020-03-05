@@ -12,9 +12,9 @@
 
 * README improvements
 
-## v1.0.0-beta.1 (2020-02-20)
+## v1.0.0b1 (2020-02-20)
 
 * First public release
-* PyPRT available on PyPI
-* Publish source code on Github
-* Publish [PyPRT examples](https://github.com/Esri/pyprt-examples) on Github
+* PyPRT wheels available on PyPI
+* Published source code on GitHub
+* Published [PyPRT examples](https://github.com/Esri/pyprt-examples) on GitHub
