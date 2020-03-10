@@ -60,6 +60,7 @@ Map getTasks() {
 Map taskGenPyPRT() {
 	Map tasks = [:]
 	tasks << cepl.generateTasks('pyprt-py36', this.&taskBuildPyPRT, CONFIGS_PY36)
+	tasks << cepl.generateTasks('pyprt-py36-conda', this.&taskCondaBuildPyPRT, CONFIGS_PY36)
 	tasks << cepl.generateTasks('pyprt-doc', this.&taskBuildDoc, CONFIGS_DOC)
 	return tasks;
 }
@@ -94,6 +95,36 @@ def taskBuildPyPRT(cfg) {
 		return cls[0][1]
 	}
 	papl.publish('pyprt', env.BRANCH_NAME, "PyPRT-*.whl", versionExtractor, cfg, classifierExtractor)
+}
+
+def taskCondaBuildPyPRT(cfg) {
+	cepl.cleanCurrentDir()
+	papl.checkout(REPO, env.BRANCH_NAME)
+
+	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
+	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
+	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
+	dir(path: SOURCE) {
+		withEnv(buildEnvs) {
+			psl.runCmd("conda create --prefix ${env.WORKSPACE} --file environment.yml")
+			psl.runCmd("activate ${env.WORKSPACE}")
+
+			String cmd = toolchain.getSetupCmd(this, cfg)
+			cmd += "\nconda list"
+			cmd += "\npython setup.py bdist_conda --buildnum=${env.BUILD_NUMBER}"
+			psl.runCmd(cmd)
+		}
+	}
+
+	def versionExtractor = { p ->
+		def vers = (p =~ /.*PyPRT-([0-9]+\.[0-9]+\.[0-9abpr]+-[0-9]+)-py.*/)
+		return vers[0][1]
+	}
+	def classifierExtractor = { p ->
+		def cls = (p =~ /.*PyPRT-[0-9]+\.[0-9]+\.[0-9abpr]+-[0-9]+-(.*)\.tar.bz2/)
+		return cls[0][1]
+	}
+	papl.publish('pyprt', env.BRANCH_NAME, "PyPRT-*.tar.bz2", versionExtractor, cfg, classifierExtractor)
 }
 
 def taskBuildDoc(cfg) {
