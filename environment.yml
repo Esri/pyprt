@@ -1,0 +1,10 @@
+channels:
+  - esri
+  - defaults
+  - anaconda
+dependencies:
+  - python=3.6
+  - sphinx
+  - conda-build
+  - conda-verify
+
