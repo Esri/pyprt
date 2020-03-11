@@ -20,10 +20,14 @@ import subprocess
 from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 from distutils.command.clean import clean
-from distutils.command.bdist_conda import CondaDistribution
 from distutils.dir_util import copy_tree, remove_tree
 from distutils import log
 from sphinx.setup_command import BuildDoc
+try:
+    from distutils.command.bdist_conda import CondaDistribution
+    distclass = CondaDistribution
+except:
+    distclass = []
 
 record_file = os.path.join(os.curdir, 'pyprt.egg-info',
                            'record_setup_develop_files.txt')
@@ -233,7 +237,7 @@ setup(
     ext_modules=[CMakeExtension('pyprt.pyprt', 'src')],
     cmdclass={'build_ext': CMakeBuild, 'clean': CleanCommand,
               'build_doc': BuildDoc},
-    distclass=CondaDistribution,
+    distclass=distclass,
     conda_import_tests=False,
     license="PyPRT is under the same license as the included CityEngine SDK. An exception is the PyPRT source code, which is licensed under the Apache License, Version 2.0.",
     classifiers=['Development Status :: 4 - Beta',
