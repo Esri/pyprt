@@ -79,6 +79,15 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
 1. Run `pipenv run python setup.py bdist_wheel`. This will build the CMake project and Python packages.
 1. The resulting wheel is written to the temporary `dist` folder.
 
+#### Build Conda Package
+
+1. Install Miniconda or Anaconda.
+1. In the PyPRT git root, open a shell and activate correct C++ compiler (`vcvarsall.bat` on Windows or `source /opt/rh/devtoolset-8/enable` on RHEL-based Linux).
+1. First time only: run `conda env create --prefix ./env --file environment.yml` to create a conda environment with all the required Python packages.
+1. Run `activate ./env`.
+1. Run `python setup.py bdist_conda`. This will build the CMake project and Python packages.
+1. The resulting package is written to the `./env/conda-bld/{platform}` folder.
+
 #### Iterative Python Development
 
 1. In the PyPRT git root, open a shell and activate correct C++ compiler (`vcvarsall.bat` on Windows or `source /opt/rh/devtoolset-8/enable` on RHEL-based Linux).

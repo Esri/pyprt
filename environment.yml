@@ -1,5 +1,4 @@
 channels:
-  - esri
   - defaults
   - anaconda
 dependencies:
