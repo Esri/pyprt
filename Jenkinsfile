@@ -60,6 +60,7 @@ Map getTasks() {
 Map taskGenPyPRT() {
 	Map tasks = [:]
 	tasks << cepl.generateTasks('pyprt-py36', this.&taskBuildPyPRT, CONFIGS_PY36)
+	tasks << cepl.generateTasks('pyprt-py36-conda', this.&taskCondaBuildPyPRT, CONFIGS_PY36)
 	tasks << cepl.generateTasks('pyprt-doc', this.&taskBuildDoc, CONFIGS_DOC)
 	return tasks;
 }
@@ -94,6 +95,56 @@ def taskBuildPyPRT(cfg) {
 		return cls[0][1]
 	}
 	papl.publish('pyprt', env.BRANCH_NAME, "PyPRT-*.whl", versionExtractor, cfg, classifierExtractor)
+}
+
+def taskCondaBuildPyPRT(cfg) {
+	cepl.cleanCurrentDir()
+	papl.checkout(REPO, env.BRANCH_NAME)
+
+	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
+	final JenkinsTools CONDA = JenkinsTools.CONDA
+	final String condaToolEnvVar = CONDA.getEvalEnv(this)
+
+	final String condaEnvName = 'pyprt-conda-env'
+	final String condaEnvPath = "${env.WORKSPACE}/${condaEnvName}"
+	final String condaNativeEnvPath = isUnix() ? condaEnvPath : condaEnvPath.replaceAll('/', '\\\\')
+	final String condaNativeEnvCondaCmd = isUnix() ? "${condaEnvPath}/bin/conda" : "${condaEnvPath}\\condabin\\conda.bat".replaceAll('/', '\\\\')
+
+	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain, CONDA]
+	final List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
+	dir(path: SOURCE) {
+		withEnv(buildEnvs) {
+			final String condaCmd = CONDA.getCmd(this)
+
+			psl.runCmd("${condaCmd} env create -f environment.yml -p ${condaNativeEnvPath}")
+			psl.runCmd("${condaNativeEnvCondaCmd} list")
+
+			final String cmd = toolchain.getSetupCmd(this, cfg)
+			cmd += "\n${condaNativeEnvCondaCmd} run python setup.py bdist_conda --buildnum=${env.BUILD_NUMBER}"
+			psl.runCmd(cmd)
+		}
+	}
+
+	// cannot control where conda outputs the package, need to adapt to expectations of publish
+	fileOperations([
+	    folderCreateOperation('build'),
+	    fileCopyOperation(
+			includes: "${condaEnvName}/conda-bld/*/pyprt-*.tar.bz2",
+			excludes: '',
+			targetLocation: 'build',
+			flattenFiles: true
+		)
+	])
+
+ 	def versionExtractor = { p ->
+ 		def vers = (p =~ /.*pyprt-([0-9]+\.[0-9]+\.[0-9abpr]+)-py[0-9]+_([0-9]+)\.tar\.bz2/)
+ 		return "${vers[0][1]}-${vers[0][2]}"
+ 	}
+	def classifierExtractor = { p ->
+ 		def cls = (p =~ /.*pyprt-[0-9]+\.[0-9]+\.[0-9abpr]+-(py[0-9]+)_[0-9]+\.tar\.bz2/)
+		return "${cls[0][1]}-${cfg.os}-${cfg.arch}"
+	}
+ 	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-*.tar.bz2", versionExtractor, cfg, classifierExtractor)
 }
 
 def taskBuildDoc(cfg) {
