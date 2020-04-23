@@ -4,6 +4,7 @@
 
 ### Added
 
+* PyPRT conda package available on Anaconda Cloud
 * API Documentation
 * License file and copyright statements
 * ChangeLog
@@ -11,6 +12,7 @@
 ### Changed
 
 * README improvements
+* setup.py metadata and PyPI project page improvements
 
 ## v1.0.0b1 (2020-02-20)
 
