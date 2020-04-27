@@ -240,7 +240,7 @@ setup(
     distclass=distclass,
     conda_import_tests=False,
     license="PyPRT is under the same license as the included CityEngine SDK. An exception is the PyPRT source code, which is licensed under the Apache License, Version 2.0.",
-    classifiers=['Development Status :: 4 - Beta',
+    classifiers=['Development Status :: 5 - Production/Stable',
                  'License :: Free for non-commercial use',
                  'License :: OSI Approved :: Apache Software License',
                  'Operating System :: Microsoft :: Windows',
