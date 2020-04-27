@@ -7,7 +7,6 @@
 * PyPRT conda package available on Anaconda Cloud
 * API Documentation
 * License file and copyright statements
-* ChangeLog
 
 ### Changed
 
