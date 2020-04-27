@@ -6,7 +6,7 @@ title: PyPRT - Python Bindings for the CityEngine SDK
 <tr>
 	<td style="font-size:22pt;text-align:center;vertical-align:bottom"><a href="#installation"><img src="images/cog.png" width="100px" /> Installation</a></td>
 	<td style="font-size:22pt;text-align:center;vertical-align:bottom"><a href="#examples"><img src="images/bldg3d.png" width="100px" /> Examples</a></td>
-	<td style="font-size:22pt;text-align:center;vertical-align:bottom"><a href="apidoc/index.html"><img src="images/docs.png" width="100px" /> Documentation</a></td>
+	<td style="font-size:22pt;text-align:center;vertical-align:bottom"><a href="https://github.com/Esri/pyprt/blob/master/README.md#documentation"><img src="images/docs.png" width="100px" /> Documentation</a></td>
 </tr>
 </table>
 
