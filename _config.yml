@@ -2,3 +2,5 @@ theme: jekyll-theme-cayman
 title: PyPRT - Python Bindings for the CityEngine SDK
 repository: esri/pyprt
 show_downloads: false
+include:
+  - _static
