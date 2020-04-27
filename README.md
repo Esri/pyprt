@@ -14,7 +14,7 @@ PyPRT is a Python binding for PRT (CityEngine Procedural Runtime). It enables th
 
 ## Installation
 
-Simply run `pip install pyprt` in your desired Python environment or `conda install pyprt` in a Conda environment. Then use `import pyprt` in your scripts.
+For Python 3.6 (64bit), run `pip install pyprt` in your (virtual) Python environment or `conda install pyprt` in a Conda environment. Then use `import pyprt` in your scripts. For other Python versions, please [build](#development) PyPRT yourself at the moment.
 
 ## Minimal Usage
 ```python
@@ -52,7 +52,7 @@ pyprt.shutdown_prt()
 
 ## Documentation
 
-* [API Reference]
+* [API Reference](https://esri.github.io/pyprt/apidoc/index.html)
 * [Changelog](CHANGELOG.md)
 * [Authoring of Rule Packages](https://doc.arcgis.com/en/cityengine/latest/help/help-rule-package.htm#ESRI_SECTION1_F9D4CCCE0EC74E5FB646A8BD141A38F9)
 * [Examples](https://github.com/Esri/pyprt-examples)
