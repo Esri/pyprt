@@ -117,6 +117,23 @@ std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap) {
 	return {};
 }
 
+std::wstring detectStartRule(const pcu::RuleFileInfoUPtr& ruleFileInfo) {
+	for (size_t r = 0; r < ruleFileInfo->getNumRules(); r++) {
+		const auto* rule = ruleFileInfo->getRule(r);
+
+		// start rules must not have any parameters
+		if (rule->getNumParameters() > 0)
+			continue;
+
+		for (size_t a = 0; a < rule->getNumAnnotations(); a++) {
+			if (std::wcscmp(rule->getAnnotation(a)->getName(), L"@StartRule") == 0) {
+				return rule->getName();
+			}
+		}
+	}
+	return {};
+}
+
 void extractMainShapeAttributes(const py::dict& shapeAttr, std::wstring& ruleFile, std::wstring& startRule,
                                 int32_t& seed, std::wstring& shapeName, pcu::AttributeMapPtr& convertShapeAttr) {
 	convertShapeAttr = pcu::createAttributeMapFromPythonDict(
@@ -296,7 +313,20 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 			}
 		}
 
-        mRuleFile = getRuleFileEntry(mResolveMap.get());
+		mRuleFile = getRuleFileEntry(mResolveMap.get());
+
+		prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
+		const wchar_t* ruleFileURI = mResolveMap->getString(mRuleFile.c_str());
+		if (ruleFileURI == nullptr) {
+			LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
+		}
+
+		pcu::RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, mCache.get(), &infoStatus));
+		if (!info || infoStatus != prt::STATUS_OK) {
+			LOG_ERR << "could not get rule file info from rule file " << mRuleFile;
+		}
+
+		mStartRule = detectStartRule(info);
 
 		// Initial shapes
 		std::vector<const prt::InitialShape*> initialShapes(mInitialShapesBuilders.size());
