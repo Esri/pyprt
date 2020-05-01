@@ -17,8 +17,8 @@
  * A copy of the license is available in the repository's LICENSE file.
  */
 
-#include "logging.h"
 #include "utils.h"
+#include "logging.h"
 
 #include "prt/StringUtils.h"
 
@@ -60,7 +60,6 @@ void tokenize(const std::basic_string<C>& str, std::vector<std::basic_string<C>>
 namespace py = pybind11;
 
 namespace pcu {
-
 /**
  * Helper function to convert a Python dictionary of "<key>:<value>" into a
  * prt::AttributeMap
@@ -173,9 +172,25 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, prt::AttributeMa
 }
 
 /**
+ * prt specific string helper
+ */
+constexpr const wchar_t STYLE_DELIMITER = L'$';
+
+std::wstring removeStylePrefix(const std::wstring& fullName) {
+	const auto sepPos = fullName.find(STYLE_DELIMITER);
+	if (sepPos == std::wstring::npos)
+		return fullName;
+	if (sepPos == fullName.length() - 1)
+		return {};
+	if (fullName.length() <= 1)
+		return {};
+	return fullName.substr(sepPos + 1);
+}
+
+
+/**
  * String conversion functions
  */
-
 template <typename inC, typename outC, typename FUNC>
 std::basic_string<outC> callAPI(FUNC f, const std::basic_string<inC>& s) {
 	std::vector<outC> buffer(s.size());

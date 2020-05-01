@@ -134,6 +134,80 @@ std::wstring detectStartRule(const pcu::RuleFileInfoUPtr& ruleFileInfo) {
 	return {};
 }
 
+py::dict getRuleAttributes(const std::wstring& ruleFile, const prt::RuleFileInfo* ruleFileInfo) {
+	auto ruleAttrs = py::dict();
+
+	for (size_t i = 0; i < ruleFileInfo->getNumAttributes(); i++) {
+		const prt::RuleFileInfo::Entry* attr = ruleFileInfo->getAttribute(i);
+
+		std::wstring name = pcu::removeStylePrefix(attr->getName());
+		prt::AnnotationArgumentType valueType = attr->getReturnType();
+		py::str type;
+
+		if (valueType == prt::AAT_STR)
+			type = "STRING_VALUE_TYPE";
+		else if (valueType == prt::AAT_BOOL)
+			type = "BOOL_VALUE_TYPE";
+		else if (valueType == prt::AAT_FLOAT)
+			type = "FLOAT_VALUE_TYPE";
+		else if (valueType == prt::AAT_STR_ARRAY)
+			type = "BOOL_VALUE_TYPE";
+		else if (valueType == prt::AAT_BOOL_ARRAY)
+			type = "FLOAT_VALUE_TYPE";
+		else if (valueType == prt::AAT_FLOAT_ARRAY)
+			type = "BOOL_VALUE_TYPE";
+		else
+			type = "UNKNOWN_VALUE_TYPE";
+
+		ruleAttrs[py::cast(name)] = type;
+	}
+
+	return ruleAttrs;
+}
+
+py::dict inspectRPK(const std::string& rulePackagePath) {
+	std::cout << "TEST RPK INSPECTION:" << std::endl;
+	pcu::ResolveMapPtr resolveMap;
+
+	// Resolve Map
+	if (!rulePackagePath.empty()) {
+		LOG_INF << "inspecting rule package " << rulePackagePath << std::endl;
+
+		const std::string u8rpkURI = pcu::toFileURI(rulePackagePath);
+		prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
+		try {
+			resolveMap.reset(prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status));
+		}
+		catch (std::exception& e) {
+			pybind11::print("CAUGHT EXCEPTION:", e.what());
+		}
+
+		if (resolveMap && (status == prt::STATUS_OK)) {
+			LOG_DBG << "resolve map = " << pcu::objectToXML(resolveMap.get()) << std::endl;
+		}
+		else {
+			LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting.";
+		}
+	}
+
+	std::wstring ruleFile = getRuleFileEntry(resolveMap.get());
+
+	prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
+	const wchar_t* ruleFileURI = resolveMap->getString(ruleFile.c_str());
+	if (ruleFileURI == nullptr) {
+		LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
+	}
+
+	pcu::RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, nullptr, &infoStatus));
+	if (!info || infoStatus != prt::STATUS_OK) {
+		LOG_ERR << "could not get rule file info from rule file " << ruleFile;
+	}
+
+	py::dict ruleAttrs = getRuleAttributes(ruleFile, info.get());
+
+	return ruleAttrs;
+}
+
 void extractMainShapeAttributes(const py::dict& shapeAttr, std::wstring& ruleFile, std::wstring& startRule,
                                 int32_t& seed, std::wstring& shapeName, pcu::AttributeMapPtr& convertShapeAttr) {
 	convertShapeAttr = pcu::createAttributeMapFromPythonDict(
@@ -628,6 +702,7 @@ PYBIND11_MODULE(pyprt, m) {
 	m.def("initialize_prt", &initializePRT, docInit);
 	m.def("is_prt_initialized", &isPRTInitialized, docIsInit);
 	m.def("shutdown_prt", &shutdownPRT, docShutdown);
+	m.def("inspect_rpk", &inspectRPK, py::arg("rulePackagePath"));
 
 	py::class_<InitialShape>(m, "InitialShape", docIs)
 	        .def(py::init<const std::vector<double>&>(), py::arg("vertCoordinates"), docIsInitV)
