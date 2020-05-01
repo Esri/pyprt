@@ -69,7 +69,7 @@ std::unique_ptr<PRTContext> prtCtx;
 
 void initializePRT() {
 	if (!prtCtx)
-		prtCtx.reset(new PRTContext(prt::LOG_ERROR));
+		prtCtx.reset(new PRTContext(prt::LOG_DEBUG));
 }
 
 bool isPRTInitialized() {
@@ -102,6 +102,20 @@ GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const std::vector<dou
     : mInitialShapeIndex(initShapeIdx), mVertices(vert), mIndices(indices), mFaces(face), mReport(rep) {}
 
 namespace {
+
+std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap) {
+	const std::wstring sCGB(L".cgb");
+
+	size_t nKeys;
+	wchar_t const* const* keys = resolveMap->getKeys(&nKeys);
+	for (size_t k = 0; k < nKeys; k++) {
+		const std::wstring key(keys[k]);
+		if (std::equal(sCGB.rbegin(), sCGB.rend(), key.rbegin()))
+			return key;
+	}
+
+	return {};
+}
 
 void extractMainShapeAttributes(const py::dict& shapeAttr, std::wstring& ruleFile, std::wstring& startRule,
                                 int32_t& seed, std::wstring& shapeName, pcu::AttributeMapPtr& convertShapeAttr) {
@@ -281,6 +295,8 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 				return {};
 			}
 		}
+
+        mRuleFile = getRuleFileEntry(mResolveMap.get());
 
 		// Initial shapes
 		std::vector<const prt::InitialShape*> initialShapes(mInitialShapesBuilders.size());
