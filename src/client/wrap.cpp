@@ -61,6 +61,8 @@ const std::wstring ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder"
 const std::wstring ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
 const std::wstring ENCODER_ID_PYTHON = L"com.esri.pyprt.PyEncoder";
 
+constexpr const wchar_t* ANNOT_HIDDEN = L"@Hidden";
+
 PYBIND11_MAKE_OPAQUE(std::vector<GeneratedModel>);
 
 namespace {
@@ -69,7 +71,7 @@ std::unique_ptr<PRTContext> prtCtx;
 
 void initializePRT() {
 	if (!prtCtx)
-		prtCtx.reset(new PRTContext(prt::LOG_DEBUG));
+		prtCtx.reset(new PRTContext(prt::LOG_ERROR));
 }
 
 bool isPRTInitialized() {
@@ -138,35 +140,44 @@ py::dict getRuleAttributes(const std::wstring& ruleFile, const prt::RuleFileInfo
 	auto ruleAttrs = py::dict();
 
 	for (size_t i = 0; i < ruleFileInfo->getNumAttributes(); i++) {
+		bool hidden = false;
 		const prt::RuleFileInfo::Entry* attr = ruleFileInfo->getAttribute(i);
 
 		std::wstring name = pcu::removeStylePrefix(attr->getName());
 		prt::AnnotationArgumentType valueType = attr->getReturnType();
 		py::str type;
 
-		if (valueType == prt::AAT_STR)
-			type = "STRING_VALUE_TYPE";
-		else if (valueType == prt::AAT_BOOL)
-			type = "BOOL_VALUE_TYPE";
-		else if (valueType == prt::AAT_FLOAT)
-			type = "FLOAT_VALUE_TYPE";
-		else if (valueType == prt::AAT_STR_ARRAY)
-			type = "BOOL_VALUE_TYPE";
-		else if (valueType == prt::AAT_BOOL_ARRAY)
-			type = "FLOAT_VALUE_TYPE";
-		else if (valueType == prt::AAT_FLOAT_ARRAY)
-			type = "BOOL_VALUE_TYPE";
-		else
-			type = "UNKNOWN_VALUE_TYPE";
+		for (size_t f = 0; f < attr->getNumAnnotations(); f++) {
+			if (!(std::wcscmp(attr->getAnnotation(f)->getName(), ANNOT_HIDDEN))) {
+				hidden = true;
+				break;
+			}
+        }
 
-		ruleAttrs[py::cast(name)] = type;
+        if (!hidden) {
+			if (valueType == prt::AAT_STR)
+				type = "STRING_VALUE_TYPE";
+			else if (valueType == prt::AAT_BOOL)
+				type = "BOOL_VALUE_TYPE";
+			else if (valueType == prt::AAT_FLOAT)
+				type = "FLOAT_VALUE_TYPE";
+			else if (valueType == prt::AAT_STR_ARRAY)
+				type = "BOOL_VALUE_TYPE";
+			else if (valueType == prt::AAT_BOOL_ARRAY)
+				type = "FLOAT_VALUE_TYPE";
+			else if (valueType == prt::AAT_FLOAT_ARRAY)
+				type = "BOOL_VALUE_TYPE";
+			else
+				type = "UNKNOWN_VALUE_TYPE";
+
+			ruleAttrs[py::cast(name)] = type;
+		}
 	}
 
 	return ruleAttrs;
 }
 
 py::dict inspectRPK(const std::string& rulePackagePath) {
-	std::cout << "TEST RPK INSPECTION:" << std::endl;
 	pcu::ResolveMapPtr resolveMap;
 
 	// Resolve Map
