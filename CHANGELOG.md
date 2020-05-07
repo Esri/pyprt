@@ -1,6 +1,6 @@
 # PyPRT ChangeLog
 
-## v1.0.0 (2020-MM-DD) *Unreleased*
+## v1.0.0 (2020-05-07)
 
 ### Added
 
