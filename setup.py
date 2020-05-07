@@ -154,6 +154,9 @@ class CMakeBuild(build_ext):
             '-DCMAKE_MAKE_PROGRAM={}'.format(cmake.make_executable)
         ]
 
+        if sys.platform.startswith('darwin'):
+            cmake_configure_command.append('-DCMAKE_CXX_COMPILER=clang++')
+
         prt_dir = os.getenv('PRT_DIR', '')
         if prt_dir != '':
             cmake_configure_command.append('-Dprt_DIR={}'.format(prt_dir))
