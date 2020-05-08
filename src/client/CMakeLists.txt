@@ -54,7 +54,8 @@ elseif(PYPRT_MACOS)
 	target_compile_options(${CLIENT_TARGET} PRIVATE
 			-stdlib=libc++
 			-fvisibility=hidden -fvisibility-inlines-hidden
-			-Wall -Wextra -Wunused-parameter)
+			-Wall -Wextra -Wunused-parameter
+			-mmacosx-version-min=10.15) # required by C++17
 
 	set_target_properties(${CLIENT_TARGET} PROPERTIES
 			INSTALL_RPATH "@loader_path"
