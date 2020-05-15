@@ -68,13 +68,19 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
 * C++ Compiler (C++ 17)
   * Windows: MSVC 14.16 or later
   * Linux: GCC 8 or later
+  * macOS (Catalina or later): Xcode 11
 * Python (version >= 3.6) with pip and pipenv
 * CMake (version >= 3.14)
 * Ninja (or jom)
 
+A note regarding "open a shell" in the following sections: this implies that the shell also needs to have the correct C++ compiler activated:
+* On Windows, use the shortcuts provided by Visual Studio or run `vcvarsall.bat` of the desired MSVC toolchain.
+* On RHEL-based Linux, run e.g. `source /opt/rh/devtoolset-8/enable`.
+* On macOS, there is usually no action required (the current Xcode command line tools are activated by default).
+
 #### Build Python Wheel
 
-1. In the PyPRT git root, open a shell and activate correct C++ compiler (`vcvarsall.bat` on Windows or `source /opt/rh/devtoolset-8/enable` on RHEL-based Linux).
+1. Open a shell in the PyPRT git root.
 1. First time only: run `pipenv install` to get all required Python packages.
 1. Run `pipenv run python setup.py bdist_wheel`. This will build the CMake project and Python packages.
 1. The resulting wheel is written to the temporary `dist` folder.
@@ -82,7 +88,7 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
 #### Build Conda Package
 
 1. Install Miniconda or Anaconda.
-1. In the PyPRT git root, open a shell and activate correct C++ compiler (`vcvarsall.bat` on Windows or `source /opt/rh/devtoolset-8/enable` on RHEL-based Linux).
+1. Open a shell in the PyPRT git root and activate Miniconda (or Anaconda).
 1. First time only: run `conda env create --prefix ./env --file environment.yml` to create a conda environment with all the required Python packages.
 1. Run `activate ./env`.
 1. Run `python setup.py bdist_conda`. This will build the CMake project and Python packages.
@@ -90,7 +96,7 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
 
 #### Iterative Python Development
 
-1. In the PyPRT git root, open a shell and activate correct C++ compiler (`vcvarsall.bat` on Windows or `source /opt/rh/devtoolset-8/enable` on RHEL-based Linux).
+1. Open a shell in the PyPRT git root.
 1. First time only: run `pipenv install` to get all required Python packages.
 1. Run `pipenv shell` to activate the required Python packages.
 1. Install PyPRT in current pip environment in dev mode by running `pip install -e .` (note the dot at the end). This will use CMake to build the native extension and copy them into the source directory.
@@ -110,7 +116,7 @@ The `setup.py clean` call mentioned above will also clean out the native extensi
 
 #### Running Unit Tests
 
-1. In the PyPRT git root, open a shell and activate correct C++ compiler (`vcvarsall.bat` on Windows or `source /opt/rh/devtoolset-8/enable` on RHEL-based Linux).
+1. Open a shell in the PyPRT git root.
 1. First time only: run `pipenv install` to get all required Python packages.
 1. Run `pipenv run tox`.
 

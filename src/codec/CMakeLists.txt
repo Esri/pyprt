@@ -46,7 +46,6 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 	target_compile_options(${CODEC_TARGET} PRIVATE
 			-stdlib=libc++
 			-fvisibility=hidden -fvisibility-inlines-hidden
-			-Wl,--exclude-libs,ALL
 			-Wall -Wextra -Wunused-parameter)
 endif()
 
