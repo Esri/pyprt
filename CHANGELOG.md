@@ -1,5 +1,13 @@
 # PyPRT ChangeLog
 
+## v1.1.0 (2020-XX-YY)
+
+### Added
+* Support for macOS Catalina
+
+### Changed
+* ...
+
 ## v1.0.0 (2020-05-07)
 
 ### Added
