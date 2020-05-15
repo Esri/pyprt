@@ -21,7 +21,7 @@
 
 #include "prt/Callbacks.h"
 
-class IPyCallbacks : public prt::Callbacks {
+class __attribute__ ((visibility("default"))) IPyCallbacks : public prt::Callbacks {
 public:
 	virtual ~IPyCallbacks() override = default;
 

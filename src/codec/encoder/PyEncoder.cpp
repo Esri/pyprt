@@ -57,13 +57,7 @@ const prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS =
                                         // instead of 1.5 sec
 
 IPyCallbacks* getPyCallbacks(prt::Callbacks* cb) {
-#if defined(__APPLE__) && defined(__clang__)
-	// workaround for Apple Clang, dynamic_cast unexpectedly returns zero
-	// probably related to IPyCallbacks beeing an abstract class
-	return static_cast<IPyCallbacks*>(cb);
-#else
 	return dynamic_cast<IPyCallbacks*>(cb);
-#endif
 }
 
 } // namespace
