@@ -189,7 +189,7 @@ py::dict inspectRPK(const std::string& rulePackagePath) {
 		try {
 			resolveMap.reset(prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status));
 		}
-		catch (std::exception& e) {
+		catch (const std::exception& e) {
 			pybind11::print("CAUGHT EXCEPTION:", e.what());
 			return py::dict();
 		}
@@ -389,7 +389,7 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 			try {
 				mResolveMap.reset(prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status));
 			}
-			catch (std::exception& e) {
+			catch (const std::exception& e) {
 				pybind11::print("CAUGHT EXCEPTION:", e.what());
 				return {};
 			}
