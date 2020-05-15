@@ -156,17 +156,17 @@ py::dict getRuleAttributes(const std::wstring& ruleFile, const prt::RuleFileInfo
 
         if (!hidden) {
 			if (valueType == prt::AAT_STR)
-				type = "STRING_VALUE_TYPE";
+				type = "string";
 			else if (valueType == prt::AAT_BOOL)
-				type = "BOOL_VALUE_TYPE";
+				type = "bool";
 			else if (valueType == prt::AAT_FLOAT)
-				type = "FLOAT_VALUE_TYPE";
+				type = "float";
 			else if (valueType == prt::AAT_STR_ARRAY)
-				type = "BOOL_VALUE_TYPE";
+				type = "string[]";
 			else if (valueType == prt::AAT_BOOL_ARRAY)
-				type = "FLOAT_VALUE_TYPE";
+				type = "bool[]";
 			else if (valueType == prt::AAT_FLOAT_ARRAY)
-				type = "BOOL_VALUE_TYPE";
+				type = "float[]";
 			else
 				type = "UNKNOWN_VALUE_TYPE";
 
