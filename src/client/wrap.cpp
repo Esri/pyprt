@@ -228,12 +228,6 @@ void extractMainShapeAttributes(const py::dict& shapeAttr, std::wstring& ruleFil
 	convertShapeAttr = pcu::createAttributeMapFromPythonDict(
 	        shapeAttr, *(pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create())));
 	if (convertShapeAttr) {
-		if (convertShapeAttr->hasKey(L"ruleFile") &&
-		    convertShapeAttr->getType(L"ruleFile") == prt::AttributeMap::PT_STRING)
-			ruleFile = convertShapeAttr->getString(L"ruleFile");
-		if (convertShapeAttr->hasKey(L"startRule") &&
-		    convertShapeAttr->getType(L"startRule") == prt::AttributeMap::PT_STRING)
-			startRule = convertShapeAttr->getString(L"startRule");
 		if (convertShapeAttr->hasKey(L"seed") && convertShapeAttr->getType(L"seed") == prt::AttributeMap::PT_INT)
 			seed = convertShapeAttr->getInt(L"seed");
 		if (convertShapeAttr->hasKey(L"shapeName") &&
@@ -293,13 +287,11 @@ void ModelGenerator::setAndCreateInitialShape(const std::vector<py::dict>& shape
 		if (shapesAttr.size() > ind)
 			shapeAttr = shapesAttr[ind];
 
-		std::wstring ruleF = mRuleFile;
-		std::wstring startR = mStartRule;
 		int32_t randomS = mSeed;
 		std::wstring shapeN = mShapeName;
-		extractMainShapeAttributes(shapeAttr, ruleF, startR, randomS, shapeN, convertedShapeAttr[ind]);
+		extractMainShapeAttributes(shapeAttr, mRuleFile, mStartRule, randomS, shapeN, convertedShapeAttr[ind]);
 
-		mInitialShapesBuilders[ind]->setAttributes(ruleF.c_str(), startR.c_str(), randomS, shapeN.c_str(),
+		mInitialShapesBuilders[ind]->setAttributes(mRuleFile.c_str(), mStartRule.c_str(), randomS, shapeN.c_str(),
 		                                           convertedShapeAttr[ind].get(), mResolveMap.get());
 
 		initShapePtrs[ind].reset(mInitialShapesBuilders[ind]->createInitialShape());
