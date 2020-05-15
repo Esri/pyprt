@@ -32,6 +32,10 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final String REPO   = 'git@github.com:esri/pyprt.git'
 @Field final String SOURCE = 'pyprt.git'
 
+@Field final List CONFIGS_PREPARE = [
+	[ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC83, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64, python: '3.6' ],
+]
+
 @Field final List CONFIGS_PY36 = [
 	[ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC83, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64, python: '3.6' ],
 	[ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC142, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64, python: '3.6' ],
@@ -44,18 +48,22 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 // -- PIPELINE
 
-stage('pyprt') {
-	cepl.runParallel(getTasks())
+stage('prepare') {
+	cepl.runParallel(taskGenPrepare())
 }
 
-Map getTasks() {
-	Map tasks = [:]
-	tasks << taskGenPyPRT()
-	return tasks
+stage('pyprt') {
+	cepl.runParallel(taskGenPyPRT())
 }
 
 
 // -- TASK GENERATORS
+
+Map taskGenPrepare() {
+	Map tasks = [:]
+	tasks << cepl.generateTasks('pyprt-prepare', this.&taskPrepare, CONFIGS_PREPARE)
+	return tasks
+}
 
 Map taskGenPyPRT() {
 	Map tasks = [:]
@@ -67,6 +75,32 @@ Map taskGenPyPRT() {
 
 
 // -- TASK BUILDERS
+
+@Field String pkgVer = "0.0.0"
+
+def taskPrepare(cfg) {
+ 	cepl.cleanCurrentDir()
+ 	papl.checkout(REPO, env.BRANCH_NAME)
+
+ 	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
+ 	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
+ 	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
+ 	dir(path: SOURCE) {
+		withEnv(buildEnvs + ["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
+			psl.runCmd("pipenv install")
+
+			String cmd = toolchain.getSetupCmd(this, cfg)
+			cmd += "\npipenv run pip list"
+			cmd += "\npipenv run python setup.py build_py"
+			psl.runCmd(cmd)
+
+			pkgVer = psl.runCmd('pipenv run python get_pkg_version.py', true)
+ 			pkgVer += "-${env.BUILD_NUMBER}"
+ 		}
+ 	}
+
+ 	echo("Detected PyPRT version: ${pkgVer}")
+}
 
 def taskBuildPyPRT(cfg) {
 	cepl.cleanCurrentDir()
@@ -86,15 +120,11 @@ def taskBuildPyPRT(cfg) {
 		}
 	}
 
-	def versionExtractor = { p ->
-		def vers = (p =~ /.*PyPRT-([0-9]+\.[0-9]+\.[0-9abpr]+-[0-9]+)-cp.*/)
-		return vers[0][1]
-	}
 	def classifierExtractor = { p ->
-		def cls = (p =~ /.*PyPRT-[0-9]+\.[0-9]+\.[0-9abpr]+-[0-9]+-(.*)\.whl/)
+		def cls = (p =~ /.*-(cp.*)\.whl/)
 		return cls[0][1]
 	}
-	papl.publish('pyprt', env.BRANCH_NAME, "PyPRT-*.whl", versionExtractor, cfg, classifierExtractor)
+	papl.publish('pyprt', env.BRANCH_NAME, "PyPRT-*.whl", { return pkgVer }, cfg, classifierExtractor)
 }
 
 def taskCondaBuildPyPRT(cfg) {
@@ -136,15 +166,11 @@ def taskCondaBuildPyPRT(cfg) {
 		)
 	])
 
- 	def versionExtractor = { p ->
- 		def vers = (p =~ /.*pyprt-([0-9]+\.[0-9]+\.[0-9abpr]+)-py[0-9]+_([0-9]+)\.tar\.bz2/)
- 		return "${vers[0][1]}-${vers[0][2]}"
- 	}
 	def classifierExtractor = { p ->
- 		def cls = (p =~ /.*pyprt-[0-9]+\.[0-9]+\.[0-9abpr]+-(py[0-9]+)_[0-9]+\.tar\.bz2/)
+ 		def cls = (p =~ /.*-(py[0-9]+)_[0-9]+\.tar\.bz2/)
 		return "${cls[0][1]}-${cfg.os}-${cfg.arch}"
 	}
- 	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-*.tar.bz2", versionExtractor, cfg, classifierExtractor)
+ 	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-*.tar.bz2", { return pkgVer }, cfg, classifierExtractor)
 }
 
 def taskBuildDoc(cfg) {
@@ -152,7 +178,6 @@ def taskBuildDoc(cfg) {
 	papl.checkout(REPO, env.BRANCH_NAME)
 
 	final String sphinxOutput = "${env.WORKSPACE}/build"
-	String pkgVer
 
 	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
 	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
@@ -167,8 +192,6 @@ def taskBuildDoc(cfg) {
 			cmd += "\npipenv run python setup.py build --build-lib=${buildLib}"
 			cmd += "\nPYPRT_PACKAGE_LOCATION=${buildLib} pipenv run python setup.py build_doc --build-dir=${sphinxOutput}"
 			psl.runCmd(cmd)
-
-			pkgVer = psl.runCmd('pipenv run python get_pkg_version.py', true)
 		}
 	}
 
@@ -176,6 +199,5 @@ def taskBuildDoc(cfg) {
 		zip(zipFile: "pyprt-doc.zip", dir: "html")
 	}
 
-	assert pkgVer != null
-	papl.publish('pyprt-doc', env.BRANCH_NAME, "pyprt-doc.zip", { return "${pkgVer}-${env.BUILD_NUMBER}" }, cfg)
+	papl.publish('pyprt-doc', env.BRANCH_NAME, "pyprt-doc.zip", { return pkgVer }, cfg)
 }
