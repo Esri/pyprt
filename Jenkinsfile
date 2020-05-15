@@ -82,15 +82,11 @@ def taskPrepare(cfg) {
  	cepl.cleanCurrentDir()
  	papl.checkout(REPO, env.BRANCH_NAME)
 
- 	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
- 	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
- 	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
  	dir(path: SOURCE) {
-		withEnv(buildEnvs + ["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
+		withEnv(["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
 			psl.runCmd("pipenv install")
 
-			String cmd = toolchain.getSetupCmd(this, cfg)
-			cmd += "\npipenv run pip list"
+			String cmd = "\npipenv run pip list"
 			cmd += "\npipenv run python setup.py build_py"
 			psl.runCmd(cmd)
 
