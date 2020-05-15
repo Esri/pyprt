@@ -191,6 +191,7 @@ py::dict inspectRPK(const std::string& rulePackagePath) {
 		}
 		catch (std::exception& e) {
 			pybind11::print("CAUGHT EXCEPTION:", e.what());
+			return py::dict();
 		}
 
 		if (resolveMap && (status == prt::STATUS_OK)) {
@@ -198,6 +199,7 @@ py::dict inspectRPK(const std::string& rulePackagePath) {
 		}
 		else {
 			LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting.";
+			return py::dict();
 		}
 	}
 
@@ -207,11 +209,13 @@ py::dict inspectRPK(const std::string& rulePackagePath) {
 	const wchar_t* ruleFileURI = resolveMap->getString(ruleFile.c_str());
 	if (ruleFileURI == nullptr) {
 		LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
+		return py::dict();
 	}
 
 	pcu::RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, nullptr, &infoStatus));
 	if (!info || infoStatus != prt::STATUS_OK) {
 		LOG_ERR << "could not get rule file info from rule file " << ruleFile;
+		return py::dict();
 	}
 
 	py::dict ruleAttrs = getRuleAttributes(ruleFile, info.get());
@@ -387,6 +391,7 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 			}
 			catch (std::exception& e) {
 				pybind11::print("CAUGHT EXCEPTION:", e.what());
+				return {};
 			}
 
 			if (mResolveMap && (status == prt::STATUS_OK)) {
@@ -403,12 +408,14 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 		const wchar_t* ruleFileURI = mResolveMap->getString(mRuleFile.c_str());
 		if (ruleFileURI == nullptr) {
 			LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
+			return {};
 		}
 
         prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
 		pcu::RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, mCache.get(), &infoStatus));
 		if (!info || infoStatus != prt::STATUS_OK) {
 			LOG_ERR << "could not get rule file info from rule file " << mRuleFile;
+			return {};
 		}
 
 		mStartRule = detectStartRule(info);
