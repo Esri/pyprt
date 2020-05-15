@@ -195,5 +195,5 @@ def taskBuildDoc(cfg) {
 		zip(zipFile: "pyprt-doc.zip", dir: "html")
 	}
 
-	papl.publish('pyprt-doc', env.BRANCH_NAME, "pyprt-doc.zip", { return pkgVer }, cfg)
+	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-doc.zip", { return pkgVer }, cfg)
 }
