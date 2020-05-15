@@ -400,12 +400,12 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 
 		mRuleFile = getRuleFileEntry(mResolveMap.get());
 
-		prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
 		const wchar_t* ruleFileURI = mResolveMap->getString(mRuleFile.c_str());
 		if (ruleFileURI == nullptr) {
 			LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
 		}
 
+        prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
 		pcu::RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, mCache.get(), &infoStatus));
 		if (!info || infoStatus != prt::STATUS_OK) {
 			LOG_ERR << "could not get rule file info from rule file " << mRuleFile;
