@@ -205,13 +205,13 @@ py::dict inspectRPK(const std::string& rulePackagePath) {
 
 	std::wstring ruleFile = getRuleFileEntry(resolveMap.get());
 
-	prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
 	const wchar_t* ruleFileURI = resolveMap->getString(ruleFile.c_str());
 	if (ruleFileURI == nullptr) {
 		LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
 		return py::dict();
 	}
 
+    prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
 	pcu::RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, nullptr, &infoStatus));
 	if (!info || infoStatus != prt::STATUS_OK) {
 		LOG_ERR << "could not get rule file info from rule file " << ruleFile;
