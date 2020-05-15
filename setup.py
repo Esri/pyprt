@@ -35,7 +35,7 @@ record_file = os.path.join(os.curdir, 'pyprt.egg-info',
 pyprt_name = 'PyPRT'
 pyprt_author = 'Esri R&D Center Zurich'
 pyprt_copyright = '(c) 2020, ' + pyprt_author
-pyprt_version = '1.0.0'  # keep consistent with __version__ in pyprt/__init__.py
+pyprt_version = '1.1.0.dev0'  # keep consistent with __version__ in pyprt/__init__.py
 
 long_description = """
 PyPRT is a Python binding for PRT ("Procedural Runtime"). It enables the execution of [CityEngine](http://www.esri.com/software/cityengine) 
