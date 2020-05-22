@@ -521,6 +521,14 @@ PYBIND11_MODULE(pyprt, m) {
     )mydelimiter";
 	const char* docShutdown = "Shutdown of PRT. The PRT initialization process can be done only once per "
 	                          "session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.";
+	const char* docInspectRPK = R"mydelimiter(
+        inspect_rpk(rule_package_path) -> dict
+
+        This function returns the CGA rule attributes name and value type for the specified rule package path.
+
+        :Returns:
+            dict
+    )mydelimiter";
 	const char* docIs = R"mydelimiter(
         __init__(*args, **kwargs)
 
@@ -716,7 +724,7 @@ PYBIND11_MODULE(pyprt, m) {
 	m.def("initialize_prt", &initializePRT, docInit);
 	m.def("is_prt_initialized", &isPRTInitialized, docIsInit);
 	m.def("shutdown_prt", &shutdownPRT, docShutdown);
-	m.def("inspect_rpk", &inspectRPK, py::arg("rulePackagePath"));
+	m.def("inspect_rpk", &inspectRPK, py::arg("rulePackagePath"), docInspectRPK);
 
 	py::class_<InitialShape>(m, "InitialShape", docIs)
 	        .def(py::init<const std::vector<double>&>(), py::arg("vertCoordinates"), docIsInitV)
