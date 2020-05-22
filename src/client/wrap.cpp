@@ -154,7 +154,7 @@ py::dict getRuleAttributes(const std::wstring& ruleFile, const prt::RuleFileInfo
 			}
         }
 
-        if (!hidden) {
+        if (!hidden && !name.empty()) {
 			if (valueType == prt::AAT_STR)
 				type = "string";
 			else if (valueType == prt::AAT_BOOL)

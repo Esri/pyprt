@@ -175,18 +175,27 @@ AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, prt::AttributeMa
  * prt specific string helper
  */
 constexpr const wchar_t STYLE_DELIMITER = L'$';
+const wchar_t* DEFAULT_STYLE = L"Default";
 
 std::wstring removeStylePrefix(const std::wstring& fullName) {
 	const auto sepPos = fullName.find(STYLE_DELIMITER);
+	std::wstring style;
+
+	if (sepPos && sepPos != std::wstring::npos)
+		style = fullName.substr(0, sepPos);
+
 	if (sepPos == std::wstring::npos)
 		return fullName;
 	if (sepPos == fullName.length() - 1)
 		return {};
 	if (fullName.length() <= 1)
 		return {};
-	return fullName.substr(sepPos + 1);
-}
 
+	if (!wcscmp(style.c_str(), DEFAULT_STYLE))
+		return fullName.substr(sepPos + 1);
+	else
+		return {};
+}
 
 /**
  * String conversion functions
