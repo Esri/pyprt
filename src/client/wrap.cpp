@@ -619,14 +619,11 @@ PYBIND11_MODULE(pyprt, m) {
 
         This function does the procedural generation of the models. It outputs a list of GeneratedModel instances. 
         You need to provide one shape attribute dictionary per initial shape or one dictionary that will be applied 
-        to all initial shapes. A shape attribute dictionary **must** contain at least the ``'ruleFile'`` and  the 
-        ``'startRule'`` keys. The rule file value is a string indicating where the CGB file is located in the Rule 
-        Package. The start rule value is also a string and refers to the *@StartRule* annotation in the CGA rule 
-        file. The shape attribute dictionary only contains either string, float or bool values, **except** the 
+        to all initial shapes. The shape attribute dictionary only contains either string, float or bool values, **except** the 
         ``'seed'`` value, which has to be an integer (default value equals to *0*). The ``'shapeName'`` is 
-        another non-mandatory entry (default value equals to *"InitialShape"*). In addition to the rule file, the 
-        start rule, the seed and the shape name keys, the shape attribute dictionary will contain the CGA input 
-        attributes specific to the CGA file you are using. Concerning the encoder, you can use the 
+        another non-mandatory entry (default value equals to *"InitialShape"*). In addition to the seed and the shape name keys, 
+        the shape attribute dictionary will contain the CGA input attributes specific to the CGA file you are using (use the 
+        *inspect_rpk* function to know these input attributes). Concerning the encoder, you can use the 
         ``'com.esri.pyprt.PyEncoder'`` or any other geometry encoder. The PyEncoder has two options: 
         ``'emitGeometry'`` and ``'emitReport'`` whose value is a boolean. The complete list of the other geometry 
         encoders can be found `here <https://esri.github.io/esri-cityengine-sdk/html/esri_prt_codecs.html>`__. In 
@@ -647,9 +644,9 @@ PYBIND11_MODULE(pyprt, m) {
 
             ``rpk = os.path.join(os.getcwd(), 'extrusion_rule.rpk')``
 
-            ``attrs1 = {'ruleFile': 'bin/extrusion_rule.cgb', 'startRule': 'Default$Footprint', 'shapeName': 'myShape1', 'seed': 555, 'minBuildingHeight': 30.0}``
+            ``attrs1 = {'shapeName': 'myShape1', 'seed': 555, 'minBuildingHeight': 30.0}``
 
-            ``attrs2 = {'ruleFile': 'bin/extrusion_rule.cgb', 'startRule': 'Default$Footprint', 'shapeName': 'myShape2', 'seed': 777, 'minBuildingHeight': 25.0}``
+            ``attrs2 = {'shapeName': 'myShape2', 'seed': 777, 'minBuildingHeight': 25.0}``
 
             ``models1 = m.generate_model([attrs1, attrs2], rpk, 'com.esri.pyprt.PyEncoder', {'emitReport': True, 'emitGeometry': True})``
         )mydelimiter";
