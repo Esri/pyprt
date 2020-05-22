@@ -202,6 +202,10 @@ py::dict inspectRPK(const std::string& rulePackagePath) {
 			return py::dict();
 		}
 	}
+	else {
+		LOG_ERR << "getting empty rule package path.";
+		return py::dict();
+    }
 
 	std::wstring ruleFile = getRuleFileEntry(resolveMap.get());
 
