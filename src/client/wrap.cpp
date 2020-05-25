@@ -105,6 +105,32 @@ GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const std::vector<dou
 
 namespace {
 
+bool isRpkValid(const std::string& rulePackagePath, pcu::ResolveMapPtr* resolveMap) {
+	if (!rulePackagePath.empty()) {
+		LOG_INF << "using rule package " << rulePackagePath << std::endl;
+
+		const std::string u8rpkURI = pcu::toFileURI(rulePackagePath);
+		prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
+		try {
+			resolveMap->reset(prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status));
+		}
+		catch (const std::exception& e) {
+			pybind11::print("CAUGHT EXCEPTION:", e.what());
+			return false;
+		}
+
+		if (resolveMap && (status == prt::STATUS_OK)) {
+			LOG_DBG << "resolve map = " << pcu::objectToXML(resolveMap->get()) << std::endl;
+		}
+		else {
+			LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting.";
+			return false;
+		}
+	}
+
+	return true;
+}
+
 std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap) {
 	const std::wstring sCGB(L".cgb");
 
@@ -152,9 +178,9 @@ py::dict getRuleAttributes(const std::wstring& ruleFile, const prt::RuleFileInfo
 				hidden = true;
 				break;
 			}
-        }
+		}
 
-        if (!hidden && !name.empty()) {
+		if (!hidden && !name.empty()) {
 			if (valueType == prt::AAT_STR)
 				type = "string";
 			else if (valueType == prt::AAT_BOOL)
@@ -180,32 +206,10 @@ py::dict getRuleAttributes(const std::wstring& ruleFile, const prt::RuleFileInfo
 py::dict inspectRPK(const std::string& rulePackagePath) {
 	pcu::ResolveMapPtr resolveMap;
 
-	// Resolve Map
-	if (!rulePackagePath.empty()) {
-		LOG_INF << "inspecting rule package " << rulePackagePath << std::endl;
-
-		const std::string u8rpkURI = pcu::toFileURI(rulePackagePath);
-		prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
-		try {
-			resolveMap.reset(prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status));
-		}
-		catch (const std::exception& e) {
-			pybind11::print("CAUGHT EXCEPTION:", e.what());
-			return py::dict();
-		}
-
-		if (resolveMap && (status == prt::STATUS_OK)) {
-			LOG_DBG << "resolve map = " << pcu::objectToXML(resolveMap.get()) << std::endl;
-		}
-		else {
-			LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting.";
-			return py::dict();
-		}
-	}
-	else {
-		LOG_ERR << "getting empty rule package path.";
+	if (rulePackagePath.empty() || !isRpkValid(rulePackagePath, &resolveMap)) {
+		LOG_ERR << "invalid rule package path";
 		return py::dict();
-    }
+	}
 
 	std::wstring ruleFile = getRuleFileEntry(resolveMap.get());
 
@@ -215,7 +219,7 @@ py::dict inspectRPK(const std::string& rulePackagePath) {
 		return py::dict();
 	}
 
-    prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
+	prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
 	pcu::RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, nullptr, &infoStatus));
 	if (!info || infoStatus != prt::STATUS_OK) {
 		LOG_ERR << "could not get rule file info from rule file " << ruleFile;
@@ -376,28 +380,8 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 			return {};
 		}
 
-		// Resolve Map
-		if (!rulePackagePath.empty()) {
-			LOG_INF << "using rule package " << rulePackagePath << std::endl;
-
-			const std::string u8rpkURI = pcu::toFileURI(rulePackagePath);
-			prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
-			try {
-				mResolveMap.reset(prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status));
-			}
-			catch (const std::exception& e) {
-				pybind11::print("CAUGHT EXCEPTION:", e.what());
-				return {};
-			}
-
-			if (mResolveMap && (status == prt::STATUS_OK)) {
-				LOG_DBG << "resolve map = " << pcu::objectToXML(mResolveMap.get()) << std::endl;
-			}
-			else {
-				LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting.";
-				return {};
-			}
-		}
+		if (!isRpkValid(rulePackagePath, &mResolveMap))
+			return {};
 
 		mRuleFile = getRuleFileEntry(mResolveMap.get());
 
@@ -407,7 +391,7 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 			return {};
 		}
 
-        prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
+		prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
 		pcu::RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, mCache.get(), &infoStatus));
 		if (!info || infoStatus != prt::STATUS_OK) {
 			LOG_ERR << "could not get rule file info from rule file " << mRuleFile;
