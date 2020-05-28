@@ -105,7 +105,7 @@ GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const std::vector<dou
 
 namespace {
 
-bool isRpkValid(const std::string& rulePackagePath, pcu::ResolveMapPtr* resolveMap) {
+bool getResolveMap(const std::string& rulePackagePath, pcu::ResolveMapPtr* resolveMap) {
 	if (!rulePackagePath.empty()) {
 		LOG_INF << "using rule package " << rulePackagePath << std::endl;
 
@@ -206,7 +206,7 @@ py::dict getRuleAttributes(const std::wstring& ruleFile, const prt::RuleFileInfo
 py::dict inspectRPK(const std::string& rulePackagePath) {
 	pcu::ResolveMapPtr resolveMap;
 
-	if (rulePackagePath.empty() || !isRpkValid(rulePackagePath, &resolveMap)) {
+	if (rulePackagePath.empty() || !getResolveMap(rulePackagePath, &resolveMap)) {
 		LOG_ERR << "invalid rule package path";
 		return py::dict();
 	}
@@ -379,7 +379,7 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 			return {};
 		}
 
-		if (!isRpkValid(rulePackagePath, &mResolveMap))
+		if (!getResolveMap(rulePackagePath, &mResolveMap))
 			return {};
 
 		mRuleFile = getRuleFileEntry(mResolveMap.get());
