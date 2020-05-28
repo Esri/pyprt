@@ -32,8 +32,7 @@ m = pyprt.ModelGenerator([shape_geometry])
 ​
 # Model Generation Arguments Setup
 rpk = os.path.join(os.getcwd(), 'extrusion_rule.rpk')
-shape_attributes = {'ruleFile': 'bin/extrusion_rule.cgb', 'startRule':'Default$Footprint',
-	'shapeName': 'myShape', 'seed': 555}
+shape_attributes = {'shapeName': 'myShape', 'seed': 555}
 encoder = 'com.esri.pyprt.PyEncoder'
 encoder_options = {'emitReport': True, 'emitGeometry': True}
 ​
