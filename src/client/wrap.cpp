@@ -169,8 +169,11 @@ py::dict getRuleAttributes(const std::wstring& ruleFile, const prt::RuleFileInfo
 		bool hidden = false;
 		const prt::RuleFileInfo::Entry* attr = ruleFileInfo->getAttribute(i);
 
-		std::wstring name = pcu::removeStylePrefix(attr->getName());
-		prt::AnnotationArgumentType valueType = attr->getReturnType();
+		const std::wstring fullName(attr->getName());
+		if (fullName.find(L"Default$") != 0)
+			continue;
+		const std::wstring name = fullName.substr(8);
+		const prt::AnnotationArgumentType valueType = attr->getReturnType();
 		py::str type;
 
 		for (size_t f = 0; f < attr->getNumAnnotations(); f++) {
@@ -180,7 +183,7 @@ py::dict getRuleAttributes(const std::wstring& ruleFile, const prt::RuleFileInfo
 			}
 		}
 
-		if (!hidden && !name.empty()) {
+		if (!hidden) {
 			if (valueType == prt::AAT_STR)
 				type = "string";
 			else if (valueType == prt::AAT_BOOL)
@@ -231,7 +234,8 @@ py::dict inspectRPK(const std::string& rulePackagePath) {
 	return ruleAttrs;
 }
 
-void extractMainShapeAttributes(const py::dict& shapeAttr, int32_t& seed, std::wstring& shapeName, pcu::AttributeMapPtr& convertShapeAttr) {
+void extractMainShapeAttributes(const py::dict& shapeAttr, int32_t& seed, std::wstring& shapeName,
+                                pcu::AttributeMapPtr& convertShapeAttr) {
 	convertShapeAttr = pcu::createAttributeMapFromPythonDict(
 	        shapeAttr, *(pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create())));
 	if (convertShapeAttr) {
