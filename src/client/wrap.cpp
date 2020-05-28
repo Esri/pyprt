@@ -231,8 +231,7 @@ py::dict inspectRPK(const std::string& rulePackagePath) {
 	return ruleAttrs;
 }
 
-void extractMainShapeAttributes(const py::dict& shapeAttr, std::wstring& ruleFile, std::wstring& startRule,
-                                int32_t& seed, std::wstring& shapeName, pcu::AttributeMapPtr& convertShapeAttr) {
+void extractMainShapeAttributes(const py::dict& shapeAttr, int32_t& seed, std::wstring& shapeName, pcu::AttributeMapPtr& convertShapeAttr) {
 	convertShapeAttr = pcu::createAttributeMapFromPythonDict(
 	        shapeAttr, *(pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create())));
 	if (convertShapeAttr) {
@@ -297,7 +296,7 @@ void ModelGenerator::setAndCreateInitialShape(const std::vector<py::dict>& shape
 
 		int32_t randomS = mSeed;
 		std::wstring shapeN = mShapeName;
-		extractMainShapeAttributes(shapeAttr, mRuleFile, mStartRule, randomS, shapeN, convertedShapeAttr[ind]);
+		extractMainShapeAttributes(shapeAttr, randomS, shapeN, convertedShapeAttr[ind]);
 
 		mInitialShapesBuilders[ind]->setAttributes(mRuleFile.c_str(), mStartRule.c_str(), randomS, shapeN.c_str(),
 		                                           convertedShapeAttr[ind].get(), mResolveMap.get());
