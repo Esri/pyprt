@@ -23,6 +23,8 @@ add_library(${CODEC_TARGET} SHARED
 		codecs_Py.cpp
 		encoder/PyEncoder.cpp)
 
+target_include_directories(${CODEC_TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
 target_compile_features(${CODEC_TARGET} PRIVATE
 		cxx_std_14) # C++14
 

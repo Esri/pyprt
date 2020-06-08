@@ -70,7 +70,7 @@ target_link_libraries(${CLIENT_TARGET} PRIVATE
 
 target_include_directories(${CLIENT_TARGET} PRIVATE
      ${PRT_INCLUDE_PATH}
-     ${PROJECT_SOURCE_DIR}/codec/encoder)
+     ${PROJECT_SOURCE_DIR}/codec)
 
 
 ### install target
