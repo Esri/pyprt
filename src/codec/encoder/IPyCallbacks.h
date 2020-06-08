@@ -19,9 +19,11 @@
 
 #pragma once
 
+#include "codec.h"
 #include "prt/Callbacks.h"
 
-class IPyCallbacks : public prt::Callbacks {
+
+class PYENC_EXPORTS_API IPyCallbacks : public prt::Callbacks {
 public:
 	virtual ~IPyCallbacks() override = default;
 
