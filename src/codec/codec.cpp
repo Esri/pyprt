@@ -17,7 +17,7 @@
  * A copy of the license is available in the repository's LICENSE file.
  */
 
-#include "codecs_Py.h"
+#include "codec.h"
 
 #include "encoder/PyEncoder.h"
 
