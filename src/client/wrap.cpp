@@ -18,7 +18,7 @@
  */
 
 #ifdef _WIN32
-#   define _CRT_SECURE_NO_WARNINGS
+#	define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #include "wrap.h"
@@ -608,4 +608,5 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def("get_indices", &GeneratedModel::getIndices, docGmGetI)
 	        .def("get_faces", &GeneratedModel::getFaces, docGmGetF)
 	        .def("get_report", &GeneratedModel::getReport, docGmGetR);
-}
+
+} // PYBIND11_MODULE
