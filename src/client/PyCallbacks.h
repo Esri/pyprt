@@ -140,17 +140,17 @@ public:
 	}
 
 	prt::Status attrBoolArray(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const bool* /*ptr*/,
-	                          size_t /*size*/) override {
+	                          size_t /*size*/, size_t /*nRows*/) override {
 		return prt::STATUS_OK;
 	}
 
 	prt::Status attrFloatArray(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const double* /*ptr*/,
-	                           size_t /*size*/) override {
+	                           size_t /*size*/, size_t /*nRows*/) override {
 		return prt::STATUS_OK;
 	}
 
 	prt::Status attrStringArray(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
-	                            const wchar_t* const* /*ptr*/, size_t /*size*/) override {
+	                            const wchar_t* const* /*ptr*/, size_t /*size*/, size_t /*nRows*/) override {
 		return prt::STATUS_OK;
 	}
 };
