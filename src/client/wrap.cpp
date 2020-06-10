@@ -162,7 +162,7 @@ std::wstring detectStartRule(const pcu::RuleFileInfoUPtr& ruleFileInfo) {
 	return {};
 }
 
-py::dict getRuleAttributes(const std::wstring& ruleFile, const prt::RuleFileInfo* ruleFileInfo) {
+py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 	auto ruleAttrs = py::dict();
 
 	for (size_t i = 0; i < ruleFileInfo->getNumAttributes(); i++) {
@@ -229,7 +229,7 @@ py::dict inspectRPK(const std::string& rulePackagePath) {
 		return py::dict();
 	}
 
-	py::dict ruleAttrs = getRuleAttributes(ruleFile, info.get());
+	py::dict ruleAttrs = getRuleAttributes(info.get());
 
 	return ruleAttrs;
 }
