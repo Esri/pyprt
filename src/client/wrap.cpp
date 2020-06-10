@@ -72,7 +72,7 @@ std::unique_ptr<PRTContext> prtCtx;
 
 void initializePRT() {
 	if (!prtCtx)
-		prtCtx.reset(new PRTContext(prt::LOG_ERROR));
+		prtCtx.reset(new PRTContext(prt::LOG_WARNING));
 }
 
 bool isPRTInitialized() {
