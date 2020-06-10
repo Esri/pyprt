@@ -9,7 +9,10 @@
 /examples/output
 
 /**/Pipfile.lock
-/pyprt/**/*.so
+
+# development mode
+/pyprt/pyprt/bin/*
+/pyprt/pyprt/lib/*
 
 /.vs
 /.vscode

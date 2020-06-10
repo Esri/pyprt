@@ -6,7 +6,7 @@
 * Support for macOS Catalina
 
 ### Changed
-* ...
+* Updated to PRT 2.2 (CityEngine 2020.0)
 
 ## v1.0.0 (2020-05-07)
 
