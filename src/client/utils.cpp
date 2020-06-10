@@ -86,7 +86,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::Attr
 					bld.setBoolArray(key.c_str(), v_arr.get(), count);
 				}
 				catch (std::exception& e) {
-					std::wcerr << L"cannot set bool array attribute " << key << ": " << e.what() << std::endl;
+					LOG_ERR << L"cannot set bool array attribute " << key << ": " << e.what();
 				}
 			}
 			else if (py::isinstance<py::float_>(li[0])) {
@@ -101,7 +101,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::Attr
 					bld.setFloatArray(key.c_str(), v_arr.data(), v_arr.size());
 				}
 				catch (std::exception& e) {
-					std::wcerr << L"cannot set float array attribute " << key << ": " << e.what() << std::endl;
+					LOG_ERR << L"cannot set float array attribute " << key << ": " << e.what();
 				}
 			}
 			else if (py::isinstance<py::int_>(li[0])) {
@@ -131,7 +131,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::Attr
 				bld.setStringArray(key.c_str(), v_arr_ptrs.data(), v_arr_ptrs.size());
 			}
 			else
-				std::cout << "Unknown array type." << std::endl;
+				LOG_WRN << "Encountered unknown array type for key " << key;
 		}
 		else {
 			if (py::isinstance<py::bool_>(a.second.ptr())) { // check for boolean first!!
@@ -140,7 +140,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::Attr
 					bld.setBool(key.c_str(), val);
 				}
 				catch (std::exception& e) {
-					std::wcerr << L"cannot set bool attribute " << key << ": " << e.what() << std::endl;
+					LOG_ERR << "cannot set bool attribute " << key << ": " << e.what();
 				}
 			}
 			else if (py::isinstance<py::float_>(a.second.ptr())) {
@@ -149,7 +149,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::Attr
 					bld.setFloat(key.c_str(), val);
 				}
 				catch (std::exception& e) {
-					std::wcerr << L"cannot set float attribute " << key << ": " << e.what() << std::endl;
+					LOG_ERR << "cannot set float attribute " << key << ": " << e.what();
 				}
 			}
 			else if (py::isinstance<py::int_>(a.second.ptr())) {
@@ -166,7 +166,7 @@ AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::Attr
 				bld.setString(key.c_str(), val.c_str());
 			}
 			else
-				std::cout << "Unknown type." << std::endl;
+				LOG_WRN << "Encountered unknown scalar type for key " << key;
 		}
 	}
 	return AttributeMapPtr{bld.createAttributeMap()};
