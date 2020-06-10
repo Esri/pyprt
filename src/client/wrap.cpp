@@ -105,11 +105,11 @@ GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const std::vector<dou
 
 namespace {
 
-bool getResolveMap(const std::string& rulePackagePath, pcu::ResolveMapPtr* resolveMap) {
-	if (!rulePackagePath.empty()) {
+bool getResolveMap(const std::filesystem::path& rulePackagePath, pcu::ResolveMapPtr* resolveMap) {
+	if (std::filesystem::exists(rulePackagePath)) {
 		LOG_INF << "using rule package " << rulePackagePath << std::endl;
 
-		const std::string u8rpkURI = pcu::toFileURI(rulePackagePath);
+		const std::string u8rpkURI = pcu::toFileURI(rulePackagePath.string());
 		prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
 		try {
 			resolveMap->reset(prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status));
@@ -206,10 +206,10 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 	return ruleAttrs;
 }
 
-py::dict inspectRPK(const std::string& rulePackagePath) {
+py::dict inspectRPK(const std::filesystem::path& rulePackagePath) {
 	pcu::ResolveMapPtr resolveMap;
 
-	if (rulePackagePath.empty() || !getResolveMap(rulePackagePath, &resolveMap)) {
+	if (!std::filesystem::exists(rulePackagePath) || !getResolveMap(rulePackagePath, &resolveMap)) {
 		LOG_ERR << "invalid rule package path";
 		return py::dict();
 	}
@@ -355,7 +355,7 @@ void ModelGenerator::getRawEncoderDataPointers(std::vector<const wchar_t*>& allE
 }
 
 std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::dict>& shapeAttributes,
-                                                          const std::string& rulePackagePath,
+                                                          const std::filesystem::path& rulePackagePath,
                                                           const std::wstring& geometryEncoderName,
                                                           const py::dict& geometryEncoderOptions) {
 	if (!mValid) {
@@ -733,4 +733,8 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def("get_indices", &GeneratedModel::getIndices, docGmGetI)
 	        .def("get_faces", &GeneratedModel::getFaces, docGmGetF)
 	        .def("get_report", &GeneratedModel::getReport, docGmGetR);
+
+	py::class_<std::filesystem::path>(m, "Path")
+			.def(py::init<std::string>());
+	py::implicitly_convertible<std::string, std::filesystem::path>();
 }

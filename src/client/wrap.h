@@ -215,7 +215,7 @@ public:
 	~ModelGenerator() {}
 
 	std::vector<GeneratedModel> generateModel(const std::vector<py::dict>& shapeAttributes,
-	                                          const std::string& rulePackagePath,
+	                                          const std::filesystem::path& rulePackagePath,
 	                                          const std::wstring& geometryEncoderName,
 	                                          const py::dict& geometryEcoderOptions);
 	std::vector<GeneratedModel> generateAnotherModel(const std::vector<py::dict>& shapeAttributes);
