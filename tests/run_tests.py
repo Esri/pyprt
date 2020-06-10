@@ -22,6 +22,7 @@ import otherExporter_test
 import pyGeometry_test
 import shapeAttributesDict_test
 import arcgis_test
+import inspectRPK_test
 
 
 class PyPRTTestResult(unittest.TextTestResult):
@@ -46,6 +47,7 @@ def test_suite():
     suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
     suite.addTests(loader.loadTestsFromModule(shapeAttributesDict_test))
     suite.addTests(loader.loadTestsFromModule(arcgis_test))
+    suite.addTests(loader.loadTestsFromModule(inspectRPK_test))
     return suite
 
 
