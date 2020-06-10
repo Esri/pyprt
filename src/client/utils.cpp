@@ -65,7 +65,7 @@ namespace pcu {
  * Helper function to convert a Python dictionary of "<key>:<value>" into a
  * prt::AttributeMap
  */
-AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, prt::AttributeMapBuilder& bld) {
+AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::AttributeMapBuilder& bld) {
 	for (auto a : args) {
 
 		const std::wstring key = a.first.cast<std::wstring>();
