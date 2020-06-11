@@ -29,8 +29,8 @@ private:
 	std::vector<std::wstring> mEncodersNames;
 	std::vector<pcu::InitialShapeBuilderPtr> mInitialShapesBuilders;
 
-	std::wstring mRuleFile = L"";
-	std::wstring mStartRule = L"";
+	std::wstring mRuleFile;
+	std::wstring mStartRule;
 	int32_t mSeed = 0;
 	std::wstring mShapeName = L"InitialShape";
 
