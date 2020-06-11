@@ -17,6 +17,8 @@
  * A copy of the license is available in the repository's LICENSE file.
  */
 
+#pragma once
+
 #include "PyCallbacks.h"
 #include "logging.h"
 #include "utils.h"
@@ -52,7 +54,7 @@ namespace py = pybind11;
 // cstr must have space for cstrSize characters
 // cstr will be null-terminated and the actually needed size is placed in
 // cstrSize
-void copyToCStr(const std::string& str, char* cstr, size_t& cstrSize) {
+inline void copyToCStr(const std::string& str, char* cstr, size_t& cstrSize) {
 	if (cstrSize > 0) {
 		strncpy(cstr, str.c_str(), cstrSize);
 		cstr[cstrSize - 1] = 0x0; // enforce null-termination
@@ -95,40 +97,6 @@ public:
 		stream << "<PythonLogHandler />";
 		return stream;
 	}
-};
-
-/**
- * Helper struct to manage PRT lifetime (e.g. the prt::init() call)
- */
-struct PRTContext {
-	PRTContext(prt::LogLevel minimalLogLevel) {
-		prt::addLogHandler(&mLogHandler);
-
-		// setup path for PRT extension libraries
-		const std::filesystem::path moduleRoot = pcu::getModuleDirectory().parent_path();
-		const auto prtExtensionPath = moduleRoot / "lib";
-
-		// initialize PRT with the path to its extension libraries, the default log
-		// level
-		const std::wstring wExtPath = prtExtensionPath.wstring();
-		const std::array<const wchar_t*, 1> extPaths = {wExtPath.c_str()};
-		mPRTHandle.reset(prt::init(extPaths.data(), extPaths.size(), minimalLogLevel));
-	}
-
-	~PRTContext() {
-		// shutdown PRT
-		mPRTHandle.reset();
-
-		// remove loggers
-		prt::removeLogHandler(&mLogHandler);
-	}
-
-	explicit operator bool() const {
-		return (bool)mPRTHandle;
-	}
-
-	PythonLogHandler mLogHandler;
-	pcu::ObjectPtr mPRTHandle;
 };
 
 class InitialShape {

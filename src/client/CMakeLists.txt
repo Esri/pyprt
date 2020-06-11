@@ -24,7 +24,8 @@ message(STATUS "Python Module Suffix: " ${PYTHON_MODULE_EXTENSION})
 pybind11_add_module(${CLIENT_TARGET} MODULE
 		utils.cpp
 		wrap.cpp
-		PyCallbacks.cpp)
+		PyCallbacks.cpp
+		PRTContext.cpp)
 
 set_target_properties(${CLIENT_TARGET}
 		PROPERTIES CXX_STANDARD 17

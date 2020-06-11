@@ -22,6 +22,7 @@
 #endif
 
 #include "wrap.h"
+#include "PRTContext.h"
 #include "PyCallbacks.h"
 #include "logging.h"
 #include "utils.h"
@@ -754,8 +755,7 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def("get_faces", &GeneratedModel::getFaces, docGmGetF)
 	        .def("get_report", &GeneratedModel::getReport, docGmGetR);
 
-	py::class_<std::filesystem::path>(m, "Path")
-			.def(py::init<std::string>());
+	py::class_<std::filesystem::path>(m, "Path").def(py::init<std::string>());
 	py::implicitly_convertible<std::string, std::filesystem::path>();
 
 } // PYBIND11_MODULE
