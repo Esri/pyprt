@@ -39,6 +39,8 @@
 #	include <direct.h>
 #endif
 
+namespace py = pybind11;
+
 namespace {
 
 constexpr const wchar_t* ANNOT_HIDDEN = L"@Hidden";
@@ -56,12 +58,6 @@ bool isPRTInitialized() {
 void shutdownPRT() {
 	PRTContext::shutdown();
 }
-
-} // namespace
-
-namespace py = pybind11;
-
-namespace {
 
 py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 	auto ruleAttrs = py::dict();
