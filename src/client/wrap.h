@@ -62,43 +62,6 @@ inline void copyToCStr(const std::string& str, char* cstr, size_t& cstrSize) {
 	cstrSize = str.length() + 1; // returns the actually needed size including terminating null
 }
 
-/**
- * custom console logger to redirect PRT log events into the python output
- */
-class PythonLogHandler : public prt::LogHandler {
-public:
-	PythonLogHandler() = default;
-	virtual ~PythonLogHandler() = default;
-
-	virtual void handleLogEvent(const wchar_t* msg, prt::LogLevel /*level*/) {
-		pybind11::print(L"[PRT]", msg);
-	}
-
-	virtual const prt::LogLevel* getLevels(size_t* count) {
-		*count = prt::LogHandler::ALL_COUNT;
-		return prt::LogHandler::ALL;
-	}
-
-	virtual void getFormat(bool* dateTime, bool* level) {
-		*dateTime = true;
-		*level = true;
-	}
-
-	virtual char* toXML(char* result, size_t* resultSize, prt::Status* stat = 0) const {
-		std::ostringstream out;
-		out << *this;
-		copyToCStr(out.str(), result, *resultSize);
-		if (stat)
-			*stat = prt::STATUS_OK;
-		return result;
-	}
-
-	friend std::ostream& operator<<(std::ostream& stream, const PythonLogHandler&) {
-		stream << "<PythonLogHandler />";
-		return stream;
-	}
-};
-
 class InitialShape {
 public:
 	InitialShape(const std::vector<double>& vert);

@@ -1,7 +1,7 @@
 #pragma once
 
+#include "PythonLogHandler.h"
 #include "utils.h"
-#include "wrap.h"
 
 #include "prt/LogLevel.h"
 
