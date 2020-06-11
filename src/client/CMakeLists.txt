@@ -23,7 +23,7 @@ message(STATUS "Python Module Suffix: " ${PYTHON_MODULE_EXTENSION})
 
 pybind11_add_module(${CLIENT_TARGET} MODULE
 		utils.cpp
-		wrap.cpp
+		api.cpp
 		PyCallbacks.cpp
 		PRTContext.cpp
 		PythonLogHandler.cpp
