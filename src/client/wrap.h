@@ -51,14 +51,3 @@
 #endif
 
 namespace py = pybind11;
-
-// cstr must have space for cstrSize characters
-// cstr will be null-terminated and the actually needed size is placed in
-// cstrSize
-inline void copyToCStr(const std::string& str, char* cstr, size_t& cstrSize) {
-	if (cstrSize > 0) {
-		strncpy(cstr, str.c_str(), cstrSize);
-		cstr[cstrSize - 1] = 0x0; // enforce null-termination
-	}
-	cstrSize = str.length() + 1; // returns the actually needed size including terminating null
-}

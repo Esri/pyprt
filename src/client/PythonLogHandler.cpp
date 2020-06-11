@@ -1,5 +1,4 @@
 #include "PythonLogHandler.h"
-#include "wrap.h"
 
 #include <pybind11/pybind11.h>
 
@@ -17,13 +16,4 @@ const prt::LogLevel* PythonLogHandler::getLevels(size_t* count) {
 void PythonLogHandler::getFormat(bool* dateTime, bool* level) {
 	*dateTime = true;
 	*level = true;
-}
-
-char* PythonLogHandler::toXML(char* result, size_t* resultSize, prt::Status* stat) const {
-	std::ostringstream out;
-	out << *this;
-	copyToCStr(out.str(), result, *resultSize);
-	if (stat)
-		*stat = prt::STATUS_OK;
-	return result;
 }
