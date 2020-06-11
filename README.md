@@ -55,7 +55,7 @@ pyprt.shutdown_prt()
 * [Changelog](CHANGELOG.md)
 * [Authoring of Rule Packages](https://doc.arcgis.com/en/cityengine/latest/help/help-rule-package.htm#ESRI_SECTION1_F9D4CCCE0EC74E5FB646A8BD141A38F9)
 * [Examples](https://github.com/Esri/pyprt-examples)
-* [CityEngine SDK API Reference](https://esri.github.io/esri-cityengine-sdk/html/index.html)
+* [CityEngine SDK API Reference](https://esri.github.io/cityengine-sdk/html/index.html)
 
 ## Development
 
@@ -128,7 +128,7 @@ The `setup.py clean` call mentioned above will also clean out the native extensi
 
 ## License
 
-PyPRT is under the same license as the included [CityEngine SDK](https://github.com/Esri/esri-cityengine-sdk#licensing).
+PyPRT is under the same license as the included [CityEngine SDK](https://github.com/Esri/cityengine-sdk#licensing).
 
 An exception is the PyPRT source code (without CityEngine SDK, binaries, or object code), which is licensed under the Apache License, Version 2.0 (the “License”); you may not use this work except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
 

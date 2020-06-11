@@ -563,7 +563,7 @@ PYBIND11_MODULE(pyprt, m) {
 
         Constructs an InitialShape by accepting the path to a shape file. This can be an OBJ file, Collada, etc. A list
 		of supported file formats can be found at `PRT geometry encoders
-		<https://esri.github.io/esri-cityengine-sdk/html/esri_prt_codecs.html>`_.
+		<https://esri.github.io/cityengine-sdk/html/esri_prt_codecs.html>`_.
 
         :Parameters:
             **initialShapePath** -- str
@@ -627,7 +627,7 @@ PYBIND11_MODULE(pyprt, m) {
         *inspect_rpk* function to know these input attributes). Concerning the encoder, you can use the 
         ``'com.esri.pyprt.PyEncoder'`` or any other geometry encoder. The PyEncoder has two options: 
         ``'emitGeometry'`` and ``'emitReport'`` whose value is a boolean. The complete list of the other geometry 
-        encoders can be found `here <https://esri.github.io/esri-cityengine-sdk/html/esri_prt_codecs.html>`__. In 
+        encoders can be found `here <https://esri.github.io/cityengine-sdk/html/esri_prt_codecs.html>`__. In 
         case you are using another geometry encoder than the PyEncoder, you can add an ``'outputPath'`` entry to 
         the shape attribute dictionary to specify where the generated 3D geometry will be outputted. In this case, 
         the return value of this *generate_model* function will be an empty list.
