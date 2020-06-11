@@ -41,8 +41,7 @@ class ExporterTest(unittest.TestCase):
         shape_geo_from_obj = pyprt.InitialShape(
             asset_file('building_parcel.obj'))
         rpk = asset_file('envelope2002.rpk')
-        attrs = {'ruleFile': 'rules/typology/envelope2002.cgb', 'startRule': 'Default$Lot',
-                 'report_but_not_display_green': True}
+        attrs = {'report_but_not_display_green': True}
         slpk_options = {'layerTextureEncoding': ['2'], 'layerEnabled': [True], 'layerUID': ['1'],
                         'layerName': ['Salut'], 'layerTextureQuality': [1.0], 'layerTextureCompression': [9],
                         'layerTextureScaling': [1.0], 'layerTextureMaxDimension': [2048],

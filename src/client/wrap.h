@@ -211,7 +211,7 @@ public:
 	~ModelGenerator() {}
 
 	std::vector<GeneratedModel> generateModel(const std::vector<py::dict>& shapeAttributes,
-	                                          const std::string& rulePackagePath,
+	                                          const std::filesystem::path& rulePackagePath,
 	                                          const std::wstring& geometryEncoderName,
 	                                          const py::dict& geometryEcoderOptions);
 	std::vector<GeneratedModel> generateAnotherModel(const std::vector<py::dict>& shapeAttributes);
@@ -225,8 +225,8 @@ private:
 	std::vector<std::wstring> mEncodersNames;
 	std::vector<pcu::InitialShapeBuilderPtr> mInitialShapesBuilders;
 
-	std::wstring mRuleFile = L"bin/rule.cgb";
-	std::wstring mStartRule = L"default$init";
+	std::wstring mRuleFile = L"";
+	std::wstring mStartRule = L"";
 	int32_t mSeed = 0;
 	std::wstring mShapeName = L"InitialShape";
 

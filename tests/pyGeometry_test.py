@@ -28,8 +28,7 @@ def asset_file(filename):
 class GeometryTest(unittest.TestCase):
     def test_verticesNber_candler(self):
         rpk = asset_file('candler.rpk')
-        attrs = {'ruleFile': 'bin/candler.cgb',
-                 'startRule': 'Default$Footprint'}
+        attrs = {}
         shape_geo_from_obj = pyprt.InitialShape(
             asset_file('candler_footprint.obj'))
         m = pyprt.ModelGenerator([shape_geo_from_obj])
@@ -39,8 +38,7 @@ class GeometryTest(unittest.TestCase):
 
     def test_facesNber_candler(self):
         rpk = asset_file('candler.rpk')
-        attrs = {'ruleFile': 'bin/candler.cgb',
-                 'startRule': 'Default$Footprint'}
+        attrs = {}
         shape_geo_from_obj = pyprt.InitialShape(
             asset_file('candler_footprint.obj'))
         m = pyprt.ModelGenerator([shape_geo_from_obj])
@@ -50,8 +48,7 @@ class GeometryTest(unittest.TestCase):
 
     def test_report_green(self):
         rpk = asset_file('envelope2002.rpk')
-        attrs = {'ruleFile': 'rules/typology/envelope2002.cgb', 'startRule': 'Default$Lot',
-                 'report_but_not_display_green': True, 'seed': 666}
+        attrs = {'report_but_not_display_green': True, 'seed': 666}
         shape_geo_from_obj = pyprt.InitialShape(
             asset_file('building_parcel.obj'))
         m = pyprt.ModelGenerator([shape_geo_from_obj])
@@ -65,8 +62,7 @@ class GeometryTest(unittest.TestCase):
 
     def test_noReport(self):
         rpk = asset_file('extrusion_rule.rpk')
-        attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
-                 'startRule': 'Default$Footprint'}
+        attrs = {}
         shape_geo = pyprt.InitialShape(
             [-10.0, 0.0, 5.0, -5.0, 0.0, 6.0, 20.0, 0.0, 5.0, 15.0, 0.0, 3.0])
         m = pyprt.ModelGenerator([shape_geo])
@@ -76,8 +72,7 @@ class GeometryTest(unittest.TestCase):
 
     def test_noGeometry(self):
         rpk = asset_file('extrusion_rule.rpk')
-        attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
-                 'startRule': 'Default$Footprint'}
+        attrs = {}
         shape_geo = pyprt.InitialShape(
             [-10.0, 0.0, 5.0, -5.0, 0.0, 6.0, 20.0, 0.0, 5.0, 15.0, 0.0, 3.0])
         m = pyprt.ModelGenerator([shape_geo])
@@ -87,9 +82,8 @@ class GeometryTest(unittest.TestCase):
 
     def test_buildingHeight(self):
         rpk = asset_file('extrusion_rule.rpk')
-        attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
-                 'startRule': 'Default$Footprint'}
-        attrs2 = {'ruleFile': 'bin/extrusion_rule.cgb', 'startRule': 'Default$Footprint', 'minBuildingHeight': 23.0,
+        attrs = {}
+        attrs2 = {'minBuildingHeight': 23.0,
                   'maxBuildingHeight': 23.0}
         shape_geo = pyprt.InitialShape(
             [-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
@@ -103,8 +97,7 @@ class GeometryTest(unittest.TestCase):
 
     def test_faces_data(self):
         rpk = asset_file('candler.rpk')
-        attrs = {'ruleFile': 'bin/candler.cgb',
-                 'startRule': 'Default$Footprint'}
+        attrs = {}
         shape_geo_from_obj = pyprt.InitialShape(
             asset_file('candler_footprint.obj'))
         m = pyprt.ModelGenerator([shape_geo_from_obj])
@@ -117,8 +110,7 @@ class GeometryTest(unittest.TestCase):
 
     def test_path_geometry_initshapes(self):
         rpk = asset_file('extrusion_rule.rpk')
-        attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
-                 'startRule': 'Default$Footprint'}
+        attrs = {}
         shape_geo = pyprt.InitialShape(
             [-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
         shape_geo_from_obj = pyprt.InitialShape(

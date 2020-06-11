@@ -30,12 +30,9 @@ class ShapeAttributesTest(unittest.TestCase):
 
     def test_correctExecution(self):
         rpk = asset_file('extrusion_rule.rpk')
-        attrs_1 = {'ruleFile': 'bin/extrusion_rule.cgb',
-                   'startRule': 'Default$Footprint'}
-        attrs_2 = {'ruleFile': 'bin/extrusion_rule.cgb',
-                   'startRule': 'Default$Footprint', 'minBuildingHeight': 30.0}
-        attrs_3 = {'ruleFile': 'bin/extrusion_rule.cgb',
-                   'startRule': 'Default$Footprint', 'text': 'hello'}
+        attrs_1 = {}
+        attrs_2 = {'minBuildingHeight': 30.0}
+        attrs_3 = {'text': 'hello'}
 
         shape_geometry_1 = pyprt.InitialShape(
             [0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])
@@ -51,8 +48,7 @@ class ShapeAttributesTest(unittest.TestCase):
 
     def test_oneDictForAll(self):
         rpk = asset_file('extrusion_rule.rpk')
-        attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
-                 'startRule': 'Default$Footprint', 'text': 'hello'}
+        attrs = {}
         shape_geometry_1 = pyprt.InitialShape(
             [0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])
         shape_geometry_2 = pyprt.InitialShape(
@@ -67,10 +63,8 @@ class ShapeAttributesTest(unittest.TestCase):
 
     def test_wrongNumberOfDict(self):
         rpk = asset_file('extrusion_rule.rpk')
-        attrs_1 = {'ruleFile': 'bin/extrusion_rule.cgb',
-                   'startRule': 'Default$Footprint'}
-        attrs_2 = {'ruleFile': 'bin/extrusion_rule.cgb',
-                   'startRule': 'Default$Footprint', 'minBuildingHeight': 30.0}
+        attrs_1 = {}
+        attrs_2 = {'minBuildingHeight': 30.0}
         shape_geometry_1 = pyprt.InitialShape(
             [0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])
         shape_geometry_2 = pyprt.InitialShape(
@@ -85,10 +79,8 @@ class ShapeAttributesTest(unittest.TestCase):
 
     def test_oneDictPerInitialShapeType(self):
         rpk = asset_file('extrusion_rule.rpk')
-        attrs_1 = {'ruleFile': 'bin/extrusion_rule.cgb',
-                   'startRule': 'Default$Footprint'}
-        attrs_2 = {'ruleFile': 'bin/extrusion_rule.cgb',
-                   'startRule': 'Default$Footprint', 'minBuildingHeight': 30.0}
+        attrs_1 = {}
+        attrs_2 = {'minBuildingHeight': 30.0}
         shape_geometry_1 = pyprt.InitialShape(
             [-7.666, 0.0, -0.203, -7.666, 0.0, 44.051, 32.557, 0.0, 44.051, 32.557, 0.0, -0.203])
         shape_geometry_2 = pyprt.InitialShape(

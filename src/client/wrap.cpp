@@ -64,6 +64,8 @@ const std::wstring ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder"
 const std::wstring ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
 const std::wstring ENCODER_ID_PYTHON = L"com.esri.pyprt.PyEncoder";
 
+constexpr const wchar_t* ANNOT_HIDDEN = L"@Hidden";
+
 PYBIND11_MAKE_OPAQUE(std::vector<GeneratedModel>);
 
 namespace {
@@ -106,17 +108,140 @@ GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const std::vector<dou
 
 namespace {
 
-void extractMainShapeAttributes(const py::dict& shapeAttr, std::wstring& ruleFile, std::wstring& startRule,
-                                int32_t& seed, std::wstring& shapeName, pcu::AttributeMapPtr& convertShapeAttr) {
+bool getResolveMap(const std::filesystem::path& rulePackagePath, pcu::ResolveMapPtr* resolveMap) {
+	if (std::filesystem::exists(rulePackagePath)) {
+		LOG_INF << "using rule package " << rulePackagePath << std::endl;
+
+		const std::string u8rpkURI = pcu::toFileURI(rulePackagePath.string());
+		prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
+		try {
+			resolveMap->reset(prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status));
+		}
+		catch (const std::exception& e) {
+			pybind11::print("CAUGHT EXCEPTION:", e.what());
+			return false;
+		}
+
+		if (resolveMap && (status == prt::STATUS_OK)) {
+			LOG_DBG << "resolve map = " << pcu::objectToXML(resolveMap->get()) << std::endl;
+		}
+		else {
+			LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting.";
+			return false;
+		}
+	}
+
+	return true;
+}
+
+std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap) {
+	const std::wstring sCGB(L".cgb");
+
+	size_t nKeys;
+	wchar_t const* const* keys = resolveMap->getKeys(&nKeys);
+	for (size_t k = 0; k < nKeys; k++) {
+		const std::wstring key(keys[k]);
+		if (std::equal(sCGB.rbegin(), sCGB.rend(), key.rbegin()))
+			return key;
+	}
+
+	return {};
+}
+
+std::wstring detectStartRule(const pcu::RuleFileInfoUPtr& ruleFileInfo) {
+	for (size_t r = 0; r < ruleFileInfo->getNumRules(); r++) {
+		const auto* rule = ruleFileInfo->getRule(r);
+
+		// start rules must not have any parameters
+		if (rule->getNumParameters() > 0)
+			continue;
+
+		for (size_t a = 0; a < rule->getNumAnnotations(); a++) {
+			if (std::wcscmp(rule->getAnnotation(a)->getName(), L"@StartRule") == 0) {
+				return rule->getName();
+			}
+		}
+	}
+	return {};
+}
+
+py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
+	auto ruleAttrs = py::dict();
+
+	for (size_t i = 0; i < ruleFileInfo->getNumAttributes(); i++) {
+		bool hidden = false;
+		const prt::RuleFileInfo::Entry* attr = ruleFileInfo->getAttribute(i);
+
+		const std::wstring fullName(attr->getName());
+		if (fullName.find(L"Default$") != 0)
+			continue;
+		const std::wstring name = fullName.substr(8);
+		const prt::AnnotationArgumentType valueType = attr->getReturnType();
+		py::str type;
+
+		for (size_t f = 0; f < attr->getNumAnnotations(); f++) {
+			if (!(std::wcscmp(attr->getAnnotation(f)->getName(), ANNOT_HIDDEN))) {
+				hidden = true;
+				break;
+			}
+		}
+
+		if (!hidden) {
+			if (valueType == prt::AAT_STR)
+				type = "string";
+			else if (valueType == prt::AAT_BOOL)
+				type = "bool";
+			else if (valueType == prt::AAT_FLOAT)
+				type = "float";
+			else if (valueType == prt::AAT_STR_ARRAY)
+				type = "string[]";
+			else if (valueType == prt::AAT_BOOL_ARRAY)
+				type = "bool[]";
+			else if (valueType == prt::AAT_FLOAT_ARRAY)
+				type = "float[]";
+			else
+				type = "UNKNOWN_VALUE_TYPE";
+
+			ruleAttrs[py::cast(name)] = type;
+		}
+	}
+
+	return ruleAttrs;
+}
+
+py::dict inspectRPK(const std::filesystem::path& rulePackagePath) {
+	pcu::ResolveMapPtr resolveMap;
+
+	if (!std::filesystem::exists(rulePackagePath) || !getResolveMap(rulePackagePath, &resolveMap)) {
+		LOG_ERR << "invalid rule package path";
+		return py::dict();
+	}
+
+	std::wstring ruleFile = getRuleFileEntry(resolveMap.get());
+
+	const wchar_t* ruleFileURI = resolveMap->getString(ruleFile.c_str());
+	if (ruleFileURI == nullptr) {
+		LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
+		return py::dict();
+	}
+
+	prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
+	pcu::RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, nullptr, &infoStatus));
+	if (!info || infoStatus != prt::STATUS_OK) {
+		LOG_ERR << "could not get rule file info from rule file " << ruleFile;
+		return py::dict();
+	}
+
+	py::dict ruleAttrs = getRuleAttributes(info.get());
+
+	return ruleAttrs;
+}
+
+void extractMainShapeAttributes(const py::dict& shapeAttr, int32_t& seed, std::wstring& shapeName,
+                                pcu::AttributeMapPtr& convertShapeAttr) {
 	convertShapeAttr = pcu::createAttributeMapFromPythonDict(
 	        shapeAttr, *(pcu::AttributeMapBuilderPtr(prt::AttributeMapBuilder::create())));
 	if (convertShapeAttr) {
-		if (convertShapeAttr->hasKey(L"ruleFile") &&
-		    convertShapeAttr->getType(L"ruleFile") == prt::AttributeMap::PT_STRING)
-			ruleFile = convertShapeAttr->getString(L"ruleFile");
-		if (convertShapeAttr->hasKey(L"startRule") &&
-		    convertShapeAttr->getType(L"startRule") == prt::AttributeMap::PT_STRING)
-			startRule = convertShapeAttr->getString(L"startRule");
 		if (convertShapeAttr->hasKey(L"seed") && convertShapeAttr->getType(L"seed") == prt::AttributeMap::PT_INT)
 			seed = convertShapeAttr->getInt(L"seed");
 		if (convertShapeAttr->hasKey(L"shapeName") &&
@@ -176,13 +301,11 @@ void ModelGenerator::setAndCreateInitialShape(const std::vector<py::dict>& shape
 		if (shapesAttr.size() > ind)
 			shapeAttr = shapesAttr[ind];
 
-		std::wstring ruleF = mRuleFile;
-		std::wstring startR = mStartRule;
 		int32_t randomS = mSeed;
 		std::wstring shapeN = mShapeName;
-		extractMainShapeAttributes(shapeAttr, ruleF, startR, randomS, shapeN, convertedShapeAttr[ind]);
+		extractMainShapeAttributes(shapeAttr, randomS, shapeN, convertedShapeAttr[ind]);
 
-		mInitialShapesBuilders[ind]->setAttributes(ruleF.c_str(), startR.c_str(), randomS, shapeN.c_str(),
+		mInitialShapesBuilders[ind]->setAttributes(mRuleFile.c_str(), mStartRule.c_str(), randomS, shapeN.c_str(),
 		                                           convertedShapeAttr[ind].get(), mResolveMap.get());
 
 		initShapePtrs[ind].reset(mInitialShapesBuilders[ind]->createInitialShape());
@@ -235,7 +358,7 @@ void ModelGenerator::getRawEncoderDataPointers(std::vector<const wchar_t*>& allE
 }
 
 std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::dict>& shapeAttributes,
-                                                          const std::string& rulePackagePath,
+                                                          const std::filesystem::path& rulePackagePath,
                                                           const std::wstring& geometryEncoderName,
                                                           const py::dict& geometryEncoderOptions) {
 	if (!mValid) {
@@ -263,27 +386,25 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 			return {};
 		}
 
-		// Resolve Map
-		if (!rulePackagePath.empty()) {
-			LOG_INF << "using rule package " << rulePackagePath << std::endl;
+		if (!getResolveMap(rulePackagePath, &mResolveMap))
+			return {};
 
-			const std::string u8rpkURI = pcu::toFileURI(rulePackagePath);
-			prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
-			try {
-				mResolveMap.reset(prt::createResolveMap(pcu::toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status));
-			}
-			catch (std::exception& e) {
-				pybind11::print("CAUGHT EXCEPTION:", e.what());
-			}
+		mRuleFile = getRuleFileEntry(mResolveMap.get());
 
-			if (mResolveMap && (status == prt::STATUS_OK)) {
-				LOG_DBG << "resolve map = " << pcu::objectToXML(mResolveMap.get()) << std::endl;
-			}
-			else {
-				LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting.";
-				return {};
-			}
+		const wchar_t* ruleFileURI = mResolveMap->getString(mRuleFile.c_str());
+		if (ruleFileURI == nullptr) {
+			LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
+			return {};
 		}
+
+		prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
+		pcu::RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, mCache.get(), &infoStatus));
+		if (!info || infoStatus != prt::STATUS_OK) {
+			LOG_ERR << "could not get rule file info from rule file " << mRuleFile;
+			return {};
+		}
+
+		mStartRule = detectStartRule(info);
 
 		// Initial shapes
 		std::vector<const prt::InitialShape*> initialShapes(mInitialShapesBuilders.size());
@@ -401,6 +522,14 @@ PYBIND11_MODULE(pyprt, m) {
     )mydelimiter";
 	const char* docShutdown = "Shutdown of PRT. The PRT initialization process can be done only once per "
 	                          "session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.";
+	const char* docInspectRPK = R"mydelimiter(
+        inspect_rpk(rule_package_path) -> dict
+
+        This function returns the CGA rule attributes name and value type for the specified rule package path.
+
+        :Returns:
+            dict
+    )mydelimiter";
 	const char* docIs = R"mydelimiter(
         __init__(*args, **kwargs)
 
@@ -491,14 +620,11 @@ PYBIND11_MODULE(pyprt, m) {
 
         This function does the procedural generation of the models. It outputs a list of GeneratedModel instances. 
         You need to provide one shape attribute dictionary per initial shape or one dictionary that will be applied 
-        to all initial shapes. A shape attribute dictionary **must** contain at least the ``'ruleFile'`` and  the 
-        ``'startRule'`` keys. The rule file value is a string indicating where the CGB file is located in the Rule 
-        Package. The start rule value is also a string and refers to the *@StartRule* annotation in the CGA rule 
-        file. The shape attribute dictionary only contains either string, float or bool values, **except** the 
+        to all initial shapes. The shape attribute dictionary only contains either string, float or bool values, **except** the 
         ``'seed'`` value, which has to be an integer (default value equals to *0*). The ``'shapeName'`` is 
-        another non-mandatory entry (default value equals to *"InitialShape"*). In addition to the rule file, the 
-        start rule, the seed and the shape name keys, the shape attribute dictionary will contain the CGA input 
-        attributes specific to the CGA file you are using. Concerning the encoder, you can use the 
+        another non-mandatory entry (default value equals to *"InitialShape"*). In addition to the seed and the shape name keys, 
+        the shape attribute dictionary will contain the CGA input attributes specific to the CGA file you are using (use the 
+        *inspect_rpk* function to know these input attributes). Concerning the encoder, you can use the 
         ``'com.esri.pyprt.PyEncoder'`` or any other geometry encoder. The PyEncoder has two options: 
         ``'emitGeometry'`` and ``'emitReport'`` whose value is a boolean. The complete list of the other geometry 
         encoders can be found `here <https://esri.github.io/esri-cityengine-sdk/html/esri_prt_codecs.html>`__. In 
@@ -519,9 +645,9 @@ PYBIND11_MODULE(pyprt, m) {
 
             ``rpk = os.path.join(os.getcwd(), 'extrusion_rule.rpk')``
 
-            ``attrs1 = {'ruleFile': 'bin/extrusion_rule.cgb', 'startRule': 'Default$Footprint', 'shapeName': 'myShape1', 'seed': 555, 'minBuildingHeight': 30.0}``
+            ``attrs1 = {'shapeName': 'myShape1', 'seed': 555, 'minBuildingHeight': 30.0}``
 
-            ``attrs2 = {'ruleFile': 'bin/extrusion_rule.cgb', 'startRule': 'Default$Footprint', 'shapeName': 'myShape2', 'seed': 777, 'minBuildingHeight': 25.0}``
+            ``attrs2 = {'shapeName': 'myShape2', 'seed': 777, 'minBuildingHeight': 25.0}``
 
             ``models1 = m.generate_model([attrs1, attrs2], rpk, 'com.esri.pyprt.PyEncoder', {'emitReport': True, 'emitGeometry': True})``
         )mydelimiter";
@@ -596,6 +722,7 @@ PYBIND11_MODULE(pyprt, m) {
 	m.def("initialize_prt", &initializePRT, docInit);
 	m.def("is_prt_initialized", &isPRTInitialized, docIsInit);
 	m.def("shutdown_prt", &shutdownPRT, docShutdown);
+	m.def("inspect_rpk", &inspectRPK, py::arg("rulePackagePath"), docInspectRPK);
 
 	py::class_<InitialShape>(m, "InitialShape", docIs)
 	        .def(py::init<const std::vector<double>&>(), py::arg("vertCoordinates"), docIsInitV)
@@ -620,5 +747,9 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def("get_indices", &GeneratedModel::getIndices, docGmGetI)
 	        .def("get_faces", &GeneratedModel::getFaces, docGmGetF)
 	        .def("get_report", &GeneratedModel::getReport, docGmGetR);
+
+	py::class_<std::filesystem::path>(m, "Path")
+			.def(py::init<std::string>());
+	py::implicitly_convertible<std::string, std::filesystem::path>();
 
 } // PYBIND11_MODULE

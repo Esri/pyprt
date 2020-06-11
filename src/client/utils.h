@@ -64,6 +64,7 @@ using EncoderInfoPtr = std::unique_ptr<const prt::EncoderInfo, PRTDestroyer>;
 using DecoderInfoPtr = std::unique_ptr<const prt::DecoderInfo, PRTDestroyer>;
 using SimpleOutputCallbacksPtr = std::unique_ptr<prt::SimpleOutputCallbacks, PRTDestroyer>;
 using PyCallbacksPtr = std::unique_ptr<PyCallbacks>;
+using RuleFileInfoUPtr = std::unique_ptr<const prt::RuleFileInfo, PRTDestroyer>;
 
 /**
  * prt encoder options helpers
@@ -74,7 +75,6 @@ AttributeMapPtr createValidatedOptions(const std::wstring& encID, const Attribut
 /**
  * prt specific conversion functions
  */
-
 template <typename C>
 std::vector<const C*> toPtrVec(const std::vector<std::basic_string<C>>& sv) {
 	std::vector<const C*> pv(sv.size());
@@ -88,6 +88,11 @@ std::vector<const C*> toPtrVec(const std::vector<std::unique_ptr<C, D>>& sv) {
 	std::transform(sv.begin(), sv.end(), pv.begin(), [](const std::unique_ptr<C, D>& s) { return s.get(); });
 	return pv;
 }
+
+/**
+ * prt specific string helper
+ */
+std::wstring removeStylePrefix(const std::wstring& fullName);
 
 /**
  * string and URI helpers

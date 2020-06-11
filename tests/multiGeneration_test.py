@@ -28,8 +28,7 @@ def asset_file(filename):
 class MultiTest(unittest.TestCase):
     def test_multiGenerations(self):
         rpk = asset_file('extrusion_rule.rpk')
-        attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
-                 'startRule': 'Default$Footprint'}
+        attrs = {}
         shape_geo = pyprt.InitialShape(
             [-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
         m = pyprt.ModelGenerator([shape_geo])
@@ -47,8 +46,7 @@ class MultiTest(unittest.TestCase):
 
     def test_PathAndGeometryInitShapes(self):
         rpk = asset_file('extrusion_rule.rpk')
-        attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
-                 'startRule': 'Default$Footprint'}
+        attrs = {}
         shape_geo = pyprt.InitialShape(
             [-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
         shape_geo_from_obj = pyprt.InitialShape(
