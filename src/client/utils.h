@@ -66,6 +66,9 @@ using SimpleOutputCallbacksPtr = std::unique_ptr<prt::SimpleOutputCallbacks, PRT
 using PyCallbacksPtr = std::unique_ptr<PyCallbacks>;
 using RuleFileInfoUPtr = std::unique_ptr<const prt::RuleFileInfo, PRTDestroyer>;
 
+bool getResolveMap(const std::filesystem::path& rulePackagePath, pcu::ResolveMapPtr* resolveMap);
+std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap);
+
 /**
  * prt encoder options helpers
  */

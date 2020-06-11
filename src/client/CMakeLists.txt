@@ -28,7 +28,8 @@ pybind11_add_module(${CLIENT_TARGET} MODULE
 		PRTContext.cpp
 		PythonLogHandler.cpp
 		InitialShape.cpp
-		GeneratedModel.cpp)
+		GeneratedModel.cpp
+		ModelGenerator.cpp)
 
 set_target_properties(${CLIENT_TARGET}
 		PROPERTIES CXX_STANDARD 17
