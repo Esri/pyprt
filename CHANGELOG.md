@@ -1,6 +1,14 @@
 # PyPRT ChangeLog
 
-## v1.0.0 (2020-MM-DD) *Unreleased*
+## v1.1.0 (2020-XX-YY)
+
+### Added
+* Support for macOS Catalina
+
+### Changed
+* Updated to PRT 2.2 (CityEngine 2020.0)
+
+## v1.0.0 (2020-05-07)
 
 ### Added
 

@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "IPyCallbacks.h"
+#include "encoder/IPyCallbacks.h"
 
 #include "prt/Callbacks.h"
 
@@ -92,65 +92,65 @@ public:
 		return mModels[initialShapeIdx].mCGAReport;
 	}
 
-	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) {
+	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) override {
 		pybind11::print(L"GENERATE ERROR:", isIndex, status, message);
 		return prt::STATUS_OK;
 	}
 
 	prt::Status assetError(size_t isIndex, prt::CGAErrorLevel level, const wchar_t* key, const wchar_t* uri,
-	                       const wchar_t* message) {
+	                       const wchar_t* message) override {
 		pybind11::print(L"ASSET ERROR:", isIndex, level, key, uri, message);
 		return prt::STATUS_OK;
 	}
 
 	prt::Status cgaError(size_t isIndex, int32_t shapeID, prt::CGAErrorLevel level, int32_t methodId, int32_t pc,
-	                     const wchar_t* message) {
+	                     const wchar_t* message) override {
 		pybind11::print(L"CGA ERROR:", isIndex, shapeID, level, methodId, pc, message);
 		return prt::STATUS_OK;
 	}
 
-	prt::Status cgaPrint(size_t isIndex, int32_t shapeID, const wchar_t* txt) {
+	prt::Status cgaPrint(size_t isIndex, int32_t shapeID, const wchar_t* txt) override {
 		pybind11::print(L"CGA PRINT:", isIndex, shapeID, txt);
 		return prt::STATUS_OK;
 	}
 
-	prt::Status cgaReportBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, bool /*value*/) {
+	prt::Status cgaReportBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, bool /*value*/) override {
 		return prt::STATUS_OK;
 	}
 
-	prt::Status cgaReportFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, double /*value*/) {
+	prt::Status cgaReportFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, double /*value*/) override {
 		return prt::STATUS_OK;
 	}
 
 	prt::Status cgaReportString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
-	                            const wchar_t* /*value*/) {
+	                            const wchar_t* /*value*/) override {
 		return prt::STATUS_OK;
 	}
 
-	prt::Status attrBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, bool /*value*/) {
+	prt::Status attrBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, bool /*value*/) override {
 		return prt::STATUS_OK;
 	}
 
-	prt::Status attrFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, double /*value*/) {
+	prt::Status attrFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, double /*value*/) override {
 		return prt::STATUS_OK;
 	}
 
-	prt::Status attrString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const wchar_t* /*value*/) {
+	prt::Status attrString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const wchar_t* /*value*/) override {
 		return prt::STATUS_OK;
 	}
 
 	prt::Status attrBoolArray(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const bool* /*ptr*/,
-	                          size_t /*size*/) {
+	                          size_t /*size*/, size_t /*nRows*/) override {
 		return prt::STATUS_OK;
 	}
 
 	prt::Status attrFloatArray(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const double* /*ptr*/,
-	                           size_t /*size*/) {
+	                           size_t /*size*/, size_t /*nRows*/) override {
 		return prt::STATUS_OK;
 	}
 
 	prt::Status attrStringArray(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
-	                            const wchar_t* const* /*ptr*/, size_t /*size*/) {
+	                            const wchar_t* const* /*ptr*/, size_t /*size*/, size_t /*nRows*/) override {
 		return prt::STATUS_OK;
 	}
 };

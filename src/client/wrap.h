@@ -95,10 +95,6 @@ public:
 		stream << "<PythonLogHandler />";
 		return stream;
 	}
-
-private:
-	const prt::LogLevel* mLevels;
-	size_t mCount;
 };
 
 /**

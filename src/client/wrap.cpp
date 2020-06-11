@@ -17,7 +17,9 @@
  * A copy of the license is available in the repository's LICENSE file.
  */
 
-#define _CRT_SECURE_NO_WARNINGS
+#ifdef _WIN32
+#	define _CRT_SECURE_NO_WARNINGS
+#endif
 
 #include "wrap.h"
 #include "PyCallbacks.h"
@@ -737,4 +739,5 @@ PYBIND11_MODULE(pyprt, m) {
 	py::class_<std::filesystem::path>(m, "Path")
 			.def(py::init<std::string>());
 	py::implicitly_convertible<std::string, std::filesystem::path>();
-}
+
+} // PYBIND11_MODULE

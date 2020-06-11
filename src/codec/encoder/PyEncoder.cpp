@@ -55,6 +55,11 @@ const prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS =
                 .cleanupVertexNormals(false)
                 .mergeByMaterial(true); // if false, generation takes ages... 40 sec
                                         // instead of 1.5 sec
+
+IPyCallbacks* getPyCallbacks(prt::Callbacks* cb) {
+	return dynamic_cast<IPyCallbacks*>(cb);
+}
+
 } // namespace
 
 const std::wstring PyEncoder::ID = L"com.esri.pyprt.PyEncoder";
@@ -79,7 +84,7 @@ void PyEncoder::init(prtx::GenerateContext& /*context*/) {
 void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex) {
 
 	const prtx::InitialShape* is = context.getInitialShape(initialShapeIndex);
-	auto* cb = dynamic_cast<IPyCallbacks*>(getCallbacks());
+	auto* cb = getPyCallbacks(getCallbacks());
 	if (cb == nullptr)
 		throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
 
