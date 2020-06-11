@@ -21,7 +21,6 @@
 #	define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include "wrap.h"
 #include "PRTContext.h"
 #include "ModelGenerator.h"
 #include "PyCallbacks.h"
