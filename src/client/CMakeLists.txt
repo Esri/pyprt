@@ -26,7 +26,8 @@ pybind11_add_module(${CLIENT_TARGET} MODULE
 		wrap.cpp
 		PyCallbacks.cpp
 		PRTContext.cpp
-		PythonLogHandler.cpp)
+		PythonLogHandler.cpp
+		InitialShape.cpp)
 
 set_target_properties(${CLIENT_TARGET}
 		PROPERTIES CXX_STANDARD 17
