@@ -21,33 +21,18 @@
 #	define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include "PRTContext.h"
 #include "ModelGenerator.h"
-#include "PyCallbacks.h"
+#include "PRTContext.h"
 #include "logging.h"
 #include "utils.h"
 
 #include "prt/API.h"
-#include "prt/ContentType.h"
-#include "prt/LogLevel.h"
-#include "prt/prt.h"
 
-#include <pybind11/complex.h>
-#include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
-#include <array>
 #include <cstdio>
-#include <cstdlib>
 #include <filesystem>
-#include <fstream>
-#include <functional>
-#include <iostream>
-#include <iterator>
-#include <map>
-#include <numeric>
 #include <string>
 #include <vector>
 #ifdef _WIN32
