@@ -20,6 +20,7 @@
 #pragma once
 
 #include "InitialShape.h"
+#include "GeneratedModel.h"
 #include "PyCallbacks.h"
 #include "logging.h"
 #include "utils.h"
@@ -62,36 +63,6 @@ inline void copyToCStr(const std::string& str, char* cstr, size_t& cstrSize) {
 	cstrSize = str.length() + 1; // returns the actually needed size including terminating null
 }
 
-class GeneratedModel {
-public:
-	GeneratedModel(const size_t& initialShapeIdx, const std::vector<double>& vert, const std::vector<uint32_t>& indices,
-	               const std::vector<uint32_t>& face, const py::dict& rep);
-	GeneratedModel() {}
-	~GeneratedModel() {}
-
-	size_t getInitialShapeIndex() const {
-		return mInitialShapeIndex;
-	}
-	const std::vector<double>& getVertices() const {
-		return mVertices;
-	}
-	const std::vector<uint32_t>& getIndices() const {
-		return mIndices;
-	}
-	const std::vector<uint32_t>& getFaces() const {
-		return mFaces;
-	}
-	const py::dict& getReport() const {
-		return mReport;
-	}
-
-private:
-	size_t mInitialShapeIndex;
-	std::vector<double> mVertices;
-	std::vector<uint32_t> mIndices;
-	std::vector<uint32_t> mFaces;
-	py::dict mReport;
-};
 
 namespace {
 

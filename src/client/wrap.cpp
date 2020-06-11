@@ -68,8 +68,6 @@ const std::wstring ENCODER_ID_PYTHON = L"com.esri.pyprt.PyEncoder";
 
 constexpr const wchar_t* ANNOT_HIDDEN = L"@Hidden";
 
-PYBIND11_MAKE_OPAQUE(std::vector<GeneratedModel>);
-
 namespace {
 
 std::unique_ptr<PRTContext> prtCtx;
@@ -90,12 +88,6 @@ void shutdownPRT() {
 } // namespace
 
 namespace py = pybind11;
-
-
-GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const std::vector<double>& vert,
-                               const std::vector<uint32_t>& indices, const std::vector<uint32_t>& face,
-                               const py::dict& rep)
-    : mInitialShapeIndex(initShapeIdx), mVertices(vert), mIndices(indices), mFaces(face), mReport(rep) {}
 
 namespace {
 
