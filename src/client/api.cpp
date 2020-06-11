@@ -134,8 +134,6 @@ py::dict inspectRPK(const std::filesystem::path& rulePackagePath) {
 
 } // namespace
 
-using namespace pybind11::literals;
-
 PYBIND11_MODULE(pyprt, m) {
 
 	py::options options;
