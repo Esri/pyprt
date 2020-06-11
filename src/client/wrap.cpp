@@ -58,6 +58,7 @@
  */
 const wchar_t* FILE_CGA_REPORT = L"CGAReport.txt";
 const wchar_t* ENCODER_OPT_NAME = L"name";
+constexpr const char* ENC_OPT_OUTPUT_PATH = "outputPath";
 
 const std::wstring ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
 const std::wstring ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
@@ -71,7 +72,7 @@ std::unique_ptr<PRTContext> prtCtx;
 
 void initializePRT() {
 	if (!prtCtx)
-		prtCtx.reset(new PRTContext(prt::LOG_ERROR));
+		prtCtx.reset(new PRTContext(prt::LOG_WARNING));
 }
 
 bool isPRTInitialized() {
@@ -325,7 +326,18 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 			}
 		}
 		else {
-			const std::filesystem::path outputPath = geometryEncoderOptions["outputPath"].cast<std::string>();
+			const std::filesystem::path outputPath = [&geometryEncoderOptions]() {
+				if (geometryEncoderOptions.contains(ENC_OPT_OUTPUT_PATH)) {
+					return std::filesystem::path(geometryEncoderOptions[ENC_OPT_OUTPUT_PATH].cast<std::string>());
+				}
+				else {
+					const auto fallbackOutputPath = std::filesystem::temp_directory_path() / "pyprt_fallback_output";
+					std::filesystem::create_directory(fallbackOutputPath);
+					LOG_WRN << "Encoder option '" << ENC_OPT_OUTPUT_PATH
+					        << "' was not specified, falling back to system tmp directory:" << fallbackOutputPath;
+					return fallbackOutputPath;
+				}
+			}();
 			LOG_DBG << "got outputPath = " << outputPath;
 
 			pcu::FileOutputCallbacksPtr foc;
@@ -333,8 +345,8 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 				foc.reset(prt::FileOutputCallbacks::create(outputPath.wstring().c_str()));
 			}
 			else {
-				LOG_ERR << "The directory specified by 'outputPath' is not valid or does not exist: " << outputPath
-				        << std::endl;
+				LOG_ERR << "The directory specified by '" << ENC_OPT_OUTPUT_PATH
+				        << "' is not valid or does not exist: " << outputPath << std::endl;
 				return {};
 			}
 

@@ -68,7 +68,7 @@ using PyCallbacksPtr = std::unique_ptr<PyCallbacks>;
 /**
  * prt encoder options helpers
  */
-AttributeMapPtr createAttributeMapFromPythonDict(py::dict args, prt::AttributeMapBuilder& bld);
+AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::AttributeMapBuilder& bld);
 AttributeMapPtr createValidatedOptions(const std::wstring& encID, const AttributeMapPtr& unvalidatedOptions);
 
 /**
