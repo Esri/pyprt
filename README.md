@@ -99,6 +99,7 @@ A note regarding "open a shell" in the following sections: this implies that the
 1. Open a shell in the PyPRT git root.
 1. First time only: run `pipenv install` to get all required Python packages.
 1. Run `pipenv shell` to activate the required Python packages.
+1. Run `python setup.py clean --all` (to ensure we can properly track and cleanup the temporarily copied native extension) 
 1. Install PyPRT in current pip environment in dev mode by running `pip install -e .` (note the dot at the end). This will use CMake to build the native extension and copy them into the source directory.
 1. Now you can iterate on the Python part of PyPRT...
 1. To leave development mode and cleanup your git workspace, run these commands:
