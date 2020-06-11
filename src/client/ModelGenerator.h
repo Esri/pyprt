@@ -12,7 +12,7 @@
 class ModelGenerator {
 public:
 	ModelGenerator(const std::vector<InitialShape>& myGeo);
-	~ModelGenerator() {}
+	~ModelGenerator() = default;
 
 	std::vector<GeneratedModel> generateModel(const std::vector<pybind11::dict>& shapeAttributes,
 	                                          const std::filesystem::path& rulePackagePath,

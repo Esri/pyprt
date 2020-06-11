@@ -10,7 +10,7 @@ public:
 	InitialShape(const std::vector<double>& vert, const std::vector<uint32_t>& ind,
 	             const std::vector<uint32_t>& faceCnt);
 	InitialShape(const std::string& path);
-	~InitialShape() {}
+	~InitialShape() = default;
 
 	const double* getVertices() const {
 		return mVertices.data();
