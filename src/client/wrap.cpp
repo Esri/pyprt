@@ -96,8 +96,8 @@ InitialShape::InitialShape(const std::vector<double>& vert) : mVertices(vert), m
 }
 
 InitialShape::InitialShape(const std::vector<double>& vert, const std::vector<uint32_t>& ind,
-                           const std::vector<uint32_t>& faceCnt)
-    : mVertices(vert), mIndices(ind), mFaceCounts(faceCnt), mPathFlag(false) {}
+                           const std::vector<uint32_t>& faceCnt, const std::vector<uint32_t>& holes)
+    : mVertices(vert), mIndices(ind), mFaceCounts(faceCnt), mHoles(holes), mPathFlag(false) {}
 
 InitialShape::InitialShape(const std::string& initShapePath) : mPath(initShapePath), mPathFlag(true) {}
 
@@ -726,8 +726,9 @@ PYBIND11_MODULE(pyprt, m) {
 
 	py::class_<InitialShape>(m, "InitialShape", docIs)
 	        .def(py::init<const std::vector<double>&>(), py::arg("vertCoordinates"), docIsInitV)
-	        .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&>(),
-	             py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"), docIsInitVI)
+	        .def(py::init<
+	                     const std::vector<double>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&>(),
+	             py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"), py::arg("holes"), docIsInitVI)
 	        .def(py::init<const std::string&>(), py::arg("initialShapePath"), docIsInitP)
 	        .def("get_vertex_count", &InitialShape::getVertexCount, docIsGetV)
 	        .def("get_index_count", &InitialShape::getIndexCount, docIsGetI)

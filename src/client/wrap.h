@@ -135,7 +135,7 @@ class InitialShape {
 public:
 	InitialShape(const std::vector<double>& vert);
 	InitialShape(const std::vector<double>& vert, const std::vector<uint32_t>& ind,
-	             const std::vector<uint32_t>& faceCnt);
+	             const std::vector<uint32_t>& faceCnt, const std::vector<uint32_t>& holes);
 	InitialShape(const std::string& path);
 	~InitialShape() {}
 
@@ -168,6 +168,7 @@ protected:
 	const std::vector<double> mVertices;
 	std::vector<uint32_t> mIndices;
 	std::vector<uint32_t> mFaceCounts;
+	std::vector<uint32_t> mHoles;
 	const std::string mPath;
 	const bool mPathFlag;
 };
