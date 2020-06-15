@@ -280,7 +280,8 @@ ModelGenerator::ModelGenerator(const std::vector<InitialShape>& myGeo) {
 		else {
 			if (isb->setGeometry(myGeo[ind].getVertices(), myGeo[ind].getVertexCount(), myGeo[ind].getIndices(),
 			                     myGeo[ind].getIndexCount(), myGeo[ind].getFaceCounts(),
-			                     myGeo[ind].getFaceCountsCount()) != prt::STATUS_OK) {
+			                     myGeo[ind].getFaceCountsCount(), myGeo[ind].getHoles(),
+			                     myGeo[ind].getHolesCount()) != prt::STATUS_OK) {
 
 				LOG_ERR << "invalid initial geometry";
 				mValid = false;

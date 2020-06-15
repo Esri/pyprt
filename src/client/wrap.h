@@ -157,6 +157,12 @@ public:
 	size_t getFaceCountsCount() const {
 		return mFaceCounts.size();
 	}
+	const uint32_t* getHoles() const {
+		return mHoles.data();
+	}
+	size_t getHolesCount() const {
+		return mHoles.size();
+	}
 	const std::string& getPath() const {
 		return mPath;
 	}
