@@ -4,6 +4,7 @@
 
 ### Added
 * Support for macOS Catalina
+* Holes support for initial shapes
 
 ### Changed
 * Updated to PRT 2.2 (CityEngine 2020.0)
