@@ -553,17 +553,26 @@ PYBIND11_MODULE(pyprt, m) {
         :Example: ``shape1 = pyprt.InitialShape([0, 0, 0, 0, 0, 10, 10, 0, 10, 10, 0, 0])``
         )mydelimiter";
 	const char* docIsInitVI = R"mydelimiter(
-        2. **__init__** (*vert_coordinates*, *face_indices*, *face_count*)
+        2. **__init__** (*vert_coordinates*, *face_indices*, *face_count*, *holes*)
 
         Constructs an InitialShape by accepting a list of direct vertex coordinates, a list of the vertex
         indices for each faces and a list of the indices count per face. The vertex order is expected to 
-        be counter-clockwise.
+        be counter-clockwise. The last parameter, *holes*, is optional and allows defining holes polygons in faces.
+        It is a list of lists, that assign hole-faces to faces. It follows this structure:
+
+		``[[face-with-holes1-idx, hole-face-idx1, hole-face-idx2,...], ..., [face-with-holesN-idx, hole-face-idx1, hole-face-idx2, ...]]``
+        
+        Holes must have the opposite vertex-ordering as the encircling face.
 
         :Parameters:
             - **vert_coordinates** -- List[float]
             - **face_indices** -- List[int]
             - **face_count** -- List[int]
-        :Example: ``shape2 = pyprt.InitialShape([0, 0, 0, 0, 0, 10, 10, 0, 10, 10, 0, 0], [0, 1, 2, 3], [4])``
+            - **holes** -- List[List[int]]
+        :Examples: ``shape_without_holes =``
+							``pyprt.InitialShape([0, 0, 0, 0, 0, 10, 10, 0, 10, 10, 0, 0], [0, 1, 2, 3], [4])``
+				   ``shape_with_hole =``
+							``pyprt.InitialShape([0, 0, 0, 0, 0, 10, 10, 0, 10, 10, 0, 0, 2, 0, 2, 8, 0, 8, 2, 0, 8], [0, 1, 2, 3, 4, 5, 6], [4, 3], [[0, 1]])``
         )mydelimiter";
 	const char* docIsInitP = R"mydelimiter(
         3. **__init__** (*init_shape_path*)
