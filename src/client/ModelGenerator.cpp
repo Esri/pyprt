@@ -152,21 +152,6 @@ void ModelGenerator::initializeEncoderData(const std::wstring& encName, const py
 	}
 }
 
-void ModelGenerator::getRawEncoderDataPointers(std::vector<const prt::AttributeMap*>& allEncOpt) {
-	if (mEncodersNames[0] == ENCODER_ID_PYTHON) {
-		allEncOpt.clear();
-
-		allEncOpt.push_back(mEncodersOptionsPtr[0].get());
-	}
-	else {
-		allEncOpt.clear();
-		allEncOpt.push_back(mEncodersOptionsPtr[0].get());
-		allEncOpt.push_back(mEncodersOptionsPtr[1].get());
-		allEncOpt.push_back(mEncodersOptionsPtr[2].get());
-		allEncOpt.push_back(mEncodersOptionsPtr[3].get());
-	}
-}
-
 std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::dict>& shapeAttributes,
                                                           const std::filesystem::path& rulePackagePath,
                                                           const std::wstring& geometryEncoderName,
@@ -229,11 +214,10 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 		if (!geometryEncoderName.empty())
 			initializeEncoderData(geometryEncoderName, geometryEncoderOptions);
 
-		std::vector<const wchar_t*> encoders = pcu::toPtrVec(mEncodersNames);
-
-		std::vector<const prt::AttributeMap*> encodersOptions;
-		encodersOptions.reserve(3);
-		getRawEncoderDataPointers(encodersOptions);
+		assert(mEncodersNames.size() == mEncodersOptionsPtr.size());
+		const std::vector<const wchar_t*> encoders = pcu::toPtrVec(mEncodersNames);
+		const std::vector<const prt::AttributeMap*> encodersOptions = pcu::toPtrVec(mEncodersOptionsPtr);
+		assert(encoders.size() == encodersOptions.size());
 
 		if (mEncodersNames[0] == ENCODER_ID_PYTHON) {
 

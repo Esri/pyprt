@@ -60,5 +60,4 @@ private:
 	                              std::vector<pcu::InitialShapePtr>& initShapesPtrs,
 	                              std::vector<pcu::AttributeMapPtr>& convertShapeAttr);
 	void initializeEncoderData(const std::wstring& encName, const pybind11::dict& encOpt);
-	void getRawEncoderDataPointers(std::vector<const prt::AttributeMap*>& allEncOpt);
 };
