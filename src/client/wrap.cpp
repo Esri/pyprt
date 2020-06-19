@@ -62,6 +62,7 @@ constexpr const char* ENC_OPT_OUTPUT_PATH = "outputPath";
 
 const std::wstring ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
 const std::wstring ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
+const std::wstring ENCODER_ID_CGA_ERROR = L"com.esri.prt.core.CGAErrorEncoder";
 const std::wstring ENCODER_ID_PYTHON = L"com.esri.pyprt.PyEncoder";
 
 constexpr const wchar_t* ANNOT_HIDDEN = L"@Hidden";
@@ -324,14 +325,17 @@ void ModelGenerator::initializeEncoderData(const std::wstring& encName, const py
 	if (encName != ENCODER_ID_PYTHON) {
 		mEncodersNames.push_back(ENCODER_ID_CGA_REPORT);
 		mEncodersNames.push_back(ENCODER_ID_CGA_PRINT);
+		mEncodersNames.push_back(ENCODER_ID_CGA_ERROR);
 
 		const pcu::AttributeMapBuilderPtr optionsBuilder{prt::AttributeMapBuilder::create()};
 		optionsBuilder->setString(ENCODER_OPT_NAME, FILE_CGA_REPORT);
 		const pcu::AttributeMapPtr reportOptions{optionsBuilder->createAttributeMapAndReset()};
 		const pcu::AttributeMapPtr printOptions{optionsBuilder->createAttributeMapAndReset()};
+		const pcu::AttributeMapPtr errorOptions{optionsBuilder->createAttributeMapAndReset()};
 
 		mEncodersOptionsPtr.push_back(createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions));
 		mEncodersOptionsPtr.push_back(createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions));
+		mEncodersOptionsPtr.push_back(createValidatedOptions(ENCODER_ID_CGA_ERROR, errorOptions));
 	}
 }
 
@@ -349,11 +353,13 @@ void ModelGenerator::getRawEncoderDataPointers(std::vector<const wchar_t*>& allE
 		allEnc.push_back(mEncodersNames[0].c_str());
 		allEnc.push_back(mEncodersNames[1].c_str()); // an encoder to redirect CGA report to CGAReport.txt
 		allEnc.push_back(mEncodersNames[2].c_str()); // redirects CGA print output to the callback
+		allEnc.push_back(mEncodersNames[3].c_str()); // redirects CGA error output to the callback
 
 		allEncOpt.clear();
 		allEncOpt.push_back(mEncodersOptionsPtr[0].get());
 		allEncOpt.push_back(mEncodersOptionsPtr[1].get());
 		allEncOpt.push_back(mEncodersOptionsPtr[2].get());
+		allEncOpt.push_back(mEncodersOptionsPtr[3].get());
 	}
 }
 
