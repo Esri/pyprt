@@ -17,36 +17,21 @@
  * A copy of the license is available in the repository's LICENSE file.
  */
 
-#include "codec.h"
+#pragma once
 
-#include "encoder/PyEncoder.h"
+#include "prt/LogHandler.h"
 
-#include "prtx/ExtensionManager.h"
+#include <ostream>
 
-#include <iostream>
+/**
+ * custom console logger to redirect PRT log events into the python output
+ */
+class PythonLogHandler : public prt::LogHandler {
+public:
+	PythonLogHandler() = default;
+	virtual ~PythonLogHandler() = default;
 
-extern "C" {
-
-PYENC_EXPORTS_API void registerExtensionFactories(prtx::ExtensionManager* manager) {
-	try {
-		manager->addFactory(PyEncoderFactory::instance());
-	}
-	catch (std::exception& e) {
-		std::cerr << __FUNCTION__ << " caught exception: " << e.what() << std::endl;
-	}
-	catch (...) {
-		std::cerr << __FUNCTION__ << " caught unknown exception: " << std::endl;
-	}
-}
-
-PYENC_EXPORTS_API void unregisterExtensionFactories(prtx::ExtensionManager* /*manager*/) {}
-
-PYENC_EXPORTS_API int getVersionMajor() {
-	return PRT_VERSION_MAJOR;
-}
-
-PYENC_EXPORTS_API int getVersionMinor() {
-	return PRT_VERSION_MINOR;
-}
-
-} // extern "C"
+	void handleLogEvent(const wchar_t* msg, prt::LogLevel level) override;
+	const prt::LogLevel* getLevels(size_t* count) override;
+	void getFormat(bool* dateTime, bool* level) override;
+};

@@ -17,36 +17,18 @@
  * A copy of the license is available in the repository's LICENSE file.
  */
 
-#include "codec.h"
+#include "InitialShape.h"
 
-#include "encoder/PyEncoder.h"
+#include <numeric>
 
-#include "prtx/ExtensionManager.h"
-
-#include <iostream>
-
-extern "C" {
-
-PYENC_EXPORTS_API void registerExtensionFactories(prtx::ExtensionManager* manager) {
-	try {
-		manager->addFactory(PyEncoderFactory::instance());
-	}
-	catch (std::exception& e) {
-		std::cerr << __FUNCTION__ << " caught exception: " << e.what() << std::endl;
-	}
-	catch (...) {
-		std::cerr << __FUNCTION__ << " caught unknown exception: " << std::endl;
-	}
+InitialShape::InitialShape(const std::vector<double>& vert) : mVertices(vert), mPathFlag(false) {
+	mIndices.resize(vert.size() / 3);
+	std::iota(std::begin(mIndices), std::end(mIndices), 0);
+	mFaceCounts.resize(1, (uint32_t)mIndices.size());
 }
 
-PYENC_EXPORTS_API void unregisterExtensionFactories(prtx::ExtensionManager* /*manager*/) {}
+InitialShape::InitialShape(const std::vector<double>& vert, const std::vector<uint32_t>& ind,
+                           const std::vector<uint32_t>& faceCnt)
+    : mVertices(vert), mIndices(ind), mFaceCounts(faceCnt), mPathFlag(false) {}
 
-PYENC_EXPORTS_API int getVersionMajor() {
-	return PRT_VERSION_MAJOR;
-}
-
-PYENC_EXPORTS_API int getVersionMinor() {
-	return PRT_VERSION_MINOR;
-}
-
-} // extern "C"
+InitialShape::InitialShape(const std::string& initShapePath) : mPath(initShapePath), mPathFlag(true) {}
