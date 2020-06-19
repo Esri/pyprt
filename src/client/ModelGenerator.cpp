@@ -152,22 +152,13 @@ void ModelGenerator::initializeEncoderData(const std::wstring& encName, const py
 	}
 }
 
-void ModelGenerator::getRawEncoderDataPointers(std::vector<const wchar_t*>& allEnc,
-                                               std::vector<const prt::AttributeMap*>& allEncOpt) {
+void ModelGenerator::getRawEncoderDataPointers(std::vector<const prt::AttributeMap*>& allEncOpt) {
 	if (mEncodersNames[0] == ENCODER_ID_PYTHON) {
-		allEnc.clear();
 		allEncOpt.clear();
 
-		allEnc.push_back(mEncodersNames[0].c_str());
 		allEncOpt.push_back(mEncodersOptionsPtr[0].get());
 	}
 	else {
-		allEnc.clear();
-		allEnc.push_back(mEncodersNames[0].c_str());
-		allEnc.push_back(mEncodersNames[1].c_str()); // an encoder to redirect CGA report to CGAReport.txt
-		allEnc.push_back(mEncodersNames[2].c_str()); // redirects CGA print output to the callback
-		allEnc.push_back(mEncodersNames[3].c_str()); // redirects CGA error output to the callback
-
 		allEncOpt.clear();
 		allEncOpt.push_back(mEncodersOptionsPtr[0].get());
 		allEncOpt.push_back(mEncodersOptionsPtr[1].get());
@@ -238,12 +229,11 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 		if (!geometryEncoderName.empty())
 			initializeEncoderData(geometryEncoderName, geometryEncoderOptions);
 
-		std::vector<const wchar_t*> encoders;
-		encoders.reserve(3);
+		std::vector<const wchar_t*> encoders = pcu::toPtrVec(mEncodersNames);
+
 		std::vector<const prt::AttributeMap*> encodersOptions;
 		encodersOptions.reserve(3);
-
-		getRawEncoderDataPointers(encoders, encodersOptions);
+		getRawEncoderDataPointers(encodersOptions);
 
 		if (mEncodersNames[0] == ENCODER_ID_PYTHON) {
 
