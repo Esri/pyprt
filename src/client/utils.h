@@ -69,15 +69,9 @@ using RuleFileInfoUPtr = std::unique_ptr<const prt::RuleFileInfo, PRTDestroyer>;
 bool getResolveMap(const std::filesystem::path& rulePackagePath, pcu::ResolveMapPtr* resolveMap);
 std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap);
 
-/**
- * prt encoder options helpers
- */
 AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::AttributeMapBuilder& bld);
 AttributeMapPtr createValidatedOptions(const std::wstring& encID, const AttributeMapPtr& unvalidatedOptions);
 
-/**
- * prt specific conversion functions
- */
 template <typename C>
 std::vector<const C*> toPtrVec(const std::vector<std::basic_string<C>>& sv) {
 	std::vector<const C*> pv(sv.size());
@@ -92,9 +86,6 @@ std::vector<const C*> toPtrVec(const std::vector<std::unique_ptr<C, D>>& sv) {
 	return pv;
 }
 
-/**
- * prt specific string helper
- */
 std::wstring removeStylePrefix(const std::wstring& fullName);
 
 /**
