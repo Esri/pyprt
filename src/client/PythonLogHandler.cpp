@@ -17,36 +17,22 @@
  * A copy of the license is available in the repository's LICENSE file.
  */
 
-#include "codec.h"
+#include "PythonLogHandler.h"
 
-#include "encoder/PyEncoder.h"
+#include <pybind11/pybind11.h>
 
-#include "prtx/ExtensionManager.h"
+#include <sstream>
 
-#include <iostream>
-
-extern "C" {
-
-PYENC_EXPORTS_API void registerExtensionFactories(prtx::ExtensionManager* manager) {
-	try {
-		manager->addFactory(PyEncoderFactory::instance());
-	}
-	catch (std::exception& e) {
-		std::cerr << __FUNCTION__ << " caught exception: " << e.what() << std::endl;
-	}
-	catch (...) {
-		std::cerr << __FUNCTION__ << " caught unknown exception: " << std::endl;
-	}
+void PythonLogHandler::handleLogEvent(const wchar_t* msg, prt::LogLevel /*level*/) {
+	pybind11::print(L"[PRT]", msg);
 }
 
-PYENC_EXPORTS_API void unregisterExtensionFactories(prtx::ExtensionManager* /*manager*/) {}
-
-PYENC_EXPORTS_API int getVersionMajor() {
-	return PRT_VERSION_MAJOR;
+const prt::LogLevel* PythonLogHandler::getLevels(size_t* count) {
+	*count = prt::LogHandler::ALL_COUNT;
+	return prt::LogHandler::ALL;
 }
 
-PYENC_EXPORTS_API int getVersionMinor() {
-	return PRT_VERSION_MINOR;
+void PythonLogHandler::getFormat(bool* dateTime, bool* level) {
+	*dateTime = true;
+	*level = true;
 }
-
-} // extern "C"

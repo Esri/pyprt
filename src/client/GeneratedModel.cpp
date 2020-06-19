@@ -17,36 +17,9 @@
  * A copy of the license is available in the repository's LICENSE file.
  */
 
-#include "codec.h"
+#include "GeneratedModel.h"
 
-#include "encoder/PyEncoder.h"
-
-#include "prtx/ExtensionManager.h"
-
-#include <iostream>
-
-extern "C" {
-
-PYENC_EXPORTS_API void registerExtensionFactories(prtx::ExtensionManager* manager) {
-	try {
-		manager->addFactory(PyEncoderFactory::instance());
-	}
-	catch (std::exception& e) {
-		std::cerr << __FUNCTION__ << " caught exception: " << e.what() << std::endl;
-	}
-	catch (...) {
-		std::cerr << __FUNCTION__ << " caught unknown exception: " << std::endl;
-	}
-}
-
-PYENC_EXPORTS_API void unregisterExtensionFactories(prtx::ExtensionManager* /*manager*/) {}
-
-PYENC_EXPORTS_API int getVersionMajor() {
-	return PRT_VERSION_MAJOR;
-}
-
-PYENC_EXPORTS_API int getVersionMinor() {
-	return PRT_VERSION_MINOR;
-}
-
-} // extern "C"
+GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const std::vector<double>& vert,
+                               const std::vector<uint32_t>& indices, const std::vector<uint32_t>& face,
+                               const pybind11::dict& rep)
+    : mInitialShapeIndex(initShapeIdx), mVertices(vert), mIndices(indices), mFaces(face), mReport(rep) {}

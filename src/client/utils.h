@@ -1,5 +1,5 @@
 /**
- * CityEngine SDK Geometry Encoder for Python
+ * PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
  *
  * Copyright (c) 2012-2020 Esri R&D Center Zurich
  *
@@ -66,15 +66,12 @@ using SimpleOutputCallbacksPtr = std::unique_ptr<prt::SimpleOutputCallbacks, PRT
 using PyCallbacksPtr = std::unique_ptr<PyCallbacks>;
 using RuleFileInfoUPtr = std::unique_ptr<const prt::RuleFileInfo, PRTDestroyer>;
 
-/**
- * prt encoder options helpers
- */
+bool getResolveMap(const std::filesystem::path& rulePackagePath, pcu::ResolveMapPtr* resolveMap);
+std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap);
+
 AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::AttributeMapBuilder& bld);
 AttributeMapPtr createValidatedOptions(const std::wstring& encID, const AttributeMapPtr& unvalidatedOptions);
 
-/**
- * prt specific conversion functions
- */
 template <typename C>
 std::vector<const C*> toPtrVec(const std::vector<std::basic_string<C>>& sv) {
 	std::vector<const C*> pv(sv.size());
@@ -89,9 +86,6 @@ std::vector<const C*> toPtrVec(const std::vector<std::unique_ptr<C, D>>& sv) {
 	return pv;
 }
 
-/**
- * prt specific string helper
- */
 std::wstring removeStylePrefix(const std::wstring& fullName);
 
 /**
