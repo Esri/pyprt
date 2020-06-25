@@ -36,8 +36,6 @@ namespace py = pybind11;
 
 namespace pcu {
 
-enum class RunStatus : uint8_t { DONE = EXIT_SUCCESS, FAILED = EXIT_FAILURE, CONTINUE = 2 };
-
 bool getResolveMap(const std::filesystem::path& rulePackagePath, ResolveMapPtr* resolveMap);
 std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap);
 
@@ -76,7 +74,6 @@ URI toFileURI(const std::string& p);
  * XML helpers
  */
 std::string objectToXML(const prt::Object* obj);
-RunStatus codecInfoToXML(const std::string& infoFilePath);
 
 /**
  * default initial shape geometry (a quad)
