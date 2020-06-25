@@ -19,17 +19,17 @@
 
 #pragma once
 
+#include "types.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
 
-using HoleIndices = std::vector<std::vector<uint32_t>>;
-
 class InitialShape {
 public:
-	InitialShape(const std::vector<double>& vert);
-	InitialShape(const std::vector<double>& vert, const std::vector<uint32_t>& ind,
-	             const std::vector<uint32_t>& faceCnt, const HoleIndices& holes);
+	InitialShape(const Coordinates& vert);
+	InitialShape(const Coordinates& vert, const Indices& ind,
+	             const Indices& faceCnt, const HoleIndices& holes);
 	InitialShape(const std::string& path);
 	~InitialShape() = default;
 
@@ -65,10 +65,10 @@ public:
 	}
 
 protected:
-	const std::vector<double> mVertices;
-	std::vector<uint32_t> mIndices;
-	std::vector<uint32_t> mFaceCounts;
-	std::vector<uint32_t> mHoles;
+	const Coordinates mVertices;
+	Indices mIndices;
+	Indices mFaceCounts;
+	Indices mHoles;
 	const std::string mPath;
 	const bool mPathFlag;
 };

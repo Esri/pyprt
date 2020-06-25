@@ -21,6 +21,7 @@
 #	define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#include "InitialShape.h"
 #include "ModelGenerator.h"
 #include "PRTContext.h"
 #include "doc.h"
@@ -147,11 +148,11 @@ PYBIND11_MODULE(pyprt, m) {
 	m.def("inspect_rpk", &inspectRPK, py::arg("rulePackagePath"), doc::InspectRPK);
 
 	py::class_<InitialShape>(m, "InitialShape", doc::Is)
-	        .def(py::init<const std::vector<double>&>(), py::arg("vertCoordinates"), doc::IsInitV)
-	        .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&,
+	        .def(py::init<const Coordinates&>(), py::arg("vertCoordinates"), doc::IsInitV)
+	        .def(py::init<const Coordinates&, const Indices&, const Indices&,
 	                      const HoleIndices&>(),
 	             py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"),
-	             py::arg("holes") = std::vector<std::vector<uint32_t>>(), doc::IsInitVI)
+	             py::arg("holes") = HoleIndices(), doc::IsInitVI)
 	        .def(py::init<const std::string&>(), py::arg("initialShapePath"), doc::IsInitP)
 	        .def("get_vertex_count", &InitialShape::getVertexCount, doc::IsGetV)
 	        .def("get_index_count", &InitialShape::getIndexCount, doc::IsGetI)

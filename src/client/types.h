@@ -19,43 +19,9 @@
 
 #pragma once
 
-#include "types.h"
-
-#include <pybind11/pybind11.h>
-
-#include <cstddef>
 #include <cstdint>
 #include <vector>
 
-class GeneratedModel {
-public:
-	GeneratedModel(const size_t& initialShapeIdx, const Coordinates& vert, const Indices& indices,
-	               const Indices& face, const pybind11::dict& rep);
-	GeneratedModel() = default;
-	~GeneratedModel() = default;
-
-	size_t getInitialShapeIndex() const {
-		return mInitialShapeIndex;
-	}
-	const Coordinates& getVertices() const {
-		return mVertices;
-	}
-	const Indices& getIndices() const {
-		return mIndices;
-	}
-	const Indices& getFaces() const {
-		return mFaces;
-	}
-	const pybind11::dict& getReport() const {
-		return mReport;
-	}
-
-private:
-	size_t mInitialShapeIndex;
-	Coordinates mVertices;
-	Indices mIndices;
-	Indices mFaces;
-	pybind11::dict mReport;
-};
-
-PYBIND11_MAKE_OPAQUE(std::vector<GeneratedModel>);
+using Coordinates = std::vector<double>;
+using Indices = std::vector<uint32_t>;
+using HoleIndices = std::vector<Indices>;
