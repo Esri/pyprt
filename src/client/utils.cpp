@@ -26,7 +26,6 @@
 
 #include <algorithm>
 #include <fstream>
-#include <functional>
 #include <iostream>
 
 #ifdef _WIN32
@@ -267,8 +266,9 @@ std::basic_string<C> callAPI(FUNC f, size_t initialSize) {
 }
 
 std::string objectToXML(const prt::Object* obj) {
-	auto toXMLFunc =
-	        std::bind(&prt::Object::toXML, obj, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	auto toXMLFunc = [&obj](char* result, size_t* resultSize, prt::Status* status) {
+		obj->toXML(result, resultSize, status);
+	};
 	return callAPI<char>(toXMLFunc, 4096);
 }
 
