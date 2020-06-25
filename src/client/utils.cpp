@@ -26,7 +26,6 @@
 
 #include <algorithm>
 #include <fstream>
-#include <functional>
 #include <iostream>
 
 #ifdef _WIN32
@@ -267,59 +266,10 @@ std::basic_string<C> callAPI(FUNC f, size_t initialSize) {
 }
 
 std::string objectToXML(const prt::Object* obj) {
-	auto toXMLFunc =
-	        std::bind(&prt::Object::toXML, obj, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	auto toXMLFunc = [&obj](char* result, size_t* resultSize, prt::Status* status) {
+		obj->toXML(result, resultSize, status);
+	};
 	return callAPI<char>(toXMLFunc, 4096);
-}
-
-RunStatus codecInfoToXML(const std::string& infoFilePath) {
-	const std::wstring encIDsStr{callAPI<wchar_t>(prt::listEncoderIds, 1024)};
-	const std::wstring decIDsStr{callAPI<wchar_t>(prt::listDecoderIds, 1024)};
-
-	std::vector<std::wstring> encIDs, decIDs;
-	tokenize<wchar_t>(encIDsStr, encIDs, L";");
-	tokenize<wchar_t>(decIDsStr, decIDs, L";");
-
-	try {
-		std::ofstream xml(infoFilePath);
-		xml << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n\n";
-
-		xml << "<Codecs build=\"" << prt::getVersion()->mVersion << "\" buildDate=\"" << prt::getVersion()->mBuildDate
-		    << "\" buildConfig=\"" << prt::getVersion()->mBuildConfig << "\">\n";
-
-		xml << "<Encoders>\n";
-		for (const std::wstring& encID : encIDs) {
-			prt::Status s = prt::STATUS_UNSPECIFIED_ERROR;
-			const EncoderInfoPtr encInfo{prt::createEncoderInfo(encID.c_str(), &s)};
-			if (s == prt::STATUS_OK && encInfo)
-				xml << objectToXML(encInfo.get()) << std::endl;
-			else
-				LOG_ERR << L"encoder not found for ID: " << encID << std::endl;
-		}
-		xml << "</Encoders>\n";
-
-		xml << "<Decoders>\n";
-		for (const std::wstring& decID : decIDs) {
-			prt::Status s = prt::STATUS_UNSPECIFIED_ERROR;
-			const DecoderInfoPtr decInfo{prt::createDecoderInfo(decID.c_str(), &s)};
-			if (s == prt::STATUS_OK && decInfo)
-				xml << objectToXML(decInfo.get()) << std::endl;
-			else
-				LOG_ERR << L"decoder not found for ID: " << decID << std::endl;
-		}
-		xml << "</Decoders>\n";
-
-		xml << "</Codecs>\n";
-		xml.close();
-
-		LOG_INF << "Dumped codecs info to " << infoFilePath;
-	}
-	catch (std::exception& e) {
-		LOG_ERR << "Exception while dumping codec info: " << e.what();
-		return RunStatus::FAILED;
-	}
-
-	return RunStatus::DONE;
 }
 
 URI toFileURI(const std::string& p) {

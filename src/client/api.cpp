@@ -21,6 +21,7 @@
 #	define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#include "InitialShape.h"
 #include "ModelGenerator.h"
 #include "PRTContext.h"
 #include "doc.h"
@@ -105,7 +106,7 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 }
 
 py::dict inspectRPK(const std::filesystem::path& rulePackagePath) {
-	pcu::ResolveMapPtr resolveMap;
+	ResolveMapPtr resolveMap;
 
 	if (!std::filesystem::exists(rulePackagePath) || !pcu::getResolveMap(rulePackagePath, &resolveMap)) {
 		LOG_ERR << "invalid rule package path";
@@ -121,7 +122,7 @@ py::dict inspectRPK(const std::filesystem::path& rulePackagePath) {
 	}
 
 	prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
-	pcu::RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, nullptr, &infoStatus));
+	RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, nullptr, &infoStatus));
 	if (!info || infoStatus != prt::STATUS_OK) {
 		LOG_ERR << "could not get rule file info from rule file " << ruleFile;
 		return py::dict();
@@ -147,9 +148,10 @@ PYBIND11_MODULE(pyprt, m) {
 	m.def("inspect_rpk", &inspectRPK, py::arg("rulePackagePath"), doc::InspectRPK);
 
 	py::class_<InitialShape>(m, "InitialShape", doc::Is)
-	        .def(py::init<const std::vector<double>&>(), py::arg("vertCoordinates"), doc::IsInitV)
-	        .def(py::init<const std::vector<double>&, const std::vector<uint32_t>&, const std::vector<uint32_t>&>(),
-	             py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"), doc::IsInitVI)
+	        .def(py::init<const Coordinates&>(), py::arg("vertCoordinates"), doc::IsInitV)
+	        .def(py::init<const Coordinates&, const Indices&, const Indices&, const HoleIndices&>(),
+	             py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"),
+	             py::arg("holes") = HoleIndices(), doc::IsInitVI)
 	        .def(py::init<const std::string&>(), py::arg("initialShapePath"), doc::IsInitP)
 	        .def("get_vertex_count", &InitialShape::getVertexCount, doc::IsGetV)
 	        .def("get_index_count", &InitialShape::getIndexCount, doc::IsGetI)

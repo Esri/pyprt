@@ -21,7 +21,8 @@
 
 namespace doc {
 
-constexpr const char* Init = "Initialization of PRT. PyPRT functionalities are blocked until the initialization is done.";
+constexpr const char* Init =
+        "Initialization of PRT. PyPRT functionalities are blocked until the initialization is done.";
 
 constexpr const char* IsInit = R"mydelimiter(
         is_prt_initialized() -> bool
@@ -32,8 +33,9 @@ constexpr const char* IsInit = R"mydelimiter(
             bool
     )mydelimiter";
 
-constexpr const char* Shutdown = "Shutdown of PRT. The PRT initialization process can be done only once per "
-                          "session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.";
+constexpr const char* Shutdown =
+        "Shutdown of PRT. The PRT initialization process can be done only once per "
+        "session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.";
 
 constexpr const char* InspectRPK = R"mydelimiter(
         inspect_rpk(rule_package_path) -> dict
@@ -62,17 +64,26 @@ constexpr const char* IsInitV = R"mydelimiter(
         )mydelimiter";
 
 constexpr const char* IsInitVI = R"mydelimiter(
-        2. **__init__** (*vert_coordinates*, *face_indices*, *face_count*)
+        2. **__init__** (*vert_coordinates*, *face_indices*, *face_count*, *holes*)
 
         Constructs an InitialShape by accepting a list of direct vertex coordinates, a list of the vertex
-        indices for each faces and a list of the indices count per face. The vertex order is expected to
-        be counter-clockwise.
+        indices for each faces and a list of the indices count per face. The vertex order is expected to 
+        be counter-clockwise. The last parameter, *holes*, is optional and allows defining holes polygons in faces.
+        It is a list of lists, that assign hole-faces to faces. It follows this structure:
+
+		``[[index-of-face1-with-holes, index-of-hole1-in-face1, index-of-hole2-in-face1,...], ..., [index-of-faceN-with-holes, index-of-hole1-in-faceN, index-of-hole2-in-faceN, ...]]``
+        
+        Holes must have the opposite vertex-ordering as the encircling face.
 
         :Parameters:
             - **vert_coordinates** -- List[float]
             - **face_indices** -- List[int]
             - **face_count** -- List[int]
-        :Example: ``shape2 = pyprt.InitialShape([0, 0, 0, 0, 0, 10, 10, 0, 10, 10, 0, 0], [0, 1, 2, 3], [4])``
+            - **holes** -- List[List[int]]
+        :Examples: ``shape_without_holes =``
+							``pyprt.InitialShape([0, 0, 0, 0, 0, 10, 10, 0, 10, 10, 0, 0], [0, 1, 2, 3], [4])``
+				   ``shape_with_hole =``
+							``pyprt.InitialShape([0, 0, 0, 0, 0, 10, 10, 0, 10, 10, 0, 0, 2, 0, 2, 8, 0, 8, 2, 0, 8], [0, 1, 2, 3, 4, 5, 6], [4, 3], [[0, 1]])``
         )mydelimiter";
 
 constexpr const char* IsInitP = R"mydelimiter(
@@ -126,8 +137,9 @@ constexpr const char* IsGetP = R"mydelimiter(
             str
         )mydelimiter";
 
-constexpr const char* Mg = "The ModelGenerator class will host the data required to procedurally generate the 3D model on "
-                    "a given initial shape.";
+constexpr const char* Mg =
+        "The ModelGenerator class will host the data required to procedurally generate the 3D model on "
+        "a given initial shape.";
 
 constexpr const char* MgInit = R"mydelimiter(
         __init__(init_shapes)
@@ -189,8 +201,9 @@ constexpr const char* MgGen2 = R"mydelimiter(
         :Example: ``models2 = m.generate_model([attrs3, attrs4])``
         )mydelimiter";
 
-constexpr const char* Gm = "The GeneratedModel instance contains the generated 3D geometry. This class is only employed "
-                    "if the *com.esri.pyprt.PyEncoder* encoder is used in the ModelGenerator instance.";
+constexpr const char* Gm =
+        "The GeneratedModel instance contains the generated 3D geometry. This class is only employed "
+        "if the *com.esri.pyprt.PyEncoder* encoder is used in the ModelGenerator instance.";
 
 constexpr const char* GmGetInd = R"mydelimiter(
         get_initial_shape_index() -> int

@@ -20,7 +20,7 @@
 #pragma once
 
 #include "PythonLogHandler.h"
-#include "utils.h"
+#include "types.h"
 
 #include "prt/LogLevel.h"
 
@@ -35,5 +35,5 @@ struct PRTContext {
 	~PRTContext();
 
 	PythonLogHandler mLogHandler;
-	pcu::ObjectPtr mPRTHandle;
+	ObjectPtr mPRTHandle;
 };

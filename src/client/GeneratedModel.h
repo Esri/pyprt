@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "types.h"
+
 #include <pybind11/pybind11.h>
 
 #include <cstddef>
@@ -27,21 +29,21 @@
 
 class GeneratedModel {
 public:
-	GeneratedModel(const size_t& initialShapeIdx, const std::vector<double>& vert, const std::vector<uint32_t>& indices,
-	               const std::vector<uint32_t>& face, const pybind11::dict& rep);
+	GeneratedModel(const size_t& initialShapeIdx, const Coordinates& vert, const Indices& indices,
+	               const Indices& face, const pybind11::dict& rep);
 	GeneratedModel() = default;
 	~GeneratedModel() = default;
 
 	size_t getInitialShapeIndex() const {
 		return mInitialShapeIndex;
 	}
-	const std::vector<double>& getVertices() const {
+	const Coordinates& getVertices() const {
 		return mVertices;
 	}
-	const std::vector<uint32_t>& getIndices() const {
+	const Indices& getIndices() const {
 		return mIndices;
 	}
-	const std::vector<uint32_t>& getFaces() const {
+	const Indices& getFaces() const {
 		return mFaces;
 	}
 	const pybind11::dict& getReport() const {
@@ -50,9 +52,9 @@ public:
 
 private:
 	size_t mInitialShapeIndex;
-	std::vector<double> mVertices;
-	std::vector<uint32_t> mIndices;
-	std::vector<uint32_t> mFaces;
+	Coordinates mVertices;
+	Indices mIndices;
+	Indices mFaces;
 	pybind11::dict mReport;
 };
 

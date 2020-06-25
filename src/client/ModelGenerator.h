@@ -19,8 +19,9 @@
 
 #pragma once
 
-#include "InitialShape.h"
 #include "GeneratedModel.h"
+#include "InitialShape.h"
+#include "types.h"
 #include "utils.h"
 
 #include <pybind11/pybind11.h>
@@ -40,13 +41,13 @@ public:
 	std::vector<GeneratedModel> generateAnotherModel(const std::vector<pybind11::dict>& shapeAttributes);
 
 private:
-	pcu::ResolveMapPtr mResolveMap;
-	pcu::CachePtr mCache;
+	ResolveMapPtr mResolveMap;
+	CachePtr mCache;
 
-	pcu::AttributeMapBuilderPtr mEncoderBuilder;
-	std::vector<pcu::AttributeMapPtr> mEncodersOptionsPtr;
+	AttributeMapBuilderPtr mEncoderBuilder;
+	std::vector<AttributeMapPtr> mEncodersOptionsPtr;
 	std::vector<std::wstring> mEncodersNames;
-	std::vector<pcu::InitialShapeBuilderPtr> mInitialShapesBuilders;
+	std::vector<InitialShapeBuilderPtr> mInitialShapesBuilders;
 
 	std::wstring mRuleFile;
 	std::wstring mStartRule;
@@ -57,7 +58,7 @@ private:
 
 	void setAndCreateInitialShape(const std::vector<pybind11::dict>& shapeAttr,
 	                              std::vector<const prt::InitialShape*>& initShapes,
-	                              std::vector<pcu::InitialShapePtr>& initShapesPtrs,
-	                              std::vector<pcu::AttributeMapPtr>& convertShapeAttr);
+	                              std::vector<InitialShapePtr>& initShapesPtrs,
+	                              std::vector<AttributeMapPtr>& convertShapeAttr);
 	void initializeEncoderData(const std::wstring& encName, const pybind11::dict& encOpt);
 };

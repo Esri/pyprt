@@ -25,6 +25,10 @@ def asset_file(filename):
     return os.path.join(os.path.dirname(CS_FOLDER), 'tests', 'data', filename)
 
 
+def asset_output_file(filename):
+    return os.path.join(os.path.dirname(CS_FOLDER), 'output', filename)
+
+
 class GeometryTest(unittest.TestCase):
     def test_verticesNber_candler(self):
         rpk = asset_file('candler.rpk')
@@ -130,3 +134,28 @@ class GeometryTest(unittest.TestCase):
                              model3[0].get_vertices())
         self.assertListEqual(model2[0].get_vertices(),
                              model3[1].get_vertices())
+
+    def test_initial_shape_with_hole(self):
+        rpk = asset_file('FacesHolesVerticesrule.rpk')
+        attrs = {}
+        shape_with_hole = pyprt.InitialShape([0, 0, 0, 0, 0, 10, 10, 0, 10, 10, 0, 0, 2, 0, 2, 8, 0, 8, 2, 0, 8], [
+                                             0, 1, 2, 3, 4, 5, 6], [4, 3], [[0, 1]])
+
+        encoder_options = {
+            'outputPath': os.path.dirname(asset_output_file(''))}
+        os.makedirs(encoder_options['outputPath'], exist_ok=True)
+
+        m = pyprt.ModelGenerator([shape_with_hole])
+        m.generate_model(
+            [attrs], rpk, 'com.esri.prt.codecs.OBJEncoder', encoder_options)
+
+        expected_file = os.path.join(
+            encoder_options['outputPath'], 'CGAPrint.txt')
+        expected_content = ("14\n"
+                            "9\n"
+                            "2\n")
+
+        self.assertTrue(os.path.exists(expected_file))
+        with open(expected_file, 'r') as cga_print_file:
+            cga_print = cga_print_file.read()
+            self.assertEqual(cga_print, expected_content)
