@@ -36,8 +36,10 @@ namespace py = pybind11;
 
 namespace pcu {
 
+std::filesystem::path getModuleDirectory();
 bool getResolveMap(const std::filesystem::path& rulePackagePath, ResolveMapPtr* resolveMap);
 std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap);
+std::wstring removeStylePrefix(const std::wstring& fullName);
 
 AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::AttributeMapBuilder& bld);
 AttributeMapPtr createValidatedOptions(const std::wstring& encID, const AttributeMapPtr& unvalidatedOptions);
@@ -56,23 +58,15 @@ std::vector<const C*> toPtrVec(const std::vector<std::unique_ptr<C, D>>& sv) {
 	return pv;
 }
 
-std::wstring removeStylePrefix(const std::wstring& fullName);
-
-/**
- * string and URI helpers
- */
-using URI = std::string;
-
 std::string toOSNarrowFromUTF16(const std::wstring& osWString);
 std::wstring toUTF16FromOSNarrow(const std::string& osString);
 std::wstring toUTF16FromUTF8(const std::string& utf8String);
 std::string toUTF8FromOSNarrow(const std::string& osString);
-std::string percentEncode(const std::string& utf8String);
-URI toFileURI(const std::string& p);
 
-/**
- * XML helpers
- */
+using URI = std::string;
+URI toFileURI(const std::string& p);
+std::string percentEncode(const std::string& utf8String);
+
 std::string objectToXML(const prt::Object* obj);
 
 /**
@@ -86,7 +80,5 @@ const size_t indexCount = 4;
 const uint32_t faceCounts[] = {4};
 const size_t faceCountsCount = 1;
 } // namespace quad
-
-std::filesystem::path getModuleDirectory();
 
 } // namespace pcu
