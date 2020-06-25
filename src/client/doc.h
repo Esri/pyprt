@@ -69,7 +69,7 @@ constexpr const char* IsInitVI = R"mydelimiter(
         be counter-clockwise. The last parameter, *holes*, is optional and allows defining holes polygons in faces.
         It is a list of lists, that assign hole-faces to faces. It follows this structure:
 
-		``[[face-with-holes1-idx, hole-face-idx1, hole-face-idx2,...], ..., [face-with-holesN-idx, hole-face-idx1, hole-face-idx2, ...]]``
+		``[[index-of-face1-with-holes, index-of-hole1-in-face1, index-of-hole2-in-face1,...], ..., [index-of-faceN-with-holes, index-of-hole1-in-faceN, index-of-hole2-in-faceN, ...]]``
         
         Holes must have the opposite vertex-ordering as the encircling face.
 
