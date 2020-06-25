@@ -28,7 +28,7 @@ InitialShape::InitialShape(const std::vector<double>& vert) : mVertices(vert), m
 }
 
 InitialShape::InitialShape(const std::vector<double>& vert, const std::vector<uint32_t>& ind,
-                           const std::vector<uint32_t>& faceCnt, const std::vector<std::vector<uint32_t>>& holes = {{}})
+                           const std::vector<uint32_t>& faceCnt, const HoleIndices& holes = {{}})
     : mVertices(vert), mIndices(ind), mFaceCounts(faceCnt), mPathFlag(false) {
 
 	for (auto& holesPerFaceWithHoles : holes) {
