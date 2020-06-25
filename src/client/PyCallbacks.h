@@ -35,6 +35,9 @@
 
 namespace py = pybind11;
 
+class PyCallbacks;
+using PyCallbacksPtr = std::unique_ptr<PyCallbacks>;
+
 class PyCallbacks : public IPyCallbacks {
 private:
 	struct Model {

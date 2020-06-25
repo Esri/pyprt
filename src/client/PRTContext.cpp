@@ -18,11 +18,13 @@
  */
 
 #include "PRTContext.h"
+#include "utils.h"
 
 #include <array>
-#include <string>
+#include <filesystem>
 #include <memory>
 #include <mutex>
+#include <string>
 
 namespace {
 
@@ -32,9 +34,7 @@ std::once_flag prtInitFlag;
 } // namespace
 
 std::shared_ptr<PRTContext> PRTContext::get() {
-	std::call_once(prtInitFlag, [](){
-		prtCtx = std::make_shared<PRTContext>(prt::LOG_WARNING);
-	});
+	std::call_once(prtInitFlag, []() { prtCtx = std::make_shared<PRTContext>(prt::LOG_WARNING); });
 	return prtCtx;
 }
 
