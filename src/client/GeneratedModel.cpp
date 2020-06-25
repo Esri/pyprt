@@ -19,7 +19,6 @@
 
 #include "GeneratedModel.h"
 
-GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const Coordinates& vert,
-                               const Indices& indices, const Indices& face,
-                               const pybind11::dict& rep)
+GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const Coordinates& vert, const Indices& indices,
+                               const Indices& face, const pybind11::dict& rep)
     : mInitialShapeIndex(initShapeIdx), mVertices(vert), mIndices(indices), mFaces(face), mReport(rep) {}

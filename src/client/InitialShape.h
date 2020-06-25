@@ -28,8 +28,7 @@
 class InitialShape {
 public:
 	InitialShape(const Coordinates& vert);
-	InitialShape(const Coordinates& vert, const Indices& ind,
-	             const Indices& faceCnt, const HoleIndices& holes);
+	InitialShape(const Coordinates& vert, const Indices& ind, const Indices& faceCnt, const HoleIndices& holes);
 	InitialShape(const std::string& path);
 	~InitialShape() = default;
 

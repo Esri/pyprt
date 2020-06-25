@@ -21,7 +21,8 @@
 
 namespace doc {
 
-constexpr const char* Init = "Initialization of PRT. PyPRT functionalities are blocked until the initialization is done.";
+constexpr const char* Init =
+        "Initialization of PRT. PyPRT functionalities are blocked until the initialization is done.";
 
 constexpr const char* IsInit = R"mydelimiter(
         is_prt_initialized() -> bool
@@ -32,8 +33,9 @@ constexpr const char* IsInit = R"mydelimiter(
             bool
     )mydelimiter";
 
-constexpr const char* Shutdown = "Shutdown of PRT. The PRT initialization process can be done only once per "
-                          "session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.";
+constexpr const char* Shutdown =
+        "Shutdown of PRT. The PRT initialization process can be done only once per "
+        "session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.";
 
 constexpr const char* InspectRPK = R"mydelimiter(
         inspect_rpk(rule_package_path) -> dict
@@ -135,8 +137,9 @@ constexpr const char* IsGetP = R"mydelimiter(
             str
         )mydelimiter";
 
-constexpr const char* Mg = "The ModelGenerator class will host the data required to procedurally generate the 3D model on "
-                    "a given initial shape.";
+constexpr const char* Mg =
+        "The ModelGenerator class will host the data required to procedurally generate the 3D model on "
+        "a given initial shape.";
 
 constexpr const char* MgInit = R"mydelimiter(
         __init__(init_shapes)
@@ -198,8 +201,9 @@ constexpr const char* MgGen2 = R"mydelimiter(
         :Example: ``models2 = m.generate_model([attrs3, attrs4])``
         )mydelimiter";
 
-constexpr const char* Gm = "The GeneratedModel instance contains the generated 3D geometry. This class is only employed "
-                    "if the *com.esri.pyprt.PyEncoder* encoder is used in the ModelGenerator instance.";
+constexpr const char* Gm =
+        "The GeneratedModel instance contains the generated 3D geometry. This class is only employed "
+        "if the *com.esri.pyprt.PyEncoder* encoder is used in the ModelGenerator instance.";
 
 constexpr const char* GmGetInd = R"mydelimiter(
         get_initial_shape_index() -> int

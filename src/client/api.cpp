@@ -149,8 +149,7 @@ PYBIND11_MODULE(pyprt, m) {
 
 	py::class_<InitialShape>(m, "InitialShape", doc::Is)
 	        .def(py::init<const Coordinates&>(), py::arg("vertCoordinates"), doc::IsInitV)
-	        .def(py::init<const Coordinates&, const Indices&, const Indices&,
-	                      const HoleIndices&>(),
+	        .def(py::init<const Coordinates&, const Indices&, const Indices&, const HoleIndices&>(),
 	             py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"),
 	             py::arg("holes") = HoleIndices(), doc::IsInitVI)
 	        .def(py::init<const std::string&>(), py::arg("initialShapePath"), doc::IsInitP)
