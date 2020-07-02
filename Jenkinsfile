@@ -10,9 +10,11 @@ import com.esri.zrh.jenkins.PipelineSupportLibrary
 import com.esri.zrh.jenkins.JenkinsTools
 import com.esri.zrh.jenkins.ce.CityEnginePipelineLibrary
 import com.esri.zrh.jenkins.ce.PrtAppPipelineLibrary
+import com.esri.zrh.jenkins.PslFactory
+import com.esri.zrh.jenkins.psl.UploadTrackingPsl
 import groovy.transform.Field
 
-@Field def psl = new PipelineSupportLibrary(this)
+@Field def psl = PslFactory.create(this, UploadTrackingPsl.ID)
 @Field def cepl = new CityEnginePipelineLibrary(this, psl)
 @Field def papl = new PrtAppPipelineLibrary(cepl)
 
@@ -46,6 +48,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 stage('pyprt') {
 	cepl.runParallel(getTasks())
+	papl.finalizeRun('pyprt', env.BRANCH_NAME)
 }
 
 Map getTasks() {
