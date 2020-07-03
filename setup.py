@@ -247,6 +247,7 @@ setup(
                  'License :: OSI Approved :: Apache Software License',
                  'Operating System :: Microsoft :: Windows',
                  'Operating System :: Unix',
+                 'Operating System :: MacOS',
                  'Programming Language :: C++',
                  'Programming Language :: Python',
                  'Programming Language :: Python :: 3 :: Only',
