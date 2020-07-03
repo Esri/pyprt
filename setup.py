@@ -233,7 +233,7 @@ setup(
     project_urls={"Documentation": "https://github.com/Esri/pyprt/blob/master/README.md#documentation",
                   "Examples": "https://github.com/Esri/pyprt-examples",
                   "Source Code": "https://github.com/Esri/pyprt"},
-    platforms=['Windows', 'Linux'],
+    platforms=['Windows', 'Linux', 'MacOS'],
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
     ext_modules=[CMakeExtension('pyprt.pyprt', 'src')],
