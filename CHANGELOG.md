@@ -1,14 +1,17 @@
 # PyPRT ChangeLog
 
-## v1.1.0 (2020-XX-YY)
+## v1.1.0 (2020-07-YY)
 
 ### Added
-* Support for macOS Catalina
-* Holes support for initial shapes
+* Added new API function `pyprt.inspect_rpk(...)` to query available CGA rule attributes.
+* Added support for macOS 10.15 (Catalina).
+* Added support for initial shapes with polygon holes.
+* Added automatic detection of RuleFile and StartRule attributes in RPKs.
+* The `GeneratedModel` class now provides access to CGA `print` and error output when used with the PyEncoder (new `get_cga_prints()` and `get_cga_errors()` functions).
 
 ### Changed
-* Updated to PRT 2.2 (CityEngine 2020.0)
-* Reorganized and cleaned up C++ sources
+* Internal update to PRT 2.2 (adds support for CGA language features of CityEngine 2020.0).
+* Reorganization and cleanup of C++ sources.
 
 ## v1.0.0 (2020-05-07)
 
