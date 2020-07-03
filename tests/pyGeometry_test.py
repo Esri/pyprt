@@ -159,3 +159,14 @@ class GeometryTest(unittest.TestCase):
         with open(expected_file, 'r') as cga_print_file:
             cga_print = cga_print_file.read()
             self.assertEqual(cga_print, expected_content)
+
+    def test_cga_prints_green(self):
+        rpk = asset_file('envelope2002.rpk')
+        attrs = {'report_but_not_display_green': True, 'seed': 2}
+        shape_geo_from_obj = pyprt.InitialShape(
+            asset_file('building_parcel.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
+        model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
+            'emitReport': True, 'emitGeometry': False})
+
+        self.assertEqual(model[0].get_cga_prints(), str(attrs['seed'])+"\n")
