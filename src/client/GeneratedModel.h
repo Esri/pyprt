@@ -29,8 +29,8 @@
 
 class GeneratedModel {
 public:
-	GeneratedModel(const size_t& initialShapeIdx, const Coordinates& vert, const Indices& indices,
-	               const Indices& face, const pybind11::dict& rep);
+	GeneratedModel(const size_t& initialShapeIdx, const Coordinates& vert, const Indices& indices, const Indices& face,
+	               const pybind11::dict& rep, const std::wstring& cgaPrints, const std::wstring& cgaErrors);
 	GeneratedModel() = default;
 	~GeneratedModel() = default;
 
@@ -49,6 +49,12 @@ public:
 	const pybind11::dict& getReport() const {
 		return mReport;
 	}
+	const std::wstring& getCGAPrints() const {
+		return mCGAPrints;
+	}
+	const std::wstring& getCGAErrors() const {
+		return mCGAErrors;
+	}
 
 private:
 	size_t mInitialShapeIndex;
@@ -56,6 +62,8 @@ private:
 	Indices mIndices;
 	Indices mFaces;
 	pybind11::dict mReport;
+	std::wstring mCGAPrints;
+	std::wstring mCGAErrors;
 };
 
 PYBIND11_MAKE_OPAQUE(std::vector<GeneratedModel>);
