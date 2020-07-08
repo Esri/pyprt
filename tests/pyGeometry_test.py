@@ -170,3 +170,14 @@ class GeometryTest(unittest.TestCase):
             'emitReport': True, 'emitGeometry': False})
 
         self.assertEqual(model[0].get_cga_prints(), str(attrs['seed'])+"\n")
+
+    def test_cga_errors_holes(self):
+        rpk = asset_file('FacesHolesVerticesrule.rpk')
+        attrs = {}
+        shape_with_hole_with_error = pyprt.InitialShape([0, 0, 0, 0, 0, 10, 10, 0, 10, 10, 0, 0, 2, 0, 2, 8, 0, 8, 2, 0, 8], [
+                                             0, 1, 2, 3, 4, 5, 6], [4, 3], [[0, 1, 1]])
+        m = pyprt.ModelGenerator([shape_with_hole_with_error])
+        model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
+            'emitReport': True, 'emitGeometry': False})
+
+        self.assertEqual(len(model[0].get_cga_errors()), 1)
