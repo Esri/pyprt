@@ -261,20 +261,20 @@ constexpr const char* GmGetR = R"mydelimiter(
 constexpr const char* GmGetP = R"mydelimiter(
         get_cga_prints() -> str
 
-        Returns the CGA print operations called during the generation of the model.
+        Returns a string with all the CGA print outputs of this model.
 
         :Returns:
             str
         )mydelimiter";
 
 constexpr const char* GmGetE = R"mydelimiter(
-        get_cga_errors() -> str
+        get_cga_errors() -> List[str]
 
-        Returns the runtime CGA errors and the asset errors occuried during the generation of the model. The asset error 
-        messages contain the error description as well as the asset's key and URI from the initial shape's ResolveMap.
+        Returns a list of the CGA and asset errors messages of this model. The asset error messages additionally 
+        contain the key and URI of the asset.
 
         :Returns:
-            str
+            List[str]
         )mydelimiter";
 
 } // namespace doc
