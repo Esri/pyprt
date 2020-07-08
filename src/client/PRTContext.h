@@ -17,36 +17,23 @@
  * A copy of the license is available in the repository's LICENSE file.
  */
 
-#include "codec.h"
+#pragma once
 
-#include "encoder/PyEncoder.h"
+#include "PythonLogHandler.h"
+#include "types.h"
 
-#include "prtx/ExtensionManager.h"
+#include "prt/LogLevel.h"
 
-#include <iostream>
+/**
+ * Helper struct to manage PRT lifetime (e.g. the prt::init() call)
+ */
+struct PRTContext {
+	static std::shared_ptr<PRTContext> get();
+	static void shutdown();
 
-extern "C" {
+	PRTContext(prt::LogLevel minimalLogLevel);
+	~PRTContext();
 
-PYENC_EXPORTS_API void registerExtensionFactories(prtx::ExtensionManager* manager) {
-	try {
-		manager->addFactory(PyEncoderFactory::instance());
-	}
-	catch (std::exception& e) {
-		std::cerr << __FUNCTION__ << " caught exception: " << e.what() << std::endl;
-	}
-	catch (...) {
-		std::cerr << __FUNCTION__ << " caught unknown exception: " << std::endl;
-	}
-}
-
-PYENC_EXPORTS_API void unregisterExtensionFactories(prtx::ExtensionManager* /*manager*/) {}
-
-PYENC_EXPORTS_API int getVersionMajor() {
-	return PRT_VERSION_MAJOR;
-}
-
-PYENC_EXPORTS_API int getVersionMinor() {
-	return PRT_VERSION_MINOR;
-}
-
-} // extern "C"
+	PythonLogHandler mLogHandler;
+	ObjectPtr mPRTHandle;
+};

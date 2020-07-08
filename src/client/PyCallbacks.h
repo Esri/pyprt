@@ -1,5 +1,5 @@
 /**
- * CityEngine SDK Geometry Encoder for Python
+ * PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
  *
  * Copyright (c) 2012-2020 Esri R&D Center Zurich
  *
@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "types.h"
+
 #include "encoder/IPyCallbacks.h"
 
 #include "prt/Callbacks.h"
@@ -33,13 +35,16 @@
 
 namespace py = pybind11;
 
+class PyCallbacks;
+using PyCallbacksPtr = std::unique_ptr<PyCallbacks>;
+
 class PyCallbacks : public IPyCallbacks {
 private:
 	struct Model {
 		py::dict mCGAReport;
-		std::vector<double> mVertices;
-		std::vector<uint32_t> mIndices;
-		std::vector<uint32_t> mFaces;
+		Coordinates mVertices;
+		Indices mIndices;
+		Indices mFaces;
 	};
 
 	std::vector<Model> mModels;
@@ -64,21 +69,21 @@ public:
 		return mModels.size();
 	}
 
-	const std::vector<double>& getVertices(const size_t initialShapeIdx) const {
+	const Coordinates& getVertices(const size_t initialShapeIdx) const {
 		if (initialShapeIdx >= mModels.size())
 			throw std::out_of_range("initial shape index is out of range.");
 
 		return mModels[initialShapeIdx].mVertices;
 	}
 
-	const std::vector<uint32_t>& getIndices(const size_t initialShapeIdx) const {
+	const Indices& getIndices(const size_t initialShapeIdx) const {
 		if (initialShapeIdx >= mModels.size())
 			throw std::out_of_range("initial shape index is out of range.");
 
 		return mModels[initialShapeIdx].mIndices;
 	}
 
-	const std::vector<uint32_t>& getFaces(const size_t initialShapeIdx) const {
+	const Indices& getFaces(const size_t initialShapeIdx) const {
 		if (initialShapeIdx >= mModels.size())
 			throw std::out_of_range("initial shape index is out of range.");
 

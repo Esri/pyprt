@@ -29,7 +29,7 @@ To get started, please visit the `home page of PyPRT <https://esri.github.io/pyp
 Related Documentation:
 
 * `Authoring of Rule Packages <https://doc.arcgis.com/en/cityengine/latest/help/help-rule-package.htm#ESRI_SECTION1_F9D4CCCE0EC74E5FB646A8BD141A38F9>`_
-* `CityEngine SDK API Reference <https://esri.github.io/esri-cityengine-sdk/html/index.html>`_
+* `CityEngine SDK API Reference <https://esri.github.io/cityengine-sdk/html/index.html>`_
 
 
 
