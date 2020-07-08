@@ -48,7 +48,7 @@ private:
 		Indices mFaces;
 		py::dict mCGAReport;
 		std::wstring mCGAPrints;
-		std::wstring mCGAErrors;
+		std::vector<std::wstring> mCGAErrors;
 	};
 
 	std::vector<Model> mModels;
@@ -108,7 +108,7 @@ public:
 		return mModels[initialShapeIdx].mCGAPrints;
 	}
 
-	const std::wstring& getCGAErrors(const size_t initialShapeIdx) const {
+	const std::vector<std::wstring>& getCGAErrors(const size_t initialShapeIdx) const {
 		if (initialShapeIdx >= mModels.size())
 			throw std::out_of_range("initial shape index is out of range.");
 
@@ -121,16 +121,16 @@ public:
 
 	prt::Status assetError(size_t isIndex, prt::CGAErrorLevel level, const wchar_t* key, const wchar_t* uri,
 	                       const wchar_t* message) override {
-		std::wstring errorMsg(L"Asset" + ERRORLEVELS[level] + key + L" " + uri + L" " + message);
-		mModels[isIndex].mCGAErrors += errorMsg;
+		std::wstring errorMsg(L"Asset" + ERRORLEVELS[level] + key + L" " + uri + L"\n" + message);
+		mModels[isIndex].mCGAErrors.push_back(errorMsg);
 
 		return prt::STATUS_OK;
 	}
 
 	prt::Status cgaError(size_t isIndex, int32_t /*shapeID*/, prt::CGAErrorLevel level, int32_t methodId, int32_t pc,
 	                     const wchar_t* message) override {
-		std::wstring errorMsg(L"CGA" + ERRORLEVELS[level] + message);
-		mModels[isIndex].mCGAErrors += errorMsg;
+		std::wstring errorMsg(L"CGA" + ERRORLEVELS[level] + L"\n" + message);
+		mModels[isIndex].mCGAErrors.push_back(errorMsg);
 
 		return prt::STATUS_OK;
 	}
