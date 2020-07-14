@@ -8,6 +8,7 @@
 
 ### Changed
 * Updated to PRT 2.2 (CityEngine 2020.0)
+* Moved PyPRT conda package to Esri organization
 * Reorganized and cleaned up C++ sources
 
 ## v1.0.0 (2020-05-07)
