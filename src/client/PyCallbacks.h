@@ -38,13 +38,17 @@ namespace py = pybind11;
 class PyCallbacks;
 using PyCallbacksPtr = std::unique_ptr<PyCallbacks>;
 
+const std::wstring ERRORLEVELS[] = {L"Error ", L"Warning ", L"Info "};
+
 class PyCallbacks : public IPyCallbacks {
 private:
 	struct Model {
-		py::dict mCGAReport;
 		Coordinates mVertices;
 		Indices mIndices;
 		Indices mFaces;
+		py::dict mCGAReport;
+		std::wstring mCGAPrints;
+		std::vector<std::wstring> mCGAErrors;
 	};
 
 	std::vector<Model> mModels;
@@ -97,33 +101,54 @@ public:
 		return mModels[initialShapeIdx].mCGAReport;
 	}
 
-	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) override {
-		pybind11::print(L"GENERATE ERROR:", isIndex, status, message);
+	const std::wstring& getCGAPrints(const size_t initialShapeIdx) const {
+		if (initialShapeIdx >= mModels.size())
+			throw std::out_of_range("initial shape index is out of range.");
+
+		return mModels[initialShapeIdx].mCGAPrints;
+	}
+
+	const std::vector<std::wstring>& getCGAErrors(const size_t initialShapeIdx) const {
+		if (initialShapeIdx >= mModels.size())
+			throw std::out_of_range("initial shape index is out of range.");
+
+		return mModels[initialShapeIdx].mCGAErrors;
+	}
+
+	prt::Status generateError(size_t /*isIndex*/, prt::Status /*status*/, const wchar_t* /*message*/) override {
 		return prt::STATUS_OK;
 	}
 
 	prt::Status assetError(size_t isIndex, prt::CGAErrorLevel level, const wchar_t* key, const wchar_t* uri,
 	                       const wchar_t* message) override {
-		pybind11::print(L"ASSET ERROR:", isIndex, level, key, uri, message);
+		std::wstring errorMsg(L"Asset" + ERRORLEVELS[level] + key + L" " + uri + L"\n" + message);
+		mModels[isIndex].mCGAErrors.push_back(errorMsg);
+
 		return prt::STATUS_OK;
 	}
 
-	prt::Status cgaError(size_t isIndex, int32_t shapeID, prt::CGAErrorLevel level, int32_t methodId, int32_t pc,
-	                     const wchar_t* message) override {
-		pybind11::print(L"CGA ERROR:", isIndex, shapeID, level, methodId, pc, message);
+	prt::Status cgaError(size_t isIndex, int32_t /*shapeID*/, prt::CGAErrorLevel level, int32_t /*methodId*/,
+	                     int32_t /*pc*/, const wchar_t* message) override {
+		std::wstring errorMsg(L"CGA" + ERRORLEVELS[level] + L"\n" + message);
+		mModels[isIndex].mCGAErrors.push_back(errorMsg);
+
 		return prt::STATUS_OK;
 	}
 
-	prt::Status cgaPrint(size_t isIndex, int32_t shapeID, const wchar_t* txt) override {
-		pybind11::print(L"CGA PRINT:", isIndex, shapeID, txt);
+	prt::Status cgaPrint(size_t isIndex, int32_t /*shapeID*/, const wchar_t* txt) override {
+		std::wstring printsTxt(txt);
+		mModels[isIndex].mCGAPrints += printsTxt;
+
 		return prt::STATUS_OK;
 	}
 
-	prt::Status cgaReportBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, bool /*value*/) override {
+	prt::Status cgaReportBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
+	                          bool /*value*/) override {
 		return prt::STATUS_OK;
 	}
 
-	prt::Status cgaReportFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, double /*value*/) override {
+	prt::Status cgaReportFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
+	                           double /*value*/) override {
 		return prt::STATUS_OK;
 	}
 
@@ -140,7 +165,8 @@ public:
 		return prt::STATUS_OK;
 	}
 
-	prt::Status attrString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const wchar_t* /*value*/) override {
+	prt::Status attrString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
+	                       const wchar_t* /*value*/) override {
 		return prt::STATUS_OK;
 	}
 

@@ -22,7 +22,6 @@
 #include "codec.h"
 #include "prt/Callbacks.h"
 
-
 class PYENC_EXPORTS_API IPyCallbacks : public prt::Callbacks {
 public:
 	virtual ~IPyCallbacks() override = default;

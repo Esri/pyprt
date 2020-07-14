@@ -258,4 +258,23 @@ constexpr const char* GmGetR = R"mydelimiter(
             dict
         )mydelimiter";
 
+constexpr const char* GmGetP = R"mydelimiter(
+        get_cga_prints() -> str
+
+        Returns a string with all the CGA print outputs of this model.
+
+        :Returns:
+            str
+        )mydelimiter";
+
+constexpr const char* GmGetE = R"mydelimiter(
+        get_cga_errors() -> List[str]
+
+        Returns a list of the CGA and asset errors messages of this model. The asset error messages additionally 
+        contain the key and URI of the asset.
+
+        :Returns:
+            List[str]
+        )mydelimiter";
+
 } // namespace doc
