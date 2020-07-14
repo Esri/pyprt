@@ -35,11 +35,11 @@ target_compile_definitions(${CODEC_TARGET} PRIVATE
 		-DPRT_VERSION_MAJOR=${PRT_VERSION_MAJOR}
 		-DPRT_VERSION_MINOR=${PRT_VERSION_MINOR})
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+if(PYPRT_WINDOWS)
 	target_compile_options(${CODEC_TARGET} PRIVATE
 			-bigobj -GR -EHsc)
 
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+elseif(PYPRT_LINUX)
 	target_compile_options(${CODEC_TARGET} PRIVATE
 			-D_GLIBCXX_USE_CXX11_ABI=0 # we follow RHEL and use the pre-C++11 libstdc++ mode
 			-march=nocona
@@ -47,7 +47,7 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 			-Wl,--exclude-libs,ALL
 			-Wall -Wextra -Wunused-parameter)
 
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+elseif(PYPRT_MACOS)
 	target_compile_options(${CODEC_TARGET} PRIVATE
 			-stdlib=libc++
 			-fvisibility=hidden -fvisibility-inlines-hidden
