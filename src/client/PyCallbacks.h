@@ -115,7 +115,7 @@ public:
 		return mModels[initialShapeIdx].mCGAErrors;
 	}
 
-	prt::Status generateError(size_t isIndex, prt::Status status, const wchar_t* message) override {
+	prt::Status generateError(size_t /*isIndex*/, prt::Status /*status*/, const wchar_t* /*message*/) override {
 		return prt::STATUS_OK;
 	}
 
@@ -127,8 +127,8 @@ public:
 		return prt::STATUS_OK;
 	}
 
-	prt::Status cgaError(size_t isIndex, int32_t /*shapeID*/, prt::CGAErrorLevel level, int32_t methodId, int32_t pc,
-	                     const wchar_t* message) override {
+	prt::Status cgaError(size_t isIndex, int32_t /*shapeID*/, prt::CGAErrorLevel level, int32_t /*methodId*/,
+	                     int32_t /*pc*/, const wchar_t* message) override {
 		std::wstring errorMsg(L"CGA" + ERRORLEVELS[level] + L"\n" + message);
 		mModels[isIndex].mCGAErrors.push_back(errorMsg);
 
