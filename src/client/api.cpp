@@ -170,7 +170,9 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def("get_vertices", &GeneratedModel::getVertices, doc::GmGetV)
 	        .def("get_indices", &GeneratedModel::getIndices, doc::GmGetI)
 	        .def("get_faces", &GeneratedModel::getFaces, doc::GmGetF)
-	        .def("get_report", &GeneratedModel::getReport, doc::GmGetR);
+	        .def("get_report", &GeneratedModel::getReport, doc::GmGetR)
+	        .def("get_cga_prints", &GeneratedModel::getCGAPrints, doc::GmGetP)
+	        .def("get_cga_errors", &GeneratedModel::getCGAErrors, doc::GmGetE);
 
 	py::class_<std::filesystem::path>(m, "Path").def(py::init<std::string>());
 	py::implicitly_convertible<std::string, std::filesystem::path>();

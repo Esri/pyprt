@@ -12,6 +12,7 @@
 ### Changed
 * Internal update to PRT 2.2 (adds support for CGA language features of CityEngine 2020.0).
 * Reorganization and cleanup of C++ sources.
+* Moved PyPRT conda package to Esri organization
 
 ## v1.0.0 (2020-05-07)
 
