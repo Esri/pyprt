@@ -32,7 +32,7 @@ except:
 pyprt_name = 'PyPRT'
 pyprt_author = 'Esri R&D Center Zurich'
 pyprt_copyright = '(c) 2020, ' + pyprt_author
-pyprt_version = '1.1.0.dev0'  # keep consistent with __version__ in pyprt/__init__.py
+pyprt_version = '1.1.0.rc1'  # keep consistent with __version__ in pyprt/__init__.py
 
 record_file = os.path.join(os.path.realpath(os.curdir), pyprt_name+'.egg-info', 'record_setup_develop_files.txt')
 
@@ -233,7 +233,7 @@ setup(
     project_urls={"Documentation": "https://github.com/Esri/pyprt/blob/master/README.md#documentation",
                   "Examples": "https://github.com/Esri/pyprt-examples",
                   "Source Code": "https://github.com/Esri/pyprt"},
-    platforms=['Windows', 'Linux'],
+    platforms=['Windows', 'Linux', 'MacOS'],
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
     ext_modules=[CMakeExtension('pyprt.pyprt', 'src')],
@@ -247,6 +247,7 @@ setup(
                  'License :: OSI Approved :: Apache Software License',
                  'Operating System :: Microsoft :: Windows',
                  'Operating System :: Unix',
+                 'Operating System :: MacOS',
                  'Programming Language :: C++',
                  'Programming Language :: Python',
                  'Programming Language :: Python :: 3 :: Only',
