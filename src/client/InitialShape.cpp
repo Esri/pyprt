@@ -27,8 +27,8 @@ InitialShape::InitialShape(const Coordinates& vert) : mVertices(vert), mPathFlag
 	mFaceCounts.resize(1, (uint32_t)mIndices.size());
 }
 
-InitialShape::InitialShape(const Coordinates& vert, const Indices& ind,
-                           const Indices& faceCnt, const HoleIndices& holes = {{}})
+InitialShape::InitialShape(const Coordinates& vert, const Indices& ind, const Indices& faceCnt,
+                           const HoleIndices& holes = {{}})
     : mVertices(vert), mIndices(ind), mFaceCounts(faceCnt), mPathFlag(false) {
 
 	for (auto& holesPerFaceWithHoles : holes) {

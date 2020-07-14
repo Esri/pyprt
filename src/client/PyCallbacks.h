@@ -142,11 +142,13 @@ public:
 		return prt::STATUS_OK;
 	}
 
-	prt::Status cgaReportBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, bool /*value*/) override {
+	prt::Status cgaReportBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
+	                          bool /*value*/) override {
 		return prt::STATUS_OK;
 	}
 
-	prt::Status cgaReportFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, double /*value*/) override {
+	prt::Status cgaReportFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
+	                           double /*value*/) override {
 		return prt::STATUS_OK;
 	}
 
@@ -163,7 +165,8 @@ public:
 		return prt::STATUS_OK;
 	}
 
-	prt::Status attrString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const wchar_t* /*value*/) override {
+	prt::Status attrString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
+	                       const wchar_t* /*value*/) override {
 		return prt::STATUS_OK;
 	}
 
