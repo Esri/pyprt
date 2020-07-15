@@ -26,7 +26,7 @@ message(STATUS "Python Module Suffix: " ${PYTHON_MODULE_EXTENSION})
 
 if(PYPRT_WINDOWS)
 	set(PYBIND11_CPP_STANDARD -std:c++17)
-elseif(PYPRT_LINUX)
+else()
 	set(PYBIND11_CPP_STANDARD -std=c++17)
 endif()
 pybind11_add_module(${CLIENT_TARGET} MODULE
