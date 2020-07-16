@@ -1,6 +1,6 @@
 # PyPRT ChangeLog
 
-## v1.1.0 (2020-07-YY)
+## v1.1.0 (2020-07-16)
 
 ### Added
 * Added new API function `pyprt.inspect_rpk(...)` to query available CGA rule attributes.
