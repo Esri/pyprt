@@ -121,7 +121,7 @@ def taskBuildPyPRT(cfg) {
 	}
 
 	def classifierExtractor = { p ->
-		def cls = (p =~ /.*-(cp.*)\.whl/)
+		def cls = (p =~ /[^-]*-[^-]*-[0-9]*-([^-]*-[^-]*-[^-]*)\.whl/)
 		return cls[0][1]
 	}
 	papl.publish('pyprt', env.BRANCH_NAME, "PyPRT-*.whl", { return pkgVer }, cfg, classifierExtractor)
