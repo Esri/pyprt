@@ -1,11 +1,14 @@
+#
+# PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
+#
 # Copyright (c) 2012-2020 Esri R&D Center Zurich
- 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
- 
+#
 #   http://www.apache.org/licenses/LICENSE-2.0
- 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,18 +25,25 @@ cmake_policy(SET CMP0015 NEW)
 message(STATUS "Python Module Suffix: " ${PYTHON_MODULE_EXTENSION})
 
 if(PYPRT_WINDOWS)
-	set(PYBIND11_CPP_STANDARD "-std:c++17")
-elseif(PYPRT_LINUX)
-	set(PYBIND11_CPP_STANDARD "-std=c++17")
+	set(PYBIND11_CPP_STANDARD -std:c++17)
+else()
+	set(PYBIND11_CPP_STANDARD -std=c++17)
 endif()
-
 pybind11_add_module(${CLIENT_TARGET} MODULE
 		utils.cpp
-		wrap.cpp
-		PyCallbacks.cpp)
+		api.cpp
+		PyCallbacks.cpp
+		PRTContext.cpp
+		PythonLogHandler.cpp
+		InitialShape.cpp
+		GeneratedModel.cpp
+		ModelGenerator.cpp)
+
+set_target_properties(${CLIENT_TARGET} PROPERTIES
+		CXX_STANDARD_REQUIRED TRUE)
 
 if(PYPRT_WINDOWS)
-	# TODO
+	# nothing required
 
 elseif(PYPRT_LINUX)
 	target_compile_options(${CLIENT_TARGET} PRIVATE
@@ -53,7 +63,17 @@ elseif(PYPRT_LINUX)
 	target_link_libraries(${CLIENT_TARGET} PRIVATE stdc++fs)
 
 elseif(PYPRT_MACOS)
-	# TODO
+	target_compile_options(${CLIENT_TARGET} PRIVATE
+			-stdlib=libc++
+			-fvisibility=hidden -fvisibility-inlines-hidden
+			-Wall -Wextra -Wunused-parameter
+			-mmacosx-version-min=10.15) # required by C++17
+
+	set_target_properties(${CLIENT_TARGET} PROPERTIES
+			INSTALL_RPATH "@loader_path"
+			INSTALL_RPATH_USE_LINK_PATH FALSE
+			SKIP_RPATH FALSE
+			BUILD_WITH_INSTALL_RPATH TRUE)
 
 endif()
 
@@ -62,7 +82,7 @@ target_link_libraries(${CLIENT_TARGET} PRIVATE
 
 target_include_directories(${CLIENT_TARGET} PRIVATE
      ${PRT_INCLUDE_PATH}
-     ${PROJECT_SOURCE_DIR}/codec/encoder)
+     ${PROJECT_SOURCE_DIR}/codec)
 
 
 ### install target
@@ -70,3 +90,4 @@ target_include_directories(${CLIENT_TARGET} PRIVATE
 install(TARGETS ${CLIENT_TARGET} ARCHIVE DESTINATION lib LIBRARY DESTINATION bin)
 install(FILES ${PRT_LIBRARIES} DESTINATION bin OPTIONAL)
 install(FILES ${PRT_EXT_LIBRARIES} DESTINATION lib)
+install(DIRECTORY ${PRT_EXT_RESOURCES} DESTINATION lib MESSAGE_NEVER)

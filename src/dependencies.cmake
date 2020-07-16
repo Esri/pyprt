@@ -1,3 +1,21 @@
+#
+# PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
+#
+# Copyright (c) 2012-2020 Esri R&D Center Zurich
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# A copy of the license is available in the repository's LICENSE file.
+
 include(FetchContent)
 
 
@@ -18,7 +36,7 @@ endif()
 if(NOT prt_DIR)
 	if(PYPRT_WINDOWS)
 		set(PRT_OS "win10")
-		set(PRT_TC "vc141")
+		set(PRT_TC "vc142")
 	elseif(PYPRT_LINUX)
 		set(PRT_OS "rhel7")
 		set(PRT_TC "gcc63")
@@ -27,9 +45,9 @@ if(NOT prt_DIR)
 		set(PRT_TC "ac81")
 	endif()
 
-	set(PRT_VERSION "2.1.5704")
+	set(PRT_VERSION "2.2.6332")
 	set(PRT_ARCHIVE "esri_ce_sdk-${PRT_VERSION}-${PRT_OS}-${PRT_TC}-x86_64-rel-opt.zip")
-	set(PRT_URL     "https://github.com/esri/esri-cityengine-sdk/releases/download/${PRT_VERSION}/${PRT_ARCHIVE}")
+	set(PRT_URL     "https://github.com/esri/cityengine-sdk/releases/download/${PRT_VERSION}/${PRT_ARCHIVE}")
 
 	FetchContent_Declare(prt URL ${PRT_URL} DOWNLOAD_NO_EXTRACT $ENV{PRT_EXTRACTION_WORKAROUND})
 	FetchContent_GetProperties(prt)
@@ -55,6 +73,9 @@ endif()
 
 find_package(prt CONFIG REQUIRED)
 message(STATUS "Using PRT ${PRT_VERSION_MAJOR}.${PRT_VERSION_MINOR}.${PRT_VERSION_MICRO} at ${prt_DIR}")
+
+# workaround omission in prtConfig.cmake: manually setting up a resources list which needs to be installed as well
+list(APPEND PRT_EXT_RESOURCES ${PRT_EXTENSION_PATH}/usd)
 
 
 ### look for PyBind11

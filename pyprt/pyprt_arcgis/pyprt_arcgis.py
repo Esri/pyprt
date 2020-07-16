@@ -41,7 +41,7 @@ def arcgis_to_pyprt(feature_set):
     for feature in feature_set.features:
         try:
             geo = Geometry(feature.geometry)
-            if geo.type is 'Polygon':
+            if geo.type == 'Polygon':
                 coord = geo.coordinates()[0]
                 coord_remove_last = coord[:-1]
                 coord_inverse = np.flip(coord_remove_last, axis=0)

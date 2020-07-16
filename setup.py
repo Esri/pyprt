@@ -29,13 +29,12 @@ try:
 except:
     distclass = []
 
-record_file = os.path.join(os.curdir, 'pyprt.egg-info',
-                           'record_setup_develop_files.txt')
-
 pyprt_name = 'PyPRT'
 pyprt_author = 'Esri R&D Center Zurich'
 pyprt_copyright = '(c) 2020, ' + pyprt_author
-pyprt_version = '1.0.0'  # keep consistent with __version__ in pyprt/__init__.py
+pyprt_version = '1.1.0'  # keep consistent with __version__ in pyprt/__init__.py
+
+record_file = os.path.join(os.path.realpath(os.curdir), pyprt_name+'.egg-info', 'record_setup_develop_files.txt')
 
 long_description = """
 PyPRT is a Python binding for PRT ("Procedural Runtime"). It enables the execution of [CityEngine](http://www.esri.com/software/cityengine) 
@@ -154,6 +153,9 @@ class CMakeBuild(build_ext):
             '-DCMAKE_MAKE_PROGRAM={}'.format(cmake.make_executable)
         ]
 
+        if sys.platform.startswith('darwin'):
+            cmake_configure_command.append('-DCMAKE_CXX_COMPILER=clang++')
+
         prt_dir = os.getenv('PRT_DIR', '')
         if prt_dir != '':
             cmake_configure_command.append('-Dprt_DIR={}'.format(prt_dir))
@@ -231,7 +233,7 @@ setup(
     project_urls={"Documentation": "https://github.com/Esri/pyprt/blob/master/README.md#documentation",
                   "Examples": "https://github.com/Esri/pyprt-examples",
                   "Source Code": "https://github.com/Esri/pyprt"},
-    platforms=['Windows', 'Linux'],
+    platforms=['Windows', 'Linux', 'MacOS'],
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
     ext_modules=[CMakeExtension('pyprt.pyprt', 'src')],
@@ -245,6 +247,7 @@ setup(
                  'License :: OSI Approved :: Apache Software License',
                  'Operating System :: Microsoft :: Windows',
                  'Operating System :: Unix',
+                 'Operating System :: MacOS',
                  'Programming Language :: C++',
                  'Programming Language :: Python',
                  'Programming Language :: Python :: 3 :: Only',

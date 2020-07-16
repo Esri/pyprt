@@ -25,11 +25,14 @@ def asset_file(filename):
     return os.path.join(os.path.dirname(CS_FOLDER), 'tests', 'data', filename)
 
 
+def asset_output_file(filename):
+    return os.path.join(os.path.dirname(CS_FOLDER), 'output', filename)
+
+
 class GeometryTest(unittest.TestCase):
     def test_verticesNber_candler(self):
         rpk = asset_file('candler.rpk')
-        attrs = {'ruleFile': 'bin/candler.cgb',
-                 'startRule': 'Default$Footprint'}
+        attrs = {}
         shape_geo_from_obj = pyprt.InitialShape(
             asset_file('candler_footprint.obj'))
         m = pyprt.ModelGenerator([shape_geo_from_obj])
@@ -39,8 +42,7 @@ class GeometryTest(unittest.TestCase):
 
     def test_facesNber_candler(self):
         rpk = asset_file('candler.rpk')
-        attrs = {'ruleFile': 'bin/candler.cgb',
-                 'startRule': 'Default$Footprint'}
+        attrs = {}
         shape_geo_from_obj = pyprt.InitialShape(
             asset_file('candler_footprint.obj'))
         m = pyprt.ModelGenerator([shape_geo_from_obj])
@@ -50,8 +52,7 @@ class GeometryTest(unittest.TestCase):
 
     def test_report_green(self):
         rpk = asset_file('envelope2002.rpk')
-        attrs = {'ruleFile': 'rules/typology/envelope2002.cgb', 'startRule': 'Default$Lot',
-                 'report_but_not_display_green': True, 'seed': 666}
+        attrs = {'report_but_not_display_green': True, 'seed': 666}
         shape_geo_from_obj = pyprt.InitialShape(
             asset_file('building_parcel.obj'))
         m = pyprt.ModelGenerator([shape_geo_from_obj])
@@ -65,8 +66,7 @@ class GeometryTest(unittest.TestCase):
 
     def test_noReport(self):
         rpk = asset_file('extrusion_rule.rpk')
-        attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
-                 'startRule': 'Default$Footprint'}
+        attrs = {}
         shape_geo = pyprt.InitialShape(
             [-10.0, 0.0, 5.0, -5.0, 0.0, 6.0, 20.0, 0.0, 5.0, 15.0, 0.0, 3.0])
         m = pyprt.ModelGenerator([shape_geo])
@@ -76,8 +76,7 @@ class GeometryTest(unittest.TestCase):
 
     def test_noGeometry(self):
         rpk = asset_file('extrusion_rule.rpk')
-        attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
-                 'startRule': 'Default$Footprint'}
+        attrs = {}
         shape_geo = pyprt.InitialShape(
             [-10.0, 0.0, 5.0, -5.0, 0.0, 6.0, 20.0, 0.0, 5.0, 15.0, 0.0, 3.0])
         m = pyprt.ModelGenerator([shape_geo])
@@ -87,9 +86,8 @@ class GeometryTest(unittest.TestCase):
 
     def test_buildingHeight(self):
         rpk = asset_file('extrusion_rule.rpk')
-        attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
-                 'startRule': 'Default$Footprint'}
-        attrs2 = {'ruleFile': 'bin/extrusion_rule.cgb', 'startRule': 'Default$Footprint', 'minBuildingHeight': 23.0,
+        attrs = {}
+        attrs2 = {'minBuildingHeight': 23.0,
                   'maxBuildingHeight': 23.0}
         shape_geo = pyprt.InitialShape(
             [-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
@@ -103,8 +101,7 @@ class GeometryTest(unittest.TestCase):
 
     def test_faces_data(self):
         rpk = asset_file('candler.rpk')
-        attrs = {'ruleFile': 'bin/candler.cgb',
-                 'startRule': 'Default$Footprint'}
+        attrs = {}
         shape_geo_from_obj = pyprt.InitialShape(
             asset_file('candler_footprint.obj'))
         m = pyprt.ModelGenerator([shape_geo_from_obj])
@@ -117,8 +114,7 @@ class GeometryTest(unittest.TestCase):
 
     def test_path_geometry_initshapes(self):
         rpk = asset_file('extrusion_rule.rpk')
-        attrs = {'ruleFile': 'bin/extrusion_rule.cgb',
-                 'startRule': 'Default$Footprint'}
+        attrs = {}
         shape_geo = pyprt.InitialShape(
             [-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
         shape_geo_from_obj = pyprt.InitialShape(
@@ -138,3 +134,50 @@ class GeometryTest(unittest.TestCase):
                              model3[0].get_vertices())
         self.assertListEqual(model2[0].get_vertices(),
                              model3[1].get_vertices())
+
+    def test_initial_shape_with_hole(self):
+        rpk = asset_file('FacesHolesVerticesrule.rpk')
+        attrs = {}
+        shape_with_hole = pyprt.InitialShape([0, 0, 0, 0, 0, 10, 10, 0, 10, 10, 0, 0, 2, 0, 2, 8, 0, 8, 2, 0, 8], [
+                                             0, 1, 2, 3, 4, 5, 6], [4, 3], [[0, 1]])
+
+        encoder_options = {
+            'outputPath': os.path.dirname(asset_output_file(''))}
+        os.makedirs(encoder_options['outputPath'], exist_ok=True)
+
+        m = pyprt.ModelGenerator([shape_with_hole])
+        m.generate_model(
+            [attrs], rpk, 'com.esri.prt.codecs.OBJEncoder', encoder_options)
+
+        expected_file = os.path.join(
+            encoder_options['outputPath'], 'CGAPrint.txt')
+        expected_content = ("14\n"
+                            "9\n"
+                            "2\n")
+
+        self.assertTrue(os.path.exists(expected_file))
+        with open(expected_file, 'r') as cga_print_file:
+            cga_print = cga_print_file.read()
+            self.assertEqual(cga_print, expected_content)
+
+    def test_cga_prints_green(self):
+        rpk = asset_file('envelope2002.rpk')
+        attrs = {'report_but_not_display_green': True, 'seed': 2}
+        shape_geo_from_obj = pyprt.InitialShape(
+            asset_file('building_parcel.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
+        model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
+            'emitReport': True, 'emitGeometry': False})
+
+        self.assertEqual(model[0].get_cga_prints(), str(attrs['seed'])+"\n")
+
+    def test_cga_errors_holes(self):
+        rpk = asset_file('FacesHolesVerticesrule.rpk')
+        attrs = {}
+        shape_with_hole_with_error = pyprt.InitialShape([0, 0, 0, 0, 0, 10, 10, 0, 10, 10, 0, 0, 2, 0, 2, 8, 0, 8, 2, 0, 8], [
+                                             0, 1, 2, 3, 4, 5, 6], [4, 3], [[0, 1, 1]])
+        m = pyprt.ModelGenerator([shape_with_hole_with_error])
+        model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
+            'emitReport': True, 'emitGeometry': False})
+
+        self.assertEqual(len(model[0].get_cga_errors()), 1)

@@ -1,5 +1,5 @@
 /**
- * CityEngine SDK Geometry Encoder for Python
+ * PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
  *
  * Copyright (c) 2012-2020 Esri R&D Center Zurich
  *
@@ -17,7 +17,7 @@
  * A copy of the license is available in the repository's LICENSE file.
  */
 
-#include "codecs_Py.h"
+#include "codec.h"
 
 #include "encoder/PyEncoder.h"
 
