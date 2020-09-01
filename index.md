@@ -79,6 +79,11 @@ Simply run `pip install pyprt` in your desired Python environment or `conda inst
 
 </table>
 
+## Blog
+
+- [Generating 3D content in Python: PyPRT, a new Python library](https://www.esri.com/arcgis-blog/products/city-engine/3d-gis/generating-3d-content-in-python-pyprt-a-new-python-library/)
+- [Converting 3D geometry formats made simple using PyPRT](https://www.esri.com/arcgis-blog/products/city-engine/3d-gis/converting-3d-geometry-formats-made-simple-using-pyprt/)
+
 ## Licensing
 
 PyPRT is under the same license as the included [CityEngine SDK](https://github.com/Esri/esri-cityengine-sdk#licensing).
