@@ -65,6 +65,9 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 	auto ruleAttrs = py::dict();
 
 	for (size_t i = 0; i < ruleFileInfo->getNumAttributes(); i++) {
+		auto dictAttr = py::dict();
+		py::str type;
+		std::vector<std::vector<py::object>> annotations;
 		bool hidden = false;
 		const prt::RuleFileInfo::Entry* attr = ruleFileInfo->getAttribute(i);
 
@@ -73,13 +76,40 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 			continue;
 		const std::wstring name = fullName.substr(8);
 		const prt::AnnotationArgumentType valueType = attr->getReturnType();
-		py::str type;
 
 		for (size_t f = 0; f < attr->getNumAnnotations(); f++) {
 			if (!(std::wcscmp(attr->getAnnotation(f)->getName(), ANNOT_HIDDEN))) {
 				hidden = true;
 				break;
 			}
+
+			if (!(std::wcsncmp(attr->getAnnotation(f)->getName(), L"@", 1))) {
+				std::vector<py::object> annotation;
+				annotation.push_back(py::cast(attr->getAnnotation(f)->getName())); //first reserve?
+
+				for (size_t u = 0; u < attr->getAnnotation(f)->getNumArguments(); u++) {
+					py::list annotationParameters;
+					py::object annotationValue;
+					const prt::AnnotationArgumentType annotationValueType =
+					        attr->getAnnotation(f)->getArgument(u)->getType();
+
+					if (annotationValueType == prt::AAT_STR)
+						annotationValue = py::cast(attr->getAnnotation(f)->getArgument(u)->getStr());
+					else if (annotationValueType == prt::AAT_BOOL)
+						annotationValue = py::cast(attr->getAnnotation(f)->getArgument(u)->getBool());
+					else if (annotationValueType == prt::AAT_FLOAT)
+						annotationValue = py::cast(attr->getAnnotation(f)->getArgument(u)->getFloat());
+					else
+						annotationValue = py::cast("UNKNOWN_PARAMETER_VALUE_TYPE");
+
+					annotationParameters.append(py::cast(attr->getAnnotation(f)->getArgument(u)->getKey()));
+					annotationParameters.append(annotationValue);
+					annotation.push_back(annotationParameters);
+				}
+
+				annotations.push_back(annotation);
+			}
+
 		}
 
 		if (!hidden) {
@@ -98,7 +128,10 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 			else
 				type = "UNKNOWN_VALUE_TYPE";
 
-			ruleAttrs[py::cast(name)] = type;
+			dictAttr[py::cast("type")] = type;
+			dictAttr[py::cast("annotations")] = annotations;
+
+			ruleAttrs[py::cast(name)] = dictAttr;
 		}
 	}
 
