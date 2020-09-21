@@ -138,7 +138,7 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 	return ruleAttrs;
 }
 
-py::dict inspectRPK(const std::filesystem::path& rulePackagePath) {
+py::dict getRPKInfo(const std::filesystem::path& rulePackagePath) {
 	ResolveMapPtr resolveMap;
 
 	if (!std::filesystem::exists(rulePackagePath) || !pcu::getResolveMap(rulePackagePath, &resolveMap)) {
@@ -178,7 +178,7 @@ PYBIND11_MODULE(pyprt, m) {
 	m.def("initialize_prt", &initializePRT, doc::Init);
 	m.def("is_prt_initialized", &isPRTInitialized, doc::IsInit);
 	m.def("shutdown_prt", &shutdownPRT, doc::Shutdown);
-	m.def("inspect_rpk", &inspectRPK, py::arg("rulePackagePath"), doc::InspectRPK);
+	m.def("get_rpk_attributes_info", &getRPKInfo, py::arg("rulePackagePath"), doc::InspectRPK);
 
 	py::class_<InitialShape>(m, "InitialShape", doc::Is)
 	        .def(py::init<const Coordinates&>(), py::arg("vertCoordinates"), doc::IsInitV)
