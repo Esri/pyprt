@@ -105,7 +105,7 @@ def taskPrepare(cfg) {
 
 def taskBuildPyPRT(cfg) {
 	cepl.cleanCurrentDir()
-	papl.checkout(REPO, env.BRANCH_NAME)
+	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
 
 	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
 	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
@@ -130,7 +130,7 @@ def taskBuildPyPRT(cfg) {
 
 def taskCondaBuildPyPRT(cfg) {
 	cepl.cleanCurrentDir()
-	papl.checkout(REPO, env.BRANCH_NAME)
+	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
 
 	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
 	final JenkinsTools CONDA = JenkinsTools.CONDA
@@ -176,7 +176,7 @@ def taskCondaBuildPyPRT(cfg) {
 
 def taskBuildDoc(cfg) {
 	cepl.cleanCurrentDir()
-	papl.checkout(REPO, env.BRANCH_NAME)
+	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
 
 	final String sphinxOutput = "${env.WORKSPACE}/build"
 
