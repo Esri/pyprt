@@ -74,31 +74,32 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 		const std::wstring name = fullName.substr(8);
 
 		for (size_t f = 0; f < attr->getNumAnnotations(); f++) {
-			if (std::wcscmp(attr->getAnnotation(f)->getName(), ANNOT_HIDDEN) == 0) {
+			const prt::Annotation* annot = attr->getAnnotation(f);
+			if (std::wcscmp(annot->getName(), ANNOT_HIDDEN) == 0) {
 				hidden = true;
 				break;
 			}
 
-			if (std::wcsncmp(attr->getAnnotation(f)->getName(), L"@", 1) == 0) {
+			if (std::wcsncmp(annot->getName(), L"@", 1) == 0) {
 				std::vector<py::object> annotation;
-				annotation.push_back(py::cast(attr->getAnnotation(f)->getName())); //first reserve?
+				annotation.push_back(py::cast(annot->getName())); //first reserve?
 
-				for (size_t u = 0; u < attr->getAnnotation(f)->getNumArguments(); u++) {
+				for (size_t u = 0; u < annot->getNumArguments(); u++) {
 					py::object annotationValue;
-					const prt::AnnotationArgumentType annotationValueType =
-					        attr->getAnnotation(f)->getArgument(u)->getType();
+					const prt::AnnotationArgument* annotationArg = annot->getArgument(u);
+					const prt::AnnotationArgumentType annotationValueType = annotationArg->getType();
 
 					if (annotationValueType == prt::AAT_STR)
-						annotationValue = py::cast(attr->getAnnotation(f)->getArgument(u)->getStr());
+						annotationValue = py::cast(annotationArg->getStr());
 					else if (annotationValueType == prt::AAT_BOOL)
-						annotationValue = py::cast(attr->getAnnotation(f)->getArgument(u)->getBool());
+						annotationValue = py::cast(annotationArg->getBool());
 					else if (annotationValueType == prt::AAT_FLOAT)
-						annotationValue = py::cast(attr->getAnnotation(f)->getArgument(u)->getFloat());
+						annotationValue = py::cast(annotationArg->getFloat());
 					else
 						annotationValue = py::cast("UNKNOWN_PARAMETER_VALUE_TYPE");
 
 					py::list annotationParameters;
-					annotationParameters.append(py::cast(attr->getAnnotation(f)->getArgument(u)->getKey()));
+					annotationParameters.append(py::cast(annotationArg->getKey()));
 					annotationParameters.append(annotationValue);
 					annotation.push_back(annotationParameters);
 				}
