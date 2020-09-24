@@ -65,17 +65,13 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 	auto ruleAttrs = py::dict();
 
 	for (size_t i = 0; i < ruleFileInfo->getNumAttributes(); i++) {
-		auto dictAttr = py::dict();
-		py::str type;
-		std::vector<std::vector<py::object>> annotations;
-		bool hidden = false;
 		const prt::RuleFileInfo::Entry* attr = ruleFileInfo->getAttribute(i);
-
+		bool hidden = false;
+		std::vector<std::vector<py::object>> annotations;
 		const std::wstring fullName(attr->getName());
 		if (fullName.find(L"Default$") != 0)
 			continue;
 		const std::wstring name = fullName.substr(8);
-		const prt::AnnotationArgumentType valueType = attr->getReturnType();
 
 		for (size_t f = 0; f < attr->getNumAnnotations(); f++) {
 			if (!(std::wcscmp(attr->getAnnotation(f)->getName(), ANNOT_HIDDEN))) {
@@ -88,7 +84,6 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 				annotation.push_back(py::cast(attr->getAnnotation(f)->getName())); //first reserve?
 
 				for (size_t u = 0; u < attr->getAnnotation(f)->getNumArguments(); u++) {
-					py::list annotationParameters;
 					py::object annotationValue;
 					const prt::AnnotationArgumentType annotationValueType =
 					        attr->getAnnotation(f)->getArgument(u)->getType();
@@ -102,6 +97,7 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 					else
 						annotationValue = py::cast("UNKNOWN_PARAMETER_VALUE_TYPE");
 
+					py::list annotationParameters;
 					annotationParameters.append(py::cast(attr->getAnnotation(f)->getArgument(u)->getKey()));
 					annotationParameters.append(annotationValue);
 					annotation.push_back(annotationParameters);
@@ -112,6 +108,9 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 
 		}
 
+		const prt::AnnotationArgumentType valueType = attr->getReturnType();
+		auto dictAttr = py::dict();
+		py::str type;
 		if (!hidden) {
 			if (valueType == prt::AAT_STR)
 				type = "string";
