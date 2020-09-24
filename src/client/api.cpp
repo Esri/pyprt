@@ -74,12 +74,12 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 		const std::wstring name = fullName.substr(8);
 
 		for (size_t f = 0; f < attr->getNumAnnotations(); f++) {
-			if (!(std::wcscmp(attr->getAnnotation(f)->getName(), ANNOT_HIDDEN))) {
+			if (std::wcscmp(attr->getAnnotation(f)->getName(), ANNOT_HIDDEN) == 0) {
 				hidden = true;
 				break;
 			}
 
-			if (!(std::wcsncmp(attr->getAnnotation(f)->getName(), L"@", 1))) {
+			if (std::wcsncmp(attr->getAnnotation(f)->getName(), L"@", 1) == 0) {
 				std::vector<py::object> annotation;
 				annotation.push_back(py::cast(attr->getAnnotation(f)->getName())); //first reserve?
 
