@@ -61,6 +61,44 @@ void shutdownPRT() {
 	PRTContext::shutdown();
 }
 
+void getAnnotations(const prt::RuleFileInfo::Entry* attribute, std::vector<std::vector<py::object>>& annotations,
+                    bool& hidden) {
+	for (size_t f = 0; f < attribute->getNumAnnotations(); f++) {
+		const prt::Annotation* annot = attribute->getAnnotation(f);
+		if (std::wcscmp(annot->getName(), ANNOT_HIDDEN) == 0) {
+			hidden = true;
+			break;
+		}
+
+		if (std::wcsncmp(annot->getName(), L"@", 1) == 0) {
+			std::vector<py::object> annotationPyList;
+			annotationPyList.push_back(py::cast(annot->getName()));
+
+			for (size_t u = 0; u < annot->getNumArguments(); u++) {
+				py::object annotationValue;
+				const prt::AnnotationArgument* annotationArg = annot->getArgument(u);
+				const prt::AnnotationArgumentType annotationValueType = annotationArg->getType();
+
+				if (annotationValueType == prt::AAT_STR)
+					annotationValue = py::cast(annotationArg->getStr());
+				else if (annotationValueType == prt::AAT_BOOL)
+					annotationValue = py::cast(annotationArg->getBool());
+				else if (annotationValueType == prt::AAT_FLOAT)
+					annotationValue = py::cast(annotationArg->getFloat());
+				else
+					annotationValue = py::cast("UNKNOWN_PARAMETER_VALUE_TYPE");
+
+				py::list annotationParameters;
+				annotationParameters.append(py::cast(annotationArg->getKey()));
+				annotationParameters.append(annotationValue);
+				annotationPyList.push_back(annotationParameters);
+			}
+
+			annotations.push_back(annotationPyList);
+		}
+	}
+}
+
 py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 	auto ruleAttrs = py::dict();
 
@@ -72,42 +110,7 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 		if (fullName.find(L"Default$") != 0)
 			continue;
 		const std::wstring name = fullName.substr(8);
-
-		for (size_t f = 0; f < attr->getNumAnnotations(); f++) {
-			const prt::Annotation* annot = attr->getAnnotation(f);
-			if (std::wcscmp(annot->getName(), ANNOT_HIDDEN) == 0) {
-				hidden = true;
-				break;
-			}
-
-			if (std::wcsncmp(annot->getName(), L"@", 1) == 0) {
-				std::vector<py::object> annotation;
-				annotation.push_back(py::cast(annot->getName())); //first reserve?
-
-				for (size_t u = 0; u < annot->getNumArguments(); u++) {
-					py::object annotationValue;
-					const prt::AnnotationArgument* annotationArg = annot->getArgument(u);
-					const prt::AnnotationArgumentType annotationValueType = annotationArg->getType();
-
-					if (annotationValueType == prt::AAT_STR)
-						annotationValue = py::cast(annotationArg->getStr());
-					else if (annotationValueType == prt::AAT_BOOL)
-						annotationValue = py::cast(annotationArg->getBool());
-					else if (annotationValueType == prt::AAT_FLOAT)
-						annotationValue = py::cast(annotationArg->getFloat());
-					else
-						annotationValue = py::cast("UNKNOWN_PARAMETER_VALUE_TYPE");
-
-					py::list annotationParameters;
-					annotationParameters.append(py::cast(annotationArg->getKey()));
-					annotationParameters.append(annotationValue);
-					annotation.push_back(annotationParameters);
-				}
-
-				annotations.push_back(annotation);
-			}
-
-		}
+		getAnnotations(attr, annotations, hidden);
 
 		const prt::AnnotationArgumentType valueType = attr->getReturnType();
 		auto dictAttr = py::dict();
