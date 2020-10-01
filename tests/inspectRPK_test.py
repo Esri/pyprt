@@ -26,7 +26,7 @@ def asset_file(filename):
 
 
 class InspectRPKTest(unittest.TestCase):
-    def test_candlerRPK(self):
+    def test_candler_rpk(self):
         rpk = asset_file('candler.rpk')
 
         inspect_dict = pyprt.get_rpk_attributes_info(rpk)
@@ -35,7 +35,7 @@ class InspectRPKTest(unittest.TestCase):
 
         self.assertSetEqual(set(inspect_dict.keys()), set(ground_truth_keys))
 
-    def test_candlerRPK_attr(self):
+    def test_candler_rpk_attr(self):
         rpk = asset_file('candler.rpk')
 
         inspect_dict = pyprt.get_rpk_attributes_info(rpk)

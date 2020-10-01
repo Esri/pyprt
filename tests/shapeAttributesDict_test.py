@@ -28,7 +28,7 @@ def asset_file(filename):
 
 class ShapeAttributesTest(unittest.TestCase):
 
-    def test_correctExecution(self):
+    def test_correct_execution(self):
         rpk = asset_file('extrusion_rule.rpk')
         attrs_1 = {}
         attrs_2 = {'minBuildingHeight': 30.0}
@@ -46,7 +46,7 @@ class ShapeAttributesTest(unittest.TestCase):
                                  {'emitReport': False, 'emitGeometry': True})
         self.assertEqual(len(model), 3)
 
-    def test_oneDictForAll(self):
+    def test_one_dict_for_all(self):
         rpk = asset_file('extrusion_rule.rpk')
         attrs = {}
         shape_geometry_1 = pyprt.InitialShape(
@@ -61,7 +61,7 @@ class ShapeAttributesTest(unittest.TestCase):
                                  {'emitReport': False, 'emitGeometry': True})
         self.assertEqual(len(model), 3)
 
-    def test_wrongNumberOfDict(self):
+    def test_wrong_number_of_dict(self):
         rpk = asset_file('extrusion_rule.rpk')
         attrs_1 = {}
         attrs_2 = {'minBuildingHeight': 30.0}
@@ -77,7 +77,7 @@ class ShapeAttributesTest(unittest.TestCase):
                                  {'emitReport': False, 'emitGeometry': True})
         self.assertEqual(len(model), 0)
 
-    def test_oneDictPerInitialShapeType(self):
+    def test_one_dict_per_initial_shape_type(self):
         rpk = asset_file('extrusion_rule.rpk')
         attrs_1 = {}
         attrs_2 = {'minBuildingHeight': 30.0}
@@ -91,7 +91,7 @@ class ShapeAttributesTest(unittest.TestCase):
         self.assertNotEqual(model[0].get_report()[
                             'Min Height.0_avg'], model[1].get_report()['Min Height.0_avg'])
 
-    def test_arrayAttributes(self):
+    def test_array_attributes(self):
         with tempfile.TemporaryDirectory() as output_path:
             rpk = asset_file('arrayAttrs.rpk')
             attrs = {'ruleFile': 'bin/arrayAttrs.cgb',
