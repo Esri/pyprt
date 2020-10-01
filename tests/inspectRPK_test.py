@@ -39,7 +39,7 @@ class InspectRPKTest(unittest.TestCase):
         rpk = asset_file('candler.rpk')
 
         inspect_dict = pyprt.get_rpk_attributes_info(rpk)
-        ground_truth_dict = {'annotations': [['@Order', ['#NULL#', 3.0]],['@Range',['#NULL#', 0.5],['#NULL#', 2.0]],['@Group',['#NULL#', 'Windows'],['#NULL#', 4.0]]],
+        ground_truth_dict = {'annotations': [['@Order', ['NO_KEY', 3.0]],['@Range',['NO_KEY', 0.5],['NO_KEY', 2.0]],['@Group',['NO_KEY', 'Windows'],['NO_KEY', 4.0]]],
                              'type': 'float'}
 
         self.assertDictEqual(inspect_dict['RearWindowWidth'], ground_truth_dict)
