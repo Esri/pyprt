@@ -46,6 +46,8 @@ namespace py = pybind11;
 namespace {
 
 constexpr const wchar_t* ANNOT_HIDDEN = L"@Hidden";
+constexpr const wchar_t* NO_KEY = L"#NULL#";
+constexpr const wchar_t* NO_KEY_PY = L"NO_KEY";
 
 void initializePRT() {
 	auto prt = PRTContext::get(); // this will implicitly construct PRTContext and call prt::init
@@ -89,7 +91,10 @@ void getAnnotations(const prt::RuleFileInfo::Entry* attribute, std::vector<std::
 					annotationValue = py::cast("UNKNOWN_PARAMETER_VALUE_TYPE");
 
 				py::list annotationParameters;
-				annotationParameters.append(py::cast(annotationArg->getKey()));
+				if (std::wcscmp(annotationArg->getKey(), NO_KEY) == 0)
+					annotationParameters.append(py::cast(NO_KEY_PY));
+				else
+					annotationParameters.append(py::cast(annotationArg->getKey()));
 				annotationParameters.append(annotationValue);
 				annotationPyList.push_back(annotationParameters);
 			}
