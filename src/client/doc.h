@@ -37,10 +37,22 @@ constexpr const char* Shutdown =
         "Shutdown of PRT. The PRT initialization process can be done only once per "
         "session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.";
 
-constexpr const char* InspectRPK = R"mydelimiter(
+constexpr const char* InspectRPKDeprecated = R"mydelimiter(
         inspect_rpk(rule_package_path) -> dict
+        
+        Deprecated: use get_rpk_attributes_info(rule_package_path) instead.
 
         This function returns the CGA rule attributes name and value type for the specified rule package path.
+
+        :Returns:
+            dict
+    )mydelimiter";
+
+constexpr const char* GetRPKInfo = R"mydelimiter(
+        get_rpk_attributes_info(rule_package_path) -> dict
+
+        This function returns the CGA rule attributes name and value type for the specified rule package path as 
+        well as a list of the attributes annotations (annotation name, key(s) and value(s)).
 
         :Returns:
             dict

@@ -259,8 +259,8 @@ PYBIND11_MODULE(pyprt, m) {
 	m.def("initialize_prt", &initializePRT, doc::Init);
 	m.def("is_prt_initialized", &isPRTInitialized, doc::IsInit);
 	m.def("shutdown_prt", &shutdownPRT, doc::Shutdown);
-	m.def("inspect_rpk", &inspectRPKDeprecated, py::arg("rulePackagePath"), doc::InspectRPK);
-	m.def("get_rpk_attributes_info", &getRPKInfo, py::arg("rulePackagePath"), doc::InspectRPK);
+	m.def("inspect_rpk", &inspectRPKDeprecated, py::arg("rulePackagePath"), doc::InspectRPKDeprecated);
+	m.def("get_rpk_attributes_info", &getRPKInfo, py::arg("rulePackagePath"), doc::GetRPKInfo);
 
 	py::class_<InitialShape>(m, "InitialShape", doc::Is)
 	        .def(py::init<const Coordinates&>(), py::arg("vertCoordinates"), doc::IsInitV)
