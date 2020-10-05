@@ -104,6 +104,25 @@ void getAnnotations(const prt::RuleFileInfo::Entry* attribute, std::vector<std::
 	}
 }
 
+py::str getAnnotationArgumentTypeString(const prt::AnnotationArgumentType& valueType) {
+	py::str type;
+	if (valueType == prt::AAT_STR)
+		type = "string";
+	else if (valueType == prt::AAT_BOOL)
+		type = "bool";
+	else if (valueType == prt::AAT_FLOAT)
+		type = "float";
+	else if (valueType == prt::AAT_STR_ARRAY)
+		type = "string[]";
+	else if (valueType == prt::AAT_BOOL_ARRAY)
+		type = "bool[]";
+	else if (valueType == prt::AAT_FLOAT_ARRAY)
+		type = "float[]";
+	else
+		type = "UNKNOWN_VALUE_TYPE";
+	return type;
+}
+
 py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 	auto ruleAttrs = py::dict();
 
@@ -119,26 +138,9 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 
 		const prt::AnnotationArgumentType valueType = attr->getReturnType();
 		auto dictAttr = py::dict();
-		py::str type;
 		if (!hidden) {
-			if (valueType == prt::AAT_STR)
-				type = "string";
-			else if (valueType == prt::AAT_BOOL)
-				type = "bool";
-			else if (valueType == prt::AAT_FLOAT)
-				type = "float";
-			else if (valueType == prt::AAT_STR_ARRAY)
-				type = "string[]";
-			else if (valueType == prt::AAT_BOOL_ARRAY)
-				type = "bool[]";
-			else if (valueType == prt::AAT_FLOAT_ARRAY)
-				type = "float[]";
-			else
-				type = "UNKNOWN_VALUE_TYPE";
-
-			dictAttr[py::cast("type")] = type;
+			dictAttr[py::cast("type")] = getAnnotationArgumentTypeString(valueType);
 			dictAttr[py::cast("annotations")] = annotations;
-
 			ruleAttrs[py::cast(name)] = dictAttr;
 		}
 	}
@@ -186,7 +188,6 @@ py::dict getRuleAttributesDeprecated(const prt::RuleFileInfo* ruleFileInfo) {
 			continue;
 		const std::wstring name = fullName.substr(8);
 		const prt::AnnotationArgumentType valueType = attr->getReturnType();
-		py::str type;
 
 		for (size_t f = 0; f < attr->getNumAnnotations(); f++) {
 			if (!(std::wcscmp(attr->getAnnotation(f)->getName(), ANNOT_HIDDEN))) {
@@ -196,22 +197,7 @@ py::dict getRuleAttributesDeprecated(const prt::RuleFileInfo* ruleFileInfo) {
 		}
 
 		if (!hidden) {
-			if (valueType == prt::AAT_STR)
-				type = "string";
-			else if (valueType == prt::AAT_BOOL)
-				type = "bool";
-			else if (valueType == prt::AAT_FLOAT)
-				type = "float";
-			else if (valueType == prt::AAT_STR_ARRAY)
-				type = "string[]";
-			else if (valueType == prt::AAT_BOOL_ARRAY)
-				type = "bool[]";
-			else if (valueType == prt::AAT_FLOAT_ARRAY)
-				type = "float[]";
-			else
-				type = "UNKNOWN_VALUE_TYPE";
-
-			ruleAttrs[py::cast(name)] = type;
+			ruleAttrs[py::cast(name)] = getAnnotationArgumentTypeString(valueType);;
 		}
 	}
 
