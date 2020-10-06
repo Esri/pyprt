@@ -52,7 +52,8 @@ constexpr const char* GetRPKInfo = R"mydelimiter(
         get_rpk_attributes_info(rule_package_path) -> dict
 
         This function returns the CGA rule attributes name and value type for the specified rule package path as 
-        well as a list of the attributes annotations (annotation name, key(s) and value(s)).
+        well as a list of the attributes annotations (annotation name, key(s) and value(s)). In case of an unnamed 
+        annotation parameter, its key is equal to ``'#NULL#'``, which can be read using the ``pyprt.NO_KEY`` constant.
 
         :Returns:
             dict

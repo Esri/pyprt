@@ -92,7 +92,7 @@ void getAnnotations(const prt::RuleFileInfo::Entry* attribute, std::vector<std::
 
 				py::list annotationParameters;
 				if (std::wcscmp(annotationArg->getKey(), NO_KEY) == 0)
-					annotationParameters.append(py::cast(NO_KEY_PY));
+					annotationParameters.append(py::cast(NO_KEY));
 				else
 					annotationParameters.append(py::cast(annotationArg->getKey()));
 				annotationParameters.append(annotationValue);
@@ -247,6 +247,7 @@ PYBIND11_MODULE(pyprt, m) {
 	m.def("shutdown_prt", &shutdownPRT, doc::Shutdown);
 	m.def("inspect_rpk", &inspectRPKDeprecated, py::arg("rulePackagePath"), doc::InspectRPKDeprecated);
 	m.def("get_rpk_attributes_info", &getRPKInfo, py::arg("rulePackagePath"), doc::GetRPKInfo);
+	m.attr("NO_KEY") = NO_KEY;
 
 	py::class_<InitialShape>(m, "InitialShape", doc::Is)
 	        .def(py::init<const Coordinates&>(), py::arg("vertCoordinates"), doc::IsInitV)
