@@ -46,6 +46,8 @@ namespace py = pybind11;
 namespace {
 
 constexpr const wchar_t* ANNOT_HIDDEN = L"@Hidden";
+constexpr const wchar_t* NO_KEY = L"#NULL#";
+constexpr const wchar_t* NO_KEY_PY = L"NO_KEY";
 
 void initializePRT() {
 	auto prt = PRTContext::get(); // this will implicitly construct PRTContext and call prt::init
@@ -61,51 +63,92 @@ void shutdownPRT() {
 	PRTContext::shutdown();
 }
 
+void getAnnotations(const prt::RuleFileInfo::Entry* attribute, std::vector<std::vector<py::object>>& annotations,
+                    bool& hidden) {
+	for (size_t f = 0; f < attribute->getNumAnnotations(); f++) {
+		const prt::Annotation* annot = attribute->getAnnotation(f);
+		if (std::wcscmp(annot->getName(), ANNOT_HIDDEN) == 0) {
+			hidden = true;
+			break;
+		}
+
+		if (std::wcsncmp(annot->getName(), L"@", 1) == 0) {
+			std::vector<py::object> annotationPyList;
+			annotationPyList.push_back(py::cast(annot->getName()));
+
+			for (size_t u = 0; u < annot->getNumArguments(); u++) {
+				py::object annotationValue;
+				const prt::AnnotationArgument* annotationArg = annot->getArgument(u);
+				const prt::AnnotationArgumentType annotationValueType = annotationArg->getType();
+
+				if (annotationValueType == prt::AAT_STR)
+					annotationValue = py::cast(annotationArg->getStr());
+				else if (annotationValueType == prt::AAT_BOOL)
+					annotationValue = py::cast(annotationArg->getBool());
+				else if (annotationValueType == prt::AAT_FLOAT)
+					annotationValue = py::cast(annotationArg->getFloat());
+				else
+					annotationValue = py::cast("UNKNOWN_PARAMETER_VALUE_TYPE");
+
+				py::list annotationParameters;
+				if (std::wcscmp(annotationArg->getKey(), NO_KEY) == 0)
+					annotationParameters.append(py::cast(NO_KEY));
+				else
+					annotationParameters.append(py::cast(annotationArg->getKey()));
+				annotationParameters.append(annotationValue);
+				annotationPyList.push_back(annotationParameters);
+			}
+
+			annotations.push_back(annotationPyList);
+		}
+	}
+}
+
+py::str getAnnotationArgumentTypeString(const prt::AnnotationArgumentType& valueType) {
+	py::str type;
+	if (valueType == prt::AAT_STR)
+		type = "string";
+	else if (valueType == prt::AAT_BOOL)
+		type = "bool";
+	else if (valueType == prt::AAT_FLOAT)
+		type = "float";
+	else if (valueType == prt::AAT_STR_ARRAY)
+		type = "string[]";
+	else if (valueType == prt::AAT_BOOL_ARRAY)
+		type = "bool[]";
+	else if (valueType == prt::AAT_FLOAT_ARRAY)
+		type = "float[]";
+	else
+		type = "UNKNOWN_VALUE_TYPE";
+	return type;
+}
+
 py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 	auto ruleAttrs = py::dict();
 
 	for (size_t i = 0; i < ruleFileInfo->getNumAttributes(); i++) {
-		bool hidden = false;
 		const prt::RuleFileInfo::Entry* attr = ruleFileInfo->getAttribute(i);
-
+		bool hidden = false;
+		std::vector<std::vector<py::object>> annotations;
 		const std::wstring fullName(attr->getName());
 		if (fullName.find(L"Default$") != 0)
 			continue;
 		const std::wstring name = fullName.substr(8);
+		getAnnotations(attr, annotations, hidden);
+
 		const prt::AnnotationArgumentType valueType = attr->getReturnType();
-		py::str type;
-
-		for (size_t f = 0; f < attr->getNumAnnotations(); f++) {
-			if (!(std::wcscmp(attr->getAnnotation(f)->getName(), ANNOT_HIDDEN))) {
-				hidden = true;
-				break;
-			}
-		}
-
+		auto dictAttr = py::dict();
 		if (!hidden) {
-			if (valueType == prt::AAT_STR)
-				type = "string";
-			else if (valueType == prt::AAT_BOOL)
-				type = "bool";
-			else if (valueType == prt::AAT_FLOAT)
-				type = "float";
-			else if (valueType == prt::AAT_STR_ARRAY)
-				type = "string[]";
-			else if (valueType == prt::AAT_BOOL_ARRAY)
-				type = "bool[]";
-			else if (valueType == prt::AAT_FLOAT_ARRAY)
-				type = "float[]";
-			else
-				type = "UNKNOWN_VALUE_TYPE";
-
-			ruleAttrs[py::cast(name)] = type;
+			dictAttr[py::cast("type")] = getAnnotationArgumentTypeString(valueType);
+			dictAttr[py::cast("annotations")] = annotations;
+			ruleAttrs[py::cast(name)] = dictAttr;
 		}
 	}
 
 	return ruleAttrs;
 }
 
-py::dict inspectRPK(const std::filesystem::path& rulePackagePath) {
+py::dict getRPKInfo(const std::filesystem::path& rulePackagePath) {
 	ResolveMapPtr resolveMap;
 
 	if (!std::filesystem::exists(rulePackagePath) || !pcu::getResolveMap(rulePackagePath, &resolveMap)) {
@@ -133,6 +176,63 @@ py::dict inspectRPK(const std::filesystem::path& rulePackagePath) {
 	return ruleAttrs;
 }
 
+py::dict getRuleAttributesDeprecated(const prt::RuleFileInfo* ruleFileInfo) {
+	auto ruleAttrs = py::dict();
+
+	for (size_t i = 0; i < ruleFileInfo->getNumAttributes(); i++) {
+		bool hidden = false;
+		const prt::RuleFileInfo::Entry* attr = ruleFileInfo->getAttribute(i);
+
+		const std::wstring fullName(attr->getName());
+		if (fullName.find(L"Default$") != 0)
+			continue;
+		const std::wstring name = fullName.substr(8);
+		const prt::AnnotationArgumentType valueType = attr->getReturnType();
+
+		for (size_t f = 0; f < attr->getNumAnnotations(); f++) {
+			if (!(std::wcscmp(attr->getAnnotation(f)->getName(), ANNOT_HIDDEN))) {
+				hidden = true;
+				break;
+			}
+		}
+
+		if (!hidden) {
+			ruleAttrs[py::cast(name)] = getAnnotationArgumentTypeString(valueType);;
+		}
+	}
+
+	return ruleAttrs;
+}
+
+py::dict inspectRPKDeprecated(const std::filesystem::path& rulePackagePath) {
+	PyErr_WarnEx(PyExc_DeprecationWarning, "inspect_rpk(rule_package_path) is deprecated, use get_rpk_attributes_info(rule_package_path) instead.", 1);
+	ResolveMapPtr resolveMap;
+
+	if (!std::filesystem::exists(rulePackagePath) || !pcu::getResolveMap(rulePackagePath, &resolveMap)) {
+		LOG_ERR << "invalid rule package path";
+		return py::dict();
+	}
+
+	std::wstring ruleFile = pcu::getRuleFileEntry(resolveMap.get());
+
+	const wchar_t* ruleFileURI = resolveMap->getString(ruleFile.c_str());
+	if (ruleFileURI == nullptr) {
+		LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
+		return py::dict();
+	}
+
+	prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
+	RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, nullptr, &infoStatus));
+	if (!info || infoStatus != prt::STATUS_OK) {
+		LOG_ERR << "could not get rule file info from rule file " << ruleFile;
+		return py::dict();
+	}
+
+	py::dict ruleAttrs = getRuleAttributesDeprecated(info.get());
+
+	return ruleAttrs;
+}
+
 } // namespace
 
 PYBIND11_MODULE(pyprt, m) {
@@ -145,7 +245,9 @@ PYBIND11_MODULE(pyprt, m) {
 	m.def("initialize_prt", &initializePRT, doc::Init);
 	m.def("is_prt_initialized", &isPRTInitialized, doc::IsInit);
 	m.def("shutdown_prt", &shutdownPRT, doc::Shutdown);
-	m.def("inspect_rpk", &inspectRPK, py::arg("rulePackagePath"), doc::InspectRPK);
+	m.def("inspect_rpk", &inspectRPKDeprecated, py::arg("rulePackagePath"), doc::InspectRPKDeprecated);
+	m.def("get_rpk_attributes_info", &getRPKInfo, py::arg("rulePackagePath"), doc::GetRPKInfo);
+	m.attr("NO_KEY") = NO_KEY;
 
 	py::class_<InitialShape>(m, "InitialShape", doc::Is)
 	        .def(py::init<const Coordinates&>(), py::arg("vertCoordinates"), doc::IsInitV)

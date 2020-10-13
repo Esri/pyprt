@@ -26,7 +26,7 @@ def asset_file(filename):
 
 
 class MultiTest(unittest.TestCase):
-    def test_multiGenerations(self):
+    def test_multigenerations(self):
         rpk = asset_file('extrusion_rule.rpk')
         attrs = {}
         shape_geo = pyprt.InitialShape(
@@ -44,7 +44,7 @@ class MultiTest(unittest.TestCase):
         self.assertListEqual(model3[0].get_vertices(),
                              model4[0].get_vertices())
 
-    def test_PathAndGeometryInitShapes(self):
+    def test_path_geometry_init_shapes(self):
         rpk = asset_file('extrusion_rule.rpk')
         attrs = {}
         shape_geo = pyprt.InitialShape(

@@ -26,11 +26,20 @@ def asset_file(filename):
 
 
 class InspectRPKTest(unittest.TestCase):
-    def test_candlerRPK(self):
+    def test_candler_rpk(self):
         rpk = asset_file('candler.rpk')
 
-        inspect_dict = pyprt.inspect_rpk(rpk)
-        ground_truth_dict = {'BuildingHeight': 'float', 'ColorizeWall': 'string', 'CornerWallWidth': 'float', 'CorniceOverhang': 'float', 'FloorHeight': 'float', 'FrontWindowWidth': 'float',
-                             'GroundfloorHeight': 'float', 'Mode': 'string', 'RearWindowWidth': 'float', 'SillSize': 'float', 'TileWidth': 'float', 'WallTexture': 'string', 'WindowHeight': 'float', 'streetWidth': 'float'}
+        inspect_dict = pyprt.get_rpk_attributes_info(rpk)
+        ground_truth_keys = ['BuildingHeight', 'ColorizeWall', 'CornerWallWidth', 'CorniceOverhang', 'FloorHeight', 'FrontWindowWidth',
+                             'GroundfloorHeight', 'Mode', 'RearWindowWidth', 'SillSize', 'TileWidth', 'WallTexture', 'WindowHeight', 'streetWidth']
 
-        self.assertDictEqual(inspect_dict, ground_truth_dict)
+        self.assertSetEqual(set(inspect_dict.keys()), set(ground_truth_keys))
+
+    def test_candler_rpk_attr(self):
+        rpk = asset_file('candler.rpk')
+
+        inspect_dict = pyprt.get_rpk_attributes_info(rpk)
+        ground_truth_dict = {'annotations': [['@Order', ['#NULL#', 3.0]],['@Range',['#NULL#', 0.5],['#NULL#', 2.0]],['@Group',['#NULL#', 'Windows'],['#NULL#', 4.0]]],
+                             'type': 'float'}
+
+        self.assertDictEqual(inspect_dict['RearWindowWidth'], ground_truth_dict)
