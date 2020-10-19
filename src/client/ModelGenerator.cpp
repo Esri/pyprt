@@ -163,6 +163,11 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 			return {};
 		}
 
+		if (!std::filesystem::exists(rulePackagePath)) {
+			LOG_ERR << "The rule package path is unvalid.";
+			return {};
+		}
+
 		if (!pcu::getResolveMap(rulePackagePath, &mResolveMap))
 			return {};
 
