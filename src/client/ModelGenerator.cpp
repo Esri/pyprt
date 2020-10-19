@@ -46,23 +46,6 @@ void extractMainShapeAttributes(const py::dict& shapeAttr, int32_t& seed, std::w
 	}
 }
 
-std::wstring detectStartRule(const RuleFileInfoUPtr& ruleFileInfo) {
-	for (size_t r = 0; r < ruleFileInfo->getNumRules(); r++) {
-		const auto* rule = ruleFileInfo->getRule(r);
-
-		// start rules must not have any parameters
-		if (rule->getNumParameters() > 0)
-			continue;
-
-		for (size_t a = 0; a < rule->getNumAnnotations(); a++) {
-			if (std::wcscmp(rule->getAnnotation(a)->getName(), L"@StartRule") == 0) {
-				return rule->getName();
-			}
-		}
-	}
-	return {};
-}
-
 } // namespace
 
 ModelGenerator::ModelGenerator(const std::vector<InitialShape>& myGeo) {
@@ -198,7 +181,7 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 			return {};
 		}
 
-		mStartRule = detectStartRule(info);
+		mStartRule = pcu::detectStartRule(info);
 
 		// Initial shapes
 		std::vector<const prt::InitialShape*> initialShapes(mInitialShapesBuilders.size());
