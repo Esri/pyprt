@@ -47,7 +47,6 @@ namespace {
 
 constexpr const wchar_t* ANNOT_HIDDEN = L"@Hidden";
 constexpr const wchar_t* NO_KEY = L"#NULL#";
-constexpr const wchar_t* NO_KEY_PY = L"NO_KEY";
 
 void initializePRT() {
 	auto prt = PRTContext::get(); // this will implicitly construct PRTContext and call prt::init
