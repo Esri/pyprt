@@ -278,10 +278,10 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 }
 
 std::vector<GeneratedModel> ModelGenerator::generateAnotherModel(const std::vector<py::dict>& shapeAttributes) {
-	if (!mResolveMap) {
-		LOG_ERR << "generate model with all required parameters";
-		return {};
-	}
-	else
-		return generateModel(shapeAttributes, "", L"", {});
+	const char* message = "generate_model(shape_attributes) is deprecated, use "
+	                      "generate_model(shape_attributes, rule_package_path, "
+	                      "geometry_encoder, encoder_options) instead.";
+	PyErr_WarnEx(PyExc_DeprecationWarning, message, 1);
+    LOG_ERR << message;
+    return {};
 }
