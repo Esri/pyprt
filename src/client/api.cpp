@@ -264,7 +264,7 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"),
 	             py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"),
 	             doc::MgGen)
-	        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"), doc::MgGen2);
+	        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
 
 	py::class_<GeneratedModel>(m, "GeneratedModel", doc::Gm)
 	        .def("get_initial_shape_index", &GeneratedModel::getInitialShapeIndex, doc::GmGetInd)
