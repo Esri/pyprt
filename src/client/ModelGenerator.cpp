@@ -287,7 +287,7 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 }
 
 std::vector<GeneratedModel> ModelGenerator::generateAnotherModel(const std::vector<py::dict>& shapeAttributes) {
-	const char* message = "generate_model(shape_attributes) is deprecated, use "
+	const char* message = "generate_model(shape_attributes) has been removed, use "
 	                      "generate_model(shape_attributes, rule_package_path, "
 	                      "geometry_encoder, encoder_options) instead.";
 	PyErr_WarnEx(PyExc_DeprecationWarning, message, 1);
