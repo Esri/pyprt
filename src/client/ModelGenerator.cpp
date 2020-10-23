@@ -134,6 +134,35 @@ void ModelGenerator::initializeEncoderData(const std::wstring& encName, const py
 	mEncodersOptionsPtr.push_back(pcu::createValidatedOptions(ENCODER_ID_CGA_ERROR, errorOptions));
 }
 
+const prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::path& rulePackagePath, ResolveMapPtr& resolveMap,
+	CachePtr& cache) {
+	if (!std::filesystem::exists(rulePackagePath)) {
+		LOG_ERR << "The rule package path is unvalid.";
+		return prt::STATUS_FILE_NOT_FOUND;
+	}
+
+	if (!pcu::getResolveMap(rulePackagePath, &resolveMap))
+		return prt::STATUS_RESOLVEMAP_PROVIDER_NOT_FOUND;
+
+	mRuleFile = pcu::getRuleFileEntry(resolveMap.get());
+
+	const wchar_t* ruleFileURI = resolveMap->getString(mRuleFile.c_str());
+	if (ruleFileURI == nullptr) {
+		LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
+		return prt::STATUS_INVALID_URI;
+	}
+
+	prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
+	RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, cache.get(), &infoStatus));
+	if (!info || infoStatus != prt::STATUS_OK) {
+		LOG_ERR << "could not get rule file info from rule file " << mRuleFile;
+		return infoStatus;
+	}
+
+	mStartRule = pcu::detectStartRule(info);
+	return prt::STATUS_OK;
+}
+
 std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::dict>& shapeAttributes,
                                                           const std::filesystem::path& rulePackagePath,
                                                           const std::wstring& geometryEncoderName,
