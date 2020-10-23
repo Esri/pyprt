@@ -208,15 +208,14 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 		if (!mEncoderBuilder)
 			mEncoderBuilder.reset(prt::AttributeMapBuilder::create());
 
-		if (!geometryEncoderName.empty())
-			initializeEncoderData(geometryEncoderName, geometryEncoderOptions);
+		initializeEncoderData(geometryEncoderName, geometryEncoderOptions);
 
 		assert(mEncodersNames.size() == mEncodersOptionsPtr.size());
 		const std::vector<const wchar_t*> encoders = pcu::toPtrVec(mEncodersNames);
 		const std::vector<const prt::AttributeMap*> encodersOptions = pcu::toPtrVec(mEncodersOptionsPtr);
 		assert(encoders.size() == encodersOptions.size());
 
-		if (mEncodersNames[0] == ENCODER_ID_PYTHON) {
+		if (geometryEncoderName == ENCODER_ID_PYTHON) {
 
 			PyCallbacksPtr foc{std::make_unique<PyCallbacks>(mInitialShapesBuilders.size())};
 
