@@ -192,30 +192,11 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 			return {};
 		}
 
-		if (!std::filesystem::exists(rulePackagePath)) {
-			LOG_ERR << "The rule package path is unvalid.";
+		// Rule package
+		const prt::Status rpkStat = initializeRulePackageData(rulePackagePath, mResolveMap, mCache);
+		
+		if (rpkStat != prt::STATUS_OK)
 			return {};
-		}
-
-		if (!pcu::getResolveMap(rulePackagePath, &mResolveMap))
-			return {};
-
-		mRuleFile = pcu::getRuleFileEntry(mResolveMap.get());
-
-		const wchar_t* ruleFileURI = mResolveMap->getString(mRuleFile.c_str());
-		if (ruleFileURI == nullptr) {
-			LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
-			return {};
-		}
-
-		prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
-		RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, mCache.get(), &infoStatus));
-		if (!info || infoStatus != prt::STATUS_OK) {
-			LOG_ERR << "could not get rule file info from rule file " << mRuleFile;
-			return {};
-		}
-
-		mStartRule = pcu::detectStartRule(info);
 
 		// Initial shapes
 		std::vector<const prt::InitialShape*> initialShapes(mInitialShapesBuilders.size());
