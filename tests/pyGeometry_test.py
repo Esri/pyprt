@@ -93,7 +93,7 @@ class GeometryTest(unittest.TestCase):
             [-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
         m = pyprt.ModelGenerator([shape_geo])
         m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
-        model2 = m.generate_model([attrs2])
+        model2 = m.generate_model([attrs2], rpk, 'com.esri.pyprt.PyEncoder', {})
         z_coord = [round(b, 1) for b in model2[0].get_vertices()[1:-1:3]]
         for z in z_coord:
             if z:

@@ -17,7 +17,6 @@ import unittest
 
 import pyprt
 
-import multiGeneration_test
 import otherExporter_test
 import pyGeometry_test
 import shapeAttributesDict_test
@@ -42,7 +41,6 @@ class PyPRTTestRunner(unittest.TextTestRunner):
 def test_suite():
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
-    suite.addTests(loader.loadTestsFromModule(multiGeneration_test))
     suite.addTests(loader.loadTestsFromModule(otherExporter_test))
     suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
     suite.addTests(loader.loadTestsFromModule(shapeAttributesDict_test))
