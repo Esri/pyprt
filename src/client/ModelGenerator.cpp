@@ -134,7 +134,7 @@ void ModelGenerator::initializeEncoderData(const std::wstring& encName, const py
 	mEncodersOptionsPtr.push_back(pcu::createValidatedOptions(ENCODER_ID_CGA_ERROR, errorOptions));
 }
 
-const prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::path& rulePackagePath, ResolveMapPtr& resolveMap,
+prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::path& rulePackagePath, ResolveMapPtr& resolveMap,
 	CachePtr& cache) {
 	if (!std::filesystem::exists(rulePackagePath)) {
 		LOG_ERR << "The rule package path is unvalid.";
@@ -193,7 +193,7 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 		}
 
 		// Rule package
-		const prt::Status rpkStat = initializeRulePackageData(rulePackagePath, mResolveMap, mCache);
+		prt::Status rpkStat = initializeRulePackageData(rulePackagePath, mResolveMap, mCache);
 		
 		if (rpkStat != prt::STATUS_OK)
 			return {};
