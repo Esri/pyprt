@@ -39,6 +39,7 @@ namespace pcu {
 std::filesystem::path getModuleDirectory();
 bool getResolveMap(const std::filesystem::path& rulePackagePath, ResolveMapPtr* resolveMap);
 std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap);
+std::wstring detectStartRule(const RuleFileInfoUPtr& ruleFileInfo);
 std::wstring removeStylePrefix(const std::wstring& fullName);
 
 AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::AttributeMapBuilder& bld);

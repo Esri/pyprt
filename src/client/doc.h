@@ -201,19 +201,6 @@ constexpr const char* MgGen = R"mydelimiter(
             ``models1 = m.generate_model([attrs1, attrs2], rpk, 'com.esri.pyprt.PyEncoder', {'emitReport': True, 'emitGeometry': True})``
         )mydelimiter";
 
-constexpr const char* MgGen2 = R"mydelimiter(
-        This overloaded *generate_model* function can only be used once the previous *ModelGenerator::generate_model* method has been
-        called. It is useful to specify different shape attributes but use the same CGA rule package on the
-        same initial shapes, the same encoder and encoder options.
-
-        :Parameters:
-            **shape_attributes** -- List[dict]
-
-        :Returns:
-            List[GeneratedModel]
-        :Example: ``models2 = m.generate_model([attrs3, attrs4])``
-        )mydelimiter";
-
 constexpr const char* Gm =
         "The GeneratedModel instance contains the generated 3D geometry. This class is only employed "
         "if the *com.esri.pyprt.PyEncoder* encoder is used in the ModelGenerator instance.";

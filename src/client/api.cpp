@@ -47,7 +47,6 @@ namespace {
 
 constexpr const wchar_t* ANNOT_HIDDEN = L"@Hidden";
 constexpr const wchar_t* NO_KEY = L"#NULL#";
-constexpr const wchar_t* NO_KEY_PY = L"NO_KEY";
 
 void initializePRT() {
 	auto prt = PRTContext::get(); // this will implicitly construct PRTContext and call prt::init
@@ -265,7 +264,7 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"),
 	             py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"),
 	             doc::MgGen)
-	        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"), doc::MgGen2);
+	        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
 
 	py::class_<GeneratedModel>(m, "GeneratedModel", doc::Gm)
 	        .def("get_initial_shape_index", &GeneratedModel::getInitialShapeIndex, doc::GmGetInd)

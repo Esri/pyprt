@@ -61,4 +61,6 @@ private:
 	                              std::vector<InitialShapePtr>& initShapesPtrs,
 	                              std::vector<AttributeMapPtr>& convertShapeAttr);
 	void initializeEncoderData(const std::wstring& encName, const pybind11::dict& encOpt);
+	prt::Status initializeRulePackageData(const std::filesystem::path& rulePackagePath, ResolveMapPtr& resolveMap,
+	                               CachePtr& cache);
 };
