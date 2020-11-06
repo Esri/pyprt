@@ -67,6 +67,32 @@ Simply run `pip install pyprt` in your desired Python environment or `conda inst
 	</td>
 </tr>
 
+<tr><td colspan="2"><h3>ArcGIS Notebooks & PyPRT</h3></td></tr>
+<tr>
+	<td>
+	</td>
+	<td>
+		<p>PyPRT can be used in ArcGIS Notebooks. To do so, the following steps are required.</p>
+		<p><a href="https://www.esri.com/en-us/arcgis/products/arcgis-notebooks/workspace-options/arcgis-pro">ArcGIS Notebooks in ArcGIS Pro</a>
+		<ol>
+			<li>Clone the default conda environment directly in Pro or create a new one.</li>
+			<li>Install PyPRT (<code>conda install pyprt</code>) inside the new environment (using the Python command prompt for example).</li>
+			<li>Restart Pro and open a new Notebook.</li>
+			<li>Import PyPRT (<code>import pyprt</code>) to use PyPRT functionalities.</li>
+		</ol>
+		</p>
+		<p><a href="https://www.esri.com/en-us/arcgis/products/arcgis-notebooks/workspace-options/arcgis-online">ArcGIS Notebooks on ArcGIS Online</a>
+		<ol>
+			<li>Install PyPRT (<code>!conda install -c esri pyprt --yes</code>) in the notebook cell.</li>
+			<li>Import PyPRT (<code>import pyprt</code>).</li>
+			<li>Import the ArcGIS API for Python (<code>from arcgis.gis import GIS</code>) and initialize a GIS object (<code>gis = GIS("home")</code>).</li>
+			<li>Initialize PyPRT (<code>pyprt.initialize_prt()</code>).</li>
+			<li>Use PyPRT and the Python API functionalities.</li>
+		</ol>
+		</p>
+	</td>
+</tr>
+
 <tr><td colspan="2"><h3>Other Examples</h3></td></tr>
 <tr>
 	<td>
