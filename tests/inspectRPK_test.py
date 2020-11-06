@@ -31,7 +31,7 @@ class InspectRPKTest(unittest.TestCase):
 
         inspect_dict = pyprt.get_rpk_attributes_info(rpk)
         ground_truth_keys = ['BuildingHeight', 'ColorizeWall', 'CornerWallWidth', 'CorniceOverhang', 'FloorHeight', 'FrontWindowWidth',
-                             'GroundfloorHeight', 'Mode', 'RearWindowWidth', 'SillSize', 'TileWidth', 'WallTexture', 'WindowHeight', 'streetWidth']
+                             'GroundfloorHeight', 'Mode', 'RearWindowWidth', 'SillSize', 'TileWidth', 'WallTexture', 'WindowHeight']
 
         self.assertSetEqual(set(inspect_dict.keys()), set(ground_truth_keys))
 
