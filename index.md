@@ -70,9 +70,9 @@ Simply run `pip install pyprt` in your desired Python environment or `conda inst
 <tr><td colspan="2"><h3>ArcGIS Notebooks & PyPRT</h3></td></tr>
 <tr>
 	<td>
-		<a href="images/arcgisnotebookslogo.png"><img src="images/arcgisnotebookslogo.png" width="130" /></a>
-		<a href="images/arcgisprologo.png"><img src="images/arcgisprologo.png" width="130" /></a>
-		<a href="images/arcgisonlinelogo.png"><img src="images/arcgisonlinelogo.png" width="130" /></a>
+		<a href="images/arcgisnotebookslogo.png"><img src="images/arcgisnotebookslogo.png" width="70" /></a>
+		<a href="images/arcgisprologo.png"><img src="images/arcgisprologo.png" width="70" /></a>
+		<a href="images/arcgisonlinelogo.png"><img src="images/arcgisonlinelogo.png" width="70" /></a>
 	</td>
 	<td>
 		<p>PyPRT can be used in ArcGIS Notebooks. To do so, the following steps are required.</p>
