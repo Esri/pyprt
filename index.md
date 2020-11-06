@@ -70,6 +70,9 @@ Simply run `pip install pyprt` in your desired Python environment or `conda inst
 <tr><td colspan="2"><h3>ArcGIS Notebooks & PyPRT</h3></td></tr>
 <tr>
 	<td>
+		<a href="images/arcgisnotebookslogo.png"><img src="images/arcgisnotebookslogo.png" width="130" /></a>
+		<a href="images/arcgisprologo.png"><img src="images/arcgisprologo.png" width="130" /></a>
+		<a href="images/arcgisonlinelogo.png"><img src="images/arcgisonlinelogo.png" width="130" /></a>
 	</td>
 	<td>
 		<p>PyPRT can be used in ArcGIS Notebooks. To do so, the following steps are required.</p>
@@ -78,7 +81,7 @@ Simply run `pip install pyprt` in your desired Python environment or `conda inst
 			<li>Clone the default conda environment directly in Pro or create a new one.</li>
 			<li>Install PyPRT (<code>conda install pyprt</code>) inside the new environment (using the Python command prompt for example).</li>
 			<li>Restart Pro and open a new Notebook.</li>
-			<li>Import PyPRT (<code>import pyprt</code>) to use PyPRT functionalities.</li>
+			<li>Import PyPRT (<code>import pyprt</code>) to use PyPRT.</li>
 		</ol>
 		</p>
 		<p><a href="https://www.esri.com/en-us/arcgis/products/arcgis-notebooks/workspace-options/arcgis-online">ArcGIS Notebooks on ArcGIS Online</a>
