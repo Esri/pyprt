@@ -132,7 +132,7 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 		const std::wstring fullName(attr->getName());
 		if (fullName.find(L"Default$") != 0)
 			continue;
-		if (fullName.find(L"streetWidth") != std::wstring::npos && attr->getNumParameters() == 1)
+		if (attr->getNumParameters() > 0)
 			continue;
 		const std::wstring name = fullName.substr(8);
 		getAnnotations(attr, annotations, hidden);
