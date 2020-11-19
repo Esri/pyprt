@@ -70,5 +70,9 @@ class ArcGISAPITest(unittest.TestCase):
                             "26\n"
                             "15\n"
                             "4\n")
+            
+        actual_content = ""
+        for model in models:
+            actual_content += model.get_cga_prints()
 
-        self.assertEqual(expected_content,models[0].get_cga_prints())
+        self.assertEqual(expected_content,actual_content)
