@@ -11,7 +11,7 @@
 * Removal of the overload `generate_model(rule_attributes)` (use `generate_model(rule_attributes, rule_package_path, geometry_encoder, encoder_options)` instead)
 * Deprecation of the `inspect_rpk(rule_package_path)` function (use `get_rpk_attributes_info(rule_package_path)` instead)
 * Internal update to PRT 2.3
-* Updated compiler requirements on Windows (MSVC 14.27)
+* Updated compiler requirements on Windows (MSVC 14.23)
 
 ### Fixed
 * Removed `streetWidth(a)` attribute from the rule package attributes dictionary (in `inspect_rpk(...)` and `get_rpk_attributes_info(...)`)
