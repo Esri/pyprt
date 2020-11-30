@@ -37,10 +37,23 @@ constexpr const char* Shutdown =
         "Shutdown of PRT. The PRT initialization process can be done only once per "
         "session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.";
 
-constexpr const char* InspectRPK = R"mydelimiter(
+constexpr const char* InspectRPKDeprecated = R"mydelimiter(
         inspect_rpk(rule_package_path) -> dict
+        
+        Deprecated: use get_rpk_attributes_info(rule_package_path) instead.
 
         This function returns the CGA rule attributes name and value type for the specified rule package path.
+
+        :Returns:
+            dict
+    )mydelimiter";
+
+constexpr const char* GetRPKInfo = R"mydelimiter(
+        get_rpk_attributes_info(rule_package_path) -> dict
+
+        This function returns the CGA rule attributes name and value type for the specified rule package path as 
+        well as a list of the attributes annotations (annotation name, key(s) and value(s)). In case of an unnamed 
+        annotation parameter, its key is equal to ``'#NULL#'``, which can be read using the ``pyprt.NO_KEY`` constant.
 
         :Returns:
             dict
@@ -186,19 +199,6 @@ constexpr const char* MgGen = R"mydelimiter(
             ``attrs2 = {'shapeName': 'myShape2', 'seed': 777, 'minBuildingHeight': 25.0}``
 
             ``models1 = m.generate_model([attrs1, attrs2], rpk, 'com.esri.pyprt.PyEncoder', {'emitReport': True, 'emitGeometry': True})``
-        )mydelimiter";
-
-constexpr const char* MgGen2 = R"mydelimiter(
-        This overloaded *generate_model* function can only be used once the previous *ModelGenerator::generate_model* method has been
-        called. It is useful to specify different shape attributes but use the same CGA rule package on the
-        same initial shapes, the same encoder and encoder options.
-
-        :Parameters:
-            **shape_attributes** -- List[dict]
-
-        :Returns:
-            List[GeneratedModel]
-        :Example: ``models2 = m.generate_model([attrs3, attrs4])``
         )mydelimiter";
 
 constexpr const char* Gm =

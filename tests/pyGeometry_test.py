@@ -30,7 +30,7 @@ def asset_output_file(filename):
 
 
 class GeometryTest(unittest.TestCase):
-    def test_verticesNber_candler(self):
+    def test_verticesnber_candler(self):
         rpk = asset_file('candler.rpk')
         attrs = {}
         shape_geo_from_obj = pyprt.InitialShape(
@@ -40,7 +40,7 @@ class GeometryTest(unittest.TestCase):
                                  'emitReport': False, 'emitGeometry': True})
         self.assertEqual(len(model[0].get_vertices()), 97050*3)
 
-    def test_facesNber_candler(self):
+    def test_facesnber_candler(self):
         rpk = asset_file('candler.rpk')
         attrs = {}
         shape_geo_from_obj = pyprt.InitialShape(
@@ -64,7 +64,7 @@ class GeometryTest(unittest.TestCase):
         rep_round = {x: round(z, 2) for x, z in rep.items()}
         self.assertEqual(rep_round, ground_truth_dict)
 
-    def test_noReport(self):
+    def test_noreport(self):
         rpk = asset_file('extrusion_rule.rpk')
         attrs = {}
         shape_geo = pyprt.InitialShape(
@@ -74,7 +74,7 @@ class GeometryTest(unittest.TestCase):
                                  'emitReport': False})
         self.assertDictEqual(model[0].get_report(), {})
 
-    def test_noGeometry(self):
+    def test_nogeometry(self):
         rpk = asset_file('extrusion_rule.rpk')
         attrs = {}
         shape_geo = pyprt.InitialShape(
@@ -84,7 +84,7 @@ class GeometryTest(unittest.TestCase):
                                  'emitGeometry': False})
         self.assertListEqual(model[0].get_vertices(), [])
 
-    def test_buildingHeight(self):
+    def test_buildingheight(self):
         rpk = asset_file('extrusion_rule.rpk')
         attrs = {}
         attrs2 = {'minBuildingHeight': 23.0,
@@ -93,7 +93,7 @@ class GeometryTest(unittest.TestCase):
             [-10.0, 0.0, 10.0, -10.0, 0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 0.0, 10.0])
         m = pyprt.ModelGenerator([shape_geo])
         m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
-        model2 = m.generate_model([attrs2])
+        model2 = m.generate_model([attrs2], rpk, 'com.esri.pyprt.PyEncoder', {})
         z_coord = [round(b, 1) for b in model2[0].get_vertices()[1:-1:3]]
         for z in z_coord:
             if z:

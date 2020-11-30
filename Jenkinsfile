@@ -33,6 +33,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 @Field final String REPO   = 'git@github.com:esri/pyprt.git'
 @Field final String SOURCE = 'pyprt.git'
+@Field final String CREDS = 'jenkins-devtopia-pyprt-deployer-key'
 
 @Field final List CONFIGS_PREPARE = [
 	[ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC83, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64, python: '3.6' ],
@@ -84,7 +85,7 @@ Map taskGenPyPRT() {
 
 def taskPrepare(cfg) {
  	cepl.cleanCurrentDir()
- 	papl.checkout(REPO, env.BRANCH_NAME)
+	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
 
  	dir(path: SOURCE) {
 		withEnv(["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
@@ -104,7 +105,7 @@ def taskPrepare(cfg) {
 
 def taskBuildPyPRT(cfg) {
 	cepl.cleanCurrentDir()
-	papl.checkout(REPO, env.BRANCH_NAME)
+	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
 
 	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
 	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
@@ -129,7 +130,7 @@ def taskBuildPyPRT(cfg) {
 
 def taskCondaBuildPyPRT(cfg) {
 	cepl.cleanCurrentDir()
-	papl.checkout(REPO, env.BRANCH_NAME)
+	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
 
 	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
 	final JenkinsTools CONDA = JenkinsTools.CONDA
@@ -175,7 +176,7 @@ def taskCondaBuildPyPRT(cfg) {
 
 def taskBuildDoc(cfg) {
 	cepl.cleanCurrentDir()
-	papl.checkout(REPO, env.BRANCH_NAME)
+	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
 
 	final String sphinxOutput = "${env.WORKSPACE}/build"
 

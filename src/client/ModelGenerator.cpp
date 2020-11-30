@@ -46,23 +46,6 @@ void extractMainShapeAttributes(const py::dict& shapeAttr, int32_t& seed, std::w
 	}
 }
 
-std::wstring detectStartRule(const RuleFileInfoUPtr& ruleFileInfo) {
-	for (size_t r = 0; r < ruleFileInfo->getNumRules(); r++) {
-		const auto* rule = ruleFileInfo->getRule(r);
-
-		// start rules must not have any parameters
-		if (rule->getNumParameters() > 0)
-			continue;
-
-		for (size_t a = 0; a < rule->getNumAnnotations(); a++) {
-			if (std::wcscmp(rule->getAnnotation(a)->getName(), L"@StartRule") == 0) {
-				return rule->getName();
-			}
-		}
-	}
-	return {};
-}
-
 } // namespace
 
 ModelGenerator::ModelGenerator(const std::vector<InitialShape>& myGeo) {
@@ -151,6 +134,35 @@ void ModelGenerator::initializeEncoderData(const std::wstring& encName, const py
 	mEncodersOptionsPtr.push_back(pcu::createValidatedOptions(ENCODER_ID_CGA_ERROR, errorOptions));
 }
 
+prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::path& rulePackagePath, ResolveMapPtr& resolveMap,
+	CachePtr& cache) {
+	if (!std::filesystem::exists(rulePackagePath)) {
+		LOG_ERR << "The rule package path is unvalid.";
+		return prt::STATUS_FILE_NOT_FOUND;
+	}
+
+	if (!pcu::getResolveMap(rulePackagePath, &resolveMap))
+		return prt::STATUS_RESOLVEMAP_PROVIDER_NOT_FOUND;
+
+	mRuleFile = pcu::getRuleFileEntry(resolveMap.get());
+
+	const wchar_t* ruleFileURI = resolveMap->getString(mRuleFile.c_str());
+	if (ruleFileURI == nullptr) {
+		LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
+		return prt::STATUS_INVALID_URI;
+	}
+
+	prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
+	RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, cache.get(), &infoStatus));
+	if (!info || infoStatus != prt::STATUS_OK) {
+		LOG_ERR << "could not get rule file info from rule file " << mRuleFile;
+		return infoStatus;
+	}
+
+	mStartRule = pcu::detectStartRule(info);
+	return prt::STATUS_OK;
+}
+
 std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::dict>& shapeAttributes,
                                                           const std::filesystem::path& rulePackagePath,
                                                           const std::wstring& geometryEncoderName,
@@ -180,25 +192,11 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 			return {};
 		}
 
-		if (!pcu::getResolveMap(rulePackagePath, &mResolveMap))
+		// Rule package
+		prt::Status rpkStat = initializeRulePackageData(rulePackagePath, mResolveMap, mCache);
+		
+		if (rpkStat != prt::STATUS_OK)
 			return {};
-
-		mRuleFile = pcu::getRuleFileEntry(mResolveMap.get());
-
-		const wchar_t* ruleFileURI = mResolveMap->getString(mRuleFile.c_str());
-		if (ruleFileURI == nullptr) {
-			LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
-			return {};
-		}
-
-		prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
-		RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, mCache.get(), &infoStatus));
-		if (!info || infoStatus != prt::STATUS_OK) {
-			LOG_ERR << "could not get rule file info from rule file " << mRuleFile;
-			return {};
-		}
-
-		mStartRule = detectStartRule(info);
 
 		// Initial shapes
 		std::vector<const prt::InitialShape*> initialShapes(mInitialShapesBuilders.size());
@@ -210,15 +208,14 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 		if (!mEncoderBuilder)
 			mEncoderBuilder.reset(prt::AttributeMapBuilder::create());
 
-		if (!geometryEncoderName.empty())
-			initializeEncoderData(geometryEncoderName, geometryEncoderOptions);
+		initializeEncoderData(geometryEncoderName, geometryEncoderOptions);
 
 		assert(mEncodersNames.size() == mEncodersOptionsPtr.size());
 		const std::vector<const wchar_t*> encoders = pcu::toPtrVec(mEncodersNames);
 		const std::vector<const prt::AttributeMap*> encodersOptions = pcu::toPtrVec(mEncodersOptionsPtr);
 		assert(encoders.size() == encodersOptions.size());
 
-		if (mEncodersNames[0] == ENCODER_ID_PYTHON) {
+		if (geometryEncoderName == ENCODER_ID_PYTHON) {
 
 			PyCallbacksPtr foc{std::make_unique<PyCallbacks>(mInitialShapesBuilders.size())};
 
@@ -290,10 +287,10 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 }
 
 std::vector<GeneratedModel> ModelGenerator::generateAnotherModel(const std::vector<py::dict>& shapeAttributes) {
-	if (!mResolveMap) {
-		LOG_ERR << "generate model with all required parameters";
-		return {};
-	}
-	else
-		return generateModel(shapeAttributes, "", L"", {});
+	const char* message = "generate_model(shape_attributes) has been removed, use "
+	                      "generate_model(shape_attributes, rule_package_path, "
+	                      "geometry_encoder, encoder_options) instead.";
+	PyErr_WarnEx(PyExc_DeprecationWarning, message, 1);
+    LOG_ERR << message;
+    return {};
 }

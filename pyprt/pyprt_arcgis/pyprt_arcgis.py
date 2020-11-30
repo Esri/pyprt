@@ -25,6 +25,41 @@ except ModuleNotFoundError:
     sys.exit("This module can be imported only if arcgis package is installed.")
 
 
+def add_dimension(array_coord_2d):
+    array_coord_3d = np.insert(array_coord_2d, 1, 0, axis=1)
+    return np.reshape(array_coord_3d, (1, array_coord_3d.shape[0]*array_coord_3d.shape[1]))
+
+
+def swap_yz_dimensions(array_coord):
+    coord_swap_dim = array_coord.copy()
+    temp = np.copy(array_coord[:, 1])
+    coord_swap_dim[:, 1] = coord_swap_dim[:, 2]
+    coord_swap_dim[:, 2] = temp
+    return np.reshape(coord_swap_dim, (1, coord_swap_dim.shape[0]*coord_swap_dim.shape[1]))
+
+
+def holes_conversion(holes_ind_list):
+    holes_dict = {}
+    holes_list = []
+    if len(holes_ind_list) > 0:
+        for h_idx in holes_ind_list:
+            f_idx = h_idx
+            while f_idx > 0:
+                f_idx -= 1
+                if not (f_idx in holes_ind_list):
+                    if not (f_idx in holes_dict):
+                        holes_dict[f_idx] = [h_idx]
+                    else:
+                        holes_dict[f_idx].append(h_idx)
+                    break
+
+        for key, value in holes_dict.items():
+            face_holes = [key]
+            face_holes.extend(value)
+            holes_list.append(face_holes)
+    return holes_list
+
+
 def arcgis_to_pyprt(feature_set):
     """arcgis_to_pyprt(feature_set) -> List[InitialShape]
     This function allows converting an ArcGIS FeatureSet into a list of PyPRT InitialShape instances.
@@ -41,26 +76,38 @@ def arcgis_to_pyprt(feature_set):
     for feature in feature_set.features:
         try:
             geo = Geometry(feature.geometry)
-            if geo.type == 'Polygon':
-                coord = geo.coordinates()[0]
-                coord_remove_last = coord[:-1]
-                coord_inverse = np.flip(coord_remove_last, axis=0)
+            if geo.type == 'Polygon' and (not geo.is_empty):
+                pts_cnt = 0
+                vert_coord_list = []
+                face_count_list = []
+                holes_ind_list = []
+                coord_list = geo.coordinates()
 
-                if coord.shape[1] == 2:  # we have to add a dimension
+                for face_idx, coord_part in enumerate(coord_list):
+                    in_geo = Geometry({"rings": [coord_part]})
+                    store_area = in_geo.area
+                    coord_remove_last = coord_part[:-1]
+                    coord_inverse = np.flip(coord_remove_last, axis=0)
                     coord_inverse[:, 1] *= -1
-                    coord_add_dim = np.insert(coord_inverse, 1, 0, axis=1)
-                    coord_fin = np.reshape(
-                        coord_add_dim, (1, coord_add_dim.shape[0]*coord_add_dim.shape[1]))
-                elif coord.shape[1] == 3:  # need to swap the 1 and 2 columns
-                    coord_inverse[:, 1] *= -1
-                    coord_swap_dim = coord_inverse.copy()
-                    temp = np.copy(coord_swap_dim[:, 1])
-                    coord_swap_dim[:, 1] = coord_swap_dim[:, 2]
-                    coord_swap_dim[:, 2] = temp
-                    coord_fin = np.reshape(
-                        coord_swap_dim, (1, coord_swap_dim.shape[0]*coord_swap_dim.shape[1]))
 
-                initial_geometry = pyprt.InitialShape(coord_fin.tolist()[0])
+                    if len(coord_part[0]) == 2:
+                        coord_fin = add_dimension(coord_inverse)
+                    elif len(coord_part[0]) == 3:
+                        coord_fin = swap_yz_dimensions(coord_inverse)
+                    else:
+                        print("Only 2D or 3D points are supported.")
+
+                    vert_coord_list.extend(coord_fin[0])
+                    nb_pts = len(coord_fin[0])/3
+                    pts_cnt += nb_pts
+                    face_count_list.append(int(nb_pts))
+                    if store_area > 0.0: # interior ring / holes
+                        holes_ind_list.append(face_idx)
+
+                face_indices_list = list(range(0, sum(face_count_list)))
+                holes_list = holes_conversion(holes_ind_list)
+                
+                initial_geometry = pyprt.InitialShape(vert_coord_list, face_indices_list, face_count_list, holes_list)
                 initial_geometries.append(initial_geometry)
         except:
             print("This feature is not valid: ")
