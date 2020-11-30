@@ -65,7 +65,7 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
 
 #### Requirements
 * C++ Compiler (C++ 17)
-  * Windows: MSVC 14.27 or later
+  * Windows: MSVC 14.23 or later
   * Linux: GCC 8 or later
   * macOS (Catalina or later): Xcode 11
 * Python (version >= 3.6) with pip and pipenv
