@@ -13,6 +13,6 @@
 # limitations under the License.
 # A copy of the license is available in the repository's LICENSE file.
 
-__version__ = '1.2.0rc1'
+__version__ = '1.2.0'
 
 from .pyprt import *
