@@ -4,10 +4,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>pyprt module &#8212; PyPRT 1.1.0 documentation</title>
-    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pyprt module &#8212; PyPRT 1.2.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="pyprt.html" title="pyprt package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.2.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="pyprt.html" accesskey="U">pyprt package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt module</a></li> 
       </ul>
@@ -263,7 +263,7 @@ initialized from a list of vertex coordinates.</p>
 </dl>
 <dl class="py method">
 <dt id="pyprt.pyprt.bin.pyprt.ModelGenerator.generate_model">
-<code class="sig-name descname">generate_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>GeneratedModel<span class="p">]</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.ModelGenerator.generate_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">generate_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.GeneratedModel" title="pyprt.pyprt.bin.pyprt.GeneratedModel">GeneratedModel</a><span class="p">]</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.ModelGenerator.generate_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function does the procedural generation of the models. It outputs a list of GeneratedModel instances.
 You need to provide one shape attribute dictionary per initial shape or one dictionary that will be applied
 to all initial shapes. The shape attribute dictionary only contains either string, float or bool values, <strong>except</strong> the
@@ -297,20 +297,6 @@ the return value of this <em>generate_model</em> function will be an empty list.
 <p><code class="docutils literal notranslate"><span class="pre">models1</span> <span class="pre">=</span> <span class="pre">m.generate_model([attrs1,</span> <span class="pre">attrs2],</span> <span class="pre">rpk,</span> <span class="pre">'com.esri.pyprt.PyEncoder',</span> <span class="pre">{'emitReport':</span> <span class="pre">True,</span> <span class="pre">'emitGeometry':</span> <span class="pre">True})</span></code></p>
 </dd>
 </dl>
-<p>This overloaded <em>generate_model</em> function can only be used once the previous <em>ModelGenerator::generate_model</em> method has been
-called. It is useful to specify different shape attributes but use the same CGA rule package on the
-same initial shapes, the same encoder and encoder options.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>shape_attributes</strong> – List[dict]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List[GeneratedModel]</p>
-</dd>
-<dt class="field-odd">Example</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">models2</span> <span class="pre">=</span> <span class="pre">m.generate_model([attrs3,</span> <span class="pre">attrs4])</span></code></p>
-</dd>
-</dl>
 </dd></dl>
 
 </dd></dl>
@@ -322,6 +308,19 @@ same initial shapes, the same encoder and encoder options.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="pyprt.pyprt.bin.pyprt.get_rpk_attributes_info">
+<code class="sig-name descname">get_rpk_attributes_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rule_package_path</span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#pyprt.pyprt.bin.pyprt.get_rpk_attributes_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the CGA rule attributes name and value type for the specified rule package path as
+well as a list of the attributes annotations (annotation name, key(s) and value(s)). In case of an unnamed
+annotation parameter, its key is equal to <code class="docutils literal notranslate"><span class="pre">'#NULL#'</span></code>, which can be read using the <code class="docutils literal notranslate"><span class="pre">pyprt.NO_KEY</span></code> constant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="pyprt.pyprt.bin.pyprt.initialize_prt">
 <code class="sig-name descname">initialize_prt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.initialize_prt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialization of PRT. PyPRT functionalities are blocked until the initialization is done.</p>
@@ -330,7 +329,8 @@ same initial shapes, the same encoder and encoder options.</p>
 <dl class="py function">
 <dt id="pyprt.pyprt.bin.pyprt.inspect_rpk">
 <code class="sig-name descname">inspect_rpk</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rule_package_path</span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#pyprt.pyprt.bin.pyprt.inspect_rpk" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function returns the CGA rule attributes name and value type for the specified rule package path.</p>
+<dd><p>Deprecated: use get_rpk_attributes_info(rule_package_path) instead.</p>
+<p>This function returns the CGA rule attributes name and value type for the specified rule package path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>dict</p>
@@ -406,14 +406,14 @@ same initial shapes, the same encoder and encoder options.</p>
         <li class="right" >
           <a href="pyprt.html" title="pyprt package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.2.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="pyprt.html" >pyprt package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt module</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright (c) 2020, Esri R&amp;D Center Zurich.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
     </div>
   </body>
 </html>

@@ -4,10 +4,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>pyprt.pyprt_arcgis.pyprt_arcgis &#8212; PyPRT 1.1.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pyprt.pyprt_arcgis.pyprt_arcgis &#8212; PyPRT 1.2.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
@@ -25,7 +25,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">PyPRT 1.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">PyPRT 1.2.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt.pyprt_arcgis.pyprt_arcgis</a></li> 
       </ul>
@@ -64,6 +64,41 @@
     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;This module can be imported only if arcgis package is installed.&quot;</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="add_dimension"><a class="viewcode-back" href="../../../pyprt.pyprt_arcgis.html#pyprt.pyprt_arcgis.pyprt_arcgis.add_dimension">[docs]</a><span class="k">def</span> <span class="nf">add_dimension</span><span class="p">(</span><span class="n">array_coord_2d</span><span class="p">):</span>
+    <span class="n">array_coord_3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">array_coord_2d</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">array_coord_3d</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">array_coord_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">array_coord_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="swap_yz_dimensions"><a class="viewcode-back" href="../../../pyprt.pyprt_arcgis.html#pyprt.pyprt_arcgis.pyprt_arcgis.swap_yz_dimensions">[docs]</a><span class="k">def</span> <span class="nf">swap_yz_dimensions</span><span class="p">(</span><span class="n">array_coord</span><span class="p">):</span>
+    <span class="n">coord_swap_dim</span> <span class="o">=</span> <span class="n">array_coord</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">array_coord</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">coord_swap_dim</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">coord_swap_dim</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">coord_swap_dim</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">coord_swap_dim</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">coord_swap_dim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">coord_swap_dim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="holes_conversion"><a class="viewcode-back" href="../../../pyprt.pyprt_arcgis.html#pyprt.pyprt_arcgis.pyprt_arcgis.holes_conversion">[docs]</a><span class="k">def</span> <span class="nf">holes_conversion</span><span class="p">(</span><span class="n">holes_ind_list</span><span class="p">):</span>
+    <span class="n">holes_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">holes_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">holes_ind_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">h_idx</span> <span class="ow">in</span> <span class="n">holes_ind_list</span><span class="p">:</span>
+            <span class="n">f_idx</span> <span class="o">=</span> <span class="n">h_idx</span>
+            <span class="k">while</span> <span class="n">f_idx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">f_idx</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">f_idx</span> <span class="ow">in</span> <span class="n">holes_ind_list</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">f_idx</span> <span class="ow">in</span> <span class="n">holes_dict</span><span class="p">):</span>
+                        <span class="n">holes_dict</span><span class="p">[</span><span class="n">f_idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">h_idx</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">holes_dict</span><span class="p">[</span><span class="n">f_idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h_idx</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">holes_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">face_holes</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">face_holes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">holes_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">face_holes</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">holes_list</span></div>
+
+
 <div class="viewcode-block" id="arcgis_to_pyprt"><a class="viewcode-back" href="../../../pyprt.pyprt_arcgis.html#pyprt.pyprt_arcgis.pyprt_arcgis.arcgis_to_pyprt">[docs]</a><span class="k">def</span> <span class="nf">arcgis_to_pyprt</span><span class="p">(</span><span class="n">feature_set</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;arcgis_to_pyprt(feature_set) -&gt; List[InitialShape]</span>
 <span class="sd">    This function allows converting an ArcGIS FeatureSet into a list of PyPRT InitialShape instances.</span>
@@ -80,26 +115,38 @@
     <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">feature_set</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">geo</span> <span class="o">=</span> <span class="n">Geometry</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">geo</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;Polygon&#39;</span><span class="p">:</span>
-                <span class="n">coord</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">coordinates</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">coord_remove_last</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                <span class="n">coord_inverse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">coord_remove_last</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">geo</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;Polygon&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">geo</span><span class="o">.</span><span class="n">is_empty</span><span class="p">):</span>
+                <span class="n">pts_cnt</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">vert_coord_list</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">face_count_list</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">holes_ind_list</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">coord_list</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">coordinates</span><span class="p">()</span>
 
-                <span class="k">if</span> <span class="n">coord</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># we have to add a dimension</span>
+                <span class="k">for</span> <span class="n">face_idx</span><span class="p">,</span> <span class="n">coord_part</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">coord_list</span><span class="p">):</span>
+                    <span class="n">in_geo</span> <span class="o">=</span> <span class="n">Geometry</span><span class="p">({</span><span class="s2">&quot;rings&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">coord_part</span><span class="p">]})</span>
+                    <span class="n">store_area</span> <span class="o">=</span> <span class="n">in_geo</span><span class="o">.</span><span class="n">area</span>
+                    <span class="n">coord_remove_last</span> <span class="o">=</span> <span class="n">coord_part</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">coord_inverse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">coord_remove_last</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
                     <span class="n">coord_inverse</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
-                    <span class="n">coord_add_dim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">coord_inverse</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-                    <span class="n">coord_fin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                        <span class="n">coord_add_dim</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">coord_add_dim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">coord_add_dim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-                <span class="k">elif</span> <span class="n">coord</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># need to swap the 1 and 2 columns</span>
-                    <span class="n">coord_inverse</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
-                    <span class="n">coord_swap_dim</span> <span class="o">=</span> <span class="n">coord_inverse</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                    <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">coord_swap_dim</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
-                    <span class="n">coord_swap_dim</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">coord_swap_dim</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
-                    <span class="n">coord_swap_dim</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
-                    <span class="n">coord_fin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                        <span class="n">coord_swap_dim</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">coord_swap_dim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">coord_swap_dim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
 
-                <span class="n">initial_geometry</span> <span class="o">=</span> <span class="n">pyprt</span><span class="o">.</span><span class="n">InitialShape</span><span class="p">(</span><span class="n">coord_fin</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">coord_part</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">coord_fin</span> <span class="o">=</span> <span class="n">add_dimension</span><span class="p">(</span><span class="n">coord_inverse</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">coord_part</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="n">coord_fin</span> <span class="o">=</span> <span class="n">swap_yz_dimensions</span><span class="p">(</span><span class="n">coord_inverse</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Only 2D or 3D points are supported.&quot;</span><span class="p">)</span>
+
+                    <span class="n">vert_coord_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">coord_fin</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">nb_pts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">coord_fin</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">3</span>
+                    <span class="n">pts_cnt</span> <span class="o">+=</span> <span class="n">nb_pts</span>
+                    <span class="n">face_count_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nb_pts</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">store_area</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span> <span class="c1"># interior ring / holes</span>
+                        <span class="n">holes_ind_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">face_idx</span><span class="p">)</span>
+
+                <span class="n">face_indices_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">face_count_list</span><span class="p">)))</span>
+                <span class="n">holes_list</span> <span class="o">=</span> <span class="n">holes_conversion</span><span class="p">(</span><span class="n">holes_ind_list</span><span class="p">)</span>
+                
+                <span class="n">initial_geometry</span> <span class="o">=</span> <span class="n">pyprt</span><span class="o">.</span><span class="n">InitialShape</span><span class="p">(</span><span class="n">vert_coord_list</span><span class="p">,</span> <span class="n">face_indices_list</span><span class="p">,</span> <span class="n">face_count_list</span><span class="p">,</span> <span class="n">holes_list</span><span class="p">)</span>
                 <span class="n">initial_geometries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">initial_geometry</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This feature is not valid: &quot;</span><span class="p">)</span>
@@ -137,14 +184,14 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">PyPRT 1.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">PyPRT 1.2.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt.pyprt_arcgis.pyprt_arcgis</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright (c) 2020, Esri R&amp;D Center Zurich.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
     </div>
   </body>
 </html>
