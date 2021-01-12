@@ -79,7 +79,7 @@ Simply run `pip install pyprt` in your desired Python environment or `conda inst
 		<p><a href="https://www.esri.com/en-us/arcgis/products/arcgis-notebooks/workspace-options/arcgis-pro">ArcGIS Notebooks in ArcGIS Pro</a>
 		<ol>
 			<li>Clone the default conda environment directly in Pro or create a new one.</li>
-			<li>Install PyPRT (<code>conda install pyprt</code>) inside the new environment (using the Python command prompt for example).</li>
+			<li>Install PyPRT (<code>conda install -c esri pyprt</code>) inside the new environment (using the Python command prompt for example).</li>
 			<li>Restart Pro and open a new Notebook.</li>
 			<li>Import PyPRT (<code>import pyprt</code>) to use PyPRT.</li>
 		</ol>
