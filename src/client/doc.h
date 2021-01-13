@@ -103,7 +103,7 @@ constexpr const char* IsInitP = R"mydelimiter(
         3. **__init__** (*init_shape_path*)
 
         Constructs an InitialShape by accepting the path to a shape file. This can be an OBJ file, Collada, etc.
-        A list of supported file formats can be found at `PRT geometry encoders <https://esri.github.io/esri-cityengine-sdk/html/esri_prt_codecs.html>`_.
+        A list of supported file formats can be found at `PRT geometry encoders <https://esri.github.io/cityengine-sdk/html/esri_prt_codecs.html>`_.
 
         :Parameters:
             **initial_shape_path** -- str

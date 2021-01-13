@@ -8,7 +8,7 @@ PyPRT API Documentation
 
 PyPRT provides Python bindings for PRT (CityEngine Procedural Runtime). It enables the execution of CityEngine CGA rules within Python.
 
-To get started, please visit the `home page of PyPRT <https://esri.github.io/pyprt/>`__.
+To get started, please visit the `home page of PyPRT <https://esri.github.io/cityengine/pyprt>`__.
 
 
 .. toctree::
