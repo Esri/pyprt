@@ -49,6 +49,7 @@ private:
 		py::dict mCGAReport;
 		std::wstring mCGAPrints;
 		std::vector<std::wstring> mCGAErrors;
+		py::dict mAttrVal;
 	};
 
 	std::vector<Model> mModels;
@@ -115,6 +116,13 @@ public:
 		return mModels[initialShapeIdx].mCGAErrors;
 	}
 
+	const py::dict& getAttributesValues(const size_t initialShapeIdx) const {
+		if (initialShapeIdx >= mModels.size())
+			throw std::out_of_range("initial shape index is out of range.");
+
+		return mModels[initialShapeIdx].mAttrVal;
+	}
+
 	prt::Status generateError(size_t /*isIndex*/, prt::Status /*status*/, const wchar_t* /*message*/) override {
 		return prt::STATUS_OK;
 	}
@@ -157,16 +165,25 @@ public:
 		return prt::STATUS_OK;
 	}
 
-	prt::Status attrBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, bool /*value*/) override {
+	prt::Status attrBool(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, bool value) override {
+		py::object pyKey = py::cast(key);
+		mModels[isIndex].mAttrVal[pyKey] = value;
+
 		return prt::STATUS_OK;
 	}
 
-	prt::Status attrFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, double /*value*/) override {
+	prt::Status attrFloat(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, double value) override {
+		py::object pyKey = py::cast(key);
+		mModels[isIndex].mAttrVal[pyKey] = value;
+
 		return prt::STATUS_OK;
 	}
 
-	prt::Status attrString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
-	                       const wchar_t* /*value*/) override {
+	prt::Status attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
+	                       const wchar_t* value) override {
+		py::object pyKey = py::cast(key);
+		mModels[isIndex].mAttrVal[pyKey] = value;
+
 		return prt::STATUS_OK;
 	}
 
