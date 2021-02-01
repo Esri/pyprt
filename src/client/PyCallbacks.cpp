@@ -24,6 +24,28 @@
 
 namespace py = pybind11;
 
+bool PyCallbacks::isHiddenAttribute(const RuleFileInfoUPtr& ruleFileInfo, const wchar_t* key) {
+	for (size_t ai = 0, numAttrs = ruleFileInfo->getNumAttributes(); ai < numAttrs; ai++) {
+		const auto attr = ruleFileInfo->getAttribute(ai);
+		if (std::wcscmp(key, attr->getName()) == 0) {
+			for (size_t k = 0, numAnns = attr->getNumAnnotations(); k < numAnns; k++) {
+				if (std::wcscmp(attr->getAnnotation(k)->getName(), L"@Hidden") == 0)
+					return true;
+			}
+			return false;
+		}
+	}
+	return false;
+}
+
+std::wstring PyCallbacks::removeDefaultStyleName(const wchar_t* key) {
+	const std::wstring keyName = key;
+	if (keyName.find(L"Default$") == 0)
+		return keyName.substr(8);
+	else
+		return keyName;
+}
+
 void PyCallbacks::addGeometry(const size_t initialShapeIndex, const double* vertexCoords,
                               const size_t vertexCoordsCount, const uint32_t* faceIndices,
                               const size_t faceIndicesCount, const uint32_t* faceCounts, const size_t faceCountsCount) {

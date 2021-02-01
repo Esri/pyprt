@@ -53,13 +53,19 @@ private:
 	};
 
 	std::vector<Model> mModels;
+	RuleFileInfoUPtr mRuleFileInfo;
 
 public:
-	PyCallbacks(const size_t initialShapeCount) {
+	PyCallbacks(const size_t initialShapeCount, RuleFileInfoUPtr& ruleFileInfo) {
 		mModels.resize(initialShapeCount);
+		mRuleFileInfo = std::move(ruleFileInfo);
 	}
 
 	virtual ~PyCallbacks() = default;
+
+	bool isHiddenAttribute(const RuleFileInfoUPtr& ruleFileInfo, const wchar_t* key);
+
+	std::wstring removeDefaultStyleName(const wchar_t* key);
 
 	void addGeometry(const size_t initialShapeIndex, const double* vertexCoords, const size_t vextexCoordsCount,
 	                 const uint32_t* faceIndices, const size_t faceIndicesCount, const uint32_t* faceCounts,
@@ -166,23 +172,29 @@ public:
 	}
 
 	prt::Status attrBool(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, bool value) override {
-		py::object pyKey = py::cast(key);
-		mModels[isIndex].mAttrVal[pyKey] = value;
+		if (mRuleFileInfo && !isHiddenAttribute(mRuleFileInfo, key)) {
+			py::object pyKey = py::cast(removeDefaultStyleName(key));
+			mModels[isIndex].mAttrVal[pyKey] = value;
+		}
 
 		return prt::STATUS_OK;
 	}
 
 	prt::Status attrFloat(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, double value) override {
-		py::object pyKey = py::cast(key);
-		mModels[isIndex].mAttrVal[pyKey] = value;
+		if (mRuleFileInfo && !isHiddenAttribute(mRuleFileInfo, key)) {
+			py::object pyKey = py::cast(removeDefaultStyleName(key));
+			mModels[isIndex].mAttrVal[pyKey] = value;
+		}
 
 		return prt::STATUS_OK;
 	}
 
 	prt::Status attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
 	                       const wchar_t* value) override {
-		py::object pyKey = py::cast(key);
-		mModels[isIndex].mAttrVal[pyKey] = value;
+		if (mRuleFileInfo && !isHiddenAttribute(mRuleFileInfo, key)) {
+			py::object pyKey = py::cast(removeDefaultStyleName(key));
+			mModels[isIndex].mAttrVal[pyKey] = value;
+		}
 
 		return prt::STATUS_OK;
 	}

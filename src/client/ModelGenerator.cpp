@@ -139,7 +139,7 @@ void ModelGenerator::initializeEncoderData(const std::wstring& encName, const py
 }
 
 prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::path& rulePackagePath, ResolveMapPtr& resolveMap,
-	CachePtr& cache) {
+	CachePtr& cache, RuleFileInfoUPtr& ruleInfo) {
 	if (!std::filesystem::exists(rulePackagePath)) {
 		LOG_ERR << "The rule package path is unvalid.";
 		return prt::STATUS_FILE_NOT_FOUND;
@@ -164,6 +164,7 @@ prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::pat
 	}
 
 	mStartRule = pcu::detectStartRule(info);
+	ruleInfo = std::move(info);
 	return prt::STATUS_OK;
 }
 
@@ -197,7 +198,8 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 		}
 
 		// Rule package
-		prt::Status rpkStat = initializeRulePackageData(rulePackagePath, mResolveMap, mCache);
+		RuleFileInfoUPtr ruleInfo;
+		prt::Status rpkStat = initializeRulePackageData(rulePackagePath, mResolveMap, mCache, ruleInfo);
 		
 		if (rpkStat != prt::STATUS_OK)
 			return {};
@@ -221,7 +223,7 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 
 		if (geometryEncoderName == ENCODER_ID_PYTHON) {
 
-			PyCallbacksPtr foc{std::make_unique<PyCallbacks>(mInitialShapesBuilders.size())};
+			PyCallbacksPtr foc{std::make_unique<PyCallbacks>(mInitialShapesBuilders.size(), std::move(ruleInfo))};
 
 			// Generate
 			const prt::Status genStat =
