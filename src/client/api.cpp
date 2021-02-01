@@ -276,7 +276,7 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def("get_report", &GeneratedModel::getReport, doc::GmGetR)
 	        .def("get_cga_prints", &GeneratedModel::getCGAPrints, doc::GmGetP)
 	        .def("get_cga_errors", &GeneratedModel::getCGAErrors, doc::GmGetE)
-			.def("get_attributes_values", &GeneratedModel::getAttributesValues);
+			.def("get_attributes_values", &GeneratedModel::getAttributesValues, doc::GmGetAttr);
 
 	py::class_<std::filesystem::path>(m, "Path").def(py::init<std::string>());
 	py::implicitly_convertible<std::string, std::filesystem::path>();

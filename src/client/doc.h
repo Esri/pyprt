@@ -277,4 +277,13 @@ constexpr const char* GmGetE = R"mydelimiter(
             List[str]
         )mydelimiter";
 
+constexpr const char* GmGetAttr = R"mydelimiter(
+        get_attributes_values() -> dict
+
+        Returns a dictionary with the CGA rule attributes name and value used to generate this model.
+
+        :Returns:
+            dict
+        )mydelimiter";
+
 } // namespace doc
