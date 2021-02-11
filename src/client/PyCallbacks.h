@@ -171,33 +171,11 @@ public:
 		return prt::STATUS_OK;
 	}
 
-	prt::Status attrBool(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, bool value) override {
-		if (mRuleFileInfo && !isHiddenAttribute(mRuleFileInfo, key)) {
-			py::object pyKey = py::cast(removeDefaultStyleName(key));
-			mModels[isIndex].mAttrVal[pyKey] = value;
-		}
+	prt::Status attrBool(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, bool value) override;
 
-		return prt::STATUS_OK;
-	}
+	prt::Status attrFloat(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, double value) override;
 
-	prt::Status attrFloat(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, double value) override {
-		if (mRuleFileInfo && !isHiddenAttribute(mRuleFileInfo, key)) {
-			py::object pyKey = py::cast(removeDefaultStyleName(key));
-			mModels[isIndex].mAttrVal[pyKey] = value;
-		}
-
-		return prt::STATUS_OK;
-	}
-
-	prt::Status attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
-	                       const wchar_t* value) override {
-		if (mRuleFileInfo && !isHiddenAttribute(mRuleFileInfo, key)) {
-			py::object pyKey = py::cast(removeDefaultStyleName(key));
-			mModels[isIndex].mAttrVal[pyKey] = value;
-		}
-
-		return prt::STATUS_OK;
-	}
+	prt::Status attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const wchar_t* value) override;
 
 	prt::Status attrBoolArray(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const bool* /*ptr*/,
 	                          size_t /*size*/, size_t /*nRows*/) override {

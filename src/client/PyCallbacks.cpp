@@ -84,3 +84,30 @@ void PyCallbacks::addReports(const size_t initialShapeIndex, const wchar_t** str
 		currentModel.mCGAReport[pyKey] = stringReportValues[i];
 	}
 }
+
+prt::Status PyCallbacks::attrBool(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, bool value) {
+	if (mRuleFileInfo && !isHiddenAttribute(mRuleFileInfo, key)) {
+		py::object pyKey = py::cast(removeDefaultStyleName(key));
+		mModels[isIndex].mAttrVal[pyKey] = value;
+	}
+
+	return prt::STATUS_OK;
+}
+
+	prt::Status PyCallbacks::attrFloat(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, double value) {
+	if (mRuleFileInfo && !isHiddenAttribute(mRuleFileInfo, key)) {
+		py::object pyKey = py::cast(removeDefaultStyleName(key));
+		mModels[isIndex].mAttrVal[pyKey] = value;
+	}
+
+	return prt::STATUS_OK;
+}
+
+prt::Status PyCallbacks::attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const wchar_t* value) {
+	if (mRuleFileInfo && !isHiddenAttribute(mRuleFileInfo, key)) {
+		py::object pyKey = py::cast(removeDefaultStyleName(key));
+		mModels[isIndex].mAttrVal[pyKey] = value;
+	}
+
+	return prt::STATUS_OK;
+}
