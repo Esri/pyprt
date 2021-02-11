@@ -56,8 +56,8 @@ public:
 	const std::vector<std::wstring>& getCGAErrors() const {
 		return mCGAErrors;
 	}
-	const pybind11::dict& getAttributesValues() const {
-		return mAttributesVal;
+	const pybind11::dict& getAttributes() const {
+		return mAttributes;
 	}
 
 private:
@@ -68,7 +68,7 @@ private:
 	pybind11::dict mReport;
 	std::wstring mCGAPrints;
 	std::vector<std::wstring> mCGAErrors;
-	pybind11::dict mAttributesVal;
+	pybind11::dict mAttributes;
 };
 
 PYBIND11_MAKE_OPAQUE(std::vector<GeneratedModel>);

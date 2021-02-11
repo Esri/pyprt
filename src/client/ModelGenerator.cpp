@@ -239,7 +239,7 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 			for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++) {
 				newGeneratedGeo.emplace_back(idx, foc->getVertices(idx), foc->getIndices(idx), foc->getFaces(idx),
 				                             foc->getReport(idx), foc->getCGAPrints(idx), foc->getCGAErrors(idx),
-											 foc->getAttributesValues(idx));
+											 foc->getAttributes(idx));
 			}
 		}
 		else {

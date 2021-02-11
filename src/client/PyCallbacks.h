@@ -122,7 +122,7 @@ public:
 		return mModels[initialShapeIdx].mCGAErrors;
 	}
 
-	const py::dict& getAttributesValues(const size_t initialShapeIdx) const {
+	const py::dict& getAttributes(const size_t initialShapeIdx) const {
 		if (initialShapeIdx >= mModels.size())
 			throw std::out_of_range("initial shape index is out of range.");
 
