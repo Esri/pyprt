@@ -24,6 +24,16 @@
 
 namespace py = pybind11;
 
+template <typename T>
+prt::Status PyCallbacks::storeAttr(size_t isIndex, const wchar_t* key, const T value) {
+	if (mRuleFileInfo && !isHiddenAttribute(mRuleFileInfo, key)) {
+		py::object pyKey = py::cast(removeDefaultStyleName(key));
+		mModels[isIndex].mAttrVal[pyKey] = value;
+	}
+
+	return prt::STATUS_OK;
+}
+
 bool PyCallbacks::isHiddenAttribute(const RuleFileInfoUPtr& ruleFileInfo, const wchar_t* key) {
 	for (size_t ai = 0, numAttrs = ruleFileInfo->getNumAttributes(); ai < numAttrs; ai++) {
 		const auto attr = ruleFileInfo->getAttribute(ai);
@@ -86,28 +96,14 @@ void PyCallbacks::addReports(const size_t initialShapeIndex, const wchar_t** str
 }
 
 prt::Status PyCallbacks::attrBool(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, bool value) {
-	if (mRuleFileInfo && !isHiddenAttribute(mRuleFileInfo, key)) {
-		py::object pyKey = py::cast(removeDefaultStyleName(key));
-		mModels[isIndex].mAttrVal[pyKey] = value;
-	}
-
-	return prt::STATUS_OK;
+	return storeAttr(isIndex, key, value);
 }
 
-	prt::Status PyCallbacks::attrFloat(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, double value) {
-	if (mRuleFileInfo && !isHiddenAttribute(mRuleFileInfo, key)) {
-		py::object pyKey = py::cast(removeDefaultStyleName(key));
-		mModels[isIndex].mAttrVal[pyKey] = value;
-	}
-
-	return prt::STATUS_OK;
+prt::Status PyCallbacks::attrFloat(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, double value) {
+	return storeAttr(isIndex, key, value);
 }
 
-prt::Status PyCallbacks::attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const wchar_t* value) {
-	if (mRuleFileInfo && !isHiddenAttribute(mRuleFileInfo, key)) {
-		py::object pyKey = py::cast(removeDefaultStyleName(key));
-		mModels[isIndex].mAttrVal[pyKey] = value;
-	}
-
-	return prt::STATUS_OK;
+prt::Status PyCallbacks::attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
+                                    const wchar_t* value) {
+	return storeAttr(isIndex, key, value);
 }

@@ -63,6 +63,9 @@ public:
 
 	virtual ~PyCallbacks() = default;
 
+	template <typename T>
+	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T value);
+
 	bool isHiddenAttribute(const RuleFileInfoUPtr& ruleFileInfo, const wchar_t* key);
 
 	std::wstring removeDefaultStyleName(const wchar_t* key);
