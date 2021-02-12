@@ -53,12 +53,12 @@ private:
 	};
 
 	std::vector<Model> mModels;
-	RuleFileInfoUPtr mRuleFileInfo;
+	std::vector<std::wstring> mHiddenAttrs;
 
 public:
-	PyCallbacks(const size_t initialShapeCount, RuleFileInfoUPtr& ruleFileInfo) {
+	PyCallbacks(const size_t initialShapeCount, std::vector<std::wstring>& hiddenAttrs) {
 		mModels.resize(initialShapeCount);
-		mRuleFileInfo = std::move(ruleFileInfo);
+		mHiddenAttrs = hiddenAttrs;
 	}
 
 	virtual ~PyCallbacks() = default;
@@ -66,9 +66,7 @@ public:
 	template <typename T>
 	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T value);
 
-	bool isHiddenAttribute(const RuleFileInfoUPtr& ruleFileInfo, const wchar_t* key);
-
-	std::wstring removeDefaultStyleName(const wchar_t* key);
+	bool isHiddenAttribute(const wchar_t* key);
 
 	void addGeometry(const size_t initialShapeIndex, const double* vertexCoords, const size_t vextexCoordsCount,
 	                 const uint32_t* faceIndices, const size_t faceIndicesCount, const uint32_t* faceCounts,

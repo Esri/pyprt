@@ -117,6 +117,28 @@ std::wstring detectStartRule(const RuleFileInfoUPtr& ruleFileInfo) {
 	return {};
 }
 
+std::vector<std::wstring> getHiddenAttributes(const RuleFileInfoUPtr& ruleFileInfo) {
+	std::vector<std::wstring> hiddenVec;
+
+	for (size_t ai = 0, numAttrs = ruleFileInfo->getNumAttributes(); ai < numAttrs; ai++) {
+		const auto attr = ruleFileInfo->getAttribute(ai);
+		for (size_t k = 0, numAnns = attr->getNumAnnotations(); k < numAnns; k++) {
+			if (std::wcscmp(attr->getAnnotation(k)->getName(), L"@Hidden") == 0)
+				hiddenVec.push_back(attr->getName());
+		}
+	}
+
+	return hiddenVec;
+}
+
+std::wstring removeDefaultStyleName(const wchar_t* key) {
+	const std::wstring keyName = key;
+	if (keyName.find(L"Default$") == 0)
+		return keyName.substr(8);
+	else
+		return keyName;
+}
+
 /**
  * Helper function to convert a Python dictionary of "<key>:<value>" into a
  * prt::AttributeMap

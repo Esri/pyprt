@@ -18,6 +18,7 @@
  */
 
 #include "PyCallbacks.h"
+#include "utils.h"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -26,34 +27,20 @@ namespace py = pybind11;
 
 template <typename T>
 prt::Status PyCallbacks::storeAttr(size_t isIndex, const wchar_t* key, const T value) {
-	if (mRuleFileInfo && !isHiddenAttribute(mRuleFileInfo, key)) {
-		py::object pyKey = py::cast(removeDefaultStyleName(key));
+	if (!isHiddenAttribute(key)) {
+		py::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
 		mModels[isIndex].mAttrVal[pyKey] = value;
 	}
 
 	return prt::STATUS_OK;
 }
 
-bool PyCallbacks::isHiddenAttribute(const RuleFileInfoUPtr& ruleFileInfo, const wchar_t* key) {
-	for (size_t ai = 0, numAttrs = ruleFileInfo->getNumAttributes(); ai < numAttrs; ai++) {
-		const auto attr = ruleFileInfo->getAttribute(ai);
-		if (std::wcscmp(key, attr->getName()) == 0) {
-			for (size_t k = 0, numAnns = attr->getNumAnnotations(); k < numAnns; k++) {
-				if (std::wcscmp(attr->getAnnotation(k)->getName(), L"@Hidden") == 0)
-					return true;
-			}
-			return false;
-		}
-	}
+bool PyCallbacks::isHiddenAttribute(const wchar_t* key) {
+	std::vector<std::wstring>::iterator it = find(mHiddenAttrs.begin(), mHiddenAttrs.end(), key);
+	if (it != mHiddenAttrs.end())
+		return true;
+	
 	return false;
-}
-
-std::wstring PyCallbacks::removeDefaultStyleName(const wchar_t* key) {
-	const std::wstring keyName = key;
-	if (keyName.find(L"Default$") == 0)
-		return keyName.substr(8);
-	else
-		return keyName;
 }
 
 void PyCallbacks::addGeometry(const size_t initialShapeIndex, const double* vertexCoords,
