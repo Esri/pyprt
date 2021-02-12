@@ -56,7 +56,7 @@ private:
 	std::vector<std::wstring> mHiddenAttrs;
 
 public:
-	PyCallbacks(const size_t initialShapeCount, std::vector<std::wstring>& hiddenAttrs) {
+	PyCallbacks(const size_t initialShapeCount, const std::vector<std::wstring>& hiddenAttrs) {
 		mModels.resize(initialShapeCount);
 		mHiddenAttrs = hiddenAttrs;
 	}
