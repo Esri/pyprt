@@ -36,9 +36,11 @@ prt::Status PyCallbacks::storeAttr(size_t isIndex, const wchar_t* key, const T v
 }
 
 bool PyCallbacks::isHiddenAttribute(const wchar_t* key) {
-	std::vector<std::wstring>::iterator it = find(mHiddenAttrs.begin(), mHiddenAttrs.end(), key);
-	if (it != mHiddenAttrs.end())
-		return true;
+	if (key != nullptr) {
+		std::vector<std::wstring>::iterator it = find(mHiddenAttrs.begin(), mHiddenAttrs.end(), key);
+		if (it != mHiddenAttrs.end())
+			return true;
+	}
 	
 	return false;
 }
