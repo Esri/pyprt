@@ -190,7 +190,7 @@ class GeometryTest(unittest.TestCase):
             asset_file('building_parcel.obj'))
         m = pyprt.ModelGenerator([shape_geo_from_obj, shape_geo_from_obj])
         model = m.generate_model([attrs, attrs2], rpk, 'com.esri.pyprt.PyEncoder', {})
-        self.assertDictEqual(model[0].get_attributes_values(),
+        self.assertDictEqual(model[0].get_attributes(),
                 {'maxBuildingHeight': 35.0, 'OBJECTID': 0.0, 'minBuildingHeight': 10.0, 'buildingColor': '#FF00FF', 'text': 'salut'})
-        self.assertDictEqual(model[1].get_attributes_values(),
+        self.assertDictEqual(model[1].get_attributes(),
                 {'OBJECTID': 0.0, 'minBuildingHeight': 10.0, 'buildingColor': '#FF00FF', 'text': 'salut', 'maxBuildingHeight': 30.0})
