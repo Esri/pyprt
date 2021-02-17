@@ -40,7 +40,7 @@ std::filesystem::path getModuleDirectory();
 bool getResolveMap(const std::filesystem::path& rulePackagePath, ResolveMapPtr* resolveMap);
 std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap);
 std::wstring detectStartRule(const RuleFileInfoUPtr& ruleFileInfo);
-std::vector<std::wstring> getHiddenAttributes(const RuleFileInfoUPtr& ruleFileInfo);
+std::unordered_set<std::wstring> getHiddenAttributes(const RuleFileInfoUPtr& ruleFileInfo);
 std::wstring removeDefaultStyleName(const wchar_t* key);
 
 AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::AttributeMapBuilder& bld);

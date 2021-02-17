@@ -51,7 +51,7 @@ private:
 
 	std::wstring mRuleFile;
 	std::wstring mStartRule;
-	std::vector<std::wstring> mHiddenAttrs;
+	std::unordered_set<std::wstring> mHiddenAttrs;
 	int32_t mSeed = 0;
 	std::wstring mShapeName = L"InitialShape";
 

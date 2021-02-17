@@ -119,14 +119,14 @@ std::wstring detectStartRule(const RuleFileInfoUPtr& ruleFileInfo) {
 	return {};
 }
 
-std::vector<std::wstring> getHiddenAttributes(const RuleFileInfoUPtr& ruleFileInfo) {
-	std::vector<std::wstring> hiddenVec;
+std::unordered_set<std::wstring> getHiddenAttributes(const RuleFileInfoUPtr& ruleFileInfo) {
+	std::unordered_set<std::wstring> hiddenVec;
 
 	for (size_t ai = 0, numAttrs = ruleFileInfo->getNumAttributes(); ai < numAttrs; ai++) {
 		const auto attr = ruleFileInfo->getAttribute(ai);
 		for (size_t k = 0, numAnns = attr->getNumAnnotations(); k < numAnns; k++) {
 			if (std::wcscmp(attr->getAnnotation(k)->getName(), L"@Hidden") == 0)
-				hiddenVec.push_back(attr->getName());
+				hiddenVec.insert(attr->getName());
 		}
 	}
 

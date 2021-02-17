@@ -53,10 +53,10 @@ private:
 	};
 
 	std::vector<Model> mModels;
-	std::vector<std::wstring> mHiddenAttrs;
+	std::unordered_set<std::wstring> mHiddenAttrs;
 
 public:
-	PyCallbacks(const size_t initialShapeCount, const std::vector<std::wstring>& hiddenAttrs) {
+	PyCallbacks(const size_t initialShapeCount, const std::unordered_set<std::wstring>& hiddenAttrs) {
 		mModels.resize(initialShapeCount);
 		mHiddenAttrs = hiddenAttrs;
 	}
