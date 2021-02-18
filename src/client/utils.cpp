@@ -60,6 +60,8 @@ namespace py = pybind11;
 
 namespace pcu {
 
+constexpr const wchar_t* CGA_STYLE_DEFAULT = L"Default$";
+
 bool getResolveMap(const std::filesystem::path& rulePackagePath, ResolveMapPtr* resolveMap) {
 	if (std::filesystem::exists(rulePackagePath)) {
 		LOG_INF << "using rule package " << rulePackagePath << std::endl;
@@ -115,6 +117,28 @@ std::wstring detectStartRule(const RuleFileInfoUPtr& ruleFileInfo) {
 		}
 	}
 	return {};
+}
+
+std::unordered_set<std::wstring> getHiddenAttributes(const RuleFileInfoUPtr& ruleFileInfo) {
+	std::unordered_set<std::wstring> hiddenVec;
+
+	for (size_t ai = 0, numAttrs = ruleFileInfo->getNumAttributes(); ai < numAttrs; ai++) {
+		const auto attr = ruleFileInfo->getAttribute(ai);
+		for (size_t k = 0, numAnns = attr->getNumAnnotations(); k < numAnns; k++) {
+			if (std::wcscmp(attr->getAnnotation(k)->getName(), L"@Hidden") == 0)
+				hiddenVec.insert(attr->getName());
+		}
+	}
+
+	return hiddenVec;
+}
+
+std::wstring removeDefaultStyleName(const wchar_t* key) {
+	const std::wstring keyName = key;
+	if (keyName.find(CGA_STYLE_DEFAULT) == 0)
+		return keyName.substr(wcslen(CGA_STYLE_DEFAULT));
+	else
+		return keyName;
 }
 
 /**

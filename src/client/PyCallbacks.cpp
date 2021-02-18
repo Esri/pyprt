@@ -18,11 +18,32 @@
  */
 
 #include "PyCallbacks.h"
+#include "utils.h"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 namespace py = pybind11;
+
+template <typename T>
+prt::Status PyCallbacks::storeAttr(size_t isIndex, const wchar_t* key, const T value) {
+	if (!isHiddenAttribute(key)) {
+		py::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
+		mModels[isIndex].mAttrVal[pyKey] = value;
+	}
+
+	return prt::STATUS_OK;
+}
+
+bool PyCallbacks::isHiddenAttribute(const wchar_t* key) {
+	if (key != nullptr) {
+		std::unordered_set<std::wstring>::iterator it = std::find(mHiddenAttrs.begin(), mHiddenAttrs.end(), key);
+		if (it != mHiddenAttrs.end())
+			return true;
+	}
+	
+	return false;
+}
 
 void PyCallbacks::addGeometry(const size_t initialShapeIndex, const double* vertexCoords,
                               const size_t vertexCoordsCount, const uint32_t* faceIndices,
@@ -61,4 +82,17 @@ void PyCallbacks::addReports(const size_t initialShapeIndex, const wchar_t** str
 		py::object pyKey = py::cast(stringReportKeys[i]);
 		currentModel.mCGAReport[pyKey] = stringReportValues[i];
 	}
+}
+
+prt::Status PyCallbacks::attrBool(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, bool value) {
+	return storeAttr(isIndex, key, value);
+}
+
+prt::Status PyCallbacks::attrFloat(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, double value) {
+	return storeAttr(isIndex, key, value);
+}
+
+prt::Status PyCallbacks::attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
+                                    const wchar_t* value) {
+	return storeAttr(isIndex, key, value);
 }

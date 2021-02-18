@@ -49,16 +49,24 @@ private:
 		py::dict mCGAReport;
 		std::wstring mCGAPrints;
 		std::vector<std::wstring> mCGAErrors;
+		py::dict mAttrVal;
 	};
 
 	std::vector<Model> mModels;
+	std::unordered_set<std::wstring> mHiddenAttrs;
 
 public:
-	PyCallbacks(const size_t initialShapeCount) {
+	PyCallbacks(const size_t initialShapeCount, const std::unordered_set<std::wstring>& hiddenAttrs) {
 		mModels.resize(initialShapeCount);
+		mHiddenAttrs = hiddenAttrs;
 	}
 
 	virtual ~PyCallbacks() = default;
+
+	template <typename T>
+	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T value);
+
+	bool isHiddenAttribute(const wchar_t* key);
 
 	void addGeometry(const size_t initialShapeIndex, const double* vertexCoords, const size_t vextexCoordsCount,
 	                 const uint32_t* faceIndices, const size_t faceIndicesCount, const uint32_t* faceCounts,
@@ -115,6 +123,13 @@ public:
 		return mModels[initialShapeIdx].mCGAErrors;
 	}
 
+	const py::dict& getAttributes(const size_t initialShapeIdx) const {
+		if (initialShapeIdx >= mModels.size())
+			throw std::out_of_range("initial shape index is out of range.");
+
+		return mModels[initialShapeIdx].mAttrVal;
+	}
+
 	prt::Status generateError(size_t /*isIndex*/, prt::Status /*status*/, const wchar_t* /*message*/) override {
 		return prt::STATUS_OK;
 	}
@@ -157,18 +172,11 @@ public:
 		return prt::STATUS_OK;
 	}
 
-	prt::Status attrBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, bool /*value*/) override {
-		return prt::STATUS_OK;
-	}
+	prt::Status attrBool(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, bool value) override;
 
-	prt::Status attrFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, double /*value*/) override {
-		return prt::STATUS_OK;
-	}
+	prt::Status attrFloat(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, double value) override;
 
-	prt::Status attrString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
-	                       const wchar_t* /*value*/) override {
-		return prt::STATUS_OK;
-	}
+	prt::Status attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const wchar_t* value) override;
 
 	prt::Status attrBoolArray(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const bool* /*ptr*/,
 	                          size_t /*size*/, size_t /*nRows*/) override {
