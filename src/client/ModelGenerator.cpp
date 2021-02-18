@@ -293,7 +293,7 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 	return newGeneratedGeo;
 }
 
-std::vector<GeneratedModel> ModelGenerator::generateAnotherModel(const std::vector<py::dict>& shapeAttributes) {
+std::vector<GeneratedModel> ModelGenerator::generateAnotherModel(const std::vector<py::dict>&) {
 	const char* message = "generate_model(shape_attributes) has been removed, use "
 	                      "generate_model(shape_attributes, rule_package_path, "
 	                      "geometry_encoder, encoder_options) instead.";
