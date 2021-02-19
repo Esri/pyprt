@@ -35,6 +35,26 @@ prt::Status PyCallbacks::storeAttr(size_t isIndex, const wchar_t* key, const T v
 	return prt::STATUS_OK;
 }
 
+template <typename T>
+prt::Status PyCallbacks::storeAttr(size_t isIndex, const wchar_t* key, const T* ptr, const size_t size, const size_t nRows) {
+	if (!isHiddenAttribute(key)) {
+		py::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
+		const size_t nCol = size / nRows;
+		std::vector<std::vector<T>> values(nRows, std::vector<T>(nCol));
+
+		for (size_t i = 0; i < size; i++) {
+			const size_t j = i / nCol;
+			const size_t k = i % nCol;
+			values[j][k] = ptr[i];
+		}
+
+		mModels[isIndex].mAttrVal[pyKey] = values;
+	}
+
+	return prt::STATUS_OK;
+}
+
+
 bool PyCallbacks::isHiddenAttribute(const wchar_t* key) {
 	if (key != nullptr) {
 		std::unordered_set<std::wstring>::iterator it = std::find(mHiddenAttrs.begin(), mHiddenAttrs.end(), key);
@@ -95,4 +115,19 @@ prt::Status PyCallbacks::attrFloat(size_t isIndex, int32_t /*shapeID*/, const wc
 prt::Status PyCallbacks::attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
                                     const wchar_t* value) {
 	return storeAttr(isIndex, key, value);
+}
+
+prt::Status PyCallbacks::attrBoolArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
+                                       const bool* ptr, size_t size, size_t nRows) {
+	return storeAttr(isIndex, key, ptr, size, nRows);
+}
+
+prt::Status PyCallbacks::attrFloatArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
+                                        const double* ptr, size_t size, size_t nRows) {
+	return storeAttr(isIndex, key, ptr, size, nRows);
+}
+
+prt::Status PyCallbacks::attrStringArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
+                            const wchar_t* const* ptr, size_t size, size_t nRows) {
+	return storeAttr(isIndex, key, ptr, size, nRows);
 }

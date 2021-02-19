@@ -66,6 +66,10 @@ public:
 	template <typename T>
 	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T value);
 
+	template <typename T>
+	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T* ptr, const size_t size,
+	                           const size_t nRows);
+
 	bool isHiddenAttribute(const wchar_t* key);
 
 	void addGeometry(const size_t initialShapeIndex, const double* vertexCoords, const size_t vextexCoordsCount,
@@ -178,18 +182,12 @@ public:
 
 	prt::Status attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const wchar_t* value) override;
 
-	prt::Status attrBoolArray(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const bool* /*ptr*/,
-	                          size_t /*size*/, size_t /*nRows*/) override {
-		return prt::STATUS_OK;
-	}
+	prt::Status attrBoolArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const bool* ptr,
+	                          size_t size, size_t nRows) override;
 
-	prt::Status attrFloatArray(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, const double* /*ptr*/,
-	                           size_t /*size*/, size_t /*nRows*/) override {
-		return prt::STATUS_OK;
-	}
+	prt::Status attrFloatArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const double* ptr,
+	                           size_t size, size_t nRows) override;
 
-	prt::Status attrStringArray(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
-	                            const wchar_t* const* /*ptr*/, size_t /*size*/, size_t /*nRows*/) override {
-		return prt::STATUS_OK;
-	}
+	prt::Status attrStringArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
+	                            const wchar_t* const* ptr, size_t size, size_t nRows) override;
 };
