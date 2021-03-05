@@ -25,47 +25,6 @@
 
 namespace py = pybind11;
 
-template <typename T>
-prt::Status PyCallbacks::storeAttr(size_t isIndex, const wchar_t* key, const T value) {
-	if (!isHiddenAttribute(key)) {
-		py::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
-		mModels[isIndex].mAttrVal[pyKey] = value;
-	}
-
-	return prt::STATUS_OK;
-}
-
-template <typename T>
-prt::Status PyCallbacks::storeAttr(size_t isIndex, const wchar_t* key, const T* ptr, const size_t size, const size_t nRows) {
-	if (!isHiddenAttribute(key)) {
-		py::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
-		const size_t nCol = size / nRows;
-
-		if (nRows > 1) {
-			std::vector<std::vector<T>> values(nRows, std::vector<T>(nCol));
-			for (size_t i = 0; i < size; i++) {
-				const size_t j = i / nCol;
-				const size_t k = i % nCol;
-				values[j][k] = ptr[i];
-			}
-
-			mModels[isIndex].mAttrVal[pyKey] = values;
-			return prt::STATUS_OK;
-		}
-		else {
-			std::vector<T> values(nCol);
-			for (size_t i = 0; i < size; i++)
-				values[i] = ptr[i];
-
-			mModels[isIndex].mAttrVal[pyKey] = values;
-			return prt::STATUS_OK;
-		}
-	}
-
-	return prt::STATUS_OK;
-}
-
-
 bool PyCallbacks::isHiddenAttribute(const wchar_t* key) {
 	if (key != nullptr) {
 		std::unordered_set<std::wstring>::iterator it = std::find(mHiddenAttrs.begin(), mHiddenAttrs.end(), key);

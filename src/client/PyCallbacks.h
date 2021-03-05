@@ -63,13 +63,6 @@ public:
 
 	virtual ~PyCallbacks() = default;
 
-	template <typename T>
-	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T value);
-
-	template <typename T>
-	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T* ptr, const size_t size,
-	                           const size_t nRows);
-
 	bool isHiddenAttribute(const wchar_t* key);
 
 	void addGeometry(const size_t initialShapeIndex, const double* vertexCoords, const size_t vextexCoordsCount,
@@ -190,4 +183,45 @@ public:
 
 	prt::Status attrStringArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
 	                            const wchar_t* const* ptr, size_t size, size_t nRows) override;
+
+	template <typename T>
+	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T value) {
+		if (!isHiddenAttribute(key)) {
+			py::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
+			mModels[isIndex].mAttrVal[pyKey] = value;
+		}
+
+		return prt::STATUS_OK;
+	}
+
+	template <typename T>
+	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T* ptr, const size_t size,
+	                                   const size_t nRows) {
+		if (!isHiddenAttribute(key)) {
+			py::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
+			const size_t nCol = size / nRows;
+
+			if (nRows > 1) {
+				std::vector<std::vector<T>> values(nRows, std::vector<T>(nCol));
+				for (size_t i = 0; i < size; i++) {
+					const size_t j = i / nCol;
+					const size_t k = i % nCol;
+					values[j][k] = ptr[i];
+				}
+
+				mModels[isIndex].mAttrVal[pyKey] = values;
+				return prt::STATUS_OK;
+			}
+			else {
+				std::vector<T> values(nCol);
+				for (size_t i = 0; i < size; i++)
+					values[i] = ptr[i];
+
+				mModels[isIndex].mAttrVal[pyKey] = values;
+				return prt::STATUS_OK;
+			}
+		}
+
+		return prt::STATUS_OK;
+	}
 };
