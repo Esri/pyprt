@@ -204,3 +204,17 @@ class GeometryTest(unittest.TestCase):
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
         self.assertDictEqual(model[0].get_attributes(),
                 {'arrayAttrFloat': [0.0, 1.0, 2.0], 'arrayAttrBool': [False], 'arrayAttrString': ['uhm']})
+
+    def test_attributesvalue_fct_arrays2d(self):
+        rpk = asset_file('arrayAttrs2d.rpk')
+        attrs = {}
+        shape_geo_from_obj = pyprt.InitialShape(asset_file('building_parcel.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
+        model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
+        self.assertDictEqual(model[0].get_attributes(),
+                             {'arrayAttrBool': [[False, True], [True, False]],
+                              'arrayAttrFloat': [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]],
+                              'arrayAttrString': [['first', 'row'],
+                                                  ['second', 'row'],
+                                                  ['third', 'row'],
+                                                  ['fourth', 'row']]})
