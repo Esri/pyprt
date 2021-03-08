@@ -20,6 +20,7 @@
 #pragma once
 
 #include "types.h"
+#include "utils.h"
 
 #include "encoder/IPyCallbacks.h"
 
