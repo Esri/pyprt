@@ -18,22 +18,11 @@
  */
 
 #include "PyCallbacks.h"
-#include "utils.h"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 namespace py = pybind11;
-
-template <typename T>
-prt::Status PyCallbacks::storeAttr(size_t isIndex, const wchar_t* key, const T value) {
-	if (!isHiddenAttribute(key)) {
-		py::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
-		mModels[isIndex].mAttrVal[pyKey] = value;
-	}
-
-	return prt::STATUS_OK;
-}
 
 bool PyCallbacks::isHiddenAttribute(const wchar_t* key) {
 	if (key != nullptr) {
@@ -95,4 +84,19 @@ prt::Status PyCallbacks::attrFloat(size_t isIndex, int32_t /*shapeID*/, const wc
 prt::Status PyCallbacks::attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
                                     const wchar_t* value) {
 	return storeAttr(isIndex, key, value);
+}
+
+prt::Status PyCallbacks::attrBoolArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
+                                       const bool* ptr, size_t size, size_t nRows) {
+	return storeAttr(isIndex, key, ptr, size, nRows);
+}
+
+prt::Status PyCallbacks::attrFloatArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
+                                        const double* ptr, size_t size, size_t nRows) {
+	return storeAttr(isIndex, key, ptr, size, nRows);
+}
+
+prt::Status PyCallbacks::attrStringArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
+                            const wchar_t* const* ptr, size_t size, size_t nRows) {
+	return storeAttr(isIndex, key, ptr, size, nRows);
 }
