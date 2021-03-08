@@ -57,6 +57,10 @@ stage('prepare') {
 	cepl.runParallel(taskGenPrepare())
 }
 
+stage('pyprt-tests') {
+	cepl.runParallel(taskGenTests())
+}
+
 stage('pyprt') {
 	cepl.runParallel(taskGenPyPRT())
 }
@@ -69,6 +73,12 @@ papl.finalizeRun('pyprt', env.BRANCH_NAME)
 Map taskGenPrepare() {
 	Map tasks = [:]
 	tasks << cepl.generateTasks('pyprt-prepare', this.&taskPrepare, CONFIGS_PREPARE)
+	return tasks
+}
+
+Map taskGenTests() {
+	Map tasks = [:]
+	tasks << cepl.generateTasks('pyprt-tests-py36', this.&taskRunTests, CONFIGS_PY36)
 	return tasks
 }
 
@@ -194,6 +204,25 @@ def taskBuildDoc(cfg) {
 	}
 
 	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-doc.zip", { return pkgVer }, cfg, { return "doc" })
+}
+
+def taskRunTests(cfg) {
+	cepl.cleanCurrentDir()
+	unstash(name: SOURCE_STASH)
+
+	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
+	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
+	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
+	dir(path: SOURCE) {
+		withEnv(buildEnvs) {
+			final String pyCmd = setupPythonEnv(cfg)
+			String cmd = toolchain.getSetupCmd(this, cfg)
+			cmd += "\n${pyCmd} setup.py install"
+			cmd += "\n${pyCmd} tests/run_tests.py --xml_output_directory ${WORKSPACE}"
+			psl.runCmd(cmd)
+		}
+	}
+	junit(testResults: 'TEST-*.xml')
 }
 
 
