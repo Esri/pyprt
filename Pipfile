@@ -6,7 +6,7 @@ verify_ssl = true
 [packages]
 tox = "*"
 wheel = "*"
-arcgis = "==1.6"
+arcgis = "==1.8.4"
 twine = "*"
 sphinx = "*"
 pkginfo = "*"
