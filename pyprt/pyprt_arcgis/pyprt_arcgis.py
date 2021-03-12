@@ -84,7 +84,10 @@ def arcgis_to_pyprt(feature_set):
                 coord_list = geo.coordinates()
 
                 for face_idx, coord_part in enumerate(coord_list):
-                    in_geo = Geometry({"rings": [coord_part]})
+                    if isinstance(coord_part, np.ndarray):
+                        in_geo = Geometry({"rings": [coord_part.tolist()]})
+                    else:
+                        in_geo = Geometry({"rings": [coord_part]})
                     store_area = in_geo.area
                     coord_remove_last = coord_part[:-1]
                     coord_inverse = np.flip(coord_remove_last, axis=0)
