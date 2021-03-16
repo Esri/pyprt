@@ -88,16 +88,10 @@ def taskPrepare(cfg) {
 	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
 
  	dir(path: SOURCE) {
-		withEnv(["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
-			psl.runCmd("pipenv install")
-
-			String cmd = "\npipenv run pip list"
-			cmd += "\npipenv run python setup.py build_py"
-			psl.runCmd(cmd)
-
-			pkgVer = psl.runCmd('pipenv run python get_pkg_version.py', true)
- 			pkgVer += "-${env.BUILD_NUMBER}"
- 		}
+		final String pyCmd = setupPythonEnv(cfg)
+		psl.runCmd("${pyCmd} setup.py build_py")
+		pkgVer = psl.runCmd("${pyCmd} get_pkg_version.py", true)
+        pkgVer += "-${env.BUILD_NUMBER}"
  	}
 
  	echo("Detected PyPRT version: ${pkgVer}")
@@ -111,12 +105,10 @@ def taskBuildPyPRT(cfg) {
 	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
 	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
 	dir(path: SOURCE) {
-		withEnv(buildEnvs + ["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
-			psl.runCmd("pipenv install")
-
+		withEnv(buildEnvs) {
+			final String pyCmd = setupPythonEnv(cfg)
 			String cmd = toolchain.getSetupCmd(this, cfg)
-			cmd += "\npipenv run pip list"
-			cmd += "\npipenv run python setup.py bdist_wheel --dist-dir=${env.WORKSPACE}/build --build-number=${env.BUILD_NUMBER}"
+			cmd += "\n${pyCmd} setup.py bdist_wheel --dist-dir=${env.WORKSPACE}/build --build-number=${env.BUILD_NUMBER}"
 			psl.runCmd(cmd)
 		}
 	}
@@ -184,14 +176,13 @@ def taskBuildDoc(cfg) {
 	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
 	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
 	dir(path: SOURCE) {
-		withEnv(buildEnvs + ["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
-			psl.runCmd("pipenv install")
-
+		withEnv(buildEnvs) {
+			final String pyCmd = setupPythonEnv(cfg)
 			final String buildLib = pwd(tmp: true)
 
 			String cmd = toolchain.getSetupCmd(this, cfg)
-			cmd += "\npipenv run python setup.py build --build-lib=${buildLib}"
-			cmd += "\nPYPRT_PACKAGE_LOCATION=${buildLib} pipenv run python setup.py build_doc --build-dir=${sphinxOutput}"
+			cmd += "\n${pyCmd} setup.py build --build-lib=${buildLib}"
+			cmd += "\nPYPRT_PACKAGE_LOCATION=${buildLib} ${pyCmd} setup.py build_doc --build-dir=${sphinxOutput}"
 			psl.runCmd(cmd)
 		}
 	}
@@ -201,4 +192,27 @@ def taskBuildDoc(cfg) {
 	}
 
 	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-doc.zip", { return pkgVer }, cfg, { return "doc" })
+}
+
+
+// -- HELPERS
+
+String setupPythonEnv(cfg) {
+	final String envName = 'pyprt-venv'
+	final String envPath = "${env.WORKSPACE}/${envName}"
+
+	final String pyBaseCmd = isUnix() ? "python${cfg.python}" : 'python'
+	final String pyCmd = envPath + (isUnix() ? '/bin/python' : '/Scripts/python')
+
+	psl.runCmd("${pyBaseCmd} -m venv ${envPath}")
+
+	// some packages (like 'arcgis') require up-to-date pip, let's upgrade ourselves
+	psl.runCmd("${pyCmd} -m pip install --upgrade pip")
+
+	// 'arcgis' will use legacy installation method if 'wheel' is not installed beforehand
+	psl.runCmd("${pyCmd} -m pip install wheel")
+
+	psl.runCmd("${pyCmd} -m pip install -r requirements.txt")
+
+	return pyCmd
 }
