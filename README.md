@@ -20,31 +20,31 @@ For Python 3.6 (64bit), run `pip install pyprt` in your (virtual) Python environ
 ```python
 import os
 import pyprt
-​
+
 # PRT Initialization
 pyprt.initialize_prt()
-​
+
 # Initial Shape
 shape_geometry = pyprt.InitialShape([0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])
-​
+
 # ModelGenerator Instance
 m = pyprt.ModelGenerator([shape_geometry])
-​
+
 # Model Generation Arguments Setup
 rpk = os.path.join(os.getcwd(), 'extrusion_rule.rpk')
 shape_attributes = {'shapeName': 'myShape', 'seed': 555}
 encoder = 'com.esri.pyprt.PyEncoder'
 encoder_options = {'emitReport': True, 'emitGeometry': True}
-​
+
 # PRT Generation
 generated_models = m.generate_model([shape_attributes], rpk, encoder, encoder_options)
-​
+
 # Info Collection
 for model in generated_models:
     id = model.get_initial_shape_index()
     cga_report = model.get_report()
     vertices_coordinates = model.get_vertices()
-​
+
 # PRT Shutdown
 pyprt.shutdown_prt()
 ```
@@ -68,7 +68,7 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
   * Windows: MSVC 14.23 or later
   * Linux: GCC 8 or later
   * macOS (Catalina or later): Xcode 11
-* Python (version >= 3.6) with pip and pipenv
+* Python (version >= 3.6)
 * CMake (version >= 3.14)
 * Ninja (or jom)
 
@@ -77,11 +77,16 @@ A note regarding "open a shell" in the following sections: this implies that the
 * On RHEL-based Linux, run e.g. `source /opt/rh/devtoolset-8/enable`.
 * On macOS, there is usually no action required (the current Xcode command line tools are activated by default).
 
+_Note: on Windows, replace `bin` with `Scripts` in the following commands._
+
 #### Build Python Wheel
 
-1. Open a shell in the PyPRT git root.
-1. First time only: run `pipenv install` to get all required Python packages.
-1. Run `pipenv run python setup.py bdist_wheel`. This will build the CMake project and Python packages.
+1. Open a shell in the PyPRT git root. 
+1. First time only: setup a virtual Python environment with build dependencies for PyPRT.
+    1. Create the virtual environment: `python -m venv pyprt-venv`
+    1. Get latest pip: `pyprt-venv/bin/python -m pip install --upgrade pip`
+    1. Install build dependencies for PyPRT: `pyprt-venv/bin/python -m pip install -r requirements`
+1. Run `pyprt-venv/bin/python setup.py bdist_wheel`. This will build the CMake project and Python packages.
 1. The resulting wheel is written to the temporary `dist` folder.
 
 #### Build Conda Package
@@ -96,15 +101,15 @@ A note regarding "open a shell" in the following sections: this implies that the
 #### Iterative Python Development
 
 1. Open a shell in the PyPRT git root.
-1. First time only: run `pipenv install` to get all required Python packages.
-1. Run `pipenv shell` to activate the required Python packages.
+1. First time only: setup a virtual Python environment with build dependencies for PyPRT, see "Build Python Wheel" above.
+1. Run `pyprt-venv/bin/activate` to activate the required Python packages.
 1. Run `python setup.py clean --all` (to ensure we can properly track and cleanup the temporarily copied native extension) 
 1. Install PyPRT in current pip environment in dev mode by running `pip install -e .` (note the dot at the end). This will use CMake to build the native extension and copy them into the source directory.
 1. Now you can iterate on the Python part of PyPRT...
 1. To leave development mode and cleanup your git workspace, run these commands:
    1. `pip uninstall pyprt` (this will remove the "symlinked" package for the current pip env)
    1. `python setup.py clean` (this will remove the copied native extension)
-1. Run `exit` to leave the pipenv shell.
+1. Run `exit` to leave the venv shell.
 
 #### Iterative C++ Development
 
@@ -117,8 +122,8 @@ The `setup.py clean` call mentioned above will also clean out the native extensi
 #### Running Unit Tests
 
 1. Open a shell in the PyPRT git root.
-1. First time only: run `pipenv install` to get all required Python packages.
-1. Run `pipenv run tox`.
+1. First time only: setup a virtual Python environment with build dependencies for PyPRT, see "Build Python Wheel" above.
+1. Run `pyprt-venv/bin/tox`.
 
 #### Build the API documentation
 
