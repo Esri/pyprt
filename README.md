@@ -124,7 +124,10 @@ The `setup.py clean` call mentioned above will also clean out the native extensi
 
 1. Open a shell in the PyPRT git root.
 1. First time only: setup a virtual Python environment with build dependencies for PyPRT, see "Build Python Wheel" [above](#build-python-wheel).
-1. Run `.venv/bin/tox`.
+1. Build and install PyPRT into local env: `.venv/bin/python setup.py install`
+1. Run the tests: `.venv/bin/python tests/run_tests.py`
+1. Uninstall PyPRT from local env: `.venv/bin/python -m pip uninstall pyprt`
+1. Cleanup intermediate build files: `.venv/bin/python setup.py clean --all`
 
 #### Build the API documentation
 
