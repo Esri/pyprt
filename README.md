@@ -77,7 +77,7 @@ A note regarding "open a shell" in the following sections: this implies that the
 * On RHEL-based Linux, run e.g. `source /opt/rh/devtoolset-8/enable`.
 * On macOS, there is usually no action required (the current Xcode command line tools are activated by default).
 
-_Note: on Windows, replace `bin` with `Scripts` in the following commands._
+_Note: on Windows, replace `bin` with `Scripts` in the following commands. Some commands also differ in their file extension between Linux and Windows (`.sh` vs `.bat` and similar). Please refer to the `venv` documentation for details: https://docs.python.org/3.6/library/venv.html_
 
 #### Build Python Wheel
 
@@ -85,7 +85,8 @@ _Note: on Windows, replace `bin` with `Scripts` in the following commands._
 1. First time only: setup a virtual Python environment with build dependencies for PyPRT.
     1. Create the virtual environment: `python -m venv pyprt-venv`
     1. Get latest pip: `pyprt-venv/bin/python -m pip install --upgrade pip`
-    1. Install build dependencies for PyPRT: `pyprt-venv/bin/python -m pip install -r requirements`
+    1. Get latest wheel: `pyprt-venv/bin/python -m pip install --upgrade wheel`
+    1. Install build dependencies for PyPRT: `pyprt-venv/bin/python -m pip install -r requirements.txt`
 1. Run `pyprt-venv/bin/python setup.py bdist_wheel`. This will build the CMake project and Python packages.
 1. The resulting wheel is written to the temporary `dist` folder.
 
@@ -102,14 +103,14 @@ _Note: on Windows, replace `bin` with `Scripts` in the following commands._
 
 1. Open a shell in the PyPRT git root.
 1. First time only: setup a virtual Python environment with build dependencies for PyPRT, see "Build Python Wheel" above.
-1. Run `pyprt-venv/bin/activate` to activate the required Python packages.
+1. Run `source pyprt-venv/bin/activate` (on Windows, `pyprt-venv\Scripts\activate.bat`) to activate the required Python packages.
 1. Run `python setup.py clean --all` (to ensure we can properly track and cleanup the temporarily copied native extension) 
 1. Install PyPRT in current pip environment in dev mode by running `pip install -e .` (note the dot at the end). This will use CMake to build the native extension and copy them into the source directory.
 1. Now you can iterate on the Python part of PyPRT...
 1. To leave development mode and cleanup your git workspace, run these commands:
    1. `pip uninstall pyprt` (this will remove the "symlinked" package for the current pip env)
    1. `python setup.py clean` (this will remove the copied native extension)
-1. Run `exit` to leave the venv shell.
+1. Run `deactivate` to leave the venv shell.
 
 #### Iterative C++ Development
 
