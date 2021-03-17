@@ -122,6 +122,11 @@ The `setup.py clean` call mentioned above will also clean out the native extensi
 
 #### Running Unit Tests
 
+Quick way to build and run all tests in a separate virtual environment:
+1. Open a shell in the PyPRT git root.
+1. Run helper script: `python build_and_run_tests.py`
+
+Detailed steps to run tests for development (basically what the `build_and_run_tests.py` script does):
 1. Open a shell in the PyPRT git root.
 1. First time only: setup a virtual Python environment with build dependencies for PyPRT, see "Build Python Wheel" [above](#build-python-wheel).
 1. Build and install PyPRT into local env: `.venv/bin/python setup.py install`
