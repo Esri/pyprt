@@ -116,4 +116,5 @@ wcwidth==0.2.5
 webencodings==0.5.1
 widgetsnbextension==3.5.1
 wrapt==1.12.1
+xmlrunner==1.7.7
 zipp==3.4.1
