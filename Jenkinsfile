@@ -200,7 +200,7 @@ def taskBuildDoc(cfg) {
 // -- HELPERS
 
 String setupPythonEnv(cfg) {
-	final String envName = 'pyprt-venv'
+	final String envName = '.venv'
 	final String envPath = "${env.WORKSPACE}/${envName}"
 
 	final String pyBaseCmd = isUnix() ? "python${cfg.python}" : 'python'
