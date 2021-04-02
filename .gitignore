@@ -8,7 +8,7 @@
 /output
 /examples/output
 
-/*-venv/
+/*venv/
 /**/Pipfile.lock
 
 # development mode

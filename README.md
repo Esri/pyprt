@@ -83,11 +83,11 @@ _Note: on Windows, replace `bin` with `Scripts` in the following commands. Some 
 
 1. Open a shell in the PyPRT git root. 
 1. First time only: setup a virtual Python environment with build dependencies for PyPRT.
-    1. Create the virtual environment: `python -m venv pyprt-venv`
-    1. Get latest pip: `pyprt-venv/bin/python -m pip install --upgrade pip`
-    1. Get latest wheel: `pyprt-venv/bin/python -m pip install --upgrade wheel`
-    1. Install build dependencies for PyPRT: `pyprt-venv/bin/python -m pip install -r requirements.txt`
-1. Run `pyprt-venv/bin/python setup.py bdist_wheel`. This will build the CMake project and Python packages.
+    1. Create the virtual environment: `python -m venv .venv`
+    1. Get latest pip: `.venv/bin/python -m pip install --upgrade pip`
+    1. Get latest wheel: `.venv/bin/python -m pip install --upgrade wheel`
+    1. Install build dependencies for PyPRT: `.venv/bin/python -m pip install -r requirements.txt`
+1. Run `.venv/bin/python setup.py bdist_wheel`. This will build the CMake project and Python packages.
 1. The resulting wheel is written to the temporary `dist` folder.
 
 #### Build Conda Package
@@ -103,7 +103,7 @@ _Note: on Windows, replace `bin` with `Scripts` in the following commands. Some 
 
 1. Open a shell in the PyPRT git root.
 1. First time only: setup a virtual Python environment with build dependencies for PyPRT, see "Build Python Wheel" [above](#build-python-wheel).
-1. Run `source pyprt-venv/bin/activate` (on Windows, `pyprt-venv\Scripts\activate.bat`) to activate the required Python packages.
+1. Run `source .venv/bin/activate` (on Windows, `.venv\Scripts\activate.bat`) to activate the required Python packages.
 1. Run `python setup.py clean --all` (to ensure we can properly track and cleanup the temporarily copied native extension) 
 1. Install PyPRT in current pip environment in dev mode by running `pip install -e .` (note the dot at the end). This will use CMake to build the native extension and copy them into the source directory.
 1. Now you can iterate on the Python part of PyPRT...
@@ -124,7 +124,7 @@ The `setup.py clean` call mentioned above will also clean out the native extensi
 
 1. Open a shell in the PyPRT git root.
 1. First time only: setup a virtual Python environment with build dependencies for PyPRT, see "Build Python Wheel" [above](#build-python-wheel).
-1. Run `pyprt-venv/bin/tox`.
+1. Run `.venv/bin/tox`.
 
 #### Build the API documentation
 
