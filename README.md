@@ -69,6 +69,7 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
   * Linux: GCC 8 or later
   * macOS (Catalina or later): Xcode 11
 * Python (version >= 3.6)
+  * wheel, arcgis, twine, sphinx, pkginfo
 * CMake (version >= 3.14)
 * Ninja (or jom)
 
@@ -82,11 +83,11 @@ _Note: on Windows, replace `bin` with `Scripts` in the following commands. Some 
 #### Build Python Wheel
 
 1. Open a shell in the PyPRT git root. 
-1. First time only: setup a virtual Python environment with build dependencies for PyPRT.
-    1. Create the virtual environment: `python -m venv .venv`
+1. First time only: setup a virtual Python environment with build dependencies for PyPRT. Adapt `python3.6` and `envs/py36` with your desired python version.
+    1. Create the virtual environment: `python3.6 -m venv .venv`
     1. Get latest pip: `.venv/bin/python -m pip install --upgrade pip`
     1. Get latest wheel: `.venv/bin/python -m pip install --upgrade wheel`
-    1. Install build dependencies for PyPRT: `.venv/bin/python -m pip install -r requirements.txt`
+    1. Install build dependencies for PyPRT: `.venv/bin/python -m pip install -r envs/py36/requirements.txt`
 1. Run `.venv/bin/python setup.py bdist_wheel`. This will build the CMake project and Python packages.
 1. The resulting wheel is written to the temporary `dist` folder.
 
@@ -139,6 +140,12 @@ Detailed steps to run tests for development (basically what the `build_and_run_t
 1. Install PyPRT in development mode as described [above](#iterative-python-development).
 1. Run `python setup.py build_doc`, this will output the html files in the `build/sphinx` directory.
 1. Leave development mode also as described [above](#iterative-python-development).
+
+#### Docker
+
+* Build an image to build PyPRT: `docker build -f envs/py36/Dockerfile -t pyprt:py36 .`
+* Run the build: `docker run -it --rm --name pyprt-build-py36 pyprt:py36`
+* TODO: conda support
 
 ## License
 
