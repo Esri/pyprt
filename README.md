@@ -102,7 +102,7 @@ _Note: on Windows, replace `bin` with `Scripts` in the following commands. Some 
 #### Iterative Python Development
 
 1. Open a shell in the PyPRT git root.
-1. First time only: setup a virtual Python environment with build dependencies for PyPRT, see "Build Python Wheel" above.
+1. First time only: setup a virtual Python environment with build dependencies for PyPRT, see "Build Python Wheel" [above](#build-python-wheel).
 1. Run `source pyprt-venv/bin/activate` (on Windows, `pyprt-venv\Scripts\activate.bat`) to activate the required Python packages.
 1. Run `python setup.py clean --all` (to ensure we can properly track and cleanup the temporarily copied native extension) 
 1. Install PyPRT in current pip environment in dev mode by running `pip install -e .` (note the dot at the end). This will use CMake to build the native extension and copy them into the source directory.
@@ -123,7 +123,7 @@ The `setup.py clean` call mentioned above will also clean out the native extensi
 #### Running Unit Tests
 
 1. Open a shell in the PyPRT git root.
-1. First time only: setup a virtual Python environment with build dependencies for PyPRT, see "Build Python Wheel" above.
+1. First time only: setup a virtual Python environment with build dependencies for PyPRT, see "Build Python Wheel" [above](#build-python-wheel).
 1. Run `pyprt-venv/bin/tox`.
 
 #### Build the API documentation
