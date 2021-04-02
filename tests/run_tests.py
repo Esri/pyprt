@@ -13,7 +13,11 @@
 # limitations under the License.
 # A copy of the license is available in the repository's LICENSE file.
 
+import sys
+import os
 import unittest
+import xmlrunner
+import argparse
 
 import pyprt
 
@@ -22,20 +26,6 @@ import pyGeometry_test
 import shapeAttributesDict_test
 import arcgis_test
 import inspectRPK_test
-
-
-class PyPRTTestResult(unittest.TextTestResult):
-    def startTestRun(self):
-        pyprt.initialize_prt()
-
-    def stopTestRun(self):
-        pyprt.shutdown_prt()
-        print('PRT is shut down.')
-
-
-class PyPRTTestRunner(unittest.TextTestRunner):
-    def _makeResult(self):
-        return PyPRTTestResult(self.stream, self.descriptions, self.verbosity)
 
 
 def test_suite():
@@ -49,10 +39,26 @@ def test_suite():
     return suite
 
 
-def run_tests():
-    runner = PyPRTTestRunner(verbosity=3)
+def run_tests(test_xml_reports_path = None):
+    if test_xml_reports_path:
+        runner = xmlrunner.XMLTestRunner(verbosity=3, output=test_xml_reports_path)
+    else:
+        runner = unittest.TextTestRunner(verbosity=3)
+
+    pyprt.initialize_prt()
     runner.run(test_suite())
+    pyprt.shutdown_prt()
 
 
-if __name__ == '__main__':
-    run_tests()
+if __name__ == '__main__':    
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--xml_output_directory", help="Output directory for XML test reports (must exist).", )
+    args = parser.parse_args()
+
+    xml_output_directory = None
+    if args.xml_output_directory:
+        xml_output_directory = os.path.realpath(args.xml_output_directory)
+        if not (os.path.exists(xml_output_directory) and os.path.isdir(xml_output_directory)):
+            raise "XML reports output directory does not exist: " + xml_output_directory
+   
+    run_tests(xml_output_directory)
