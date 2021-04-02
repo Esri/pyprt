@@ -228,6 +228,10 @@ def taskRunTests(cfg) {
 
 // -- HELPERS
 
+String getPySuf(cfg) {
+	return cfg.python.replaceAll(".", "")
+}
+
 String setupPythonEnv(cfg) {
 	final String envName = '.venv'
 	final String envPath = "${env.WORKSPACE}/${envName}"
@@ -243,7 +247,7 @@ String setupPythonEnv(cfg) {
 	// 'arcgis' will use legacy installation method if 'wheel' is not installed beforehand
 	psl.runCmd("${pyCmd} -m pip install wheel")
 
-	psl.runCmd("${pyCmd} -m pip install -r requirements.txt")
+	psl.runCmd("${pyCmd} -m pip install -r envs/py${getPySuf(cfg)}/requirements.txt")
 
 	return pyCmd
 }
