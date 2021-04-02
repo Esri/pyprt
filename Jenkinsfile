@@ -34,6 +34,8 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final String REPO   = 'git@github.com:esri/pyprt.git'
 @Field final String SOURCE = 'pyprt.git'
 @Field final String CREDS = 'jenkins-devtopia-pyprt-deployer-key'
+@Field final String SOURCE_STASH = 'pyprt-sources'
+@Field String pkgVer = "0.0.0"
 
 @Field final List CONFIGS_PREPARE = [
 	[ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC83, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64, python: '3.6' ],
@@ -81,23 +83,17 @@ Map taskGenPyPRT() {
 
 // -- TASK BUILDERS
 
-@Field String pkgVer = "0.0.0"
-
 def taskPrepare(cfg) {
  	cepl.cleanCurrentDir()
 	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
+	stash(name: SOURCE_STASH)
 
  	dir(path: SOURCE) {
-		withEnv(["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
-			psl.runCmd("pipenv install")
 
-			String cmd = "\npipenv run pip list"
-			cmd += "\npipenv run python setup.py build_py"
-			psl.runCmd(cmd)
-
-			pkgVer = psl.runCmd('pipenv run python get_pkg_version.py', true)
- 			pkgVer += "-${env.BUILD_NUMBER}"
- 		}
+		final String pyCmd = setupPythonEnv(cfg)
+		psl.runCmd("${pyCmd} setup.py build_py")
+		pkgVer = psl.runCmd("${pyCmd} get_pkg_version.py", true)
+        pkgVer += "-${env.BUILD_NUMBER}"
  	}
 
  	echo("Detected PyPRT version: ${pkgVer}")
@@ -105,18 +101,16 @@ def taskPrepare(cfg) {
 
 def taskBuildPyPRT(cfg) {
 	cepl.cleanCurrentDir()
-	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
+	unstash(name: SOURCE_STASH)
 
 	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
 	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
 	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
 	dir(path: SOURCE) {
-		withEnv(buildEnvs + ["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
-			psl.runCmd("pipenv install")
-
+		withEnv(buildEnvs) {
+			final String pyCmd = setupPythonEnv(cfg)
 			String cmd = toolchain.getSetupCmd(this, cfg)
-			cmd += "\npipenv run pip list"
-			cmd += "\npipenv run python setup.py bdist_wheel --dist-dir=${env.WORKSPACE}/build --build-number=${env.BUILD_NUMBER}"
+			cmd += "\n${pyCmd} setup.py bdist_wheel --dist-dir=${env.WORKSPACE}/build --build-number=${env.BUILD_NUMBER}"
 			psl.runCmd(cmd)
 		}
 	}
@@ -130,7 +124,7 @@ def taskBuildPyPRT(cfg) {
 
 def taskCondaBuildPyPRT(cfg) {
 	cepl.cleanCurrentDir()
-	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
+	unstash(name: SOURCE_STASH)
 
 	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
 	final JenkinsTools CONDA = JenkinsTools.CONDA
@@ -176,7 +170,7 @@ def taskCondaBuildPyPRT(cfg) {
 
 def taskBuildDoc(cfg) {
 	cepl.cleanCurrentDir()
-	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
+	unstash(name: SOURCE_STASH)
 
 	final String sphinxOutput = "${env.WORKSPACE}/build"
 
@@ -184,14 +178,13 @@ def taskBuildDoc(cfg) {
 	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
 	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
 	dir(path: SOURCE) {
-		withEnv(buildEnvs + ["PIPENV_DEFAULT_PYTHON_VERSION=${cfg.python}"]) {
-			psl.runCmd("pipenv install")
-
+		withEnv(buildEnvs) {
+			final String pyCmd = setupPythonEnv(cfg)
 			final String buildLib = pwd(tmp: true)
 
 			String cmd = toolchain.getSetupCmd(this, cfg)
-			cmd += "\npipenv run python setup.py build --build-lib=${buildLib}"
-			cmd += "\nPYPRT_PACKAGE_LOCATION=${buildLib} pipenv run python setup.py build_doc --build-dir=${sphinxOutput}"
+			cmd += "\n${pyCmd} setup.py build --build-lib=${buildLib}"
+			cmd += "\nPYPRT_PACKAGE_LOCATION=${buildLib} ${pyCmd} setup.py build_doc --build-dir=${sphinxOutput}"
 			psl.runCmd(cmd)
 		}
 	}
@@ -201,4 +194,27 @@ def taskBuildDoc(cfg) {
 	}
 
 	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-doc.zip", { return pkgVer }, cfg, { return "doc" })
+}
+
+
+// -- HELPERS
+
+String setupPythonEnv(cfg) {
+	final String envName = '.venv'
+	final String envPath = "${env.WORKSPACE}/${envName}"
+
+	final String pyBaseCmd = isUnix() ? "python${cfg.python}" : 'python'
+	final String pyCmd = envPath + (isUnix() ? '/bin/python' : '/Scripts/python')
+
+	psl.runCmd("${pyBaseCmd} -m venv ${envPath}")
+
+	// some packages (like 'arcgis') require up-to-date pip, let's upgrade ourselves
+	psl.runCmd("${pyCmd} -m pip install --upgrade pip")
+
+	// 'arcgis' will use legacy installation method if 'wheel' is not installed beforehand
+	psl.runCmd("${pyCmd} -m pip install wheel")
+
+	psl.runCmd("${pyCmd} -m pip install -r requirements.txt")
+
+	return pyCmd
 }
