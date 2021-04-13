@@ -84,6 +84,7 @@ FetchContent_Declare(
  	pybind11
 	GIT_REPOSITORY https://github.com/pybind/pybind11.git
 	GIT_TAG v2.2.4
+	GIT_SUBMODULES ""
 )
 
 FetchContent_GetProperties(pybind11)
