@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "PyCallbacks.h"
+#include "GeneratedPayload.h"
 #include "types.h"
 
 #include <pybind11/pybind11.h>
@@ -40,30 +40,30 @@ public:
 		return mInitialShapeIndex;
 	}
 	const Coordinates& getVertices() const {
-		return mModel.mVertices;
+		return mPayload.mVertices;
 	}
 	const Indices& getIndices() const {
-		return mModel.mIndices;
+		return mPayload.mIndices;
 	}
 	const Indices& getFaces() const {
-		return mModel.mFaces;
+		return mPayload.mFaces;
 	}
 	const pybind11::dict& getReport() const {
-		return mModel.mCGAReport;
+		return mPayload.mCGAReport;
 	}
 	const std::wstring& getCGAPrints() const {
-		return mModel.mCGAPrints;
+		return mPayload.mCGAPrints;
 	}
 	const std::vector<std::wstring>& getCGAErrors() const {
-		return mModel.mCGAErrors;
+		return mPayload.mCGAErrors;
 	}
 	const pybind11::dict& getAttributes() const {
-		return mModel.mAttrVal;
+		return mPayload.mAttrVal;
 	}
 
 private:
 	size_t mInitialShapeIndex;
-	Model mModel;
+	GeneratedPayload mPayload;
 };
 
 PYBIND11_MAKE_OPAQUE(std::vector<GeneratedModel>);

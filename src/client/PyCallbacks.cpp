@@ -38,7 +38,7 @@ void PyCallbacks::addGeometry(const size_t initialShapeIndex, const double* vert
                               const size_t vertexCoordsCount, const uint32_t* faceIndices,
                               const size_t faceIndicesCount, const uint32_t* faceCounts, const size_t faceCountsCount) {
 
-	Model& currentModel = mModels[initialShapeIndex];
+	GeneratedPayload& currentModel = mPayloads[initialShapeIndex];
 
 	if (vertexCoords != nullptr)
 		currentModel.mVertices.insert(currentModel.mVertices.end(), vertexCoords, vertexCoords + vertexCoordsCount);
@@ -55,7 +55,7 @@ void PyCallbacks::addReports(const size_t initialShapeIndex, const wchar_t** str
                              const wchar_t** floatReportKeys, const double* floatReportValues, size_t floatReportCount,
                              const wchar_t** boolReportKeys, const bool* boolReportValues, size_t boolReportCount) {
 
-	Model& currentModel = mModels[initialShapeIndex];
+	GeneratedPayload& currentModel = mPayloads[initialShapeIndex];
 
 	for (size_t i = 0; i < boolReportCount; i++) {
 		py::object pyKey = py::cast(boolReportKeys[i]);

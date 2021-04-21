@@ -17,9 +17,21 @@
  * A copy of the license is available in the repository's LICENSE file.
  */
 
-#include "GeneratedModel.h"
+#pragma once
 
-GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const Coordinates& vert, const Indices& indices,
-                               const Indices& face, const pybind11::dict& rep, const std::wstring& cgaPrints,
-                               const std::vector<std::wstring>& cgaErrors, const pybind11::dict& attrVal)
-    : mInitialShapeIndex(initShapeIdx), mPayload{vert, indices, face, rep, cgaPrints, cgaErrors, attrVal} {}
+#include "types.h"
+
+#include "pybind11/pybind11.h"
+
+#include <string>
+#include <vector>
+
+struct GeneratedPayload {
+	Coordinates mVertices;
+	Indices mIndices;
+	Indices mFaces;
+	pybind11::dict mCGAReport;
+	std::wstring mCGAPrints;
+	std::vector<std::wstring> mCGAErrors;
+	pybind11::dict mAttrVal;
+};
