@@ -188,9 +188,6 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 		        << std::endl;
 	}
 
-	std::vector<GeneratedModel> newGeneratedGeo;
-	newGeneratedGeo.reserve(mInitialShapesBuilders.size());
-
 	try {
 		if (!PRTContext::get()) {
 			LOG_ERR << "PRT has not been initialized.";
@@ -235,9 +232,12 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 				return {};
 			}
 
+			std::vector<GeneratedModel> newGeneratedGeo;
+			newGeneratedGeo.reserve(mInitialShapesBuilders.size());
 			for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++) {
 				newGeneratedGeo.emplace_back(idx, foc->getGeneratedPayload(idx));
 			}
+			return newGeneratedGeo;
 		}
 		else {
 			const std::filesystem::path outputPath = [&geometryEncoderOptions]() {
@@ -280,12 +280,10 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 	}
 	catch (const std::exception& e) {
 		LOG_ERR << "caught exception: " << e.what();
-		return {};
 	}
 	catch (...) {
 		LOG_ERR << "caught unknown exception.";
-		return {};
 	}
 
-	return newGeneratedGeo;
+	return {};
 }
