@@ -19,19 +19,78 @@
 
 #include "PyCallbacks.h"
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+PyCallbacks::PyCallbacks(const size_t initialShapeCount, const std::unordered_set<std::wstring>& hiddenAttrs) {
+	mPayloads.resize(initialShapeCount);
+	mHiddenAttrs = hiddenAttrs;
+}
 
-namespace py = pybind11;
+prt::Status PyCallbacks::generateError(size_t /*isIndex*/, prt::Status /*status*/, const wchar_t* /*message*/) {
+	return prt::STATUS_OK;
+}
 
-bool PyCallbacks::isHiddenAttribute(const wchar_t* key) {
-	if (key != nullptr) {
-		std::unordered_set<std::wstring>::iterator it = std::find(mHiddenAttrs.begin(), mHiddenAttrs.end(), key);
-		if (it != mHiddenAttrs.end())
-			return true;
-	}
-	
-	return false;
+prt::Status PyCallbacks::assetError(size_t isIndex, prt::CGAErrorLevel level, const wchar_t* key, const wchar_t* uri,
+                                    const wchar_t* message) {
+	std::wstring errorMsg(L"Asset" + ERRORLEVELS[level] + key + L" " + uri + L"\n" + message);
+	mPayloads[isIndex]->mCGAErrors.push_back(errorMsg);
+
+	return prt::STATUS_OK;
+}
+
+prt::Status PyCallbacks::cgaError(size_t isIndex, int32_t /*shapeID*/, prt::CGAErrorLevel level, int32_t /*methodId*/,
+                                  int32_t /*pc*/, const wchar_t* message) {
+	std::wstring errorMsg(L"CGA" + ERRORLEVELS[level] + L"\n" + message);
+	mPayloads[isIndex]->mCGAErrors.push_back(errorMsg);
+
+	return prt::STATUS_OK;
+}
+
+prt::Status PyCallbacks::cgaPrint(size_t isIndex, int32_t /*shapeID*/, const wchar_t* txt) {
+	std::wstring printsTxt(txt);
+	mPayloads[isIndex]->mCGAPrints += printsTxt;
+
+	return prt::STATUS_OK;
+}
+
+prt::Status PyCallbacks::cgaReportBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
+                                       bool /*value*/) {
+	return prt::STATUS_OK;
+}
+
+prt::Status PyCallbacks::cgaReportFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
+                                        double /*value*/) {
+	return prt::STATUS_OK;
+}
+
+prt::Status PyCallbacks::cgaReportString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
+                                         const wchar_t* /*value*/) {
+	return prt::STATUS_OK;
+}
+
+prt::Status PyCallbacks::attrBool(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, bool value) {
+	return storeAttr(isIndex, key, value);
+}
+
+prt::Status PyCallbacks::attrFloat(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, double value) {
+	return storeAttr(isIndex, key, value);
+}
+
+prt::Status PyCallbacks::attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const wchar_t* value) {
+	return storeAttr(isIndex, key, value);
+}
+
+prt::Status PyCallbacks::attrBoolArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const bool* ptr,
+                                       size_t size, size_t nRows) {
+	return storeAttr(isIndex, key, ptr, size, nRows);
+}
+
+prt::Status PyCallbacks::attrFloatArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const double* ptr,
+                                        size_t size, size_t nRows) {
+	return storeAttr(isIndex, key, ptr, size, nRows);
+}
+
+prt::Status PyCallbacks::attrStringArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
+                                         const wchar_t* const* ptr, size_t size, size_t nRows) {
+	return storeAttr(isIndex, key, ptr, size, nRows);
 }
 
 void PyCallbacks::addGeometry(const size_t initialShapeIndex, const double* vertexCoords,
@@ -54,6 +113,7 @@ void PyCallbacks::addReports(const size_t initialShapeIndex, const wchar_t** str
                              const wchar_t** stringReportValues, size_t stringReportCount,
                              const wchar_t** floatReportKeys, const double* floatReportValues, size_t floatReportCount,
                              const wchar_t** boolReportKeys, const bool* boolReportValues, size_t boolReportCount) {
+	namespace py = pybind11;
 
 	GeneratedPayload& currentModel = *mPayloads[initialShapeIndex];
 
@@ -73,30 +133,18 @@ void PyCallbacks::addReports(const size_t initialShapeIndex, const wchar_t** str
 	}
 }
 
-prt::Status PyCallbacks::attrBool(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, bool value) {
-	return storeAttr(isIndex, key, value);
+GeneratedPayloadPtr PyCallbacks::getGeneratedPayload(size_t initialShapeIdx) {
+	if (initialShapeIdx >= mPayloads.size())
+		throw std::out_of_range("initial shape index is out of range.");
+	return mPayloads[initialShapeIdx];
 }
 
-prt::Status PyCallbacks::attrFloat(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, double value) {
-	return storeAttr(isIndex, key, value);
-}
+bool PyCallbacks::isHiddenAttribute(const wchar_t* key) {
+	if (key != nullptr) {
+		auto it = std::find(mHiddenAttrs.begin(), mHiddenAttrs.end(), key);
+		if (it != mHiddenAttrs.end())
+			return true;
+	}
 
-prt::Status PyCallbacks::attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
-                                    const wchar_t* value) {
-	return storeAttr(isIndex, key, value);
-}
-
-prt::Status PyCallbacks::attrBoolArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
-                                       const bool* ptr, size_t size, size_t nRows) {
-	return storeAttr(isIndex, key, ptr, size, nRows);
-}
-
-prt::Status PyCallbacks::attrFloatArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
-                                        const double* ptr, size_t size, size_t nRows) {
-	return storeAttr(isIndex, key, ptr, size, nRows);
-}
-
-prt::Status PyCallbacks::attrStringArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
-                            const wchar_t* const* ptr, size_t size, size_t nRows) {
-	return storeAttr(isIndex, key, ptr, size, nRows);
+	return false;
 }

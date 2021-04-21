@@ -19,9 +19,9 @@
 
 #pragma once
 
+#include "GeneratedPayload.h"
 #include "types.h"
 #include "utils.h"
-#include "GeneratedPayload.h"
 
 #include "encoder/IPyCallbacks.h"
 
@@ -32,109 +32,60 @@
 
 #include <iostream>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
-
-namespace py = pybind11;
 
 class PyCallbacks;
 using PyCallbacksPtr = std::unique_ptr<PyCallbacks>;
 
 const std::wstring ERRORLEVELS[] = {L"Error ", L"Warning ", L"Info "};
 
-
 class PyCallbacks : public IPyCallbacks {
-private:
-	std::vector<GeneratedPayloadPtr> mPayloads;
-	std::unordered_set<std::wstring> mHiddenAttrs;
-
 public:
-	PyCallbacks(const size_t initialShapeCount, const std::unordered_set<std::wstring>& hiddenAttrs) {
-		mPayloads.resize(initialShapeCount);
-		mHiddenAttrs = hiddenAttrs;
-	}
-
+	PyCallbacks() = delete;
+	explicit PyCallbacks(const size_t initialShapeCount, const std::unordered_set<std::wstring>& hiddenAttrs);
 	virtual ~PyCallbacks() = default;
 
-	bool isHiddenAttribute(const wchar_t* key);
+	// prt::Callbacks implementation
+	prt::Status generateError(size_t /*isIndex*/, prt::Status /*status*/, const wchar_t* /*message*/) override;
+	prt::Status assetError(size_t isIndex, prt::CGAErrorLevel level, const wchar_t* key, const wchar_t* uri,
+	                       const wchar_t* message) override;
+	prt::Status cgaError(size_t isIndex, int32_t /*shapeID*/, prt::CGAErrorLevel level, int32_t /*methodId*/,
+	                     int32_t /*pc*/, const wchar_t* message) override;
+	prt::Status cgaPrint(size_t isIndex, int32_t /*shapeID*/, const wchar_t* txt) override;
+	prt::Status cgaReportBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/, bool /*value*/) override;
+	prt::Status cgaReportFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
+	                           double /*value*/) override;
+	prt::Status cgaReportString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
+	                            const wchar_t* /*value*/) override;
+	prt::Status attrBool(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, bool value) override;
+	prt::Status attrFloat(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, double value) override;
+	prt::Status attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const wchar_t* value) override;
+	prt::Status attrBoolArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const bool* ptr, size_t size,
+	                          size_t nRows) override;
+	prt::Status attrFloatArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const double* ptr, size_t size,
+	                           size_t nRows) override;
+	prt::Status attrStringArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const wchar_t* const* ptr,
+	                            size_t size, size_t nRows) override;
 
+	// IPyCallbacks implementation
 	void addGeometry(const size_t initialShapeIndex, const double* vertexCoords, const size_t vextexCoordsCount,
 	                 const uint32_t* faceIndices, const size_t faceIndicesCount, const uint32_t* faceCounts,
 	                 const size_t faceCountsCount) override;
-
 	void addReports(const size_t initialShapeIndex, const wchar_t** stringReportKeys,
 	                const wchar_t** stringReportValues, size_t stringReportCount, const wchar_t** floatReportKeys,
 	                const double* floatReportValues, size_t floatReportCount, const wchar_t** boolReportKeys,
 	                const bool* boolReportValues, size_t boolReportCount) override;
 
-	GeneratedPayloadPtr getGeneratedPayload(size_t initialShapeIdx) {
-		if (initialShapeIdx >= mPayloads.size())
-			throw std::out_of_range("initial shape index is out of range.");
-		return mPayloads[initialShapeIdx];
-	}
-
-	prt::Status generateError(size_t /*isIndex*/, prt::Status /*status*/, const wchar_t* /*message*/) override {
-		return prt::STATUS_OK;
-	}
-
-	prt::Status assetError(size_t isIndex, prt::CGAErrorLevel level, const wchar_t* key, const wchar_t* uri,
-	                       const wchar_t* message) override {
-		std::wstring errorMsg(L"Asset" + ERRORLEVELS[level] + key + L" " + uri + L"\n" + message);
-		mPayloads[isIndex]->mCGAErrors.push_back(errorMsg);
-
-		return prt::STATUS_OK;
-	}
-
-	prt::Status cgaError(size_t isIndex, int32_t /*shapeID*/, prt::CGAErrorLevel level, int32_t /*methodId*/,
-	                     int32_t /*pc*/, const wchar_t* message) override {
-		std::wstring errorMsg(L"CGA" + ERRORLEVELS[level] + L"\n" + message);
-		mPayloads[isIndex]->mCGAErrors.push_back(errorMsg);
-
-		return prt::STATUS_OK;
-	}
-
-	prt::Status cgaPrint(size_t isIndex, int32_t /*shapeID*/, const wchar_t* txt) override {
-		std::wstring printsTxt(txt);
-		mPayloads[isIndex]->mCGAPrints += printsTxt;
-
-		return prt::STATUS_OK;
-	}
-
-	prt::Status cgaReportBool(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
-	                          bool /*value*/) override {
-		return prt::STATUS_OK;
-	}
-
-	prt::Status cgaReportFloat(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
-	                           double /*value*/) override {
-		return prt::STATUS_OK;
-	}
-
-	prt::Status cgaReportString(size_t /*isIndex*/, int32_t /*shapeID*/, const wchar_t* /*key*/,
-	                            const wchar_t* /*value*/) override {
-		return prt::STATUS_OK;
-	}
-
-	prt::Status attrBool(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, bool value) override;
-
-	prt::Status attrFloat(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, double value) override;
-
-	prt::Status attrString(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const wchar_t* value) override;
-
-	prt::Status attrBoolArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const bool* ptr,
-	                          size_t size, size_t nRows) override;
-
-	prt::Status attrFloatArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key, const double* ptr,
-	                           size_t size, size_t nRows) override;
-
-	prt::Status attrStringArray(size_t isIndex, int32_t /*shapeID*/, const wchar_t* key,
-	                            const wchar_t* const* ptr, size_t size, size_t nRows) override;
+	// PyCallbacks implementation
+	GeneratedPayloadPtr getGeneratedPayload(size_t initialShapeIdx);
+	bool isHiddenAttribute(const wchar_t* key);
 
 	template <typename T>
 	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T value) {
 		if (!isHiddenAttribute(key)) {
-			py::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
+			pybind11::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
 			mPayloads[isIndex]->mAttrVal[pyKey] = value;
 		}
 
@@ -142,10 +93,9 @@ public:
 	}
 
 	template <typename T>
-	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T* ptr, const size_t size,
-	                                   const size_t nRows) {
+	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T* ptr, const size_t size, const size_t nRows) {
 		if (!isHiddenAttribute(key)) {
-			py::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
+			pybind11::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
 			const size_t nCol = size / nRows;
 
 			if (nRows > 1) {
@@ -171,4 +121,8 @@ public:
 
 		return prt::STATUS_OK;
 	}
+
+private:
+	std::vector<GeneratedPayloadPtr> mPayloads;
+	std::unordered_set<std::wstring> mHiddenAttrs;
 };
