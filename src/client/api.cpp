@@ -198,7 +198,7 @@ py::dict getRuleAttributesDeprecated(const prt::RuleFileInfo* ruleFileInfo) {
 		}
 
 		if (!hidden) {
-			ruleAttrs[py::cast(name)] = getAnnotationArgumentTypeString(valueType);;
+			ruleAttrs[py::cast(name)] = getAnnotationArgumentTypeString(valueType);
 		}
 	}
 
@@ -206,7 +206,9 @@ py::dict getRuleAttributesDeprecated(const prt::RuleFileInfo* ruleFileInfo) {
 }
 
 py::dict inspectRPKDeprecated(const std::filesystem::path& rulePackagePath) {
-	PyErr_WarnEx(PyExc_DeprecationWarning, "inspect_rpk(rule_package_path) is deprecated, use get_rpk_attributes_info(rule_package_path) instead.", 1);
+	PyErr_WarnEx(
+	        PyExc_DeprecationWarning,
+	        "inspect_rpk(rule_package_path) is deprecated, use get_rpk_attributes_info(rule_package_path) instead.", 1);
 	ResolveMapPtr resolveMap;
 
 	if (!std::filesystem::exists(rulePackagePath) || !pcu::getResolveMap(rulePackagePath, &resolveMap)) {
@@ -275,7 +277,7 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def("get_report", &GeneratedModel::getReport, doc::GmGetR)
 	        .def("get_cga_prints", &GeneratedModel::getCGAPrints, doc::GmGetP)
 	        .def("get_cga_errors", &GeneratedModel::getCGAErrors, doc::GmGetE)
-			.def("get_attributes", &GeneratedModel::getAttributes, doc::GmGetAttr);
+	        .def("get_attributes", &GeneratedModel::getAttributes, doc::GmGetAttr);
 
 	py::class_<std::filesystem::path>(m, "Path").def(py::init<std::string>());
 	py::implicitly_convertible<std::string, std::filesystem::path>();
