@@ -19,5 +19,5 @@
 
 #include "GeneratedModel.h"
 
-GeneratedModel::GeneratedModel(const size_t& initShapeIdx, std::shared_ptr<GeneratedPayload> payload)
+GeneratedModel::GeneratedModel(const size_t& initShapeIdx, GeneratedPayloadPtr payload)
     : mInitialShapeIndex(initShapeIdx), mPayload(payload) {}

@@ -46,7 +46,7 @@ const std::wstring ERRORLEVELS[] = {L"Error ", L"Warning ", L"Info "};
 
 class PyCallbacks : public IPyCallbacks {
 private:
-	std::vector<std::shared_ptr<GeneratedPayload>> mPayloads;
+	std::vector<GeneratedPayloadPtr> mPayloads;
 	std::unordered_set<std::wstring> mHiddenAttrs;
 
 public:
@@ -68,7 +68,7 @@ public:
 	                const double* floatReportValues, size_t floatReportCount, const wchar_t** boolReportKeys,
 	                const bool* boolReportValues, size_t boolReportCount) override;
 
-	std::shared_ptr<GeneratedPayload> getGeneratedPayload(size_t initialShapeIdx) {
+	GeneratedPayloadPtr getGeneratedPayload(size_t initialShapeIdx) {
 		if (initialShapeIdx >= mPayloads.size())
 			throw std::out_of_range("initial shape index is out of range.");
 		return mPayloads[initialShapeIdx];

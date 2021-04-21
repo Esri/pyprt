@@ -31,7 +31,7 @@
 class GeneratedModel {
 public:
 	GeneratedModel() = default;
-	explicit GeneratedModel(const size_t& initialShapeIdx, std::shared_ptr<GeneratedPayload> payload);
+	explicit GeneratedModel(const size_t& initialShapeIdx, GeneratedPayloadPtr payload);
 	~GeneratedModel() = default;
 
 	size_t getInitialShapeIndex() const {
@@ -61,7 +61,7 @@ public:
 
 private:
 	size_t mInitialShapeIndex;
-	std::shared_ptr<GeneratedPayload> mPayload;
+	GeneratedPayloadPtr mPayload;
 };
 
 PYBIND11_MAKE_OPAQUE(std::vector<GeneratedModel>);

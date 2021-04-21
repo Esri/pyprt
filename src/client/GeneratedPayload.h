@@ -23,6 +23,7 @@
 
 #include "pybind11/pybind11.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -35,3 +36,5 @@ struct GeneratedPayload {
 	std::vector<std::wstring> mCGAErrors;
 	pybind11::dict mAttrVal;
 };
+
+using GeneratedPayloadPtr = std::shared_ptr<GeneratedPayload>;
