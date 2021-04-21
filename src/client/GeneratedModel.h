@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "PyCallbacks.h"
 #include "types.h"
 
 #include <pybind11/pybind11.h>
@@ -39,36 +40,30 @@ public:
 		return mInitialShapeIndex;
 	}
 	const Coordinates& getVertices() const {
-		return mVertices;
+		return mModel.mVertices;
 	}
 	const Indices& getIndices() const {
-		return mIndices;
+		return mModel.mIndices;
 	}
 	const Indices& getFaces() const {
-		return mFaces;
+		return mModel.mFaces;
 	}
 	const pybind11::dict& getReport() const {
-		return mReport;
+		return mModel.mCGAReport;
 	}
 	const std::wstring& getCGAPrints() const {
-		return mCGAPrints;
+		return mModel.mCGAPrints;
 	}
 	const std::vector<std::wstring>& getCGAErrors() const {
-		return mCGAErrors;
+		return mModel.mCGAErrors;
 	}
 	const pybind11::dict& getAttributes() const {
-		return mAttributes;
+		return mModel.mAttrVal;
 	}
 
 private:
 	size_t mInitialShapeIndex;
-	Coordinates mVertices;
-	Indices mIndices;
-	Indices mFaces;
-	pybind11::dict mReport;
-	std::wstring mCGAPrints;
-	std::vector<std::wstring> mCGAErrors;
-	pybind11::dict mAttributes;
+	Model mModel;
 };
 
 PYBIND11_MAKE_OPAQUE(std::vector<GeneratedModel>);

@@ -22,5 +22,4 @@
 GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const Coordinates& vert, const Indices& indices,
                                const Indices& face, const pybind11::dict& rep, const std::wstring& cgaPrints,
                                const std::vector<std::wstring>& cgaErrors, const pybind11::dict& attrVal)
-    : mInitialShapeIndex(initShapeIdx), mVertices(vert), mIndices(indices), mFaces(face), mReport(rep),
-      mCGAPrints(cgaPrints), mCGAErrors(cgaErrors), mAttributes(attrVal) {}
+    : mInitialShapeIndex(initShapeIdx), mModel{vert, indices, face, rep, cgaPrints, cgaErrors, attrVal} {}

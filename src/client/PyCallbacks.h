@@ -41,18 +41,18 @@ using PyCallbacksPtr = std::unique_ptr<PyCallbacks>;
 
 const std::wstring ERRORLEVELS[] = {L"Error ", L"Warning ", L"Info "};
 
+struct Model {
+	Coordinates mVertices;
+	Indices mIndices;
+	Indices mFaces;
+	py::dict mCGAReport;
+	std::wstring mCGAPrints;
+	std::vector<std::wstring> mCGAErrors;
+	py::dict mAttrVal;
+};
+
 class PyCallbacks : public IPyCallbacks {
 private:
-	struct Model {
-		Coordinates mVertices;
-		Indices mIndices;
-		Indices mFaces;
-		py::dict mCGAReport;
-		std::wstring mCGAPrints;
-		std::vector<std::wstring> mCGAErrors;
-		py::dict mAttrVal;
-	};
-
 	std::vector<Model> mModels;
 	std::unordered_set<std::wstring> mHiddenAttrs;
 
