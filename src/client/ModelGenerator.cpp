@@ -138,8 +138,8 @@ void ModelGenerator::initializeEncoderData(const std::wstring& encName, const py
 	mEncodersOptionsPtr.push_back(pcu::createValidatedOptions(ENCODER_ID_ATTR_EVAL, attrOptions));
 }
 
-prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::path& rulePackagePath, ResolveMapPtr& resolveMap,
-	CachePtr& cache) {
+prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::path& rulePackagePath,
+                                                      ResolveMapPtr& resolveMap, CachePtr& cache) {
 	if (!std::filesystem::exists(rulePackagePath)) {
 		LOG_ERR << "The rule package path is unvalid.";
 		return prt::STATUS_FILE_NOT_FOUND;
