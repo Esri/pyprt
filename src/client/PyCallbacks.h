@@ -79,8 +79,7 @@ public:
 	                const bool* boolReportValues, size_t boolReportCount) override;
 
 	// PyCallbacks implementation
-	GeneratedPayloadPtr getGeneratedPayload(size_t initialShapeIdx);
-	bool isHiddenAttribute(const wchar_t* key);
+	GeneratedPayloadPtr getGeneratedPayload(size_t initialShapeIndex);
 
 	template <typename T>
 	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T value) {
@@ -123,6 +122,9 @@ public:
 	}
 
 private:
+	bool isHiddenAttribute(const wchar_t* key);
+	GeneratedPayload& getOrCreate(size_t initialShapeIndex);
+
 	std::vector<GeneratedPayloadPtr> mPayloads;
 	std::unordered_set<std::wstring> mHiddenAttrs;
 };

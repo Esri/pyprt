@@ -31,7 +31,7 @@ prt::Status PyCallbacks::generateError(size_t /*isIndex*/, prt::Status /*status*
 prt::Status PyCallbacks::assetError(size_t isIndex, prt::CGAErrorLevel level, const wchar_t* key, const wchar_t* uri,
                                     const wchar_t* message) {
 	std::wstring errorMsg(L"Asset" + ERRORLEVELS[level] + key + L" " + uri + L"\n" + message);
-	mPayloads[isIndex]->mCGAErrors.push_back(errorMsg);
+	getOrCreate(isIndex).mCGAErrors.push_back(errorMsg);
 
 	return prt::STATUS_OK;
 }
@@ -39,14 +39,14 @@ prt::Status PyCallbacks::assetError(size_t isIndex, prt::CGAErrorLevel level, co
 prt::Status PyCallbacks::cgaError(size_t isIndex, int32_t /*shapeID*/, prt::CGAErrorLevel level, int32_t /*methodId*/,
                                   int32_t /*pc*/, const wchar_t* message) {
 	std::wstring errorMsg(L"CGA" + ERRORLEVELS[level] + L"\n" + message);
-	mPayloads[isIndex]->mCGAErrors.push_back(errorMsg);
+	getOrCreate(isIndex).mCGAErrors.push_back(errorMsg);
 
 	return prt::STATUS_OK;
 }
 
 prt::Status PyCallbacks::cgaPrint(size_t isIndex, int32_t /*shapeID*/, const wchar_t* txt) {
 	std::wstring printsTxt(txt);
-	mPayloads[isIndex]->mCGAPrints += printsTxt;
+	getOrCreate(isIndex).mCGAPrints += printsTxt;
 
 	return prt::STATUS_OK;
 }
@@ -97,7 +97,7 @@ void PyCallbacks::addGeometry(const size_t initialShapeIndex, const double* vert
                               const size_t vertexCoordsCount, const uint32_t* faceIndices,
                               const size_t faceIndicesCount, const uint32_t* faceCounts, const size_t faceCountsCount) {
 
-	GeneratedPayload& currentModel = *mPayloads[initialShapeIndex];
+	GeneratedPayload& currentModel = getOrCreate(initialShapeIndex);
 
 	if (vertexCoords != nullptr)
 		currentModel.mVertices.insert(currentModel.mVertices.end(), vertexCoords, vertexCoords + vertexCoordsCount);
@@ -115,7 +115,7 @@ void PyCallbacks::addReports(const size_t initialShapeIndex, const wchar_t** str
                              const wchar_t** boolReportKeys, const bool* boolReportValues, size_t boolReportCount) {
 	namespace py = pybind11;
 
-	GeneratedPayload& currentModel = *mPayloads[initialShapeIndex];
+	GeneratedPayload& currentModel = getOrCreate(initialShapeIndex);
 
 	for (size_t i = 0; i < boolReportCount; i++) {
 		py::object pyKey = py::cast(boolReportKeys[i]);
@@ -133,10 +133,10 @@ void PyCallbacks::addReports(const size_t initialShapeIndex, const wchar_t** str
 	}
 }
 
-GeneratedPayloadPtr PyCallbacks::getGeneratedPayload(size_t initialShapeIdx) {
-	if (initialShapeIdx >= mPayloads.size())
+GeneratedPayloadPtr PyCallbacks::getGeneratedPayload(size_t initialShapeIndex) {
+	if (initialShapeIndex >= mPayloads.size())
 		throw std::out_of_range("initial shape index is out of range.");
-	return mPayloads[initialShapeIdx];
+	return mPayloads[initialShapeIndex];
 }
 
 bool PyCallbacks::isHiddenAttribute(const wchar_t* key) {
@@ -147,4 +147,12 @@ bool PyCallbacks::isHiddenAttribute(const wchar_t* key) {
 	}
 
 	return false;
+}
+
+GeneratedPayload& PyCallbacks::getOrCreate(size_t initialShapeIndex) {
+	assert(mPayloads.size() > initialShapeIndex);
+	if (!mPayloads[initialShapeIndex]) {
+		mPayloads[initialShapeIndex] = std::make_shared<GeneratedPayload>();
+	}
+	return *mPayloads[initialShapeIndex];
 }
