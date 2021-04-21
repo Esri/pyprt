@@ -34,30 +34,14 @@ public:
 	explicit GeneratedModel(const size_t& initialShapeIdx, GeneratedPayloadPtr payload);
 	~GeneratedModel() = default;
 
-	size_t getInitialShapeIndex() const {
-		return mInitialShapeIndex;
-	}
-	const Coordinates& getVertices() const {
-		return mPayload->mVertices;
-	}
-	const Indices& getIndices() const {
-		return mPayload->mIndices;
-	}
-	const Indices& getFaces() const {
-		return mPayload->mFaces;
-	}
-	const pybind11::dict& getReport() const {
-		return mPayload->mCGAReport;
-	}
-	const std::wstring& getCGAPrints() const {
-		return mPayload->mCGAPrints;
-	}
-	const std::vector<std::wstring>& getCGAErrors() const {
-		return mPayload->mCGAErrors;
-	}
-	const pybind11::dict& getAttributes() const {
-		return mPayload->mAttrVal;
-	}
+	size_t getInitialShapeIndex() const;
+	const Coordinates& getVertices() const;
+	const Indices& getIndices() const;
+	const Indices& getFaces() const;
+	const pybind11::dict& getReport() const;
+	const std::wstring& getCGAPrints() const;
+	const std::vector<std::wstring>& getCGAErrors() const;
+	const pybind11::dict& getAttributes() const;
 
 private:
 	size_t mInitialShapeIndex;

@@ -67,7 +67,5 @@ public:
 	PyEncoderFactory& operator=(PyEncoderFactory&) = delete;
 	virtual ~PyEncoderFactory() = default;
 
-	virtual PyEncoder* create(const prt::AttributeMap* defaultOptions, prt::Callbacks* callbacks) const override {
-		return new PyEncoder(getID(), defaultOptions, callbacks);
-	}
+	PyEncoder* create(const prt::AttributeMap* defaultOptions, prt::Callbacks* callbacks) const override;
 };
