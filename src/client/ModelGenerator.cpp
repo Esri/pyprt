@@ -198,7 +198,6 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 		}
 
 		// Rule package
-		RuleFileInfoUPtr ruleInfo;
 		prt::Status rpkStat = initializeRulePackageData(rulePackagePath, mResolveMap, mCache);
 
 		if (rpkStat != prt::STATUS_OK)
