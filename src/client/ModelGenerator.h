@@ -24,7 +24,7 @@
 #include "types.h"
 #include "utils.h"
 
-#include <pybind11/pybind11.h>
+#include "pybind11/pybind11.h"
 
 #include <filesystem>
 #include <vector>

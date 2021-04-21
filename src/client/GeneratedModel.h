@@ -22,7 +22,7 @@
 #include "GeneratedPayload.h"
 #include "types.h"
 
-#include <pybind11/pybind11.h>
+#include "pybind11/pybind11.h"
 
 #include <cstddef>
 #include <cstdint>
