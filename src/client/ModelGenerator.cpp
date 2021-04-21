@@ -200,7 +200,7 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 		// Rule package
 		RuleFileInfoUPtr ruleInfo;
 		prt::Status rpkStat = initializeRulePackageData(rulePackagePath, mResolveMap, mCache);
-		
+
 		if (rpkStat != prt::STATUS_OK)
 			return {};
 
@@ -291,13 +291,4 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 	}
 
 	return newGeneratedGeo;
-}
-
-std::vector<GeneratedModel> ModelGenerator::generateAnotherModel(const std::vector<py::dict>&) {
-	const char* message = "generate_model(shape_attributes) has been removed, use "
-	                      "generate_model(shape_attributes, rule_package_path, "
-	                      "geometry_encoder, encoder_options) instead.";
-	PyErr_WarnEx(PyExc_DeprecationWarning, message, 1);
-    LOG_ERR << message;
-    return {};
 }

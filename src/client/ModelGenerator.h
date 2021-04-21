@@ -38,7 +38,6 @@ public:
 	                                          const std::filesystem::path& rulePackagePath,
 	                                          const std::wstring& geometryEncoderName,
 	                                          const pybind11::dict& geometryEcoderOptions);
-	std::vector<GeneratedModel> generateAnotherModel(const std::vector<pybind11::dict>& shapeAttributes);
 
 private:
 	ResolveMapPtr mResolveMap;
