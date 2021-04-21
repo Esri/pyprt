@@ -34,6 +34,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace py = pybind11;
 
@@ -45,7 +46,7 @@ const std::wstring ERRORLEVELS[] = {L"Error ", L"Warning ", L"Info "};
 
 class PyCallbacks : public IPyCallbacks {
 private:
-	std::vector<GeneratedPayload> mPayloads;
+	std::vector<std::shared_ptr<GeneratedPayload>> mPayloads;
 	std::unordered_set<std::wstring> mHiddenAttrs;
 
 public:
@@ -67,57 +68,10 @@ public:
 	                const double* floatReportValues, size_t floatReportCount, const wchar_t** boolReportKeys,
 	                const bool* boolReportValues, size_t boolReportCount) override;
 
-	size_t getInitialShapeCount() const {
-		return mPayloads.size();
-	}
-
-	const Coordinates& getVertices(const size_t initialShapeIdx) const {
+	std::shared_ptr<GeneratedPayload> getGeneratedPayload(size_t initialShapeIdx) {
 		if (initialShapeIdx >= mPayloads.size())
 			throw std::out_of_range("initial shape index is out of range.");
-
-		return mPayloads[initialShapeIdx].mVertices;
-	}
-
-	const Indices& getIndices(const size_t initialShapeIdx) const {
-		if (initialShapeIdx >= mPayloads.size())
-			throw std::out_of_range("initial shape index is out of range.");
-
-		return mPayloads[initialShapeIdx].mIndices;
-	}
-
-	const Indices& getFaces(const size_t initialShapeIdx) const {
-		if (initialShapeIdx >= mPayloads.size())
-			throw std::out_of_range("initial shape index is out of range.");
-
-		return mPayloads[initialShapeIdx].mFaces;
-	}
-
-	const py::dict& getReport(const size_t initialShapeIdx) const {
-		if (initialShapeIdx >= mPayloads.size())
-			throw std::out_of_range("initial shape index is out of range.");
-
-		return mPayloads[initialShapeIdx].mCGAReport;
-	}
-
-	const std::wstring& getCGAPrints(const size_t initialShapeIdx) const {
-		if (initialShapeIdx >= mPayloads.size())
-			throw std::out_of_range("initial shape index is out of range.");
-
-		return mPayloads[initialShapeIdx].mCGAPrints;
-	}
-
-	const std::vector<std::wstring>& getCGAErrors(const size_t initialShapeIdx) const {
-		if (initialShapeIdx >= mPayloads.size())
-			throw std::out_of_range("initial shape index is out of range.");
-
-		return mPayloads[initialShapeIdx].mCGAErrors;
-	}
-
-	const py::dict& getAttributes(const size_t initialShapeIdx) const {
-		if (initialShapeIdx >= mPayloads.size())
-			throw std::out_of_range("initial shape index is out of range.");
-
-		return mPayloads[initialShapeIdx].mAttrVal;
+		return mPayloads[initialShapeIdx];
 	}
 
 	prt::Status generateError(size_t /*isIndex*/, prt::Status /*status*/, const wchar_t* /*message*/) override {
@@ -127,7 +81,7 @@ public:
 	prt::Status assetError(size_t isIndex, prt::CGAErrorLevel level, const wchar_t* key, const wchar_t* uri,
 	                       const wchar_t* message) override {
 		std::wstring errorMsg(L"Asset" + ERRORLEVELS[level] + key + L" " + uri + L"\n" + message);
-		mPayloads[isIndex].mCGAErrors.push_back(errorMsg);
+		mPayloads[isIndex]->mCGAErrors.push_back(errorMsg);
 
 		return prt::STATUS_OK;
 	}
@@ -135,14 +89,14 @@ public:
 	prt::Status cgaError(size_t isIndex, int32_t /*shapeID*/, prt::CGAErrorLevel level, int32_t /*methodId*/,
 	                     int32_t /*pc*/, const wchar_t* message) override {
 		std::wstring errorMsg(L"CGA" + ERRORLEVELS[level] + L"\n" + message);
-		mPayloads[isIndex].mCGAErrors.push_back(errorMsg);
+		mPayloads[isIndex]->mCGAErrors.push_back(errorMsg);
 
 		return prt::STATUS_OK;
 	}
 
 	prt::Status cgaPrint(size_t isIndex, int32_t /*shapeID*/, const wchar_t* txt) override {
 		std::wstring printsTxt(txt);
-		mPayloads[isIndex].mCGAPrints += printsTxt;
+		mPayloads[isIndex]->mCGAPrints += printsTxt;
 
 		return prt::STATUS_OK;
 	}
@@ -181,7 +135,7 @@ public:
 	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T value) {
 		if (!isHiddenAttribute(key)) {
 			py::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
-			mPayloads[isIndex].mAttrVal[pyKey] = value;
+			mPayloads[isIndex]->mAttrVal[pyKey] = value;
 		}
 
 		return prt::STATUS_OK;
@@ -202,7 +156,7 @@ public:
 					values[j][k] = ptr[i];
 				}
 
-				mPayloads[isIndex].mAttrVal[pyKey] = values;
+				mPayloads[isIndex]->mAttrVal[pyKey] = values;
 				return prt::STATUS_OK;
 			}
 			else {
@@ -210,7 +164,7 @@ public:
 				for (size_t i = 0; i < size; i++)
 					values[i] = ptr[i];
 
-				mPayloads[isIndex].mAttrVal[pyKey] = values;
+				mPayloads[isIndex]->mAttrVal[pyKey] = values;
 				return prt::STATUS_OK;
 			}
 		}

@@ -19,7 +19,5 @@
 
 #include "GeneratedModel.h"
 
-GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const Coordinates& vert, const Indices& indices,
-                               const Indices& face, const pybind11::dict& rep, const std::wstring& cgaPrints,
-                               const std::vector<std::wstring>& cgaErrors, const pybind11::dict& attrVal)
-    : mInitialShapeIndex(initShapeIdx), mPayload{vert, indices, face, rep, cgaPrints, cgaErrors, attrVal} {}
+GeneratedModel::GeneratedModel(const size_t& initShapeIdx, std::shared_ptr<GeneratedPayload> payload)
+    : mInitialShapeIndex(initShapeIdx), mPayload(payload) {}

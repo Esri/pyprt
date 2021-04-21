@@ -30,40 +30,38 @@
 
 class GeneratedModel {
 public:
-	GeneratedModel(const size_t& initialShapeIdx, const Coordinates& vert, const Indices& indices, const Indices& face,
-	               const pybind11::dict& rep, const std::wstring& cgaPrints, const std::vector<std::wstring>& cgaErrors,
-				   const pybind11::dict& attrVal);
 	GeneratedModel() = default;
+	explicit GeneratedModel(const size_t& initialShapeIdx, std::shared_ptr<GeneratedPayload> payload);
 	~GeneratedModel() = default;
 
 	size_t getInitialShapeIndex() const {
 		return mInitialShapeIndex;
 	}
 	const Coordinates& getVertices() const {
-		return mPayload.mVertices;
+		return mPayload->mVertices;
 	}
 	const Indices& getIndices() const {
-		return mPayload.mIndices;
+		return mPayload->mIndices;
 	}
 	const Indices& getFaces() const {
-		return mPayload.mFaces;
+		return mPayload->mFaces;
 	}
 	const pybind11::dict& getReport() const {
-		return mPayload.mCGAReport;
+		return mPayload->mCGAReport;
 	}
 	const std::wstring& getCGAPrints() const {
-		return mPayload.mCGAPrints;
+		return mPayload->mCGAPrints;
 	}
 	const std::vector<std::wstring>& getCGAErrors() const {
-		return mPayload.mCGAErrors;
+		return mPayload->mCGAErrors;
 	}
 	const pybind11::dict& getAttributes() const {
-		return mPayload.mAttrVal;
+		return mPayload->mAttrVal;
 	}
 
 private:
 	size_t mInitialShapeIndex;
-	GeneratedPayload mPayload;
+	std::shared_ptr<GeneratedPayload> mPayload;
 };
 
 PYBIND11_MAKE_OPAQUE(std::vector<GeneratedModel>);
