@@ -38,3 +38,34 @@ InitialShape::InitialShape(const Coordinates& vert, const Indices& ind, const In
 }
 
 InitialShape::InitialShape(const std::string& initShapePath) : mPath(initShapePath), mPathFlag(true) {}
+
+const double* InitialShape::getVertices() const {
+	return mVertices.data();
+}
+size_t InitialShape::getVertexCount() const {
+	return mVertices.size();
+}
+const uint32_t* InitialShape::getIndices() const {
+	return mIndices.data();
+}
+size_t InitialShape::getIndexCount() const {
+	return mIndices.size();
+}
+const uint32_t* InitialShape::getFaceCounts() const {
+	return mFaceCounts.data();
+}
+size_t InitialShape::getFaceCountsCount() const {
+	return mFaceCounts.size();
+}
+const uint32_t* InitialShape::getHoles() const {
+	return mHoles.data();
+}
+size_t InitialShape::getHolesCount() const {
+	return mHoles.size();
+}
+const std::string& InitialShape::getPath() const {
+	return mPath;
+}
+bool InitialShape::getPathFlag() const {
+	return mPathFlag;
+}

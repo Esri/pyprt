@@ -19,8 +19,30 @@
 
 #include "GeneratedModel.h"
 
-GeneratedModel::GeneratedModel(const size_t& initShapeIdx, const Coordinates& vert, const Indices& indices,
-                               const Indices& face, const pybind11::dict& rep, const std::wstring& cgaPrints,
-                               const std::vector<std::wstring>& cgaErrors, const pybind11::dict& attrVal)
-    : mInitialShapeIndex(initShapeIdx), mVertices(vert), mIndices(indices), mFaces(face), mReport(rep),
-      mCGAPrints(cgaPrints), mCGAErrors(cgaErrors), mAttributes(attrVal) {}
+GeneratedModel::GeneratedModel(const size_t& initShapeIdx, GeneratedPayloadPtr payload)
+    : mInitialShapeIndex(initShapeIdx), mPayload(payload) {}
+
+size_t GeneratedModel::getInitialShapeIndex() const {
+	return mInitialShapeIndex;
+}
+const Coordinates& GeneratedModel::getVertices() const {
+	return mPayload->mVertices;
+}
+const Indices& GeneratedModel::getIndices() const {
+	return mPayload->mIndices;
+}
+const Indices& GeneratedModel::getFaces() const {
+	return mPayload->mFaces;
+}
+const pybind11::dict& GeneratedModel::getReport() const {
+	return mPayload->mCGAReport;
+}
+const std::wstring& GeneratedModel::getCGAPrints() const {
+	return mPayload->mCGAPrints;
+}
+const std::vector<std::wstring>& GeneratedModel::getCGAErrors() const {
+	return mPayload->mCGAErrors;
+}
+const pybind11::dict& GeneratedModel::getAttributes() const {
+	return mPayload->mAttrVal;
+}

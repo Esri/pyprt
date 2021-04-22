@@ -19,33 +19,22 @@
 
 #pragma once
 
-#include "GeneratedPayload.h"
 #include "types.h"
 
 #include "pybind11/pybind11.h"
 
-#include <cstddef>
-#include <cstdint>
+#include <memory>
+#include <string>
 #include <vector>
 
-class GeneratedModel {
-public:
-	GeneratedModel() = default;
-	explicit GeneratedModel(const size_t& initialShapeIdx, GeneratedPayloadPtr payload);
-	~GeneratedModel() = default;
-
-	size_t getInitialShapeIndex() const;
-	const Coordinates& getVertices() const;
-	const Indices& getIndices() const;
-	const Indices& getFaces() const;
-	const pybind11::dict& getReport() const;
-	const std::wstring& getCGAPrints() const;
-	const std::vector<std::wstring>& getCGAErrors() const;
-	const pybind11::dict& getAttributes() const;
-
-private:
-	size_t mInitialShapeIndex;
-	GeneratedPayloadPtr mPayload;
+struct GeneratedPayload {
+	Coordinates mVertices;
+	Indices mIndices;
+	Indices mFaces;
+	pybind11::dict mCGAReport;
+	std::wstring mCGAPrints;
+	std::vector<std::wstring> mCGAErrors;
+	pybind11::dict mAttrVal;
 };
 
-PYBIND11_MAKE_OPAQUE(std::vector<GeneratedModel>);
+using GeneratedPayloadPtr = std::shared_ptr<GeneratedPayload>;

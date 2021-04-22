@@ -22,7 +22,7 @@
 
 #include "prt/StringUtils.h"
 
-#include <pybind11/pybind11.h>
+#include "pybind11/pybind11.h"
 
 #include <algorithm>
 #include <fstream>

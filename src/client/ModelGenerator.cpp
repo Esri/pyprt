@@ -138,8 +138,8 @@ void ModelGenerator::initializeEncoderData(const std::wstring& encName, const py
 	mEncodersOptionsPtr.push_back(pcu::createValidatedOptions(ENCODER_ID_ATTR_EVAL, attrOptions));
 }
 
-prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::path& rulePackagePath, ResolveMapPtr& resolveMap,
-	CachePtr& cache) {
+prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::path& rulePackagePath,
+                                                      ResolveMapPtr& resolveMap, CachePtr& cache) {
 	if (!std::filesystem::exists(rulePackagePath)) {
 		LOG_ERR << "The rule package path is unvalid.";
 		return prt::STATUS_FILE_NOT_FOUND;
@@ -188,9 +188,6 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 		        << std::endl;
 	}
 
-	std::vector<GeneratedModel> newGeneratedGeo;
-	newGeneratedGeo.reserve(mInitialShapesBuilders.size());
-
 	try {
 		if (!PRTContext::get()) {
 			LOG_ERR << "PRT has not been initialized.";
@@ -198,9 +195,8 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 		}
 
 		// Rule package
-		RuleFileInfoUPtr ruleInfo;
 		prt::Status rpkStat = initializeRulePackageData(rulePackagePath, mResolveMap, mCache);
-		
+
 		if (rpkStat != prt::STATUS_OK)
 			return {};
 
@@ -236,11 +232,12 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 				return {};
 			}
 
+			std::vector<GeneratedModel> newGeneratedGeo;
+			newGeneratedGeo.reserve(mInitialShapesBuilders.size());
 			for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++) {
-				newGeneratedGeo.emplace_back(idx, foc->getVertices(idx), foc->getIndices(idx), foc->getFaces(idx),
-				                             foc->getReport(idx), foc->getCGAPrints(idx), foc->getCGAErrors(idx),
-											 foc->getAttributes(idx));
+				newGeneratedGeo.emplace_back(idx, foc->getGeneratedPayload(idx));
 			}
+			return newGeneratedGeo;
 		}
 		else {
 			const std::filesystem::path outputPath = [&geometryEncoderOptions]() {
@@ -283,21 +280,10 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 	}
 	catch (const std::exception& e) {
 		LOG_ERR << "caught exception: " << e.what();
-		return {};
 	}
 	catch (...) {
 		LOG_ERR << "caught unknown exception.";
-		return {};
 	}
 
-	return newGeneratedGeo;
-}
-
-std::vector<GeneratedModel> ModelGenerator::generateAnotherModel(const std::vector<py::dict>&) {
-	const char* message = "generate_model(shape_attributes) has been removed, use "
-	                      "generate_model(shape_attributes, rule_package_path, "
-	                      "geometry_encoder, encoder_options) instead.";
-	PyErr_WarnEx(PyExc_DeprecationWarning, message, 1);
-    LOG_ERR << message;
-    return {};
+	return {};
 }
