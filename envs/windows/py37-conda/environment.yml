@@ -1,0 +1,9 @@
+channels:
+  - defaults
+  - anaconda
+dependencies:
+  - python=3.7
+  - sphinx
+  - conda-build
+  - conda-verify
+
