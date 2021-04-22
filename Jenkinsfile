@@ -44,7 +44,11 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final String DOCKER_WS_WINDOWS = "c:/temp/pyprt/ws"
 
 @Field final Map PY36_CONFIG           = [ py: '3.6' ]
+@Field final Map PY37_CONFIG           = [ py: '3.7' ]
 @Field final Map PY38_CONFIG           = [ py: '3.8' ]
+@Field final Map PY36_CONDA_CONFIG     = [ py: '3.6-conda' ]
+@Field final Map PY37_CONDA_CONFIG     = [ py: '3.7-conda' ]
+@Field final Map PY38_CONDA_CONFIG     = [ py: '3.8-conda' ]
 @Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC83, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC142, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
@@ -59,6 +63,10 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
  	PY36_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
 ]
 
+@Field final List CONFIGS_TESTS_PY37 = [
+ 	PY37_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+]
+
 @Field final List CONFIGS_TESTS_PY38 = [
 	PY38_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
 	PY38_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
@@ -69,14 +77,28 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 	PY36_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
 ]
 
+@Field final List CONFIGS_BUILD_WHEELS_PY37 = [
+	PY37_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+]
+
 @Field final List CONFIGS_BUILD_WHEELS_PY38 = [
 	PY38_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
 	PY38_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
 ]
 
 @Field final List CONFIGS_BUILD_CONDA_PY36 = [
-	PY36_CONFIG + LINUX_NATIVE_CONFIG,
-	PY36_CONFIG + WINDOWS_NATIVE_CONFIG,
+	PY36_CONDA_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
+	PY36_CONDA_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+]
+
+@Field final List CONFIGS_BUILD_CONDA_PY37 = [
+	PY37_CONDA_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
+	PY37_CONDA_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+]
+
+@Field final List CONFIGS_BUILD_CONDA_PY38 = [
+	PY38_CONDA_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
+	PY38_CONDA_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
 ]
 
 @Field final List CONFIGS_DOC = [
@@ -111,17 +133,21 @@ Map taskGenPrepare() {
 
 Map taskGenTests() {
 	Map tasks = [:]
-	tasks << cepl.generateTasks('pyprt-tests-py36', this.&taskRunTests, CONFIGS_TESTS_PY36)
-	tasks << cepl.generateTasks('pyprt-tests-py38', this.&taskRunTests, CONFIGS_TESTS_PY38)
+ 	tasks << cepl.generateTasks('pyprt-tests-py36', this.&taskRunTests, CONFIGS_TESTS_PY36)
+ 	tasks << cepl.generateTasks('pyprt-tests-py37', this.&taskRunTests, CONFIGS_TESTS_PY37)
+ 	tasks << cepl.generateTasks('pyprt-tests-py38', this.&taskRunTests, CONFIGS_TESTS_PY38)
 	return tasks
 }
 
 Map taskGenPyPRT() {
 	Map tasks = [:]
-	tasks << cepl.generateTasks('pyprt-wheel-py36', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY36)
-	tasks << cepl.generateTasks('pyprt-wheel-py38', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY38)
+  	tasks << cepl.generateTasks('pyprt-wheel-py36', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY36)
+  	tasks << cepl.generateTasks('pyprt-wheel-py37', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY37)
+  	tasks << cepl.generateTasks('pyprt-wheel-py38', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY38)
 	tasks << cepl.generateTasks('pyprt-conda-py36', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY36)
-	tasks << cepl.generateTasks('pyprt-doc', this.&taskBuildDoc, CONFIGS_DOC)
+ 	tasks << cepl.generateTasks('pyprt-conda-py37', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY37)
+ 	tasks << cepl.generateTasks('pyprt-conda-py38', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY38)
+  	tasks << cepl.generateTasks('pyprt-doc', this.&taskBuildDoc, CONFIGS_DOC)
 	return tasks;
 }
 
@@ -166,40 +192,21 @@ def taskBuildConda(cfg) {
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
-	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
-	final JenkinsTools CONDA = JenkinsTools.CONDA
-	final String condaToolEnvVar = CONDA.getEvalEnv(this)
-
-	final String condaEnvName = 'pyprt-conda-env'
-	final String condaEnvPath = "${env.WORKSPACE}/${condaEnvName}"
-	final String condaNativeEnvPath = isUnix() ? condaEnvPath : condaEnvPath.replaceAll('/', '\\\\')
-	final String condaNativeEnvCondaCmd = isUnix() ? "${condaEnvPath}/bin/conda" : "${condaEnvPath}\\condabin\\conda.bat".replaceAll('/', '\\\\')
-
-	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain, CONDA]
-	final List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
-	dir(path: SOURCE) {
-		withEnv(buildEnvs) {
-			final String condaCmd = CONDA.getCmd(this)
-
-			psl.runCmd("${condaCmd} env create -f environment.yml -p ${condaNativeEnvPath}")
-			psl.runCmd("${condaNativeEnvCondaCmd} list")
-
-			final String cmd = toolchain.getSetupCmd(this, cfg)
-			cmd += "\n${condaNativeEnvCondaCmd} run python setup.py bdist_conda --buildnum=${env.BUILD_NUMBER}"
-			psl.runCmd(cmd)
-		}
+	String buildCmd = "python setup.py bdist_conda --buildnum=${env.BUILD_NUMBER}"
+	if (isUnix()) {
+		String condaEnv = '/tmp/pyprt/pyprt-conda-env'
+		String outDir = "${cfg.ws}/build/"
+		buildCmd += " && mkdir ${outDir} && cp -r ${condaEnv}/conda-bld/linux-64/pyprt*.tar.bz2 ${outDir}"
+	}
+	else {
+	    String condaEnv = 'C:\\temp\\conda\\envs\\pyprt'
+		String outDir = "${cfg.ws.replace('/','\\')}\\build\\"
+		buildCmd += " && mkdir ${outDir} && copy ${condaEnv}\\conda-bld\\win-64\\pyprt-*.tar.bz2 ${outDir}"
 	}
 
-	// cannot control where conda outputs the package, need to adapt to expectations of publish
-	fileOperations([
-	    folderCreateOperation('build'),
-	    fileCopyOperation(
-			includes: "${condaEnvName}/conda-bld/*/pyprt-*.tar.bz2",
-			excludes: '',
-			targetLocation: 'build',
-			flattenFiles: true
-		)
-	])
+	String workDir = "${cfg.ws}/${SOURCE}"
+	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
+	runDockerCmd(cfg, dirMap, workDir, buildCmd)
 
 	def classifierExtractor = { p ->
  		def cls = (p =~ /.*-(py[0-9]+)_[0-9]+\.tar\.bz2/)
