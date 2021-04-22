@@ -1,0 +1,29 @@
+import os
+import pyprt
+
+pyprt.initialize_prt()
+
+# Define the input geometry
+shape_geometry = pyprt.InitialShape([0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])
+
+# Setup ModelGenerator instance for input geometry
+model_generator = pyprt.ModelGenerator([shape_geometry])
+
+# Setup generation parameters
+repo_path = os.path.dirname(os.path.realpath(__file__))
+rpk = os.path.join(repo_path, 'tests/data/extrusion_rule.rpk')
+shape_attributes = {'shapeName': 'myShape', 'seed': 555}
+encoder = 'com.esri.pyprt.PyEncoder'
+encoder_options = {'emitReport': True, 'emitGeometry': True}
+
+# Generate the model
+generated_models = model_generator.generate_model([shape_attributes], rpk, encoder, encoder_options)
+
+# Access the result
+for model in generated_models:
+    index = model.get_initial_shape_index()
+    cga_report = model.get_report()
+    vertices = model.get_vertices()
+    print(f"Model {index} has vertices: {vertices} and reports {cga_report}")
+
+pyprt.shutdown_prt()

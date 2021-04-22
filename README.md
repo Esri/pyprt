@@ -7,7 +7,7 @@ PyPRT is a Python binding for PRT (CityEngine Procedural Runtime). It enables th
 ## Table of Contents
 
 * [Installation](#installation)
-* [Minimal Usage](#minimal-usage)
+* [Minimal Example](#minimal-example)
 * [Documentation](#documentation)
 * [Development](#development)
 * [License](#license)
@@ -16,36 +16,39 @@ PyPRT is a Python binding for PRT (CityEngine Procedural Runtime). It enables th
 
 For Python 3.6 (64bit), run `pip install pyprt` in your (virtual) Python environment or `conda install -c esri pyprt` in a Conda environment. Then use `import pyprt` in your scripts. For other Python versions, please [build](#development) PyPRT yourself at the moment.
 
-## Minimal Usage
+## Minimal Example
+
 ```python
+# see example.py in repository root
+
 import os
 import pyprt
 
-# PRT Initialization
 pyprt.initialize_prt()
 
-# Initial Shape
+# Define the input geometry
 shape_geometry = pyprt.InitialShape([0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])
 
-# ModelGenerator Instance
-m = pyprt.ModelGenerator([shape_geometry])
+# Setup ModelGenerator instance for input geometry
+model_generator = pyprt.ModelGenerator([shape_geometry])
 
-# Model Generation Arguments Setup
-rpk = os.path.join(os.getcwd(), 'extrusion_rule.rpk')
+# Setup generation parameters
+repo_path = os.path.dirname(os.path.realpath(__file__))
+rpk = os.path.join(repo_path, 'tests/data/extrusion_rule.rpk')
 shape_attributes = {'shapeName': 'myShape', 'seed': 555}
 encoder = 'com.esri.pyprt.PyEncoder'
 encoder_options = {'emitReport': True, 'emitGeometry': True}
 
-# PRT Generation
-generated_models = m.generate_model([shape_attributes], rpk, encoder, encoder_options)
+# Generate the model
+generated_models = model_generator.generate_model([shape_attributes], rpk, encoder, encoder_options)
 
-# Info Collection
+# Access the result
 for model in generated_models:
-    id = model.get_initial_shape_index()
+    index = model.get_initial_shape_index()
     cga_report = model.get_report()
-    vertices_coordinates = model.get_vertices()
+    vertices = model.get_vertices()
+    print(f"Model {index} has vertices: {vertices} and reports {cga_report}")
 
-# PRT Shutdown
 pyprt.shutdown_prt()
 ```
 
