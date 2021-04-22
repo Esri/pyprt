@@ -1,5 +1,20 @@
 # PyPRT ChangeLog
 
+## v1.3.0 (2021-04-XX)
+
+### Added
+* New function `get_attributes` on `GeneratedModel`. Returns the CGA rule attributes used to generate the model.
+* Added support for CGA array attributes.
+* Added wheels and conda packages for Python 3.8. The code itself supports all Python versions from 3.6 to 3.9.
+
+### Changed
+* Updated the `arcgis_to_pyprt` function to work with the latest `arcgis` package (1.8).
+* Switched from `pipenv` to `venv` to better support multiple Python versions.
+
+### Removed
+* Removed previously deprecated API functions `inspect_rpk` and overload of `generate_model`.
+* Removed `tox` to simplify running tests in multiple Python versions.
+
 ## v1.2.0 (2020-11-19)
 
 ### Added
