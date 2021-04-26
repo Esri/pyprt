@@ -11,7 +11,14 @@ RUN alternatives --install /usr/local/bin/cmake cmake /usr/bin/cmake3 20 \
 --slave /usr/local/bin/ccmake ccmake /usr/bin/ccmake3 \
 --family cmake
 
-USER 997:995
+# this container works with mounted host directories
+# we create a user with matching uid/gid to avoid permissions issues
+# inspired by https://vsupalov.com/docker-shared-permissions/
+ARG USER_ID
+ARG GROUP_ID
+RUN groupadd --gid $GROUP_ID user
+RUN useradd --uid $USER_ID --gid $GROUP_ID user
+USER user
 
 # also see https://github.com/sclorg/devtoolset-container
 RUN echo "unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable devtoolset-8" >> /tmp/scl_enable
