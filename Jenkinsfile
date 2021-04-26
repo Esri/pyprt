@@ -271,8 +271,6 @@ def runDockerCmd(Map cfg, Map dirMap, String workDir, String cmd) {
 	dirMap.each { k,v -> dirMapStrArgs += " -v \"${k}:${v}\"" }
 
 	String runArgs = '--pull always --rm'
-	if (isUnix())
-		runArgs += ' -u $(id -u):$(id -g) -v "/etc/group:/etc/group:ro" -v "/etc/passwd:/etc/passwd:ro" -v "/etc/shadow:/etc/shadow:ro"'
 	runArgs += dirMapStrArgs
 	runArgs += " -w ${workDir}"
 	runArgs += " ${getDockerImage(cfg)}"
