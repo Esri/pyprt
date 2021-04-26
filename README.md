@@ -146,10 +146,12 @@ Detailed steps to run tests for development (basically what the `build_and_run_t
 1. Run `python setup.py build_doc`, this will output the html files in the `build/sphinx` directory.
 1. Leave development mode also as described [above](#iterative-python-development).
 
-### Docker
+### Build with Docker
 
 1. Open a shell in the PyPRT git root
-1. Create the desired image for the build toolchain (adapt `centos7/py36` with your desired OS/Python combination): `docker build --rm -f envs/centos7/py36/Dockerfile -t pyprt:centos7-py36 .`
+1. Create the desired image for the build toolchain (adapt `py36` to your desired Python version):
+   * Linux: `docker build --rm -f envs/centos7/py36/Dockerfile -t pyprt:centos7-py36 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
+   * Windows: `docker build --rm -f envs\windows\py36\Dockerfile -t pyprt:windows-py36 .`
 1. Run the build
    * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:centos7-py36 python setup.py bdist_wheel`
    * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py36 python setup.py bdist_wheel`
