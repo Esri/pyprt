@@ -121,6 +121,8 @@ def taskBuildPyPRT(cfg) {
 			final String pyCmd = setupPythonEnv(cfg)
 			String cmd = toolchain.getSetupCmd(this, cfg)
 			cmd += "\n${pyCmd} setup.py bdist_wheel --dist-dir=${env.WORKSPACE}/build --build-number=${env.BUILD_NUMBER}"
+			if (isUnix())
+				cmd += ' -p manylinux2014_x86_64' // see https://github.com/pypa/manylinux
 			psl.runCmd(cmd)
 		}
 	}
