@@ -1,5 +1,7 @@
 # escape=`
 
+ARG PY_VER=3.6
+
 FROM mcr.microsoft.com/windows/servercore:1809
 SHELL ["cmd", "/S", "/C"]
 
@@ -21,7 +23,7 @@ RUN C:\temp\miniconda.exe /S /AddToPath=1 /InstallationType=JustMe /RegisterPyth
 
 WORKDIR C:\temp\pyprt
 
-COPY envs/windows/py38-conda/environment.yml ./environment.yml
+COPY envs/windows/conda/environment-py${PY_VER}.yml ./environment.yml
 RUN conda env create -n pyprt --file environment.yml
 
 # https://devblogs.microsoft.com/cppblog/using-msvc-in-a-docker-container-for-your-c-projects/
