@@ -153,8 +153,8 @@ Detailed steps to run tests for development (basically what the `build_and_run_t
    * Linux: `docker build --rm -f envs/centos7/py36/Dockerfile -t pyprt:centos7-py36 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
    * Windows: `docker build --rm -f envs\windows\py36\Dockerfile -t pyprt:windows-py36 .`
 1. Run the build
-   * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:centos7-py36 python setup.py bdist_wheel`
-   * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py36 python setup.py bdist_wheel`
+   * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:centos7-py36 bash -c 'python setup.py bdist_wheel'`
+   * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py36 cmd /c "python setup.py bdist_wheel"`
 
 ## License
 
