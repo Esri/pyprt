@@ -10,7 +10,9 @@
 /**/__pycache__
 /test-reports/
 
-/.venv*/
+**/.conda-*/
+**/.venv*/
+
 /**/Pipfile.lock
 
 # development mode
