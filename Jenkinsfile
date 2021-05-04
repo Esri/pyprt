@@ -25,7 +25,7 @@ properties([
 	disableConcurrentBuilds()
 ])
 
-psl.runsHere('development')
+psl.runsHere('production')
 env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 
