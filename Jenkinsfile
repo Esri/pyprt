@@ -25,7 +25,7 @@ properties([
 	disableConcurrentBuilds()
 ])
 
-psl.runsHere('production')
+psl.runsHere('development')
 env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 
@@ -37,17 +37,50 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final String SOURCE_STASH = 'pyprt-sources'
 @Field String pkgVer = "0.0.0"
 
+@Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
+@Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
+
+@Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
+@Field final String DOCKER_WS_WINDOWS = "c:/temp/pyprt/ws"
+
+@Field final Map PY36_CONFIG           = [ py: '3.6' ]
+@Field final Map PY38_CONFIG           = [ py: '3.8' ]
+@Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC83, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
+@Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC142, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
+@Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
+@Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
+
 @Field final List CONFIGS_PREPARE = [
-	[ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC83, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64, python: '3.6' ],
+	PY36_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
 ]
 
-@Field final List CONFIGS_PY36 = [
-	[ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC83, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64, python: '3.6' ],
-	[ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC142, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64, python: '3.6' ],
+@Field final List CONFIGS_TESTS_PY36 = [
+	PY36_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
+ 	PY36_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+]
+
+@Field final List CONFIGS_TESTS_PY38 = [
+	PY38_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
+	PY38_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+]
+
+@Field final List CONFIGS_BUILD_WHEELS_PY36 = [
+	PY36_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
+	PY36_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+]
+
+@Field final List CONFIGS_BUILD_WHEELS_PY38 = [
+	PY38_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
+	PY38_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+]
+
+@Field final List CONFIGS_BUILD_CONDA_PY36 = [
+	PY36_CONFIG + LINUX_NATIVE_CONFIG,
+	PY36_CONFIG + WINDOWS_NATIVE_CONFIG,
 ]
 
 @Field final List CONFIGS_DOC = [
-	[ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC83, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64, python: '3.6' ],
+	PY36_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
 ]
 
 
@@ -57,11 +90,11 @@ stage('prepare') {
 	cepl.runParallel(taskGenPrepare())
 }
 
-stage('pyprt-tests') {
+stage('test') {
 	cepl.runParallel(taskGenTests())
 }
 
-stage('pyprt') {
+stage('build') {
 	cepl.runParallel(taskGenPyPRT())
 }
 
@@ -78,14 +111,16 @@ Map taskGenPrepare() {
 
 Map taskGenTests() {
 	Map tasks = [:]
-	tasks << cepl.generateTasks('pyprt-tests-py36', this.&taskRunTests, CONFIGS_PY36)
+	tasks << cepl.generateTasks('pyprt-tests-py36', this.&taskRunTests, CONFIGS_TESTS_PY36)
+	tasks << cepl.generateTasks('pyprt-tests-py38', this.&taskRunTests, CONFIGS_TESTS_PY38)
 	return tasks
 }
 
 Map taskGenPyPRT() {
 	Map tasks = [:]
-	tasks << cepl.generateTasks('pyprt-py36', this.&taskBuildPyPRT, CONFIGS_PY36)
-	tasks << cepl.generateTasks('pyprt-py36-conda', this.&taskCondaBuildPyPRT, CONFIGS_PY36)
+	tasks << cepl.generateTasks('pyprt-wheel-py36', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY36)
+	tasks << cepl.generateTasks('pyprt-wheel-py38', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY38)
+	tasks << cepl.generateTasks('pyprt-conda-py36', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY36)
 	tasks << cepl.generateTasks('pyprt-doc', this.&taskBuildDoc, CONFIGS_DOC)
 	return tasks;
 }
@@ -98,34 +133,27 @@ def taskPrepare(cfg) {
 	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
 	stash(name: SOURCE_STASH)
 
- 	dir(path: SOURCE) {
+	String buildCmd = "python setup.py build_py && python get_pkg_version.py > ${cfg.ws}/current_version.txt"
+	String workDir = "${cfg.ws}/${SOURCE}"
+	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
+	runDockerCmd(cfg, dirMap, workDir, buildCmd)
 
-		final String pyCmd = setupPythonEnv(cfg)
-		psl.runCmd("${pyCmd} setup.py build_py")
-		pkgVer = psl.runCmd("${pyCmd} get_pkg_version.py", true)
-        pkgVer += "-${env.BUILD_NUMBER}"
- 	}
-
+	String rawVer = readFile(file: "current_version.txt")
+	pkgVer = "${rawVer.trim()}-${env.BUILD_NUMBER}"
  	echo("Detected PyPRT version: ${pkgVer}")
 }
 
-def taskBuildPyPRT(cfg) {
+def taskBuildWheel(cfg) {
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
-	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
-	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
-	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
-	dir(path: SOURCE) {
-		withEnv(buildEnvs) {
-			final String pyCmd = setupPythonEnv(cfg)
-			String cmd = toolchain.getSetupCmd(this, cfg)
-			cmd += "\n${pyCmd} setup.py bdist_wheel --dist-dir=${env.WORKSPACE}/build --build-number=${env.BUILD_NUMBER}"
-			if (isUnix())
-				cmd += ' -p manylinux2014_x86_64' // see https://github.com/pypa/manylinux
-			psl.runCmd(cmd)
-		}
-	}
+	String buildCmd = "python setup.py bdist_wheel --dist-dir=${cfg.ws}/build --build-number=${env.BUILD_NUMBER}"
+	if (isUnix())
+		buildCmd += ' -p manylinux2014_x86_64' // see https://github.com/pypa/manylinux
+
+	String workDir = "${cfg.ws}/${SOURCE}"
+	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
+	runDockerCmd(cfg, dirMap, workDir, buildCmd)
 
 	def classifierExtractor = { p ->
 		def cls = (p =~ /[^-]*-[^-]*-[0-9]*-([^-]*-[^-]*-[^-]*)\.whl/)
@@ -134,7 +162,7 @@ def taskBuildPyPRT(cfg) {
 	papl.publish('pyprt', env.BRANCH_NAME, "PyPRT-*.whl", { return pkgVer }, cfg, classifierExtractor)
 }
 
-def taskCondaBuildPyPRT(cfg) {
+def taskBuildConda(cfg) {
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
@@ -186,20 +214,12 @@ def taskBuildDoc(cfg) {
 
 	final String sphinxOutput = "${env.WORKSPACE}/build"
 
-	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
-	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
-	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
-	dir(path: SOURCE) {
-		withEnv(buildEnvs) {
-			final String pyCmd = setupPythonEnv(cfg)
-			final String buildLib = pwd(tmp: true)
-
-			String cmd = toolchain.getSetupCmd(this, cfg)
-			cmd += "\n${pyCmd} setup.py build --build-lib=${buildLib}"
-			cmd += "\nPYPRT_PACKAGE_LOCATION=${buildLib} ${pyCmd} setup.py build_doc --build-dir=${sphinxOutput}"
-			psl.runCmd(cmd)
-		}
-	}
+	String buildLib = "${cfg.ws}/tmp_build"
+	String buildResult = "${cfg.ws}/build"
+	String buildCmd = "python setup.py build --build-lib=${buildLib} && PYPRT_PACKAGE_LOCATION=${buildLib} python setup.py build_doc --build-dir=${buildResult}"
+	String workDir = "${cfg.ws}/${SOURCE}"
+	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
+	runDockerCmd(cfg, dirMap, workDir, buildCmd)
 
 	dir(path: sphinxOutput) {
 		zip(zipFile: "pyprt-doc.zip", dir: "html")
@@ -212,40 +232,49 @@ def taskRunTests(cfg) {
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
-	final JenkinsTools toolchain = cepl.getToolchainTool(cfg)
-	final List envTools = [JenkinsTools.CMAKE313, JenkinsTools.NINJA, toolchain]
-	List buildEnvs = JenkinsTools.generateToolEnv(this, envTools)
-	dir(path: SOURCE) {
-		withEnv(buildEnvs) {
-			final String pyCmd = setupPythonEnv(cfg)
-			String cmd = toolchain.getSetupCmd(this, cfg)
-			cmd += "\n${pyCmd} setup.py install"
-			cmd += "\n${pyCmd} tests/run_tests.py --xml_output_directory ${WORKSPACE}"
-			psl.runCmd(cmd)
-		}
-	}
+	String buildCmd = "python setup.py install && python tests/run_tests.py --xml_output_directory ${cfg.ws}"
+	String workDir = "${cfg.ws}/${SOURCE}"
+	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
+	runDockerCmd(cfg, dirMap, workDir, buildCmd)
+
 	junit(testResults: 'TEST-*.xml')
 }
 
 
 // -- HELPERS
 
-String setupPythonEnv(cfg) {
-	final String envName = '.venv'
-	final String envPath = "${env.WORKSPACE}/${envName}"
+String getPySuf(cfg) {
+	return cfg.py.replace(".", "")
+}
 
-	final String pyBaseCmd = isUnix() ? "python${cfg.python}" : 'python'
-	final String pyCmd = envPath + (isUnix() ? '/bin/python' : '/Scripts/python')
+String getDockerEnvDir(Map cfg) {
+	String envDir = "envs/"
+	switch (cfg.os) {
+		case cepl.CFG_OS_WIN10: envDir += 'windows'; break;
+		case cepl.CFG_OS_RHEL7: envDir += 'centos7'; break;
+		default: error("No docker env available for ${cfg.os}")
+	}
+	return "${envDir}/py${getPySuf(cfg)}"
+}
 
-	psl.runCmd("${pyBaseCmd} -m venv ${envPath}")
+String getDockerImage(Map cfg) {
+	String image = 'zrh-dreg-sp-1.esri.com/pyprt/pyprt'
 
-	// some packages (like 'arcgis') require up-to-date pip, let's upgrade ourselves
-	psl.runCmd("${pyCmd} -m pip install --upgrade pip")
+	String tag = (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL7) ? 'centos7' : error(cfg.os)
+	tag += "-py${getPySuf(cfg)}-${cfg.tc}"
 
-	// 'arcgis' will use legacy installation method if 'wheel' is not installed beforehand
-	psl.runCmd("${pyCmd} -m pip install wheel")
+	return "${image}:${tag}"
+}
 
-	psl.runCmd("${pyCmd} -m pip install -r requirements.txt")
+def runDockerCmd(Map cfg, Map dirMap, String workDir, String cmd) {
+	String dirMapStrArgs = ""
+	dirMap.each { k,v -> dirMapStrArgs += " -v \"${k}:${v}\"" }
 
-	return pyCmd
+	String runArgs = '--pull always --rm'
+	runArgs += dirMapStrArgs
+	runArgs += " -w ${workDir}"
+	runArgs += " ${getDockerImage(cfg)}"
+	runArgs += isUnix() ? " bash -c '${cmd}'" : " cmd /c \"${cmd}\""
+
+	psl.runCmd("docker run ${runArgs}")
 }
