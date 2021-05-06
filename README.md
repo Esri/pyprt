@@ -71,7 +71,7 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
   * Linux: GCC 8 or later (we build and test on RHEL7/CentOS7)
   * macOS (Catalina or later): Xcode 11
 * Python (version >= 3.6)
-  * wheel, arcgis, twine, sphinx, pkginfo, xmlrunner
+  * Packages: wheel, arcgis 1.8.2, twine, sphinx, pkginfo, xmlrunner
 * CMake (version >= 3.14)
 * Ninja (or jom)
 
