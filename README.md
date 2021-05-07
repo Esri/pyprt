@@ -16,7 +16,7 @@ PyPRT provides Python binding for PRT (Procedural RunTime) of CityEngine. This e
 
 Run `pip install pyprt` in your (virtual) Python environment or `conda install -c esri pyprt` in a Conda environment. Then use `import pyprt` in your scripts.
 
-We provide wheels for Python 3.6 and 3.8 on both Linux and Windows, as well as Python 3.7 on Windows only. Conda packages are available for Python 3.6, 3.7 and 3.8 both on Linux and Windows. For other Python versions please [build](#development) PyPRT yourself.
+We provide wheels for Python 3.6 and 3.8 on Linux, Windows and macOS. Additionally, we also provide wheels for Python 3.7 on Windows. Conda packages are available for Python 3.6, 3.7 and 3.8 on Linux, Windows and macOS. For other Python versions please [build](#development) PyPRT yourself.
 
 ## Minimal Example
 
@@ -73,9 +73,9 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
 * C++ Compiler (C++ 17)
   * Windows: MSVC 14.23 or later
   * Linux: GCC 8 or later (we build and test on RHEL7/CentOS7)
-  * macOS (Catalina or later): Xcode 11
+  * macOS (Catalina or later): Xcode 11 or later
 * Python (version >= 3.6)
-  * Packages: wheel, arcgis 1.8.2, twine, sphinx, pkginfo, xmlrunner
+  * Packages (latest version if not specified): wheel, arcgis 1.8.2, twine, sphinx, pkginfo, xmlrunner
 * Optional: Conda (e.g. miniconda3)
 * CMake (version >= 3.14)
 * Ninja (or jom)
@@ -153,7 +153,7 @@ Detailed steps to run tests for development (basically what the `build_and_run_t
 
 ### Build with Docker
 
-Note: On Windows, Docker needs to be switched to "Windows Containers".
+Note: We only support Docker on Linux and Windows. On Windows, Docker needs to be switched to "Windows Containers".
 
 #### Build Wheels
 
