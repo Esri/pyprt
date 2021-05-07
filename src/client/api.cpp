@@ -30,8 +30,8 @@
 
 #include "prt/API.h"
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl_bind.h>
+#include "pybind11/pybind11.h"
+#include "pybind11/stl_bind.h"
 
 #include <cstdio>
 #include <filesystem>
@@ -177,63 +177,6 @@ py::dict getRPKInfo(const std::filesystem::path& rulePackagePath) {
 	return ruleAttrs;
 }
 
-py::dict getRuleAttributesDeprecated(const prt::RuleFileInfo* ruleFileInfo) {
-	auto ruleAttrs = py::dict();
-
-	for (size_t i = 0; i < ruleFileInfo->getNumAttributes(); i++) {
-		bool hidden = false;
-		const prt::RuleFileInfo::Entry* attr = ruleFileInfo->getAttribute(i);
-
-		const std::wstring fullName(attr->getName());
-		if (fullName.find(L"Default$") != 0)
-			continue;
-		const std::wstring name = fullName.substr(8);
-		const prt::AnnotationArgumentType valueType = attr->getReturnType();
-
-		for (size_t f = 0; f < attr->getNumAnnotations(); f++) {
-			if (!(std::wcscmp(attr->getAnnotation(f)->getName(), ANNOT_HIDDEN))) {
-				hidden = true;
-				break;
-			}
-		}
-
-		if (!hidden) {
-			ruleAttrs[py::cast(name)] = getAnnotationArgumentTypeString(valueType);;
-		}
-	}
-
-	return ruleAttrs;
-}
-
-py::dict inspectRPKDeprecated(const std::filesystem::path& rulePackagePath) {
-	PyErr_WarnEx(PyExc_DeprecationWarning, "inspect_rpk(rule_package_path) is deprecated, use get_rpk_attributes_info(rule_package_path) instead.", 1);
-	ResolveMapPtr resolveMap;
-
-	if (!std::filesystem::exists(rulePackagePath) || !pcu::getResolveMap(rulePackagePath, &resolveMap)) {
-		LOG_ERR << "invalid rule package path";
-		return py::dict();
-	}
-
-	std::wstring ruleFile = pcu::getRuleFileEntry(resolveMap.get());
-
-	const wchar_t* ruleFileURI = resolveMap->getString(ruleFile.c_str());
-	if (ruleFileURI == nullptr) {
-		LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
-		return py::dict();
-	}
-
-	prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
-	RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, nullptr, &infoStatus));
-	if (!info || infoStatus != prt::STATUS_OK) {
-		LOG_ERR << "could not get rule file info from rule file " << ruleFile;
-		return py::dict();
-	}
-
-	py::dict ruleAttrs = getRuleAttributesDeprecated(info.get());
-
-	return ruleAttrs;
-}
-
 } // namespace
 
 PYBIND11_MODULE(pyprt, m) {
@@ -246,7 +189,6 @@ PYBIND11_MODULE(pyprt, m) {
 	m.def("initialize_prt", &initializePRT, doc::Init);
 	m.def("is_prt_initialized", &isPRTInitialized, doc::IsInit);
 	m.def("shutdown_prt", &shutdownPRT, doc::Shutdown);
-	m.def("inspect_rpk", &inspectRPKDeprecated, py::arg("rulePackagePath"), doc::InspectRPKDeprecated);
 	m.def("get_rpk_attributes_info", &getRPKInfo, py::arg("rulePackagePath"), doc::GetRPKInfo);
 	m.attr("NO_KEY") = NO_KEY;
 
@@ -265,8 +207,7 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def(py::init<const std::vector<InitialShape>&>(), py::arg("initialShapes"), doc::MgInit)
 	        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"),
 	             py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"),
-	             doc::MgGen)
-	        .def("generate_model", &ModelGenerator::generateAnotherModel, py::arg("shapeAttributes"));
+	             doc::MgGen);
 
 	py::class_<GeneratedModel>(m, "GeneratedModel", doc::Gm)
 	        .def("get_initial_shape_index", &GeneratedModel::getInitialShapeIndex, doc::GmGetInd)
@@ -276,7 +217,7 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def("get_report", &GeneratedModel::getReport, doc::GmGetR)
 	        .def("get_cga_prints", &GeneratedModel::getCGAPrints, doc::GmGetP)
 	        .def("get_cga_errors", &GeneratedModel::getCGAErrors, doc::GmGetE)
-			.def("get_attributes", &GeneratedModel::getAttributes, doc::GmGetAttr);
+	        .def("get_attributes", &GeneratedModel::getAttributes, doc::GmGetAttr);
 
 	py::class_<std::filesystem::path>(m, "Path").def(py::init<std::string>());
 	py::implicitly_convertible<std::string, std::filesystem::path>();

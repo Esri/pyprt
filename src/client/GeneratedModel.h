@@ -19,9 +19,10 @@
 
 #pragma once
 
+#include "GeneratedPayload.h"
 #include "types.h"
 
-#include <pybind11/pybind11.h>
+#include "pybind11/pybind11.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -29,46 +30,22 @@
 
 class GeneratedModel {
 public:
-	GeneratedModel(const size_t& initialShapeIdx, const Coordinates& vert, const Indices& indices, const Indices& face,
-	               const pybind11::dict& rep, const std::wstring& cgaPrints, const std::vector<std::wstring>& cgaErrors,
-				   const pybind11::dict& attrVal);
 	GeneratedModel() = default;
+	explicit GeneratedModel(const size_t& initialShapeIdx, GeneratedPayloadPtr payload);
 	~GeneratedModel() = default;
 
-	size_t getInitialShapeIndex() const {
-		return mInitialShapeIndex;
-	}
-	const Coordinates& getVertices() const {
-		return mVertices;
-	}
-	const Indices& getIndices() const {
-		return mIndices;
-	}
-	const Indices& getFaces() const {
-		return mFaces;
-	}
-	const pybind11::dict& getReport() const {
-		return mReport;
-	}
-	const std::wstring& getCGAPrints() const {
-		return mCGAPrints;
-	}
-	const std::vector<std::wstring>& getCGAErrors() const {
-		return mCGAErrors;
-	}
-	const pybind11::dict& getAttributes() const {
-		return mAttributes;
-	}
+	size_t getInitialShapeIndex() const;
+	const Coordinates& getVertices() const;
+	const Indices& getIndices() const;
+	const Indices& getFaces() const;
+	const pybind11::dict& getReport() const;
+	const std::wstring& getCGAPrints() const;
+	const std::vector<std::wstring>& getCGAErrors() const;
+	const pybind11::dict& getAttributes() const;
 
 private:
 	size_t mInitialShapeIndex;
-	Coordinates mVertices;
-	Indices mIndices;
-	Indices mFaces;
-	pybind11::dict mReport;
-	std::wstring mCGAPrints;
-	std::vector<std::wstring> mCGAErrors;
-	pybind11::dict mAttributes;
+	GeneratedPayloadPtr mPayload;
 };
 
 PYBIND11_MAKE_OPAQUE(std::vector<GeneratedModel>);

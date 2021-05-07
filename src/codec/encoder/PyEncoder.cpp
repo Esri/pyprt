@@ -82,7 +82,6 @@ void PyEncoder::init(prtx::GenerateContext& /*context*/) {
  * preparator. In case the shape generation fails, we collect the initial shape.
  */
 void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex) {
-
 	const prtx::InitialShape* is = context.getInitialShape(initialShapeIndex);
 	auto* cb = getPyCallbacks(getCallbacks());
 	if (cb == nullptr)
@@ -216,4 +215,8 @@ PyEncoderFactory* PyEncoderFactory::createInstance() {
 	eoa.option(EO_ERROR_FALLBACK).flagAsHidden();
 
 	return new PyEncoderFactory(encoderInfoBuilder.create());
+}
+
+PyEncoder* PyEncoderFactory::create(const prt::AttributeMap* defaultOptions, prt::Callbacks* callbacks) const {
+	return new PyEncoder(getID(), defaultOptions, callbacks);
 }

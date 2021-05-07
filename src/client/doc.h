@@ -202,7 +202,8 @@ constexpr const char* MgGen = R"mydelimiter(
 
 constexpr const char* Gm =
         "The GeneratedModel instance contains the generated 3D geometry. This class is only employed "
-        "if the *com.esri.pyprt.PyEncoder* encoder is used in the :py:class:`ModelGenerator <pyprt.pyprt.bin.pyprt.ModelGenerator>` instance.";
+        "if the *com.esri.pyprt.PyEncoder* encoder is used in the :py:class:`ModelGenerator "
+        "<pyprt.pyprt.bin.pyprt.ModelGenerator>` instance.";
 
 constexpr const char* GmGetInd = R"mydelimiter(
         get_initial_shape_index() -> int
