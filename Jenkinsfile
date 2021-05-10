@@ -51,6 +51,8 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map PY38_CONDA_CONFIG     = [ py: '3.8-conda' ]
 @Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC83, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC142, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
+
+@Field final String DOCKER_IMAGE_VERSION = "v1"
 @Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
 @Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
 
@@ -267,7 +269,7 @@ String getDockerEnvDir(Map cfg) {
 String getDockerImage(Map cfg) {
 	String image = 'zrh-dreg-sp-1.esri.com/pyprt/pyprt'
 
-	String tag = 'jnk-v1-'
+	String tag = "jnk-${DOCKER_IMAGE_VERSION}-"
 	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL7) ? 'centos7' : error(cfg.os)
 	tag += "-py${getPySuf(cfg)}-${cfg.tc}"
 
