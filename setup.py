@@ -31,31 +31,34 @@ except:
 
 pyprt_name = 'PyPRT'
 pyprt_author = 'Esri R&D Center Zurich'
-pyprt_copyright = '(c) 2020, ' + pyprt_author
-pyprt_version = '1.3.0.dev0'  # keep consistent with __version__ in pyprt/__init__.py
+pyprt_copyright = '(c) 2021, ' + pyprt_author
+pyprt_version = '1.3.0'  # keep consistent with __version__ in pyprt/__init__.py
 
 record_file = os.path.join(os.path.realpath(os.curdir), pyprt_name+'.egg-info', 'record_setup_develop_files.txt')
 
-long_description = """
-PyPRT is a Python binding for PRT ("Procedural Runtime"). It enables the execution of [CityEngine](http://www.esri.com/software/cityengine) 
-CGA rules within Python. Using PyPRT, the generation of 3D content in Python is greatly simplified. Therefore, Python developers, data 
-scientists, GIS analysts, etc. can efficiently make use of CityEngine rule packages in order to create 3D geometries stored as Python data 
-structures, or to export these geometries in another format (like OBJ, Scene Layer Package, ... ). Given an initial geometry, on which to 
-apply the CGA rule, the 3D generation is procedurally done in Python (Python script, Jupyter Notebook, ...). This allows for efficient and 
-customizable geometry generation. For instance, when modeling buildings, PyPRT users can easily change the parameters of the generated 
-buildings (like the height or the shape) by changing the values of the CGA rule input attributes.
+long_description = """PyPRT is a Python binding for PRT ("Procedural Runtime"). It enables the execution of
+[CityEngine](https://www.esri.com/software/cityengine) CGA rules within Python. Using PyPRT, the generation of 3D 
+content in Python is greatly simplified. Therefore, Python developers, data scientists, GIS analysts, 
+etc. can efficiently make use of CityEngine rule packages in order to create 3D geometries stored as Python data 
+structures, or to export these geometries in another format (like OBJ, Scene Layer Package, ... ). Given an initial 
+geometry, on which to apply the CGA rule, the 3D generation is procedurally done in Python (Python script, 
+Jupyter Notebook, ...). This allows for efficient and customizable geometry generation. For instance, when modeling 
+buildings, PyPRT users can easily change the parameters of the generated buildings (like the height or the shape) by 
+changing the values of the CGA rule input attributes. 
 
-PyPRT 3D content generation is based on CGA rule packages (RPK), which are authored in CityEngine. RPKs contain the CGA rule files that 
-define the shape transformations, as well as supplementary assets. RPK examples can be found below and directly used in PyPRT.
+PyPRT 3D content generation is based on CGA rule packages (RPK), which are authored in CityEngine. RPKs contain the 
+CGA rule files that define the shape transformations, as well as supplementary assets. RPK examples can be found 
+below and directly used in PyPRT. 
 
-PyPRT allows generating 3D models on multiple initial geometries. Different input attributes can be applied on each of these initial 
-shapes. Moreover, the outputted 3D geometries can either be used inside Python or exported to another format by using one of PRT encoders.
+PyPRT allows generating 3D models on multiple initial geometries. Different input attributes can be applied on each 
+of these initial shapes. Moreover, the outputted 3D geometries can either be used inside Python or exported to 
+another format by using one of PRT encoders. 
 
-*PyPRT is free for non-commercial use.* Commercial use requires at least one commercial license of the latest CityEngine version installed 
-in the organization. No redistribution is allowed. An exception is the PyPRT source code (without CityEngine SDK, binaries or object code), 
-which is licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the License. 
-You may obtain a copy of the License at [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0).
-"""
+*PyPRT is free for non-commercial use.* Commercial use requires at least one commercial license of the latest 
+CityEngine version installed in the organization. No redistribution is allowed. An exception is the PyPRT source code 
+(without CityEngine SDK, binaries or object code), which is licensed under the Apache License, Version 2.0 (the 
+"License"); you may not use this work except in compliance with the License. You may obtain a copy of the License at 
+[https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0). """
 
 
 class CMakeConfig:
@@ -241,7 +244,8 @@ setup(
               'build_doc': BuildDoc},
     distclass=distclass,
     conda_import_tests=False,
-    license="PyPRT is under the same license as the included CityEngine SDK. An exception is the PyPRT source code, which is licensed under the Apache License, Version 2.0.",
+    license="PyPRT is under the same license as the included CityEngine SDK. An exception is the PyPRT source code, "
+            "which is licensed under the Apache License, Version 2.0.",
     classifiers=['Development Status :: 5 - Production/Stable',
                  'License :: Free for non-commercial use',
                  'License :: OSI Approved :: Apache Software License',
