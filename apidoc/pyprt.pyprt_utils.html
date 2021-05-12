@@ -5,14 +5,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pyprt.pyprt_utils module &#8212; PyPRT 1.2.0 documentation</title>
+    <title>pyprt.pyprt_utils module &#8212; PyPRT 1.3.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="pyprt.pyprt_arcgis module" href="pyprt.pyprt_arcgis.html" /> 
@@ -29,7 +28,7 @@
         <li class="right" >
           <a href="pyprt.pyprt_arcgis.html" title="pyprt.pyprt_arcgis module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.2.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.3.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="pyprt.html" accesskey="U">pyprt package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt.pyprt_utils module</a></li> 
       </ul>
@@ -44,7 +43,7 @@
 <span id="pyprt-pyprt-utils-module"></span><h1>pyprt.pyprt_utils module<a class="headerlink" href="#module-pyprt.pyprt_utils.pyprt_utils" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="pyprt.pyprt_utils.pyprt_utils.faces_indices_vectors_to_matrix">
-<code class="sig-name descname">faces_indices_vectors_to_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indices</span></em>, <em class="sig-param"><span class="n">faces</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>List<span class="p">[</span>int<span class="p">]</span><span class="p">]</span><a class="reference internal" href="_modules/pyprt/pyprt_utils/pyprt_utils.html#faces_indices_vectors_to_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyprt.pyprt_utils.pyprt_utils.faces_indices_vectors_to_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">faces_indices_vectors_to_matrix</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faces</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/pyprt/pyprt_utils/pyprt_utils.html#faces_indices_vectors_to_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyprt.pyprt_utils.pyprt_utils.faces_indices_vectors_to_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>PyPRT outputs the GeneratedModel face information as a list of vertex indices
 and a list of face indices count. This function converts these two lists into
 one list of lists containing the vertex indices per face.</p>
@@ -67,7 +66,7 @@ one list of lists containing the vertex indices per face.</p>
 
 <dl class="py function">
 <dt id="pyprt.pyprt_utils.pyprt_utils.vertices_vector_to_matrix">
-<code class="sig-name descname">vertices_vector_to_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vertices</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="reference internal" href="_modules/pyprt/pyprt_utils/pyprt_utils.html#vertices_vector_to_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyprt.pyprt_utils.pyprt_utils.vertices_vector_to_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">vertices_vector_to_matrix</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertices</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/pyprt/pyprt_utils/pyprt_utils.html#vertices_vector_to_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyprt.pyprt_utils.pyprt_utils.vertices_vector_to_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>PyPRT outputs the GeneratedModel vertex coordinates as a list. The list
 contains the x, y, z coordinates of all the vertices. This function converts the
 vertex list into a list of N vertex coordinates lists (with N, the number
@@ -88,7 +87,7 @@ of geometry vertices).</p>
 
 <dl class="py function">
 <dt id="pyprt.pyprt_utils.pyprt_utils.visualize_prt_results">
-<code class="sig-name descname">visualize_prt_results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">models</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyprt/pyprt_utils/pyprt_utils.html#visualize_prt_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyprt.pyprt_utils.pyprt_utils.visualize_prt_results" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">visualize_prt_results</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">models</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyprt/pyprt_utils/pyprt_utils.html#visualize_prt_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyprt.pyprt_utils.pyprt_utils.visualize_prt_results" title="Permalink to this definition">¶</a></dt>
 <dd><p>This helper function is used to output the geometry and report information of a
 list of GeneratedModel instances.</p>
 <dl class="field-list simple">
@@ -143,14 +142,14 @@ list of GeneratedModel instances.</p>
         <li class="right" >
           <a href="pyprt.pyprt_arcgis.html" title="pyprt.pyprt_arcgis module"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.2.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.3.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="pyprt.html" >pyprt package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt.pyprt_utils module</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright (c) 2020, Esri R&amp;D Center Zurich.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+        &#169; Copyright (c) 2021, Esri R&amp;D Center Zurich.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.2.
     </div>
   </body>
 </html>
