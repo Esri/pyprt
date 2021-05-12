@@ -1,6 +1,6 @@
 # PyPRT ChangeLog
 
-## v1.3.0 (2021-05-XX)
+## v1.3.0 (2021-05-12)
 
 ### Added
 * New function `get_attributes` on `GeneratedModel`. Returns the CGA rule attributes used to generate the model
