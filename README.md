@@ -1,6 +1,6 @@
 # PyPRT - Python Bindings for CityEngine SDK
 
-PyPRT provides Python binding for PRT (Procedural RunTime) of CityEngine. This enables the execution of CityEngine CGA rules within Python. PyPRT allows to easily and efficiently generate 3D geometries, process them as Python data structures or export them to multiple 3D file formats.
+PyPRT provides a Python binding for PRT (Procedural RunTime) of CityEngine. This enables the execution of CityEngine CGA rules within Python. PyPRT allows to easily and efficiently generate 3D geometries, process them as Python data structures or export them to multiple 3D file formats.
 
 ![Procedural Generation of 3D Models](images/diagram.png)
 
