@@ -36,7 +36,7 @@ pyprt_version = '1.3.0'  # keep consistent with __version__ in pyprt/__init__.py
 
 record_file = os.path.join(os.path.realpath(os.curdir), pyprt_name+'.egg-info', 'record_setup_develop_files.txt')
 
-long_description = """PyPRT provides Python binding for PRT (Procedural RunTime) of CityEngine. This enables the execution of
+long_description = """PyPRT provides a Python binding for PRT (Procedural RunTime) of CityEngine. This enables the execution of
 [CityEngine](https://www.esri.com/software/cityengine) CGA rules within Python. Using PyPRT, the generation of 3D 
 content in Python is greatly simplified. Therefore, Python developers, data scientists, GIS analysts, 
 etc. can efficiently make use of CityEngine rule packages in order to create 3D geometries stored as Python data 
