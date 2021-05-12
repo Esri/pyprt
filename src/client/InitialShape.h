@@ -1,13 +1,13 @@
 /**
  * PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
  *
- * Copyright (c) 2012-2020 Esri R&D Center Zurich
+ * Copyright (c) 2012-2021 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,41 +27,22 @@
 
 class InitialShape {
 public:
-	InitialShape(const Coordinates& vert);
-	InitialShape(const Coordinates& vert, const Indices& ind, const Indices& faceCnt, const HoleIndices& holes);
-	InitialShape(const std::string& path);
+	explicit InitialShape(const Coordinates& vert);
+	explicit InitialShape(const Coordinates& vert, const Indices& ind, const Indices& faceCnt,
+	                      const HoleIndices& holes);
+	explicit InitialShape(const std::string& path);
 	~InitialShape() = default;
 
-	const double* getVertices() const {
-		return mVertices.data();
-	}
-	size_t getVertexCount() const {
-		return mVertices.size();
-	}
-	const uint32_t* getIndices() const {
-		return mIndices.data();
-	}
-	size_t getIndexCount() const {
-		return mIndices.size();
-	}
-	const uint32_t* getFaceCounts() const {
-		return mFaceCounts.data();
-	}
-	size_t getFaceCountsCount() const {
-		return mFaceCounts.size();
-	}
-	const uint32_t* getHoles() const {
-		return mHoles.data();
-	}
-	size_t getHolesCount() const {
-		return mHoles.size();
-	}
-	const std::string& getPath() const {
-		return mPath;
-	}
-	bool getPathFlag() const {
-		return mPathFlag;
-	}
+	const double* getVertices() const;
+	size_t getVertexCount() const;
+	const uint32_t* getIndices() const;
+	size_t getIndexCount() const;
+	const uint32_t* getFaceCounts() const;
+	size_t getFaceCountsCount() const;
+	const uint32_t* getHoles() const;
+	size_t getHolesCount() const;
+	const std::string& getPath() const;
+	bool getPathFlag() const;
 
 protected:
 	const Coordinates mVertices;

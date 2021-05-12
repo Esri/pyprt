@@ -1,13 +1,13 @@
 /**
  * PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
  *
- * Copyright (c) 2012-2020 Esri R&D Center Zurich
+ * Copyright (c) 2012-2021 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,3 +38,34 @@ InitialShape::InitialShape(const Coordinates& vert, const Indices& ind, const In
 }
 
 InitialShape::InitialShape(const std::string& initShapePath) : mPath(initShapePath), mPathFlag(true) {}
+
+const double* InitialShape::getVertices() const {
+	return mVertices.data();
+}
+size_t InitialShape::getVertexCount() const {
+	return mVertices.size();
+}
+const uint32_t* InitialShape::getIndices() const {
+	return mIndices.data();
+}
+size_t InitialShape::getIndexCount() const {
+	return mIndices.size();
+}
+const uint32_t* InitialShape::getFaceCounts() const {
+	return mFaceCounts.data();
+}
+size_t InitialShape::getFaceCountsCount() const {
+	return mFaceCounts.size();
+}
+const uint32_t* InitialShape::getHoles() const {
+	return mHoles.data();
+}
+size_t InitialShape::getHolesCount() const {
+	return mHoles.size();
+}
+const std::string& InitialShape::getPath() const {
+	return mPath;
+}
+bool InitialShape::getPathFlag() const {
+	return mPathFlag;
+}

@@ -7,7 +7,10 @@
 /prt
 /output
 /examples/output
+/**/__pycache__
+/test-reports/
 
+/.venv*/
 /**/Pipfile.lock
 
 # development mode

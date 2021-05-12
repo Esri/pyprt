@@ -1,13 +1,13 @@
 /**
  * PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
  *
- * Copyright (c) 2012-2020 Esri R&D Center Zurich
+ * Copyright (c) 2012-2021 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 #include "types.h"
 #include "utils.h"
 
-#include <pybind11/pybind11.h>
+#include "pybind11/pybind11.h"
 
 #include <filesystem>
 #include <vector>
@@ -38,7 +38,6 @@ public:
 	                                          const std::filesystem::path& rulePackagePath,
 	                                          const std::wstring& geometryEncoderName,
 	                                          const pybind11::dict& geometryEcoderOptions);
-	std::vector<GeneratedModel> generateAnotherModel(const std::vector<pybind11::dict>& shapeAttributes);
 
 private:
 	ResolveMapPtr mResolveMap;
@@ -51,6 +50,7 @@ private:
 
 	std::wstring mRuleFile;
 	std::wstring mStartRule;
+	std::unordered_set<std::wstring> mHiddenAttrs;
 	int32_t mSeed = 0;
 	std::wstring mShapeName = L"InitialShape";
 
@@ -62,5 +62,5 @@ private:
 	                              std::vector<AttributeMapPtr>& convertShapeAttr);
 	void initializeEncoderData(const std::wstring& encName, const pybind11::dict& encOpt);
 	prt::Status initializeRulePackageData(const std::filesystem::path& rulePackagePath, ResolveMapPtr& resolveMap,
-	                               CachePtr& cache);
+	                                      CachePtr& cache);
 };

@@ -1,13 +1,13 @@
 /**
  * PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
  *
- * Copyright (c) 2012-2020 Esri R&D Center Zurich
+ * Copyright (c) 2012-2021 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@
 
 #include "prt/StringUtils.h"
 
-#include <pybind11/pybind11.h>
+#include "pybind11/pybind11.h"
 
 #include <algorithm>
 #include <fstream>
@@ -59,6 +59,8 @@ void tokenize(const std::basic_string<C>& str, std::vector<std::basic_string<C>>
 namespace py = pybind11;
 
 namespace pcu {
+
+constexpr const wchar_t* CGA_STYLE_DEFAULT = L"Default$";
 
 bool getResolveMap(const std::filesystem::path& rulePackagePath, ResolveMapPtr* resolveMap) {
 	if (std::filesystem::exists(rulePackagePath)) {
@@ -115,6 +117,28 @@ std::wstring detectStartRule(const RuleFileInfoUPtr& ruleFileInfo) {
 		}
 	}
 	return {};
+}
+
+std::unordered_set<std::wstring> getHiddenAttributes(const RuleFileInfoUPtr& ruleFileInfo) {
+	std::unordered_set<std::wstring> hiddenVec;
+
+	for (size_t ai = 0, numAttrs = ruleFileInfo->getNumAttributes(); ai < numAttrs; ai++) {
+		const auto attr = ruleFileInfo->getAttribute(ai);
+		for (size_t k = 0, numAnns = attr->getNumAnnotations(); k < numAnns; k++) {
+			if (std::wcscmp(attr->getAnnotation(k)->getName(), L"@Hidden") == 0)
+				hiddenVec.insert(attr->getName());
+		}
+	}
+
+	return hiddenVec;
+}
+
+std::wstring removeDefaultStyleName(const wchar_t* key) {
+	const std::wstring keyName = key;
+	if (keyName.find(CGA_STYLE_DEFAULT) == 0)
+		return keyName.substr(wcslen(CGA_STYLE_DEFAULT));
+	else
+		return keyName;
 }
 
 /**

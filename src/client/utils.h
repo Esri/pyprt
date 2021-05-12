@@ -1,13 +1,13 @@
 /**
  * PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
  *
- * Copyright (c) 2012-2020 Esri R&D Center Zurich
+ * Copyright (c) 2012-2021 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,8 +24,8 @@
 #include "prt/API.h"
 #include "prt/LogHandler.h"
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include "pybind11/pybind11.h"
+#include "pybind11/stl.h"
 
 #include <cstdlib>
 #include <filesystem>
@@ -40,7 +40,8 @@ std::filesystem::path getModuleDirectory();
 bool getResolveMap(const std::filesystem::path& rulePackagePath, ResolveMapPtr* resolveMap);
 std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap);
 std::wstring detectStartRule(const RuleFileInfoUPtr& ruleFileInfo);
-std::wstring removeStylePrefix(const std::wstring& fullName);
+std::unordered_set<std::wstring> getHiddenAttributes(const RuleFileInfoUPtr& ruleFileInfo);
+std::wstring removeDefaultStyleName(const wchar_t* key);
 
 AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::AttributeMapBuilder& bld);
 AttributeMapPtr createValidatedOptions(const std::wstring& encID, const AttributeMapPtr& unvalidatedOptions);

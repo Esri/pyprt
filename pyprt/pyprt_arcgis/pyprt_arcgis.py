@@ -1,10 +1,10 @@
-# Copyright (c) 2012-2020 Esri R&D Center Zurich
+# Copyright (c) 2012-2021 Esri R&D Center Zurich
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 
-#   http://www.apache.org/licenses/LICENSE-2.0
+#   https://www.apache.org/licenses/LICENSE-2.0
 
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -84,7 +84,10 @@ def arcgis_to_pyprt(feature_set):
                 coord_list = geo.coordinates()
 
                 for face_idx, coord_part in enumerate(coord_list):
-                    in_geo = Geometry({"rings": [coord_part]})
+                    if isinstance(coord_part, np.ndarray):
+                        in_geo = Geometry({"rings": [coord_part.tolist()]})
+                    else:
+                        in_geo = Geometry({"rings": [coord_part]})
                     store_area = in_geo.area
                     coord_remove_last = coord_part[:-1]
                     coord_inverse = np.flip(coord_remove_last, axis=0)

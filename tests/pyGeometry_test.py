@@ -181,3 +181,40 @@ class GeometryTest(unittest.TestCase):
             'emitReport': True, 'emitGeometry': False})
 
         self.assertEqual(len(model[0].get_cga_errors()), 1)
+
+    def test_attributesvalue_fct(self):
+        rpk = asset_file('extrusion_rule.rpk')
+        attrs = {'maxBuildingHeight':35.0}
+        attrs2 = {}
+        shape_geo_from_obj = pyprt.InitialShape(
+            asset_file('building_parcel.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj, shape_geo_from_obj])
+        model = m.generate_model([attrs, attrs2], rpk, 'com.esri.pyprt.PyEncoder', {})
+        self.assertDictEqual(model[0].get_attributes(),
+                {'maxBuildingHeight': 35.0, 'OBJECTID': 0.0, 'minBuildingHeight': 10.0, 'buildingColor': '#FF00FF', 'text': 'salut'})
+        self.assertDictEqual(model[1].get_attributes(),
+                {'OBJECTID': 0.0, 'minBuildingHeight': 10.0, 'buildingColor': '#FF00FF', 'text': 'salut', 'maxBuildingHeight': 30.0})
+
+    def test_attributesvalue_fct_arrays(self):
+        rpk = asset_file('arrayAttrs.rpk')
+        attrs = {'arrayAttrFloat': [0.0, 1.0, 2.0]}
+        shape_geo_from_obj = pyprt.InitialShape(
+            asset_file('building_parcel.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
+        model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
+        self.assertDictEqual(model[0].get_attributes(),
+                {'arrayAttrFloat': [0.0, 1.0, 2.0], 'arrayAttrBool': [False], 'arrayAttrString': ['uhm']})
+
+    def test_attributesvalue_fct_arrays2d(self):
+        rpk = asset_file('arrayAttrs2d.rpk')
+        attrs = {}
+        shape_geo_from_obj = pyprt.InitialShape(asset_file('building_parcel.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
+        model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
+        self.assertDictEqual(model[0].get_attributes(),
+                             {'arrayAttrBool': [[False, True], [True, False]],
+                              'arrayAttrFloat': [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]],
+                              'arrayAttrString': [['first', 'row'],
+                                                  ['second', 'row'],
+                                                  ['third', 'row'],
+                                                  ['fourth', 'row']]})

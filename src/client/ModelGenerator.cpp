@@ -1,13 +1,13 @@
 /**
  * PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
  *
- * Copyright (c) 2012-2020 Esri R&D Center Zurich
+ * Copyright (c) 2012-2021 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,6 +29,7 @@ namespace {
 const std::wstring ENCODER_ID_CGA_REPORT = L"com.esri.prt.core.CGAReportEncoder";
 const std::wstring ENCODER_ID_CGA_PRINT = L"com.esri.prt.core.CGAPrintEncoder";
 const std::wstring ENCODER_ID_CGA_ERROR = L"com.esri.prt.core.CGAErrorEncoder";
+const std::wstring ENCODER_ID_ATTR_EVAL = L"com.esri.prt.core.AttributeEvalEncoder";
 const std::wstring ENCODER_ID_PYTHON = L"com.esri.pyprt.PyEncoder";
 
 constexpr const char* ENC_OPT_OUTPUT_PATH = "outputPath";
@@ -123,19 +124,22 @@ void ModelGenerator::initializeEncoderData(const std::wstring& encName, const py
 	mEncodersNames.push_back(ENCODER_ID_CGA_REPORT);
 	mEncodersNames.push_back(ENCODER_ID_CGA_PRINT);
 	mEncodersNames.push_back(ENCODER_ID_CGA_ERROR);
+	mEncodersNames.push_back(ENCODER_ID_ATTR_EVAL);
 
 	const AttributeMapBuilderPtr optionsBuilder{prt::AttributeMapBuilder::create()};
 	const AttributeMapPtr reportOptions{optionsBuilder->createAttributeMapAndReset()};
 	const AttributeMapPtr printOptions{optionsBuilder->createAttributeMapAndReset()};
 	const AttributeMapPtr errorOptions{optionsBuilder->createAttributeMapAndReset()};
+	const AttributeMapPtr attrOptions{optionsBuilder->createAttributeMapAndReset()};
 
 	mEncodersOptionsPtr.push_back(pcu::createValidatedOptions(ENCODER_ID_CGA_REPORT, reportOptions));
 	mEncodersOptionsPtr.push_back(pcu::createValidatedOptions(ENCODER_ID_CGA_PRINT, printOptions));
 	mEncodersOptionsPtr.push_back(pcu::createValidatedOptions(ENCODER_ID_CGA_ERROR, errorOptions));
+	mEncodersOptionsPtr.push_back(pcu::createValidatedOptions(ENCODER_ID_ATTR_EVAL, attrOptions));
 }
 
-prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::path& rulePackagePath, ResolveMapPtr& resolveMap,
-	CachePtr& cache) {
+prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::path& rulePackagePath,
+                                                      ResolveMapPtr& resolveMap, CachePtr& cache) {
 	if (!std::filesystem::exists(rulePackagePath)) {
 		LOG_ERR << "The rule package path is unvalid.";
 		return prt::STATUS_FILE_NOT_FOUND;
@@ -160,6 +164,7 @@ prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::pat
 	}
 
 	mStartRule = pcu::detectStartRule(info);
+	mHiddenAttrs = pcu::getHiddenAttributes(info);
 	return prt::STATUS_OK;
 }
 
@@ -183,9 +188,6 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 		        << std::endl;
 	}
 
-	std::vector<GeneratedModel> newGeneratedGeo;
-	newGeneratedGeo.reserve(mInitialShapesBuilders.size());
-
 	try {
 		if (!PRTContext::get()) {
 			LOG_ERR << "PRT has not been initialized.";
@@ -194,7 +196,7 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 
 		// Rule package
 		prt::Status rpkStat = initializeRulePackageData(rulePackagePath, mResolveMap, mCache);
-		
+
 		if (rpkStat != prt::STATUS_OK)
 			return {};
 
@@ -217,7 +219,7 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 
 		if (geometryEncoderName == ENCODER_ID_PYTHON) {
 
-			PyCallbacksPtr foc{std::make_unique<PyCallbacks>(mInitialShapesBuilders.size())};
+			PyCallbacksPtr foc{std::make_unique<PyCallbacks>(mInitialShapesBuilders.size(), mHiddenAttrs)};
 
 			// Generate
 			const prt::Status genStat =
@@ -230,10 +232,12 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 				return {};
 			}
 
+			std::vector<GeneratedModel> newGeneratedGeo;
+			newGeneratedGeo.reserve(mInitialShapesBuilders.size());
 			for (size_t idx = 0; idx < mInitialShapesBuilders.size(); idx++) {
-				newGeneratedGeo.emplace_back(idx, foc->getVertices(idx), foc->getIndices(idx), foc->getFaces(idx),
-				                             foc->getReport(idx), foc->getCGAPrints(idx), foc->getCGAErrors(idx));
+				newGeneratedGeo.emplace_back(idx, foc->getGeneratedPayload(idx));
 			}
+			return newGeneratedGeo;
 		}
 		else {
 			const std::filesystem::path outputPath = [&geometryEncoderOptions]() {
@@ -276,21 +280,10 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 	}
 	catch (const std::exception& e) {
 		LOG_ERR << "caught exception: " << e.what();
-		return {};
 	}
 	catch (...) {
 		LOG_ERR << "caught unknown exception.";
-		return {};
 	}
 
-	return newGeneratedGeo;
-}
-
-std::vector<GeneratedModel> ModelGenerator::generateAnotherModel(const std::vector<py::dict>& shapeAttributes) {
-	const char* message = "generate_model(shape_attributes) has been removed, use "
-	                      "generate_model(shape_attributes, rule_package_path, "
-	                      "geometry_encoder, encoder_options) instead.";
-	PyErr_WarnEx(PyExc_DeprecationWarning, message, 1);
-    LOG_ERR << message;
-    return {};
+	return {};
 }
