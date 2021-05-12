@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2020 Esri R&D Center Zurich
+# Copyright (c) 2012-2021 Esri R&D Center Zurich
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ pyprt_version = '1.3.0'  # keep consistent with __version__ in pyprt/__init__.py
 
 record_file = os.path.join(os.path.realpath(os.curdir), pyprt_name+'.egg-info', 'record_setup_develop_files.txt')
 
-long_description = """PyPRT is a Python binding for PRT ("Procedural Runtime"). It enables the execution of
+long_description = """PyPRT provides a Python binding for PRT (Procedural RunTime) of CityEngine. This enables the execution of
 [CityEngine](https://www.esri.com/software/cityengine) CGA rules within Python. Using PyPRT, the generation of 3D 
 content in Python is greatly simplified. Therefore, Python developers, data scientists, GIS analysts, 
 etc. can efficiently make use of CityEngine rule packages in order to create 3D geometries stored as Python data 
@@ -231,7 +231,7 @@ setup(
     description='Python bindings for the "Procedural Runtime" (PRT) of CityEngine by Esri.',
     long_description_content_type="text/markdown",
     long_description=long_description,
-    url='https://esri.github.io/pyprt/',
+    url='https://esri.github.io/cityengine/pyprt',
     download_url='https://github.com/Esri/pyprt/releases',
     project_urls={"Documentation": "https://github.com/Esri/pyprt/blob/master/README.md#documentation",
                   "Examples": "https://github.com/Esri/pyprt-examples",
