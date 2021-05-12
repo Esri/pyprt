@@ -103,7 +103,7 @@ _Note: on Windows, replace `bin` with `Scripts` in the following commands. Some 
 
 1. Install Miniconda or Anaconda.
 1. Open a shell in the PyPRT git root and activate Miniconda (or Anaconda).
-1. First time only: run `conda env create --prefix ./env --file environment.yml` to create a conda environment with all the required Python packages.
+1. First time only: run `conda env create --prefix ./env --file envs/centos7/py36-conda/environment.yml` to create a conda environment with all the required Python packages (adapt `centos7/py36-conda` to your desired OS/Python combination).
 1. Run `activate ./env`.
 1. Run `python setup.py bdist_conda`. This will build the CMake project and Python packages.
 1. The resulting package is written to the `./env/conda-bld/{platform}` folder.
