@@ -10,7 +10,7 @@ PyPRT provides a Python binding for PRT (Procedural RunTime) of CityEngine. This
 * [Minimal Example](#minimal-example)
 * [Documentation](#documentation)
 * [Development](#development)
-* [License](#license)
+* [License](#licensing-information)
 
 ## Installation
 
@@ -177,10 +177,14 @@ Note: We only support Docker on Linux and Windows. On Windows, Docker needs to b
     * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py36-conda cmd /c "python setup.py bdist_conda && copy C:\temp\conda\envs\pyprt\conda-bld\win-64\pyprt-*.tar.bz2 C:\temp\pyprt\root"`
 1. The resulting conda package will be located in the current directy (PyPRT git repo root).
 
-## License
+## Licensing Information
 
-PyPRT is under the same license as the included [CityEngine SDK](https://github.com/Esri/cityengine-sdk#licensing).
+PyPRT is free for personal, educational, and non-commercial use. Commercial use requires at least one commercial license of the latest CityEngine version installed in the organization. Redistribution or web service offerings are not allowed unless expressly permitted.
 
-An exception is the PyPRT source code (without CityEngine SDK, binaries, or object code), which is licensed under the Apache License, Version 2.0 (the “License”); you may not use this work except in compliance with the License. You may obtain a copy of the License at <http://www.apache.org/licenses/LICENSE-2.0>.
+PyPRT is under the same license as the included [CityEngine SDK](https://github.com/esri/cityengine-sdk#licensing). An exception is the PyPRT source code (without CityEngine SDK, binaries, or object code), which is licensed under the Apache License, Version 2.0 (the “License”); you may not use this work except in compliance with the License. You may obtain a copy of the License at https://www.apache.org/licenses/LICENSE-2.0
+
+All content in the "Examples" directory/section is licensed under the APACHE 2.0 license as well.
+
+For questions or enquiries, please contact the Esri CityEngine team (cityengine-info@esri.com).
 
 [Back to top](#table-of-contents)
