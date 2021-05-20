@@ -10,7 +10,7 @@ PyPRT provides a Python binding for PRT (Procedural RunTime) of CityEngine. This
 * [Minimal Example](#minimal-example)
 * [Documentation](#documentation)
 * [Development](#development)
-* [License](#licensing-information)
+* [Licensing Information](#licensing-information)
 
 ## Installation
 
