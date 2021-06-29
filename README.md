@@ -72,7 +72,7 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
 
 * C++ Compiler (C++ 17)
   * Windows: MSVC 14.27 or later
-  * Linux: GCC 8 or later (we build and test on RHEL7/CentOS7)
+  * Linux: GCC 9.3 or later (we build and test on RHEL7/CentOS7)
   * macOS (Catalina or later): Xcode 11 or later
 * Python (version >= 3.6)
   * Packages (latest version if not specified): wheel, arcgis 1.8.2, twine, sphinx, pkginfo, xmlrunner
