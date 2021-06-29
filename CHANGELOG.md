@@ -1,5 +1,11 @@
 # PyPRT ChangeLog
 
+## v1.4.0 (2021-07-XX)
+
+### Changed
+* Internal update to PRT 2.4
+* Updated compiler requirements on Windows (MSVC 14.27)
+
 ## v1.3.0 (2021-05-12)
 
 ### Added
