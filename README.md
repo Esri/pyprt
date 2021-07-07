@@ -16,7 +16,7 @@ PyPRT provides a Python binding for PRT (Procedural RunTime) of CityEngine. This
 
 Run `pip install pyprt` in your (virtual) Python environment or `conda install -c esri pyprt` in a Conda environment. Then use `import pyprt` in your scripts.
 
-We provide wheels for Python 3.6 and 3.8 on Linux, Windows and macOS. Additionally, we also provide wheels for Python 3.7 on Windows. Conda packages are available for Python 3.6, 3.7 and 3.8 on Linux, Windows and macOS. For other Python versions please [build](#development) PyPRT yourself.
+We provide wheels for Python 3.6 and 3.8 on Linux and Windows. Additionally, we also provide wheels for Python 3.7 on Windows. Conda packages are available for Python 3.6, 3.7 and 3.8 on Linux and Windows. For other Python versions please [build](#development) PyPRT yourself.
 
 ## Minimal Example
 
@@ -73,7 +73,6 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
 * C++ Compiler (C++ 17)
   * Windows: MSVC 14.23 or later
   * Linux: GCC 8 or later (we build and test on RHEL7/CentOS7)
-  * macOS (Catalina or later): Xcode 11 or later
 * Python (version >= 3.6)
   * Packages (latest version if not specified): wheel, arcgis 1.8.2, twine, sphinx, pkginfo, xmlrunner
 * Optional: Conda (e.g. miniconda3)
@@ -84,7 +83,6 @@ A note regarding the meaning of "open a shell" in the following sections: this i
 
 * On Windows, use the shortcuts provided by Visual Studio or run `vcvarsall.bat` of the desired MSVC toolchain.
 * On RHEL-based Linux, run e.g. `source /opt/rh/devtoolset-8/enable`.
-* On macOS, there is usually no action required (the current Xcode command line tools are activated by default).
 
 _Note: on Windows, replace `bin` with `Scripts` in the following commands. Some commands also differ in their file extension between Linux and Windows (`.sh` vs `.bat` and similar). Please refer to the `venv` documentation for details: <https://docs.python.org/3.6/library/venv.html>_
 

@@ -1,5 +1,10 @@
 # PyPRT ChangeLog
 
+## v1.4.0 (2021-07-XX)
+
+### Removed
+* Removed MacOS support as PRT 2.4 and later is not available anymore on that platform
+
 ## v1.3.0 (2021-05-12)
 
 ### Added
