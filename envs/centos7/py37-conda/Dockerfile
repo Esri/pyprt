@@ -1,7 +1,7 @@
 FROM centos:7
 
 RUN yum install -y centos-release-scl-rh epel-release \
-	&& yum install -y git cmake3 ninja-build devtoolset-8-toolchain \
+	&& yum install -y git cmake3 ninja-build devtoolset-9-toolchain \
 	&& yum install -y curl bzip2
 
 # make cmake3 the default cmake
@@ -35,5 +35,5 @@ COPY envs/centos7/py37-conda/environment.yml ./environment.yml
 RUN ./conda/bin/conda env create --prefix ./pyprt-conda-env --file ./environment.yml
 
 # also see https://github.com/sclorg/devtoolset-container
-RUN echo "unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable devtoolset-8 && source /tmp/pyprt/conda/bin/activate /tmp/pyprt/pyprt-conda-env" >> /tmp/env_enable
+RUN echo "unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable devtoolset-9 && source /tmp/pyprt/conda/bin/activate /tmp/pyprt/pyprt-conda-env" >> /tmp/env_enable
 ENV BASH_ENV=/tmp/env_enable ENV=/tmp/env_enable PROMPT_COMMAND="source /tmp/env_enable"

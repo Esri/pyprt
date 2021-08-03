@@ -267,7 +267,7 @@ String getDockerEnvDir(Map cfg) {
 String getDockerImage(Map cfg) {
 	String image = 'zrh-dreg-sp-1.esri.com/pyprt/pyprt'
 
-	String tag = 'jnk-v1-'
+	String tag = 'jnk-v3-'
 	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL7) ? 'centos7' : error(cfg.os)
 	tag += "-py${getPySuf(cfg)}-${cfg.tc}"
 

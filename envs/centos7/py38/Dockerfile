@@ -2,7 +2,7 @@ FROM centos:7
 
 RUN yum install -y centos-release-scl-rh epel-release
 
-RUN yum install -y git cmake3 ninja-build devtoolset-8-toolchain \
+RUN yum install -y git cmake3 ninja-build devtoolset-9-toolchain \
 rh-python38-python rh-python38-python-devel rh-python38-python-pip
 
 RUN alternatives --install /usr/local/bin/cmake cmake /usr/bin/cmake3 20 \
@@ -21,7 +21,7 @@ RUN useradd --uid $USER_ID --gid $GROUP_ID user
 USER user
 
 # also see https://github.com/sclorg/devtoolset-container
-RUN echo "unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable devtoolset-8" >> /tmp/scl_enable
+RUN echo "unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable devtoolset-9" >> /tmp/scl_enable
 ENV BASH_ENV=/tmp/scl_enable ENV=/tmp/scl_enable PROMPT_COMMAND=". /tmp/scl_enable"
 
 WORKDIR /tmp/pyprt/docker
