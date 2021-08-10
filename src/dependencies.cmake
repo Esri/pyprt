@@ -25,8 +25,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	set(PYPRT_WINDOWS 1)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	set(PYPRT_LINUX 1)
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-	set(PYPRT_MACOS 1)
 endif()
 
 
@@ -40,9 +38,6 @@ if(NOT prt_DIR)
 	elseif(PYPRT_LINUX)
 		set(PRT_OS "rhel7")
 		set(PRT_TC "gcc93")
-	elseif(PYPRT_MACOS)
-		set(PRT_OS "osx12")
-		set(PRT_TC "ac81")
 	endif()
 
 	set(PRT_VERSION "2.4.7316")
