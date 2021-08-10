@@ -4,7 +4,7 @@
 
 ### Changed
 * Internal update to PRT 2.4
-* Updated compiler requirements on Windows (MSVC 14.27)
+* Updated compiler requirements on Windows (MSVC 14.27) and Linux (GCC 9.3)
 
 ### Removed
 * Removed MacOS support as PRT 2.4 and later is not available anymore on that platform
