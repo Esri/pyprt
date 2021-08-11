@@ -168,7 +168,7 @@ Note: We only support Docker on Linux and Windows. On Windows, Docker needs to b
 
 1. Open a shell in the PyPRT git root
 1. Create the desired image for the build toolchain (adapt `py36` to your desired Python version):
-    * Linux: `docker build --rm -f envs/centos7/py36-conda/Dockerfile -t pyprt:centos7-py36-conda .`
+    * Linux: `docker build --rm -f envs/centos7/py36-conda/Dockerfile -t pyprt:centos7-py36-conda --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
     * Windows: `docker build --rm -f envs\windows\py36-conda\Dockerfile -t pyprt:windows-py36-conda .`
 1. Run the build
     * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:centos7-py36-conda bash -c 'python setup.py bdist_conda && cp -r /tmp/pyprt/pyprt-conda-env/conda-bld/linux-64/pyprt*.tar.bz2 /tmp/pyprt/root'`
