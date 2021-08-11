@@ -173,7 +173,7 @@ Note: We only support Docker on Linux and Windows. On Windows, Docker needs to b
 1. Run the build
     * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:centos7-py36-conda bash -c 'python setup.py bdist_conda && cp -r /tmp/pyprt/pyprt-conda-env/conda-bld/linux-64/pyprt*.tar.bz2 /tmp/pyprt/root'`
     * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py36-conda cmd /c "python setup.py bdist_conda && copy C:\temp\conda\envs\pyprt\conda-bld\win-64\pyprt-*.tar.bz2 C:\temp\pyprt\root"`
-1. The resulting conda package will be located in the current directy (PyPRT git repo root).
+1. The resulting conda package will be located in the current directly (PyPRT git repo root).
 
 ## Licensing Information
 
