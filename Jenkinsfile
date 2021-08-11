@@ -46,9 +46,11 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map PY36_CONFIG           = [ py: '3.6' ]
 @Field final Map PY37_CONFIG           = [ py: '3.7' ]
 @Field final Map PY38_CONFIG           = [ py: '3.8' ]
+@Field final Map PY39_CONFIG           = [ py: '3.9' ]
 @Field final Map PY36_CONDA_CONFIG     = [ py: '3.6-conda' ]
 @Field final Map PY37_CONDA_CONFIG     = [ py: '3.7-conda' ]
 @Field final Map PY38_CONDA_CONFIG     = [ py: '3.8-conda' ]
+@Field final Map PY39_CONDA_CONFIG     = [ py: '3.9-conda' ]
 @Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC93, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC1427, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
@@ -72,6 +74,10 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 	PY38_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
 ]
 
+@Field final List CONFIGS_TESTS_PY39 = [
+	PY39_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
+]
+
 @Field final List CONFIGS_BUILD_WHEELS_PY36 = [
 	PY36_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
 	PY36_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
@@ -84,6 +90,10 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final List CONFIGS_BUILD_WHEELS_PY38 = [
 	PY38_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
 	PY38_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+]
+
+@Field final List CONFIGS_BUILD_WHEELS_PY39 = [
+	PY39_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
 ]
 
 @Field final List CONFIGS_BUILD_CONDA_PY36 = [
@@ -99,6 +109,10 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final List CONFIGS_BUILD_CONDA_PY38 = [
 	PY38_CONDA_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
 	PY38_CONDA_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+]
+
+@Field final List CONFIGS_BUILD_CONDA_PY39 = [
+	PY39_CONDA_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
 ]
 
 @Field final List CONFIGS_DOC = [
@@ -136,6 +150,7 @@ Map taskGenTests() {
  	tasks << cepl.generateTasks('pyprt-tests-py36', this.&taskRunTests, CONFIGS_TESTS_PY36)
  	tasks << cepl.generateTasks('pyprt-tests-py37', this.&taskRunTests, CONFIGS_TESTS_PY37)
  	tasks << cepl.generateTasks('pyprt-tests-py38', this.&taskRunTests, CONFIGS_TESTS_PY38)
+ 	tasks << cepl.generateTasks('pyprt-tests-py39', this.&taskRunTests, CONFIGS_TESTS_PY39)
 	return tasks
 }
 
@@ -144,9 +159,11 @@ Map taskGenPyPRT() {
   	tasks << cepl.generateTasks('pyprt-wheel-py36', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY36)
   	tasks << cepl.generateTasks('pyprt-wheel-py37', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY37)
   	tasks << cepl.generateTasks('pyprt-wheel-py38', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY38)
+  	tasks << cepl.generateTasks('pyprt-wheel-py39', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY39)
 	tasks << cepl.generateTasks('pyprt-conda-py36', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY36)
  	tasks << cepl.generateTasks('pyprt-conda-py37', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY37)
  	tasks << cepl.generateTasks('pyprt-conda-py38', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY38)
+ 	tasks << cepl.generateTasks('pyprt-conda-py39', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY39)
   	tasks << cepl.generateTasks('pyprt-doc', this.&taskBuildDoc, CONFIGS_DOC)
 	return tasks;
 }
