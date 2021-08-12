@@ -37,6 +37,8 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final String SOURCE_STASH = 'pyprt-sources'
 @Field String pkgVer = "0.0.0"
 
+@Field final String DOCKER_IMAGE_REV = "v3"
+
 @Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
 @Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
 
@@ -287,7 +289,7 @@ String getDockerEnvDir(Map cfg) {
 String getDockerImage(Map cfg) {
 	String image = 'zrh-dreg-sp-1.esri.com/pyprt/pyprt'
 
-	String tag = 'jnk-v3-'
+	String tag = "jnk-${DOCKER_IMAGE_REV}-"
 	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL7) ? 'centos7' : error(cfg.os)
 	tag += "-py${getPySuf(cfg)}-${cfg.tc}"
 
