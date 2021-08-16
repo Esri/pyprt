@@ -16,7 +16,9 @@ PyPRT provides a Python binding for PRT (Procedural RunTime) of CityEngine. This
 
 Run `pip install pyprt` in your (virtual) Python environment or `conda install -c esri pyprt` in a Conda environment. Then use `import pyprt` in your scripts.
 
-We provide wheels for Python 3.6 and 3.8 on Linux and Windows. Additionally, we also provide wheels for Python 3.7 on Windows. Conda packages are available for Python 3.6, 3.7 and 3.8 on Linux and Windows. For other Python versions please [build](#development) PyPRT yourself.
+We provide wheels for Python 3.6, 3.8 and 3.9 on Linux and Windows. Additionally, we also provide wheels for Python 3.7 on Windows. Conda packages are available for Python 3.6, 3.7, 3.8 and 3.9(*) on Linux and Windows. For other Python versions please [build](#development) PyPRT yourself.
+
+(*) A note regarding Python 3.9 and Conda: The arcgis package for Python 3.9 is not yet available in Conda, therefore the arcgis submodule in PyPRT is not yet working with Python 3.9.
 
 ## Minimal Example
 
@@ -168,12 +170,12 @@ Note: We only support Docker on Linux and Windows. On Windows, Docker needs to b
 
 1. Open a shell in the PyPRT git root
 1. Create the desired image for the build toolchain (adapt `py36` to your desired Python version):
-    * Linux: `docker build --rm -f envs/centos7/py36-conda/Dockerfile -t pyprt:centos7-py36-conda .`
+    * Linux: `docker build --rm -f envs/centos7/py36-conda/Dockerfile -t pyprt:centos7-py36-conda --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
     * Windows: `docker build --rm -f envs\windows\py36-conda\Dockerfile -t pyprt:windows-py36-conda .`
 1. Run the build
     * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:centos7-py36-conda bash -c 'python setup.py bdist_conda && cp -r /tmp/pyprt/pyprt-conda-env/conda-bld/linux-64/pyprt*.tar.bz2 /tmp/pyprt/root'`
     * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py36-conda cmd /c "python setup.py bdist_conda && copy C:\temp\conda\envs\pyprt\conda-bld\win-64\pyprt-*.tar.bz2 C:\temp\pyprt\root"`
-1. The resulting conda package will be located in the current directy (PyPRT git repo root).
+1. The resulting conda package will be located in the current directly (PyPRT git repo root).
 
 ## Licensing Information
 
