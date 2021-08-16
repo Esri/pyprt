@@ -18,7 +18,7 @@ Run `pip install pyprt` in your (virtual) Python environment or `conda install -
 
 We provide wheels for Python 3.6, 3.8 and 3.9 on Linux and Windows. Additionally, we also provide wheels for Python 3.7 on Windows. Conda packages are available for Python 3.6, 3.7, 3.8 and 3.9(*) on Linux and Windows. For other Python versions please [build](#development) PyPRT yourself.
 
-(*) A note regarding Python 3.9 and Conda: The arcgis package for Python 3.9 is not yet available in Conda, the arcgis submodule in PyPRT is not working yet.
+(*) A note regarding Python 3.9 and Conda: The arcgis package for Python 3.9 is not yet available in Conda, therefore the arcgis submodule in PyPRT is not yet working with Python 3.9.
 
 ## Minimal Example
 
