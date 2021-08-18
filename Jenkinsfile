@@ -57,69 +57,42 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
 
 @Field final List CONFIGS_PREPARE = [
-	PY36 + KIND_WHEEL + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
+    composeConfig(PY36, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 ]
 
-@Field final List CONFIGS_TESTS_PY36 = [
-	PY36 + KIND_WHEEL + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
- 	PY36 + KIND_WHEEL + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+@Field final List CONFIGS_TEST = [
+    composeConfig(PY36, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY36, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY37, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
-@Field final List CONFIGS_TESTS_PY37 = [
- 	PY37 + KIND_WHEEL + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+@Field final List CONFIGS_BUILD_WHEEL = [
+    composeConfig(PY36, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY36, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY37, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
-@Field final List CONFIGS_TESTS_PY38 = [
-	PY38 + KIND_WHEEL + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY38 + KIND_WHEEL + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_TESTS_PY39 = [
-	PY39 + KIND_WHEEL + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY39 + KIND_WHEEL + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_BUILD_WHEELS_PY36 = [
-	PY36 + KIND_WHEEL + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY36 + KIND_WHEEL + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_BUILD_WHEELS_PY37 = [
-	PY37 + KIND_WHEEL + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_BUILD_WHEELS_PY38 = [
-	PY38 + KIND_WHEEL + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY38 + KIND_WHEEL + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_BUILD_WHEELS_PY39 = [
-	PY39 + KIND_WHEEL + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY39 + KIND_WHEEL + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_BUILD_CONDA_PY36 = [
-	PY36 + KIND_CONDA + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY36 + KIND_CONDA + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_BUILD_CONDA_PY37 = [
-	PY37 + KIND_CONDA + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY37 + KIND_CONDA + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_BUILD_CONDA_PY38 = [
-	PY38 + KIND_CONDA + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY38 + KIND_CONDA + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_BUILD_CONDA_PY39 = [
-	PY39 + KIND_CONDA + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY39 + KIND_CONDA + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+@Field final List CONFIGS_BUILD_CONDA = [
+    composeConfig(PY36, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY36, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY37, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY37, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY38, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY38, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY39, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY39, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_DOC = [
-	PY36 + KIND_WHEEL + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
+    composeConfig(PY36, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 ]
 
 
@@ -144,30 +117,21 @@ papl.finalizeRun('pyprt', env.BRANCH_NAME)
 
 Map taskGenPrepare() {
 	Map tasks = [:]
-	tasks << cepl.generateTasks('pyprt-prepare', this.&taskPrepare, CONFIGS_PREPARE)
+	tasks << cepl.generateTasks('prepare', this.&taskPrepare, CONFIGS_PREPARE)
 	return tasks
 }
 
 Map taskGenTests() {
 	Map tasks = [:]
- 	tasks << cepl.generateTasks('pyprt-tests-py36', this.&taskRunTests, CONFIGS_TESTS_PY36)
- 	tasks << cepl.generateTasks('pyprt-tests-py37', this.&taskRunTests, CONFIGS_TESTS_PY37)
- 	tasks << cepl.generateTasks('pyprt-tests-py38', this.&taskRunTests, CONFIGS_TESTS_PY38)
- 	tasks << cepl.generateTasks('pyprt-tests-py39', this.&taskRunTests, CONFIGS_TESTS_PY39)
+ 	tasks << cepl.generateTasks('test', this.&taskRunTests, CONFIGS_TEST)
 	return tasks
 }
 
 Map taskGenPyPRT() {
 	Map tasks = [:]
-  	tasks << cepl.generateTasks('pyprt-wheel-py36', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY36)
-  	tasks << cepl.generateTasks('pyprt-wheel-py37', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY37)
-  	tasks << cepl.generateTasks('pyprt-wheel-py38', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY38)
-  	tasks << cepl.generateTasks('pyprt-wheel-py39', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY39)
-	tasks << cepl.generateTasks('pyprt-conda-py36', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY36)
- 	tasks << cepl.generateTasks('pyprt-conda-py37', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY37)
- 	tasks << cepl.generateTasks('pyprt-conda-py38', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY38)
- 	tasks << cepl.generateTasks('pyprt-conda-py39', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY39)
-  	tasks << cepl.generateTasks('pyprt-doc', this.&taskBuildDoc, CONFIGS_DOC)
+  	tasks << cepl.generateTasks('build', this.&taskBuildWheel, CONFIGS_BUILD_WHEEL)
+	tasks << cepl.generateTasks('build', this.&taskBuildConda, CONFIGS_BUILD_CONDA)
+  	tasks << cepl.generateTasks('doc', this.&taskBuildDoc, CONFIGS_DOC)
 	return tasks;
 }
 
@@ -269,6 +233,11 @@ def taskRunTests(cfg) {
 
 
 // -- HELPERS
+
+@NonCPS
+Map composeConfig(py, kind, tc, dc) {
+	return py + kind + tc + dc + [ grp: "py${py['py']}-${kind['kind']}" ]
+}
 
 String getDockerImage(Map cfg) {
 	String image = 'zrh-dreg-sp-1.esri.com/pyprt/pyprt'
