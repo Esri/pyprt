@@ -45,10 +45,10 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
 @Field final String DOCKER_WS_WINDOWS = "c:/temp/pyprt/ws"
 
-@Field final Map PY36_CONFIG           = [ py: '3.6' ]
-@Field final Map PY37_CONFIG           = [ py: '3.7' ]
-@Field final Map PY38_CONFIG           = [ py: '3.8' ]
-@Field final Map PY39_CONFIG           = [ py: '3.9' ]
+@Field final Map PY36_CONFIG           = [ py: '3.6-wheel' ]
+@Field final Map PY37_CONFIG           = [ py: '3.7-wheel' ]
+@Field final Map PY38_CONFIG           = [ py: '3.8-wheel' ]
+@Field final Map PY39_CONFIG           = [ py: '3.9-wheel' ]
 @Field final Map PY36_CONDA_CONFIG     = [ py: '3.6-conda' ]
 @Field final Map PY37_CONDA_CONFIG     = [ py: '3.7-conda' ]
 @Field final Map PY38_CONDA_CONFIG     = [ py: '3.8-conda' ]
@@ -291,7 +291,7 @@ String getDockerImage(Map cfg) {
 
 	String tag = "jnk-${DOCKER_IMAGE_REV}-"
 	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL7) ? 'centos7' : error(cfg.os)
-	tag += "-py${getPySuf(cfg)}-${cfg.tc}"
+	tag += "-py${cfg.py}-${cfg.tc}"
 
 	return "${image}:${tag}"
 }
