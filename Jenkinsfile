@@ -272,20 +272,6 @@ def taskRunTests(cfg) {
 
 // -- HELPERS
 
-String getPySuf(cfg) {
-	return cfg.py.replace(".", "")
-}
-
-String getDockerEnvDir(Map cfg) {
-	String envDir = "envs/"
-	switch (cfg.os) {
-		case cepl.CFG_OS_WIN10: envDir += 'windows'; break;
-		case cepl.CFG_OS_RHEL7: envDir += 'centos7'; break;
-		default: error("No docker env available for ${cfg.os}")
-	}
-	return "${envDir}/py${getPySuf(cfg)}"
-}
-
 String getDockerImage(Map cfg) {
 	String image = 'zrh-dreg-sp-1.esri.com/pyprt/pyprt'
 
