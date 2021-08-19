@@ -1,0 +1,193 @@
+#!/usr/bin/env groovy
+
+// This pipeline is designed to run on Esri-internal CI infrastructure.
+
+
+// -- PIPELINE LIBRARIES
+
+@Library('psl')
+import com.esri.zrh.jenkins.PipelineSupportLibrary
+import com.esri.zrh.jenkins.JenkinsTools
+import com.esri.zrh.jenkins.ce.CityEnginePipelineLibrary
+import com.esri.zrh.jenkins.ce.PrtAppPipelineLibrary
+import com.esri.zrh.jenkins.PslFactory
+import com.esri.zrh.jenkins.psl.UploadTrackingPsl
+import groovy.transform.Field
+
+@Field def psl = PslFactory.create(this, UploadTrackingPsl.ID)
+@Field def cepl = new CityEnginePipelineLibrary(this, psl)
+@Field def papl = new PrtAppPipelineLibrary(cepl)
+
+
+// -- SETUP
+
+properties([
+	disableConcurrentBuilds()
+])
+
+psl.runsHere('production')
+
+
+// -- GLOBAL DEFINITIONS
+
+@Field final String DOCKER_REGISTRY  = 'zrh-dreg-sp-1.esri.com'
+@Field final String DOCKER_PROJECT   = "${DOCKER_REGISTRY}/pyprt/"
+@Field final String DOCKER_IMAGE_REV = 'v4' // target revision of the generated images
+
+@Field final String REPO   = 'git@github.com:esri/pyprt.git'
+@Field final String SOURCE = 'pyprt.git'
+@Field final String CREDS = 'jenkins-devtopia-pyprt-deployer-key'
+@Field final String SOURCE_STASH = 'pyprt-sources'
+
+@Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
+@Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
+
+@Field final Map PY36 = [ py: '3.6' ]
+@Field final Map PY37 = [ py: '3.7' ]
+@Field final Map PY38 = [ py: '3.8' ]
+@Field final Map PY39 = [ py: '3.9' ]
+
+@Field final Map BASE = [ kind: 'base' ]
+@Field final Map WHEEL = [ kind: 'wheel' ]
+@Field final Map CONDA = [ kind: 'conda' ]
+
+@Field final String OS_CENTOS7 = 'centos7'
+@Field final String OS_WINDOWS = 'windows'
+
+@Field final Map LINUX_TOOLCHAIN   = [ ba: DOCKER_AGENT_LINUX,   os: OS_CENTOS7, tc: cepl.CFG_TC_GCC93 ]
+@Field final Map WINDOWS_TOOLCHAIN = [ ba: DOCKER_AGENT_WINDOWS, os: OS_WINDOWS, tc: cepl.CFG_TC_VC1427 ]
+
+@Field final List CONFIGS_PREPARE    = [
+	LINUX_TOOLCHAIN,
+]
+@Field final List CONFIGS_BASE_IMAGES = [
+	composeConfig(null, BASE, LINUX_TOOLCHAIN),
+	composeConfig(null, BASE, WINDOWS_TOOLCHAIN),
+	composeConfig(PY36, BASE, WINDOWS_TOOLCHAIN),
+	composeConfig(PY37, BASE, WINDOWS_TOOLCHAIN),
+	composeConfig(PY38, BASE, WINDOWS_TOOLCHAIN),
+	composeConfig(PY39, BASE, WINDOWS_TOOLCHAIN),
+]
+@Field final List CONFIGS_IMAGES = [
+	composeConfig(PY36, WHEEL, LINUX_TOOLCHAIN),
+	composeConfig(PY36, WHEEL, WINDOWS_TOOLCHAIN),
+	composeConfig(PY36, CONDA, LINUX_TOOLCHAIN),
+	composeConfig(PY36, CONDA, WINDOWS_TOOLCHAIN),
+	composeConfig(PY37, WHEEL, WINDOWS_TOOLCHAIN),
+	composeConfig(PY37, CONDA, LINUX_TOOLCHAIN),
+	composeConfig(PY37, CONDA, WINDOWS_TOOLCHAIN),
+	composeConfig(PY38, WHEEL, LINUX_TOOLCHAIN),
+	composeConfig(PY38, WHEEL, WINDOWS_TOOLCHAIN),
+	composeConfig(PY38, CONDA, LINUX_TOOLCHAIN),
+	composeConfig(PY38, CONDA, WINDOWS_TOOLCHAIN),
+	composeConfig(PY39, WHEEL, LINUX_TOOLCHAIN),
+	composeConfig(PY39, WHEEL, WINDOWS_TOOLCHAIN),
+	composeConfig(PY39, CONDA, LINUX_TOOLCHAIN),
+	composeConfig(PY39, CONDA, WINDOWS_TOOLCHAIN),
+]
+
+
+// -- PIPELINE
+
+stage('prepare') {
+	cepl.runParallel(taskGenPrepare())
+}
+
+stage('build-base-images') {
+	cepl.runParallel(taskGenBuildDockerBaseImage())
+}
+
+stage('build-images') {
+	cepl.runParallel(taskGenBuildDockerImage())
+}
+
+
+// -- TASK GENERATORS
+
+Map taskGenPrepare() {
+	Map tasks = [:]
+	tasks << cepl.generateTasks('prepare', this.&taskPrepare, CONFIGS_PREPARE)
+	return tasks
+}
+
+Map taskGenBuildDockerBaseImage() {
+	Map tasks = [:]
+  	tasks << cepl.generateTasks('image', this.&taskBuildDockerImage, CONFIGS_BASE_IMAGES)
+	return tasks;
+}
+
+Map taskGenBuildDockerImage() {
+	Map tasks = [:]
+  	tasks << cepl.generateTasks('image', this.&taskBuildDockerImage, CONFIGS_IMAGES)
+	return tasks;
+}
+
+
+// -- TASK BUILDERS
+
+def taskPrepare(cfg) {
+ 	cepl.cleanCurrentDir()
+	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
+	stash(name: SOURCE_STASH)
+}
+
+def taskBuildDockerImage(cfg) {
+	cepl.cleanCurrentDir()
+	unstash(name: SOURCE_STASH)
+
+	final String dockerFile = getDockerFile(cfg)
+	final String image = getDockerImage(cfg)
+	final String tag = getDockerTag(cfg)
+	final String dockerArgs = getDockerArgs(cfg)
+
+	dir(path: SOURCE) {
+		docker.withRegistry("https://${DOCKER_REGISTRY}", 'jenkins-pyprt-dreg-robot') {
+			def dockerImage = docker.build(image, "-m 4GB --rm -f ${dockerFile} ${dockerArgs} .")
+			dockerImage.push(tag)
+		}
+	}
+}
+
+
+// -- HELPERS
+
+@NonCPS
+Map composeConfig(py, kind, tc) {
+	if (py != null)
+		return py + kind + tc + [ grp: "py${py['py']}-${kind['kind']}" ]
+	else
+		return kind + tc + [ grp: "${kind['kind']}" ]
+}
+
+String getDockerFile(cfg) {
+	String path = "envs/${cfg.os}/${cfg.kind}/Dockerfile"
+	if (cfg.py == PY39.py && cfg.os == OS_CENTOS7 && cfg.kind == WHEEL.kind)
+		path += '-py3.9' // workaround: no Python 3.9 packages available for CentOS7
+	else if (cfg.py != null && cfg.kind == BASE.kind)
+		path += '-py' // base images from pre-built python images
+	return path
+}
+
+String getDockerImage(cfg) {
+	return DOCKER_PROJECT + ((cfg.kind == BASE.kind) ? 'pyprt-base' : 'pyprt')
+}
+
+String getDockerTag(cfg) {
+	String tag = "jnk-${DOCKER_IMAGE_REV}-${cfg.os}"
+	if (cfg.kind != BASE.kind)
+		tag += "-py${cfg.py}-${cfg.kind}-${cfg.tc}"
+	else if (cfg.py != null)
+		tag += "-py${cfg.py}"
+	return tag
+}
+
+String getDockerArgs(cfg) {
+	String args = ''
+	if (cfg.kind != BASE.kind)
+		args += " --build-arg REGISTRY=${DOCKER_PROJECT}"
+	if (cfg.py != null)
+		args += " --build-arg PY_VER=${cfg.py}"
+	if (cfg.os == OS_CENTOS7)
+		args += ' --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+	return args
+}
