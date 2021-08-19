@@ -159,22 +159,22 @@ Note: We only support Docker on Linux and Windows. On Windows, Docker needs to b
 
 1. Open a shell in the PyPRT git root
 1. Create the desired image for the build toolchain (adapt to your desired Python version):
-   * Linux: `docker build --rm -f envs/centos7/wheel/Dockerfile -t pyprt:centos7-py36 --build-arg PY_VER=3.6 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
-   * Windows: `docker build --rm -f envs\windows\wheel\Dockerfile -t pyprt:windows-py36 --build-arg PY_VER=3.6 .`
+   * Linux: `docker build --rm -f envs/centos7/wheel/Dockerfile -t pyprt:centos7-py3.6 --build-arg PY_VER=3.6 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
+   * Windows: `docker build --rm -f envs\windows\wheel\Dockerfile -t pyprt:windows-py3.6 --build-arg PY_VER=3.6 .`
 1. Run the build
-   * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:centos7-py36 bash -c 'python setup.py bdist_wheel'`
-   * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py36 cmd /c "python setup.py bdist_wheel"`
+   * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:centos7-py3.6 bash -c 'python setup.py bdist_wheel'`
+   * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py3.6 cmd /c "python setup.py bdist_wheel"`
 1. The resulting wheel should appear in the `dist` directory.
 
 #### Build Conda Packages
 
 1. Open a shell in the PyPRT git root
 1. Create the desired image for the build toolchain (adapt `py3.6` to your desired Python version):
-    * Linux: `docker build --rm -f envs/centos7/conda/Dockerfile -t pyprt:centos7-py36-conda --build-arg PY_VER=3.6 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
-    * Windows: `docker build --rm -f envs\windows\conda\Dockerfile -t pyprt:windows-py36-conda --build-arg PY_VER=3.6 .`
+    * Linux: `docker build --rm -f envs/centos7/conda/Dockerfile -t pyprt:centos7-py3.6-conda --build-arg PY_VER=3.6 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
+    * Windows: `docker build --rm -f envs\windows\conda\Dockerfile -t pyprt:windows-py3.6-conda --build-arg PY_VER=3.6 .`
 1. Run the build
-    * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:centos7-py36-conda bash -c 'python setup.py bdist_conda && cp -r /tmp/pyprt/pyprt-conda-env/conda-bld/linux-64/pyprt*.tar.bz2 /tmp/pyprt/root'`
-    * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py36-conda cmd /c "python setup.py bdist_conda && copy C:\temp\conda\envs\pyprt\conda-bld\win-64\pyprt-*.tar.bz2 C:\temp\pyprt\root"`
+    * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:centos7-py3.6-conda bash -c 'python setup.py bdist_conda && cp -r /tmp/pyprt/pyprt-conda-env/conda-bld/linux-64/pyprt*.tar.bz2 /tmp/pyprt/root'`
+    * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py3.6-conda cmd /c "python setup.py bdist_conda && copy C:\temp\conda\envs\pyprt\conda-bld\win-64\pyprt-*.tar.bz2 C:\temp\pyprt\root"`
 1. The resulting conda package will be located in the current directly (PyPRT git repo root).
 
 ## Licensing Information
