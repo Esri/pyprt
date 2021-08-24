@@ -3,8 +3,8 @@ channels:
   - anaconda
   - esri
 dependencies:
-  - python=3.8
+  - python=3.9
   - sphinx
   - conda-build
   - conda-verify
-  - arcgis=1.8.2
+  #- arcgis=1.8.2

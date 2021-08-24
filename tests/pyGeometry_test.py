@@ -38,7 +38,7 @@ class GeometryTest(unittest.TestCase):
         m = pyprt.ModelGenerator([shape_geo_from_obj])
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
                                  'emitReport': False, 'emitGeometry': True})
-        self.assertEqual(len(model[0].get_vertices()), 97050*3)
+        self.assertEqual(len(model[0].get_vertices()), 97044*3)
 
     def test_facesnber_candler(self):
         rpk = asset_file('candler.rpk')

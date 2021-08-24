@@ -58,23 +58,6 @@ elseif(PYPRT_LINUX)
 			INSTALL_RPATH_USE_LINK_PATH FALSE
 			SKIP_RPATH FALSE
 			BUILD_WITH_INSTALL_RPATH TRUE)
-
-	# GCC 8 needs explicit linking of C++17 std::filesystem lib
-	target_link_libraries(${CLIENT_TARGET} PRIVATE stdc++fs)
-
-elseif(PYPRT_MACOS)
-	target_compile_options(${CLIENT_TARGET} PRIVATE
-			-stdlib=libc++
-			-fvisibility=hidden -fvisibility-inlines-hidden
-			-Wall -Wextra -Wunused-parameter
-			-mmacosx-version-min=10.15) # required by C++17
-
-	set_target_properties(${CLIENT_TARGET} PROPERTIES
-			INSTALL_RPATH "@loader_path"
-			INSTALL_RPATH_USE_LINK_PATH FALSE
-			SKIP_RPATH FALSE
-			BUILD_WITH_INSTALL_RPATH TRUE)
-
 endif()
 
 target_link_libraries(${CLIENT_TARGET} PRIVATE

@@ -47,11 +47,6 @@ elseif(PYPRT_LINUX)
 			-Wl,--exclude-libs,ALL
 			-Wall -Wextra -Wunused-parameter)
 
-elseif(PYPRT_MACOS)
-	target_compile_options(${CODEC_TARGET} PRIVATE
-			-stdlib=libc++
-			-fvisibility=hidden -fvisibility-inlines-hidden
-			-Wall -Wextra -Wunused-parameter)
 endif()
 
 

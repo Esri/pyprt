@@ -37,72 +37,62 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final String SOURCE_STASH = 'pyprt-sources'
 @Field String pkgVer = "0.0.0"
 
+@Field final String DOCKER_IMAGE_REV = "v4"
+
 @Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
 @Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
 
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
 @Field final String DOCKER_WS_WINDOWS = "c:/temp/pyprt/ws"
 
-@Field final Map PY36_CONFIG           = [ py: '3.6' ]
-@Field final Map PY37_CONFIG           = [ py: '3.7' ]
-@Field final Map PY38_CONFIG           = [ py: '3.8' ]
-@Field final Map PY36_CONDA_CONFIG     = [ py: '3.6-conda' ]
-@Field final Map PY37_CONDA_CONFIG     = [ py: '3.7-conda' ]
-@Field final Map PY38_CONDA_CONFIG     = [ py: '3.8-conda' ]
-@Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC83, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
-@Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC142, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
+@Field final Map PY36                  = [ py: '3.6' ]
+@Field final Map PY37                  = [ py: '3.7' ]
+@Field final Map PY38                  = [ py: '3.8' ]
+@Field final Map PY39                  = [ py: '3.9' ]
+@Field final Map KIND_WHEEL            = [ kind: 'wheel' ]
+@Field final Map KIND_CONDA            = [ kind: 'conda' ]
+@Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC93, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
+@Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC1427, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
 @Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
 
 @Field final List CONFIGS_PREPARE = [
-	PY36_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
+    composeConfig(PY36, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 ]
 
-@Field final List CONFIGS_TESTS_PY36 = [
-	PY36_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
- 	PY36_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+@Field final List CONFIGS_TEST = [
+    composeConfig(PY36, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY36, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY37, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
-@Field final List CONFIGS_TESTS_PY37 = [
- 	PY37_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+@Field final List CONFIGS_BUILD_WHEEL = [
+    composeConfig(PY36, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY36, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY37, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
-@Field final List CONFIGS_TESTS_PY38 = [
-	PY38_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY38_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_BUILD_WHEELS_PY36 = [
-	PY36_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY36_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_BUILD_WHEELS_PY37 = [
-	PY37_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_BUILD_WHEELS_PY38 = [
-	PY38_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY38_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_BUILD_CONDA_PY36 = [
-	PY36_CONDA_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY36_CONDA_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_BUILD_CONDA_PY37 = [
-	PY37_CONDA_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY37_CONDA_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
-]
-
-@Field final List CONFIGS_BUILD_CONDA_PY38 = [
-	PY38_CONDA_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
-	PY38_CONDA_CONFIG + WINDOWS_DOCKER_CONFIG + WINDOWS_NATIVE_CONFIG,
+@Field final List CONFIGS_BUILD_CONDA = [
+    composeConfig(PY36, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY36, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY37, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY37, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY38, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY38, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY39, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY39, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_DOC = [
-	PY36_CONFIG + LINUX_DOCKER_CONFIG + LINUX_NATIVE_CONFIG,
+    composeConfig(PY36, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 ]
 
 
@@ -127,27 +117,21 @@ papl.finalizeRun('pyprt', env.BRANCH_NAME)
 
 Map taskGenPrepare() {
 	Map tasks = [:]
-	tasks << cepl.generateTasks('pyprt-prepare', this.&taskPrepare, CONFIGS_PREPARE)
+	tasks << cepl.generateTasks('prepare', this.&taskPrepare, CONFIGS_PREPARE)
 	return tasks
 }
 
 Map taskGenTests() {
 	Map tasks = [:]
- 	tasks << cepl.generateTasks('pyprt-tests-py36', this.&taskRunTests, CONFIGS_TESTS_PY36)
- 	tasks << cepl.generateTasks('pyprt-tests-py37', this.&taskRunTests, CONFIGS_TESTS_PY37)
- 	tasks << cepl.generateTasks('pyprt-tests-py38', this.&taskRunTests, CONFIGS_TESTS_PY38)
+ 	tasks << cepl.generateTasks('test', this.&taskRunTests, CONFIGS_TEST)
 	return tasks
 }
 
 Map taskGenPyPRT() {
 	Map tasks = [:]
-  	tasks << cepl.generateTasks('pyprt-wheel-py36', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY36)
-  	tasks << cepl.generateTasks('pyprt-wheel-py37', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY37)
-  	tasks << cepl.generateTasks('pyprt-wheel-py38', this.&taskBuildWheel, CONFIGS_BUILD_WHEELS_PY38)
-	tasks << cepl.generateTasks('pyprt-conda-py36', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY36)
- 	tasks << cepl.generateTasks('pyprt-conda-py37', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY37)
- 	tasks << cepl.generateTasks('pyprt-conda-py38', this.&taskBuildConda, CONFIGS_BUILD_CONDA_PY38)
-  	tasks << cepl.generateTasks('pyprt-doc', this.&taskBuildDoc, CONFIGS_DOC)
+  	tasks << cepl.generateTasks('build', this.&taskBuildWheel, CONFIGS_BUILD_WHEEL)
+	tasks << cepl.generateTasks('build', this.&taskBuildConda, CONFIGS_BUILD_CONDA)
+  	tasks << cepl.generateTasks('doc', this.&taskBuildDoc, CONFIGS_DOC)
 	return tasks;
 }
 
@@ -250,26 +234,17 @@ def taskRunTests(cfg) {
 
 // -- HELPERS
 
-String getPySuf(cfg) {
-	return cfg.py.replace(".", "")
-}
-
-String getDockerEnvDir(Map cfg) {
-	String envDir = "envs/"
-	switch (cfg.os) {
-		case cepl.CFG_OS_WIN10: envDir += 'windows'; break;
-		case cepl.CFG_OS_RHEL7: envDir += 'centos7'; break;
-		default: error("No docker env available for ${cfg.os}")
-	}
-	return "${envDir}/py${getPySuf(cfg)}"
+@NonCPS
+Map composeConfig(py, kind, tc, dc) {
+	return py + kind + tc + dc + [ grp: "py${py['py']}-${kind['kind']}" ]
 }
 
 String getDockerImage(Map cfg) {
 	String image = 'zrh-dreg-sp-1.esri.com/pyprt/pyprt'
 
-	String tag = 'jnk-v1-'
+	String tag = "jnk-${DOCKER_IMAGE_REV}-"
 	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL7) ? 'centos7' : error(cfg.os)
-	tag += "-py${getPySuf(cfg)}-${cfg.tc}"
+	tag += "-py${cfg.py}-${cfg.kind}-${cfg.tc}"
 
 	return "${image}:${tag}"
 }
