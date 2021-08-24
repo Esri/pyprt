@@ -58,10 +58,6 @@ elseif(PYPRT_LINUX)
 			INSTALL_RPATH_USE_LINK_PATH FALSE
 			SKIP_RPATH FALSE
 			BUILD_WITH_INSTALL_RPATH TRUE)
-
-	# GCC 8 needs explicit linking of C++17 std::filesystem lib
-	target_link_libraries(${CLIENT_TARGET} PRIVATE stdc++fs)
-
 endif()
 
 target_link_libraries(${CLIENT_TARGET} PRIVATE
