@@ -2,9 +2,13 @@
 
 ## v1.4.0 (2021-08-XX)
 
+### Added
+* Added pre-built wheels and conda packages for Python 3.9
+
 ### Changed
 * Internal update to PRT 2.4
 * Updated compiler requirements on Windows (MSVC 14.27) and Linux (GCC 9.3)
+* Updated urllib3, pywin32 and pillow versions in the environment requirements-py3.*.txt files based on dependabot security analysis
 
 ### Removed
 * Removed MacOS support as PRT 2.4 and later is not available anymore on that platform
