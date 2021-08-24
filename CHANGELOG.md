@@ -1,6 +1,6 @@
 # PyPRT ChangeLog
 
-## v1.4.0 (2021-08-XX)
+## v1.4.0 (2021-08-24)
 
 * Compatible CityEngine versions to create RPKs with: 2021.0 or earlier
 
