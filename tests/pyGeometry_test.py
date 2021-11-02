@@ -50,6 +50,16 @@ class GeometryTest(unittest.TestCase):
                                  'emitReport': False, 'emitGeometry': True})
         self.assertEqual(len(model[0].get_faces()), 47202)
 
+    def test_facesnber_triangulation(self):
+        rpk = asset_file('extrusion_rule.rpk')
+        attrs = {}
+        shape_geo_from_obj = pyprt.InitialShape(
+            asset_file('candler_footprint.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
+        model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
+                                 'emitReport': False, 'emitGeometry': True, 'triangulate': True})
+        self.assertEqual(len(model[0].get_faces()), 28)
+
     def test_report_green(self):
         rpk = asset_file('envelope2002.rpk')
         attrs = {'report_but_not_display_green': True, 'seed': 666}

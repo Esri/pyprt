@@ -114,7 +114,6 @@ void PyEncoder::processReports(prtx::GenerateContext& context, size_t initialSha
 	}
 }
 
-
 /*
  * Manage the geometries collection.
  */
