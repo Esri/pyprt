@@ -68,6 +68,90 @@ const std::wstring PyEncoder::NAME = L"Python Geometry and Report Encoder";
 const std::wstring PyEncoder::DESCRIPTION = L"Encodes geometry and CGA report for Python.";
 
 /**
+ * Manage the reports collection.
+ */
+void PyEncoder::processReports(prtx::GenerateContext& context, size_t initialShapeIndex, IPyCallbacks* cb) {
+	prtx::ReportsAccumulatorPtr reportsAccumulator{prtx::SummarizingReportsAccumulator::create()};
+	prtx::ReportingStrategyPtr reportsCollector{
+	        prtx::AllShapesReportingStrategy::create(context, initialShapeIndex, reportsAccumulator)};
+
+	prtx::ReportsPtr rep = reportsCollector->getReports();
+
+	if (rep) {
+		const prtx::Shape::ReportBoolVect& boolReps = rep->mBools;
+		const size_t boolRepCount = boolReps.size();
+		std::vector<const wchar_t*> boolRepKeys(boolRepCount);
+		std::unique_ptr<bool[]> boolRepValues(new bool[boolRepCount]);
+
+		for (size_t i = 0; i < boolRepCount; i++) {
+			boolRepKeys[i] = boolReps[i].first->c_str();
+			boolRepValues[i] = boolReps[i].second;
+		}
+
+		const prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
+		const size_t floatRepCount = floatReps.size();
+		std::vector<const wchar_t*> floatRepKeys(floatRepCount);
+		std::vector<double> floatRepValues(floatRepCount);
+
+		for (size_t i = 0; i < floatRepCount; i++) {
+			floatRepKeys[i] = floatReps[i].first->c_str();
+			floatRepValues[i] = floatReps[i].second;
+		}
+
+		const prtx::Shape::ReportStringVect& stringReps = rep->mStrings;
+		const size_t stringRepCount = stringReps.size();
+		std::vector<const wchar_t*> stringRepKeys(stringRepCount);
+		std::vector<const wchar_t*> stringRepValues(stringRepCount);
+
+		for (size_t i = 0; i < stringRepCount; i++) {
+			stringRepKeys[i] = stringReps[i].first->c_str();
+			stringRepValues[i] = stringReps[i].second->c_str();
+		}
+
+		cb->addReports(initialShapeIndex, stringRepKeys.data(), stringRepValues.data(), stringRepCount,
+		               floatRepKeys.data(), floatRepValues.data(), floatRepCount, boolRepKeys.data(),
+		               boolRepValues.get(), boolRepCount);
+	}
+}
+
+
+/*
+ * Manage the geometries collection.
+ */
+void PyEncoder::processGeometries(std::vector<prtx::EncodePreparator::FinalizedInstance>& instances, IPyCallbacks* cb) {
+	uint32_t vertexIndexBase = 0;
+
+	std::vector<double> vertexCoords;
+	std::vector<uint32_t> faceIndices;
+	std::vector<uint32_t> faceCounts;
+
+	for (const auto& instance : instances) {
+		const prtx::MeshPtrVector& meshes = instance.getGeometry()->getMeshes();
+
+		vertexCoords.clear();
+		faceIndices.clear();
+		faceCounts.clear();
+
+		for (const auto& mesh : meshes) {
+			const prtx::DoubleVector& verts = mesh->getVertexCoords();
+			vertexCoords.insert(vertexCoords.end(), verts.begin(), verts.end());
+
+			for (uint32_t fi = 0; fi < mesh->getFaceCount(); ++fi) {
+				const uint32_t* vtxIdx = mesh->getFaceVertexIndices(fi);
+				const uint32_t vtxCnt = mesh->getFaceVertexCount(fi);
+				faceCounts.push_back(vtxCnt);
+				for (uint32_t vi = 0; vi < vtxCnt; vi++)
+					faceIndices.push_back(vtxIdx[vi] + vertexIndexBase);
+			}
+			vertexIndexBase += (uint32_t)verts.size() / 3;
+		}
+
+		cb->addGeometry(instance.getInitialShapeIndex(), vertexCoords.data(), vertexCoords.size(), faceIndices.data(),
+		                faceIndices.size(), faceCounts.data(), faceCounts.size());
+	}
+}
+
+/**
  * Setup two namespaces for mesh and material objects and initialize the encode
  * preprator. The namespaces are used to create unique names for all mesh and
  * material objects.
@@ -88,53 +172,11 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
 	if (cb == nullptr)
 		throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
 
-	if (getOptions()->getBool(EO_TRIANGULATE)) {
+	if (getOptions()->getBool(EO_TRIANGULATE))
 		ENC_PREP_FLAGS.triangulate(true);
-	}
 
-	if (getOptions()->getBool(EO_EMIT_REPORT)) {
-		prtx::ReportsAccumulatorPtr reportsAccumulator{prtx::SummarizingReportsAccumulator::create()};
-		prtx::ReportingStrategyPtr reportsCollector{
-		        prtx::AllShapesReportingStrategy::create(context, initialShapeIndex, reportsAccumulator)};
-
-		prtx::ReportsPtr rep = reportsCollector->getReports();
-
-		if (rep) {
-			const prtx::Shape::ReportBoolVect& boolReps = rep->mBools;
-			const size_t boolRepCount = boolReps.size();
-			std::vector<const wchar_t*> boolRepKeys(boolRepCount);
-			std::unique_ptr<bool[]> boolRepValues(new bool[boolRepCount]);
-
-			for (size_t i = 0; i < boolRepCount; i++) {
-				boolRepKeys[i] = boolReps[i].first->c_str();
-				boolRepValues[i] = boolReps[i].second;
-			}
-
-			const prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
-			const size_t floatRepCount = floatReps.size();
-			std::vector<const wchar_t*> floatRepKeys(floatRepCount);
-			std::vector<double> floatRepValues(floatRepCount);
-
-			for (size_t i = 0; i < floatRepCount; i++) {
-				floatRepKeys[i] = floatReps[i].first->c_str();
-				floatRepValues[i] = floatReps[i].second;
-			}
-
-			const prtx::Shape::ReportStringVect& stringReps = rep->mStrings;
-			const size_t stringRepCount = stringReps.size();
-			std::vector<const wchar_t*> stringRepKeys(stringRepCount);
-			std::vector<const wchar_t*> stringRepValues(stringRepCount);
-
-			for (size_t i = 0; i < stringRepCount; i++) {
-				stringRepKeys[i] = stringReps[i].first->c_str();
-				stringRepValues[i] = stringReps[i].second->c_str();
-			}
-
-			cb->addReports(initialShapeIndex, stringRepKeys.data(), stringRepValues.data(), stringRepCount,
-			               floatRepKeys.data(), floatRepValues.data(), floatRepCount, boolRepKeys.data(),
-			               boolRepValues.get(), boolRepCount);
-		}
-	}
+	if (getOptions()->getBool(EO_EMIT_REPORT))
+		processReports(context, initialShapeIndex, cb);
 
 	if (getOptions()->getBool(EO_EMIT_GEOMETRY)) {
 		try {
@@ -149,36 +191,7 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
 
 		std::vector<prtx::EncodePreparator::FinalizedInstance> finalizedInstances;
 		mEncodePreparator->fetchFinalizedInstances(finalizedInstances, ENC_PREP_FLAGS);
-		uint32_t vertexIndexBase = 0;
-
-		std::vector<double> vertexCoords;
-		std::vector<uint32_t> faceIndices;
-		std::vector<uint32_t> faceCounts;
-
-		for (const auto& instance : finalizedInstances) {
-			const prtx::MeshPtrVector& meshes = instance.getGeometry()->getMeshes();
-
-			vertexCoords.clear();
-			faceIndices.clear();
-			faceCounts.clear();
-
-			for (const auto& mesh : meshes) {
-				const prtx::DoubleVector& verts = mesh->getVertexCoords();
-				vertexCoords.insert(vertexCoords.end(), verts.begin(), verts.end());
-
-				for (uint32_t fi = 0; fi < mesh->getFaceCount(); ++fi) {
-					const uint32_t* vtxIdx = mesh->getFaceVertexIndices(fi);
-					const uint32_t vtxCnt = mesh->getFaceVertexCount(fi);
-					faceCounts.push_back(vtxCnt);
-					for (uint32_t vi = 0; vi < vtxCnt; vi++)
-						faceIndices.push_back(vtxIdx[vi] + vertexIndexBase);
-				}
-				vertexIndexBase += (uint32_t)verts.size() / 3;
-			}
-
-			cb->addGeometry(instance.getInitialShapeIndex(), vertexCoords.data(), vertexCoords.size(),
-			                faceIndices.data(), faceIndices.size(), faceCounts.data(), faceCounts.size());
-		}
+		processGeometries(finalizedInstances, cb);
 	}
 }
 
