@@ -156,23 +156,19 @@ void PyEncoder::init(prtx::GenerateContext& /*context*/) {
  * preparator. In case the shape generation fails, we collect the initial shape.
  */
 void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex) {
-	prtx::EncodePreparator::PreparationFlags enc_prep_flags =
+	const prtx::EncodePreparator::PreparationFlags enc_prep_flags =
 	        prtx::EncodePreparator::PreparationFlags()
 	                .instancing(false)
-	                .triangulate(false)
+	                .triangulate(getOptions()->getBool(EO_TRIANGULATE))
 	                .mergeVertices(false)
 	                .cleanupUVs(false)
 	                .cleanupVertexNormals(false)
-	                .mergeByMaterial(true); // if false, generation takes ages... 40 sec
-	                                        // instead of 1.5 sec
+	                .mergeByMaterial(true);
 
 	const prtx::InitialShape* is = context.getInitialShape(initialShapeIndex);
 	auto* cb = getPyCallbacks(getCallbacks());
 	if (cb == nullptr)
 		throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
-
-	if (getOptions()->getBool(EO_TRIANGULATE))
-		enc_prep_flags.triangulate(true);
 
 	if (getOptions()->getBool(EO_EMIT_REPORT))
 		processReports(context, initialShapeIndex, cb);
