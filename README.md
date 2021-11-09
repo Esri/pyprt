@@ -41,7 +41,7 @@ repo_path = os.path.dirname(os.path.realpath(__file__))
 rpk = os.path.join(repo_path, 'tests/data/extrusion_rule.rpk')
 shape_attributes = {'shapeName': 'myShape', 'seed': 555}
 encoder = 'com.esri.pyprt.PyEncoder'
-encoder_options = {'emitReport': True, 'emitGeometry': True, 'triangulate': False}
+encoder_options = {'emitReport': True, 'emitGeometry': True}
 
 # Generate the model
 generated_models = model_generator.generate_model([shape_attributes], rpk, encoder, encoder_options)
