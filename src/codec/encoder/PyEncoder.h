@@ -53,8 +53,6 @@ public:
 	virtual void init(prtx::GenerateContext& context) override;
 	virtual void encode(prtx::GenerateContext& context, size_t initialShapeIndex) override;
 	virtual void finish(prtx::GenerateContext& context) override;
-	void processReports(prtx::GenerateContext& context, size_t initialShapeIndex, IPyCallbacks* callback);
-	void processGeometries(std::vector<prtx::EncodePreparator::FinalizedInstance>& instances, IPyCallbacks* callback);
 
 private:
 	prtx::DefaultNamePreparator mNamePreparator;

@@ -47,30 +47,14 @@ const wchar_t* EO_TRIANGULATE = L"triangulate";
 const wchar_t* EO_EMIT_REPORT = L"emitReport";
 const wchar_t* EO_EMIT_GEOMETRY = L"emitGeometry";
 
-prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS =
-        prtx::EncodePreparator::PreparationFlags()
-                .instancing(false)
-                .triangulate(false)
-                .mergeVertices(false)
-                .cleanupUVs(false)
-                .cleanupVertexNormals(false)
-                .mergeByMaterial(true); // if false, generation takes ages... 40 sec
-                                        // instead of 1.5 sec
-
 IPyCallbacks* getPyCallbacks(prt::Callbacks* cb) {
 	return dynamic_cast<IPyCallbacks*>(cb);
 }
 
-} // namespace
-
-const std::wstring PyEncoder::ID = L"com.esri.pyprt.PyEncoder";
-const std::wstring PyEncoder::NAME = L"Python Geometry and Report Encoder";
-const std::wstring PyEncoder::DESCRIPTION = L"Encodes geometry and CGA report for Python.";
-
 /**
- * Manage the reports collection.
+ * Manage reports collection.
  */
-void PyEncoder::processReports(prtx::GenerateContext& context, size_t initialShapeIndex, IPyCallbacks* cb) {
+void processReports(prtx::GenerateContext& context, size_t initialShapeIndex, IPyCallbacks* cb) {
 	prtx::ReportsAccumulatorPtr reportsAccumulator{prtx::SummarizingReportsAccumulator::create()};
 	prtx::ReportingStrategyPtr reportsCollector{
 	        prtx::AllShapesReportingStrategy::create(context, initialShapeIndex, reportsAccumulator)};
@@ -115,9 +99,9 @@ void PyEncoder::processReports(prtx::GenerateContext& context, size_t initialSha
 }
 
 /*
- * Manage the geometries collection.
+ * Manage geometries collection.
  */
-void PyEncoder::processGeometries(std::vector<prtx::EncodePreparator::FinalizedInstance>& instances, IPyCallbacks* cb) {
+void processGeometries(std::vector<prtx::EncodePreparator::FinalizedInstance>& instances, IPyCallbacks* cb) {
 	uint32_t vertexIndexBase = 0;
 
 	std::vector<double> vertexCoords;
@@ -150,6 +134,12 @@ void PyEncoder::processGeometries(std::vector<prtx::EncodePreparator::FinalizedI
 	}
 }
 
+} // namespace
+
+const std::wstring PyEncoder::ID = L"com.esri.pyprt.PyEncoder";
+const std::wstring PyEncoder::NAME = L"Python Geometry and Report Encoder";
+const std::wstring PyEncoder::DESCRIPTION = L"Encodes geometry and CGA report for Python.";
+
 /**
  * Setup two namespaces for mesh and material objects and initialize the encode
  * preprator. The namespaces are used to create unique names for all mesh and
@@ -166,13 +156,23 @@ void PyEncoder::init(prtx::GenerateContext& /*context*/) {
  * preparator. In case the shape generation fails, we collect the initial shape.
  */
 void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex) {
+	prtx::EncodePreparator::PreparationFlags enc_prep_flags =
+	        prtx::EncodePreparator::PreparationFlags()
+	                .instancing(false)
+	                .triangulate(false)
+	                .mergeVertices(false)
+	                .cleanupUVs(false)
+	                .cleanupVertexNormals(false)
+	                .mergeByMaterial(true); // if false, generation takes ages... 40 sec
+	                                        // instead of 1.5 sec
+
 	const prtx::InitialShape* is = context.getInitialShape(initialShapeIndex);
 	auto* cb = getPyCallbacks(getCallbacks());
 	if (cb == nullptr)
 		throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
 
 	if (getOptions()->getBool(EO_TRIANGULATE))
-		ENC_PREP_FLAGS.triangulate(true);
+		enc_prep_flags.triangulate(true);
 
 	if (getOptions()->getBool(EO_EMIT_REPORT))
 		processReports(context, initialShapeIndex, cb);
@@ -189,7 +189,7 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
 		}
 
 		std::vector<prtx::EncodePreparator::FinalizedInstance> finalizedInstances;
-		mEncodePreparator->fetchFinalizedInstances(finalizedInstances, ENC_PREP_FLAGS);
+		mEncodePreparator->fetchFinalizedInstances(finalizedInstances, enc_prep_flags);
 		processGeometries(finalizedInstances, cb);
 	}
 }
