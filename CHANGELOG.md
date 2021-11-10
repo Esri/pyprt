@@ -1,5 +1,10 @@
 # PyPRT ChangeLog
 
+## v1.5.0
+
+### Added
+* New PyEncoder option 'triangulate' for model triangulation
+
 ## v1.4.0 (2021-08-24)
 
 * Compatible CityEngine versions to create RPKs with: 2021.0 or earlier
