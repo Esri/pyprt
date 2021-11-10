@@ -3,7 +3,7 @@
 ## v1.5.0
 
 ### Added
-* New PyEncoder option 'triangulate' for model triangulation
+* New PyEncoder option 'triangulate' to triangulate the geometry
 
 ## v1.4.0 (2021-08-24)
 
