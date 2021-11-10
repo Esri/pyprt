@@ -173,8 +173,8 @@ constexpr const char* MgGen = R"mydelimiter(
         another non-mandatory entry (default value equals to *"InitialShape"*). In addition to the seed and the shape name keys,
         the shape attribute dictionary will contain the CGA input attributes specific to the CGA file you are using (use the
         ``get_rpk_attributes_info`` function to know these input attributes). Concerning the encoder, you can use the
-        ``'com.esri.pyprt.PyEncoder'`` or any other geometry encoder. The PyEncoder has two options:
-        ``'emitGeometry'`` and ``'emitReport'`` whose value is a boolean. The complete list of the other geometry
+        ``'com.esri.pyprt.PyEncoder'`` or any other geometry encoder. The PyEncoder has these options:
+        ``'emitGeometry'``, ``'emitReport'`` and ``'triangulate'`` whose value is a boolean. The complete list of the other geometry
         encoders can be found `here <https://esri.github.io/esri-cityengine-sdk/html/esri_prt_codecs.html>`__. In
         case you are using another geometry encoder than the PyEncoder, you can add an ``'outputPath'`` entry to
         the shape attribute dictionary to specify where the generated 3D geometry will be outputted. In this case,

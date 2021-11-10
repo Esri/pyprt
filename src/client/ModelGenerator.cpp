@@ -72,7 +72,7 @@ ModelGenerator::ModelGenerator(const std::vector<InitialShape>& myGeo) {
 				}
 			}
 			else {
-				LOG_ERR << "could not read initial shape geometry, unvalid path";
+				LOG_ERR << "could not read initial shape geometry, invalid path";
 				mValid = false;
 			}
 		}

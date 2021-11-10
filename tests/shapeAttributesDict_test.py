@@ -27,7 +27,6 @@ def asset_file(filename):
 
 
 class ShapeAttributesTest(unittest.TestCase):
-
     def test_correct_execution(self):
         rpk = asset_file('extrusion_rule.rpk')
         attrs_1 = {}

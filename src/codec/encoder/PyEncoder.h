@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "IPyCallbacks.h"
+
 #include "prtx/EncodePreparator.h"
 #include "prtx/Encoder.h"
 #include "prtx/EncoderFactory.h"
