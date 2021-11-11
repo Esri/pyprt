@@ -5,6 +5,9 @@
 ### Added
 * New PyEncoder option 'triangulate' to triangulate the geometry
 
+### Changed
+* Internal update to PRT 2.5
+
 ## v1.4.0 (2021-08-24)
 
 * Compatible CityEngine versions to create RPKs with: 2021.0 or earlier
