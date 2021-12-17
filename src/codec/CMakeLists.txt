@@ -28,8 +28,7 @@ add_library(${CODEC_TARGET} SHARED
 
 target_include_directories(${CODEC_TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_compile_features(${CODEC_TARGET} PRIVATE
-		cxx_std_14) # C++14
+target_compile_features(${CODEC_TARGET} PRIVATE cxx_std_17)
 
 target_compile_definitions(${CODEC_TARGET} PRIVATE
 		-DPRT_VERSION_MAJOR=${PRT_VERSION_MAJOR}
