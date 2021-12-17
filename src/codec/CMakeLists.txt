@@ -22,6 +22,12 @@ cmake_policy(SET CMP0015 NEW)
 
 ### setup build target
 
+set(CMAKE_CXX_FLAGS "")
+set(CMAKE_CXX_FLAGS_RELEASE "")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "")
+set(CMAKE_CXX_FLAGS_MINSIZEREL "")
+set(CMAKE_CXX_FLAGS_DEBUG "")
+
 add_library(${CODEC_TARGET} SHARED
 		codec.cpp
 		encoder/PyEncoder.cpp)
@@ -36,15 +42,27 @@ target_compile_definitions(${CODEC_TARGET} PRIVATE
 
 if(PYPRT_WINDOWS)
 	target_compile_options(${CODEC_TARGET} PRIVATE
-			-bigobj -GR -EHsc)
+			 -W4 -GR -MD -permissive-
+			-bigobj -GR -EHsc
+			$<$<CONFIG:RELWITHDEBINFO>:-Od -Zi>
+			$<$<CONFIG:RELEASE>:-O2>)
+	target_compile_definitions(${CODEC_TARGET} PRIVATE
+			-DNDEBUG -DWIN32 -D_WINDOWS)
 
 elseif(PYPRT_LINUX)
 	target_compile_options(${CODEC_TARGET} PRIVATE
-			-D_GLIBCXX_USE_CXX11_ABI=0 # we follow RHEL and use the pre-C++11 libstdc++ mode
 			-march=nocona
 			-fvisibility=hidden -fvisibility-inlines-hidden
 			-Wl,--exclude-libs,ALL
-			-Wall -Wextra -Wunused-parameter)
+			-Wall -Wextra -Wunused-parameter
+			$<$<CONFIG:RELWITHDEBINFO>:-O0>
+			$<$<CONFIG:RELEASE>:-O3>)
+
+	target_compile_definitions(${CODEC_TARGET} PRIVATE
+		-DNDEBUG
+		-D_GLIBCXX_USE_CXX11_ABI=0) # we follow RHEL and use the pre-C++11 libstdc++ mode
+
+	set_property(TARGET ${CODEC_TARGET} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 endif()
 
