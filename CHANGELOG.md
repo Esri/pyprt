@@ -7,6 +7,7 @@
 
 ### Changed
 * Internal update to PRT 2.5
+* Updated notebook, jupyterlab, pillow and babel versions in the environment files based on dependabot security analysis
 
 ## v1.4.0 (2021-08-24)
 
