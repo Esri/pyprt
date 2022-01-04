@@ -136,8 +136,8 @@ By default, the native module is built in "release" mode (full optimization, no 
 To create non-optimized wheels (or conda packages) with debug information:
 `python setup.py build --debug bdist_wheel --skip-build` (or `bdist_conda`)
 
-To enable native debugging when iteratively working on the Python/C++ code use the corresponding environment variable when running `pip install`:
-`PIP_INSTALL_OPTION="-- build --debug" pip install --verbose -e .` (Note the space between `--` and `build`.)
+To enable debugging when iteratively working on the Python/C++ code use:
+`pip install --install-option build --install-option --debug -e .`
 
 ### Running Unit Tests
 
