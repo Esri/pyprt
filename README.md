@@ -133,8 +133,8 @@ The `setup.py clean` call mentioned above will also clean out the native extensi
 
 By default, the native module is built in "release" mode (full optimization, no debug symbols). If the `--debug` argument is passed to `setup.py`, the CMake scripts will switch to "Release with Debug Info" mode, this will _disable optimization_ (`-O0`) to provide correct per-line debugging.
 
-To enable native debugging when building wheels or conda packages use:
-`python setup.py build --debug bdist_wheel` (or `bdist_conda`)
+To create non-optimized wheels (or conda packages) with debug information:
+`python setup.py build --debug bdist_wheel --skip-build` (or `bdist_conda`)
 
 To enable native debugging when iteratively working on the Python/C++ code use the corresponding environment variable when running `pip install`:
 `PIP_INSTALL_OPTION="-- build --debug" pip install --verbose -e .` (Note the space between `--` and `build`.)
