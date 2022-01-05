@@ -96,7 +96,7 @@ _Note: on Windows, replace `bin` with `Scripts` in the following commands. Some 
     1. Get latest pip: `.venv/bin/python -m pip install --upgrade pip`
     1. Get latest wheel: `.venv/bin/python -m pip install --upgrade wheel`
     1. Install build dependencies for PyPRT: `.venv/bin/python -m pip install -r envs/centos7/wheel/requirements-py3.6.txt`
-1. Run `.venv/bin/python setup.py bdist_wheel`. This will build the CMake project and Python packages.
+1. Run `.venv/bin/python setup.py bdist_wheel`. This will build the CMake project and Python packages. See [below](#c-debug-builds) for native debug mode.
 1. The resulting wheel is written to the temporary `dist` folder.
 
 ### Build Conda Package
@@ -105,7 +105,7 @@ _Note: on Windows, replace `bin` with `Scripts` in the following commands. Some 
 1. Open a shell in the PyPRT git root and activate Miniconda (or Anaconda).
 1. First time only: run `conda env create --prefix ./env --file envs/centos7/conda/environment-py3.6.yml` to create a conda environment with all the required Python packages (adapt `centos7` and `environment-py3.6.yml` to your desired OS/Python combination).
 1. Run `activate ./env`.
-1. Run `python setup.py bdist_conda`. This will build the CMake project and Python packages.
+1. Run `python setup.py bdist_conda`. This will build the CMake project and Python packages. See [below](#c-debug-builds) for native debug mode.
 1. The resulting package is written to the `./env/conda-bld/{platform}` folder.
 
 ### Iterative Python Development
@@ -114,7 +114,7 @@ _Note: on Windows, replace `bin` with `Scripts` in the following commands. Some 
 1. First time only: setup a virtual Python environment with build dependencies for PyPRT, see "Build Python Wheel" [above](#build-python-wheel).
 1. Run `source .venv/bin/activate` (on Windows, `.venv\Scripts\activate.bat`) to activate the required Python packages.
 1. Run `python setup.py clean --all` (to ensure we can properly track and cleanup the temporarily copied native extension).
-1. Install PyPRT in current pip environment in dev mode by running `pip install -e .` (note the dot at the end). This will use CMake to build the native extension and copy them into the source directory.
+1. Install PyPRT in current pip environment in dev mode by running `pip install -e .` (note the dot at the end). This will use CMake to build the native extension and copy them into the source directory. See [below](#c-debug-builds) for native debug mode.
 1. Now you can iterate on the Python part of PyPRT...
 1. To leave development mode and cleanup your git workspace, run these commands:
    1. `pip uninstall pyprt` (this will remove the "symlinked" package for the current pip env)
@@ -128,6 +128,16 @@ The `src` directory contains a standard CMake project with the PyPRT native exte
 The workflow is the same as iterating on the Python files but needs additional setup of CMAKE_INSTALL_PREFIX to point into the `pyprt/pyprt` directory.
 This will allow you to run `ninja install` after changes on the C++ files and update the "live" PyPRT package in the `pyprt` subdir.
 The `setup.py clean` call mentioned above will also clean out the native extension from the `pyprt` source directory.
+
+#### C++ Debug Builds
+
+By default, the native module is built in "release" mode (full optimization, no debug symbols). If the `--debug` argument is passed to `setup.py`, the CMake scripts will switch to "Release with Debug Info" mode, this will _disable optimization_ (`-O0`) to provide correct per-line debugging.
+
+To create non-optimized wheels (or conda packages) with debug information:
+`python setup.py build --debug bdist_wheel --skip-build` (or `bdist_conda`)
+
+To enable debugging when iteratively working on the Python/C++ code use:
+`pip install --install-option build --install-option --debug -e .`
 
 ### Running Unit Tests
 
