@@ -2,7 +2,7 @@
 
 ARG REGISTRY=''
 ARG PY_VER
-FROM ${REGISTRY}pyprt-base:jnk-v4-windows-py${PY_VER}
+FROM ${REGISTRY}pyprt-base:jnk-v5-windows-py${PY_VER}
 
 WORKDIR C:\temp\pyprt
 ARG PY_VER

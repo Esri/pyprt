@@ -1,5 +1,5 @@
 ARG REGISTRY=''
-FROM ${REGISTRY}pyprt-base:jnk-v4-centos7
+FROM ${REGISTRY}pyprt-base:jnk-v5-centos7
 
 ARG PY_VER
 ARG USER_ID
