@@ -1,5 +1,6 @@
 ARG REGISTRY=''
-FROM ${REGISTRY}pyprt-base:jnk-v5-centos7
+ARG BASE_TAG=''
+FROM ${REGISTRY}pyprt-base:${BASE_TAG}
 
 # no RPM repos yet, we manually build Python 3.9 with default CentOS 7 toolchain
 WORKDIR /tmp

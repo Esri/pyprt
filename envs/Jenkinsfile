@@ -183,8 +183,9 @@ String getDockerTag(cfg) {
 
 String getDockerArgs(cfg) {
 	String args = ''
+	String base_tag = getDockerTag(cfg)
 	if (cfg.kind != BASE.kind)
-		args += " --build-arg REGISTRY=${DOCKER_PROJECT}"
+		args += " --build-arg REGISTRY=${DOCKER_PROJECT} --build-arg BASE_TAG=${base_tag}"
 	if (cfg.py != null)
 		args += " --build-arg PY_VER=${cfg.py}"
 	if (cfg.os == OS_CENTOS7)
