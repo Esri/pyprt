@@ -172,18 +172,23 @@ String getDockerImage(cfg) {
 	return DOCKER_PROJECT + ((cfg.kind == BASE.kind) ? 'pyprt-base' : 'pyprt')
 }
 
-String getDockerTag(cfg) {
+String getDockerBaseTag(cfg) {
 	String tag = "jnk-${DOCKER_IMAGE_REV}-${cfg.os}"
-	if (cfg.kind != BASE.kind)
-		tag += "-py${cfg.py}-${cfg.kind}-${cfg.tc}"
-	else if (cfg.py != null)
+	if (cfg.py != null)
 		tag += "-py${cfg.py}"
+	return tag
+}
+
+String getDockerTag(cfg) {
+	String tag = getDockerBaseTag(cfg)
+	if (cfg.kind != BASE.kind)
+		tag += "-${cfg.kind}-${cfg.tc}"
 	return tag
 }
 
 String getDockerArgs(cfg) {
 	String args = ''
-	String base_tag = getDockerTag(cfg)
+	String base_tag = getDockerBaseTag(cfg)
 	if (cfg.kind != BASE.kind)
 		args += " --build-arg REGISTRY=${DOCKER_PROJECT} --build-arg BASE_TAG=${base_tag}"
 	if (cfg.py != null)
