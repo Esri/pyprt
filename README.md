@@ -153,14 +153,14 @@ Detailed steps to run tests for development (basically what the `build_and_run_t
 
 ### Build with Docker
 
-Note: We only support Docker on Linux and Windows. On Windows, Docker needs to be switched to "Windows Containers".
+Note: On Windows, Docker needs to be switched to "Windows Containers".
 
 #### Build Wheels
 
 1. Open a shell in the PyPRT git root
 1. Create the base image for the desired build toolchain (adapt to your desired Python version):
    * Linux: `docker build --rm -f envs/centos7/base/Dockerfile -t pyprt-base:centos7-py3.6 --build-arg PY_VER=3.6 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
-   * Windows: `docker build --rm -f envs\windows\base\Dockerfile -t pyprt-base:windows-py3.6 --build-arg PY_VER=3.6 .`
+   * Windows: `docker build --rm -f envs\windows\base\Dockerfile-py -t pyprt-base:windows-py3.6 --build-arg PY_VER=3.6 .`
 1. Create the desired image for the build toolchain (adapt to your desired Python version):
    * Linux: `docker build --rm -f envs/centos7/wheel/Dockerfile -t pyprt:centos7-py3.6 --build-arg PY_VER=3.6 --build-arg BASE_TAG=centos7-py3.6 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
    * Windows: `docker build --rm -f envs\windows\wheel\Dockerfile -t pyprt:windows-py3.6 --build-arg PY_VER=3.6 --build-arg BASE_TAG=windows-py3.6 .`
@@ -174,7 +174,7 @@ Note: We only support Docker on Linux and Windows. On Windows, Docker needs to b
 1. Open a shell in the PyPRT git root
 1. Create the base image for the desired build toolchain (adapt `py3.6` to your desired Python version):
     * Linux: `docker build --rm -f envs/centos7/base/Dockerfile -t pyprt-base:centos7-py3.6 --build-arg PY_VER=3.6 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
-    * Windows: `docker build --rm -f envs\windows\base\Dockerfile -t pyprt-base:windows-py3.6 --build-arg PY_VER=3.6 .`
+    * Windows: `docker build --rm -f envs\windows\base\Dockerfile-py -t pyprt-base:windows-py3.6 --build-arg PY_VER=3.6 .`
 1. Create the desired image for the build toolchain (adapt `py3.6` to your desired Python version):
     * Linux: `docker build --rm -f envs/centos7/conda/Dockerfile -t pyprt:centos7-py3.6-conda --build-arg PY_VER=3.6 --build-arg BASE_TAG=centos7-py3.6 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
     * Windows: `docker build --rm -f envs\windows\conda\Dockerfile -t pyprt:windows-py3.6-conda --build-arg PY_VER=3.6 --build-arg BASE_TAG=windows-py3.6 .`
