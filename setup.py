@@ -58,8 +58,8 @@ another format by using one of PRT encoders."""
 
 
 class CMakeConfig:
-    def __init__(self):
-        self.cmake_build_type = 'RelWithDebInfo'
+    def __init__(self, is_debug):
+        self.cmake_build_type = 'RelWithDebInfo' if is_debug else 'Release'
         self.cmake_executable = self.detect_cmake()
         self.make_executable, self.cmake_generator = self.detect_make()
 
@@ -136,7 +136,7 @@ class CMakeBuild(build_ext):
 
         self.announce('Configuring CMake project', level=3)
 
-        cmake = CMakeConfig()
+        cmake = CMakeConfig(self.debug)
         print(cmake)
 
         cmake_install_prefix = os.path.join(self.build_lib, 'pyprt', 'pyprt')

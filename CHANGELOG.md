@@ -7,6 +7,8 @@
 
 ### Changed
 * Internal update to PRT 2.5
+* Removed debug symbols from the native module in the released packages
+* Development: expose the `setup.py --debug` option to switch between "Release" and "Release with Debug Info" for the native module
 * Updated notebook, jupyterlab, pillow and babel versions in the environment files based on dependabot security analysis
 
 ## v1.4.0 (2021-08-24)
