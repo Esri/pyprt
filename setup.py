@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2021 Esri R&D Center Zurich
+# Copyright (c) 2012-2022 Esri R&D Center Zurich
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ except:
 
 pyprt_name = 'PyPRT'
 pyprt_author = 'Esri R&D Center Zurich'
-pyprt_copyright = '(c) 2021, ' + pyprt_author
-pyprt_version = '1.4.0'  # keep consistent with __version__ in pyprt/__init__.py
+pyprt_copyright = '(c) 2022, ' + pyprt_author
+pyprt_version = '1.5.0'  # keep consistent with __version__ in pyprt/__init__.py
 
 record_file = os.path.join(os.path.realpath(os.curdir), pyprt_name + '.egg-info', 'record_setup_develop_files.txt')
 
@@ -58,8 +58,8 @@ another format by using one of PRT encoders."""
 
 
 class CMakeConfig:
-    def __init__(self):
-        self.cmake_build_type = 'RelWithDebInfo'
+    def __init__(self, is_debug):
+        self.cmake_build_type = 'RelWithDebInfo' if is_debug else 'Release'
         self.cmake_executable = self.detect_cmake()
         self.make_executable, self.cmake_generator = self.detect_make()
 
@@ -136,7 +136,7 @@ class CMakeBuild(build_ext):
 
         self.announce('Configuring CMake project', level=3)
 
-        cmake = CMakeConfig()
+        cmake = CMakeConfig(self.debug)
         print(cmake)
 
         cmake_install_prefix = os.path.join(self.build_lib, 'pyprt', 'pyprt')

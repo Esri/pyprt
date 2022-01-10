@@ -3,7 +3,8 @@
 ARG REGISTRY=''
 ARG PY_VER
 
-FROM ${REGISTRY}pyprt-base:jnk-v4-windows
+ARG BASE_TAG=''
+FROM ${REGISTRY}pyprt-base:${BASE_TAG}
 
 ADD https://zrh-code.esri.com/nexus/service/local/repositories/tools/content/io/conda/miniconda3/4.10.3/miniconda3-4.10.3-py39-windows-x86_64.exe C:\temp\miniconda.exe
 RUN C:\temp\miniconda.exe /S /AddToPath=1 /InstallationType=JustMe /RegisterPython=0 /D=C:\temp\conda

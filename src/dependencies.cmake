@@ -1,7 +1,7 @@
 #
 # PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
 #
-# Copyright (c) 2012-2021 Esri R&D Center Zurich
+# Copyright (c) 2012-2022 Esri R&D Center Zurich
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ if(NOT prt_DIR)
 		set(PRT_TC "gcc93")
 	endif()
 
-	set(PRT_VERSION "2.4.7316")
+	set(PRT_VERSION "2.6.8135")
 	set(PRT_ARCHIVE "esri_ce_sdk-${PRT_VERSION}-${PRT_OS}-${PRT_TC}-x86_64-rel-opt.zip")
 	set(PRT_URL     "https://github.com/esri/cityengine-sdk/releases/download/${PRT_VERSION}/${PRT_ARCHIVE}")
 

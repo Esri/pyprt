@@ -1,7 +1,7 @@
 #
 # PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
 #
-# Copyright (c) 2012-2021 Esri R&D Center Zurich
+# Copyright (c) 2012-2022 Esri R&D Center Zurich
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,12 @@ cmake_policy(SET CMP0015 NEW)
 
 
 ### python bindings dependency
+
+set(CMAKE_CXX_FLAGS "")
+set(CMAKE_CXX_FLAGS_RELEASE "")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "")
+set(CMAKE_CXX_FLAGS_MINSIZEREL "")
+set(CMAKE_CXX_FLAGS_DEBUG "")
 
 message(STATUS "Python Module Suffix: " ${PYTHON_MODULE_EXTENSION})
 
@@ -43,15 +49,26 @@ set_target_properties(${CLIENT_TARGET} PROPERTIES
 		CXX_STANDARD_REQUIRED TRUE)
 
 if(PYPRT_WINDOWS)
-	# nothing required
+	target_compile_options(${CLIENT_TARGET} PRIVATE
+			-GL -W4 -MD -permissive-
+			-bigobj -GR -EHsc
+			$<$<CONFIG:RELWITHDEBINFO>:-Od -Zi>
+			$<$<CONFIG:RELEASE>:-O2>)
+	target_compile_definitions(${CODEC_TARGET} PRIVATE
+			-DNDEBUG -DWIN32 -D_WINDOWS)
 
 elseif(PYPRT_LINUX)
 	target_compile_options(${CLIENT_TARGET} PRIVATE
-			-D_GLIBCXX_USE_CXX11_ABI=0
 			-march=nocona
 			-fvisibility=hidden -fvisibility-inlines-hidden
 			-Wl,--exclude-libs,ALL
-			-Wall -Wextra -Wunused-parameter)
+			-Wall -Wextra -Wunused-parameter
+			$<$<CONFIG:RELWITHDEBINFO>:-O0>
+			$<$<CONFIG:RELEASE>:-O3>)
+
+	target_compile_definitions(${CLIENT_TARGET} PRIVATE
+			-DNDEBUG
+			-D_GLIBCXX_USE_CXX11_ABI=0) # we follow RHEL and use the pre-C++11 libstdc++ mode
 
 	set_target_properties(${CLIENT_TARGET} PROPERTIES
 			INSTALL_RPATH "\$ORIGIN"

@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2020 Esri R&D Center Zurich
+# Copyright (c) 2012-2022 Esri R&D Center Zurich
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ def asset_output_file(filename):
 
 
 class GeometryTest(unittest.TestCase):
-    def test_verticesnber_candler(self):
+    def test_verticesnumber_candler(self):
         rpk = asset_file('candler.rpk')
         attrs = {}
         shape_geo_from_obj = pyprt.InitialShape(
@@ -40,7 +40,7 @@ class GeometryTest(unittest.TestCase):
                                  'emitReport': False, 'emitGeometry': True})
         self.assertEqual(len(model[0].get_vertices()), 97044*3)
 
-    def test_facesnber_candler(self):
+    def test_facesnumber_candler(self):
         rpk = asset_file('candler.rpk')
         attrs = {}
         shape_geo_from_obj = pyprt.InitialShape(
@@ -49,6 +49,16 @@ class GeometryTest(unittest.TestCase):
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
                                  'emitReport': False, 'emitGeometry': True})
         self.assertEqual(len(model[0].get_faces()), 47202)
+
+    def test_facesnumber_triangulation(self):
+        rpk = asset_file('extrusion_rule.rpk')
+        attrs = {}
+        shape_geo_from_obj = pyprt.InitialShape(
+            asset_file('candler_footprint.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
+        model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
+                                 'emitReport': False, 'emitGeometry': True, 'triangulate': True})
+        self.assertEqual(len(model[0].get_faces()), 28)
 
     def test_report_green(self):
         rpk = asset_file('envelope2002.rpk')

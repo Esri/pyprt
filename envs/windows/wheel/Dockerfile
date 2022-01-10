@@ -1,8 +1,9 @@
 # escape=`
 
 ARG REGISTRY=''
+ARG BASE_TAG=''
 ARG PY_VER
-FROM ${REGISTRY}pyprt-base:jnk-v4-windows-py${PY_VER}
+FROM ${REGISTRY}pyprt-base:${BASE_TAG}-py${PY_VER}
 
 WORKDIR C:\temp\pyprt
 ARG PY_VER

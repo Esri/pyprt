@@ -1,7 +1,7 @@
 /**
  * PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
  *
- * Copyright (c) 2012-2021 Esri R&D Center Zurich
+ * Copyright (c) 2012-2022 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,21 +43,95 @@ namespace {
 const wchar_t* EO_BASE_NAME = L"baseName";
 const wchar_t* EO_ERROR_FALLBACK = L"errorFallback";
 const std::wstring ENCFILE_EXT = L".txt";
+const wchar_t* EO_TRIANGULATE = L"triangulate";
 const wchar_t* EO_EMIT_REPORT = L"emitReport";
 const wchar_t* EO_EMIT_GEOMETRY = L"emitGeometry";
 
-const prtx::EncodePreparator::PreparationFlags ENC_PREP_FLAGS =
-        prtx::EncodePreparator::PreparationFlags()
-                .instancing(false)
-                .triangulate(false)
-                .mergeVertices(false)
-                .cleanupUVs(false)
-                .cleanupVertexNormals(false)
-                .mergeByMaterial(true); // if false, generation takes ages... 40 sec
-                                        // instead of 1.5 sec
-
 IPyCallbacks* getPyCallbacks(prt::Callbacks* cb) {
 	return dynamic_cast<IPyCallbacks*>(cb);
+}
+
+/**
+ * Manage reports collection.
+ */
+void processReports(prtx::GenerateContext& context, size_t initialShapeIndex, IPyCallbacks* cb) {
+	prtx::ReportsAccumulatorPtr reportsAccumulator{prtx::SummarizingReportsAccumulator::create()};
+	prtx::ReportingStrategyPtr reportsCollector{
+	        prtx::AllShapesReportingStrategy::create(context, initialShapeIndex, reportsAccumulator)};
+
+	prtx::ReportsPtr rep = reportsCollector->getReports();
+
+	if (rep) {
+		const prtx::Shape::ReportBoolVect& boolReps = rep->mBools;
+		const size_t boolRepCount = boolReps.size();
+		std::vector<const wchar_t*> boolRepKeys(boolRepCount);
+		std::unique_ptr<bool[]> boolRepValues(new bool[boolRepCount]);
+
+		for (size_t i = 0; i < boolRepCount; i++) {
+			boolRepKeys[i] = boolReps[i].first->c_str();
+			boolRepValues[i] = boolReps[i].second;
+		}
+
+		const prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
+		const size_t floatRepCount = floatReps.size();
+		std::vector<const wchar_t*> floatRepKeys(floatRepCount);
+		std::vector<double> floatRepValues(floatRepCount);
+
+		for (size_t i = 0; i < floatRepCount; i++) {
+			floatRepKeys[i] = floatReps[i].first->c_str();
+			floatRepValues[i] = floatReps[i].second;
+		}
+
+		const prtx::Shape::ReportStringVect& stringReps = rep->mStrings;
+		const size_t stringRepCount = stringReps.size();
+		std::vector<const wchar_t*> stringRepKeys(stringRepCount);
+		std::vector<const wchar_t*> stringRepValues(stringRepCount);
+
+		for (size_t i = 0; i < stringRepCount; i++) {
+			stringRepKeys[i] = stringReps[i].first->c_str();
+			stringRepValues[i] = stringReps[i].second->c_str();
+		}
+
+		cb->addReports(initialShapeIndex, stringRepKeys.data(), stringRepValues.data(), stringRepCount,
+		               floatRepKeys.data(), floatRepValues.data(), floatRepCount, boolRepKeys.data(),
+		               boolRepValues.get(), boolRepCount);
+	}
+}
+
+/*
+ * Manage geometries collection.
+ */
+void processGeometries(std::vector<prtx::EncodePreparator::FinalizedInstance>& instances, IPyCallbacks* cb) {
+	uint32_t vertexIndexBase = 0;
+
+	std::vector<double> vertexCoords;
+	std::vector<uint32_t> faceIndices;
+	std::vector<uint32_t> faceCounts;
+
+	for (const auto& instance : instances) {
+		const prtx::MeshPtrVector& meshes = instance.getGeometry()->getMeshes();
+
+		vertexCoords.clear();
+		faceIndices.clear();
+		faceCounts.clear();
+
+		for (const auto& mesh : meshes) {
+			const prtx::DoubleVector& verts = mesh->getVertexCoords();
+			vertexCoords.insert(vertexCoords.end(), verts.begin(), verts.end());
+
+			for (uint32_t fi = 0; fi < mesh->getFaceCount(); ++fi) {
+				const uint32_t* vtxIdx = mesh->getFaceVertexIndices(fi);
+				const uint32_t vtxCnt = mesh->getFaceVertexCount(fi);
+				faceCounts.push_back(vtxCnt);
+				for (uint32_t vi = 0; vi < vtxCnt; vi++)
+					faceIndices.push_back(vtxIdx[vi] + vertexIndexBase);
+			}
+			vertexIndexBase += (uint32_t)verts.size() / 3;
+		}
+
+		cb->addGeometry(instance.getInitialShapeIndex(), vertexCoords.data(), vertexCoords.size(), faceIndices.data(),
+		                faceIndices.size(), faceCounts.data(), faceCounts.size());
+	}
 }
 
 } // namespace
@@ -82,54 +156,22 @@ void PyEncoder::init(prtx::GenerateContext& /*context*/) {
  * preparator. In case the shape generation fails, we collect the initial shape.
  */
 void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex) {
+	const prtx::EncodePreparator::PreparationFlags enc_prep_flags =
+	        prtx::EncodePreparator::PreparationFlags()
+	                .instancing(false)
+	                .triangulate(getOptions()->getBool(EO_TRIANGULATE))
+	                .mergeVertices(false)
+	                .cleanupUVs(false)
+	                .cleanupVertexNormals(false)
+	                .mergeByMaterial(true);
+
 	const prtx::InitialShape* is = context.getInitialShape(initialShapeIndex);
 	auto* cb = getPyCallbacks(getCallbacks());
 	if (cb == nullptr)
 		throw prtx::StatusException(prt::STATUS_ILLEGAL_CALLBACK_OBJECT);
 
-	if (getOptions()->getBool(EO_EMIT_REPORT)) {
-		prtx::ReportsAccumulatorPtr reportsAccumulator{prtx::SummarizingReportsAccumulator::create()};
-		prtx::ReportingStrategyPtr reportsCollector{
-		        prtx::AllShapesReportingStrategy::create(context, initialShapeIndex, reportsAccumulator)};
-
-		prtx::ReportsPtr rep = reportsCollector->getReports();
-
-		if (rep) {
-			const prtx::Shape::ReportBoolVect& boolReps = rep->mBools;
-			const size_t boolRepCount = boolReps.size();
-			std::vector<const wchar_t*> boolRepKeys(boolRepCount);
-			std::unique_ptr<bool[]> boolRepValues(new bool[boolRepCount]);
-
-			for (size_t i = 0; i < boolRepCount; i++) {
-				boolRepKeys[i] = boolReps[i].first->c_str();
-				boolRepValues[i] = boolReps[i].second;
-			}
-
-			const prtx::Shape::ReportFloatVect& floatReps = rep->mFloats;
-			const size_t floatRepCount = floatReps.size();
-			std::vector<const wchar_t*> floatRepKeys(floatRepCount);
-			std::vector<double> floatRepValues(floatRepCount);
-
-			for (size_t i = 0; i < floatRepCount; i++) {
-				floatRepKeys[i] = floatReps[i].first->c_str();
-				floatRepValues[i] = floatReps[i].second;
-			}
-
-			const prtx::Shape::ReportStringVect& stringReps = rep->mStrings;
-			const size_t stringRepCount = stringReps.size();
-			std::vector<const wchar_t*> stringRepKeys(stringRepCount);
-			std::vector<const wchar_t*> stringRepValues(stringRepCount);
-
-			for (size_t i = 0; i < stringRepCount; i++) {
-				stringRepKeys[i] = stringReps[i].first->c_str();
-				stringRepValues[i] = stringReps[i].second->c_str();
-			}
-
-			cb->addReports(initialShapeIndex, stringRepKeys.data(), stringRepValues.data(), stringRepCount,
-			               floatRepKeys.data(), floatRepValues.data(), floatRepCount, boolRepKeys.data(),
-			               boolRepValues.get(), boolRepCount);
-		}
-	}
+	if (getOptions()->getBool(EO_EMIT_REPORT))
+		processReports(context, initialShapeIndex, cb);
 
 	if (getOptions()->getBool(EO_EMIT_GEOMETRY)) {
 		try {
@@ -143,37 +185,8 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
 		}
 
 		std::vector<prtx::EncodePreparator::FinalizedInstance> finalizedInstances;
-		mEncodePreparator->fetchFinalizedInstances(finalizedInstances, ENC_PREP_FLAGS);
-		uint32_t vertexIndexBase = 0;
-
-		std::vector<double> vertexCoords;
-		std::vector<uint32_t> faceIndices;
-		std::vector<uint32_t> faceCounts;
-
-		for (const auto& instance : finalizedInstances) {
-			const prtx::MeshPtrVector& meshes = instance.getGeometry()->getMeshes();
-
-			vertexCoords.clear();
-			faceIndices.clear();
-			faceCounts.clear();
-
-			for (const auto& mesh : meshes) {
-				const prtx::DoubleVector& verts = mesh->getVertexCoords();
-				vertexCoords.insert(vertexCoords.end(), verts.begin(), verts.end());
-
-				for (uint32_t fi = 0; fi < mesh->getFaceCount(); ++fi) {
-					const uint32_t* vtxIdx = mesh->getFaceVertexIndices(fi);
-					const uint32_t vtxCnt = mesh->getFaceVertexCount(fi);
-					faceCounts.push_back(vtxCnt);
-					for (uint32_t vi = 0; vi < vtxCnt; vi++)
-						faceIndices.push_back(vtxIdx[vi] + vertexIndexBase);
-				}
-				vertexIndexBase += (uint32_t)verts.size() / 3;
-			}
-
-			cb->addGeometry(instance.getInitialShapeIndex(), vertexCoords.data(), vertexCoords.size(),
-			                faceIndices.data(), faceIndices.size(), faceCounts.data(), faceCounts.size());
-		}
+		mEncodePreparator->fetchFinalizedInstances(finalizedInstances, enc_prep_flags);
+		processGeometries(finalizedInstances, cb);
 	}
 }
 
@@ -198,6 +211,7 @@ PyEncoderFactory* PyEncoderFactory::createInstance() {
 	prtx::PRTUtils::AttributeMapBuilderPtr amb(prt::AttributeMapBuilder::create());
 	amb->setString(EO_BASE_NAME, L"enc_default_name"); // required by CityEngine
 	amb->setBool(EO_ERROR_FALLBACK, prtx::PRTX_TRUE);  // required by CityEngine
+	amb->setBool(EO_TRIANGULATE, prtx::PRTX_FALSE);
 	amb->setBool(EO_EMIT_REPORT, prtx::PRTX_TRUE);
 	amb->setBool(EO_EMIT_GEOMETRY, prtx::PRTX_TRUE);
 	encoderInfoBuilder.setDefaultOptions(amb->createAttributeMap());

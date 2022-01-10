@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2021 Esri R&D Center Zurich
+# Copyright (c) 2012-2022 Esri R&D Center Zurich
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

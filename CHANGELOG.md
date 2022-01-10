@@ -1,5 +1,16 @@
 # PyPRT ChangeLog
 
+## v1.5.0 (2022-01-10)
+
+### Added
+* New PyEncoder option 'triangulate' to triangulate the geometry
+
+### Changed
+* Internal update to PRT 2.6
+* Removed debug symbols from the native module in the released packages
+* Development: expose the `setup.py --debug` option to switch between "Release" and "Release with Debug Info" for the native module
+* Updated notebook, jupyterlab, pillow and babel versions in the environment files based on dependabot security analysis
+
 ## v1.4.0 (2021-08-24)
 
 * Compatible CityEngine versions to create RPKs with: 2021.0 or earlier
