@@ -34,7 +34,7 @@ except:
 pyprt_name = 'PyPRT'
 pyprt_author = 'Esri R&D Center Zurich'
 pyprt_copyright = '(c) 2022, ' + pyprt_author
-pyprt_version = '1.5.0rc1'  # keep consistent with __version__ in pyprt/__init__.py
+pyprt_version = '1.5.0'  # keep consistent with __version__ in pyprt/__init__.py
 
 record_file = os.path.join(os.path.realpath(os.curdir), pyprt_name + '.egg-info', 'record_setup_develop_files.txt')
 
