@@ -1,6 +1,6 @@
 # PyPRT ChangeLog
 
-## v1.5.0
+## v1.5.0 (2022-01-10)
 
 ### Added
 * New PyEncoder option 'triangulate' to triangulate the geometry
