@@ -254,6 +254,7 @@ def runDockerCmd(Map cfg, Map dirMap, String workDir, String cmd) {
 	dirMap.each { k,v -> dirMapStrArgs += " -v \"${k}:${v}\"" }
 
 	String runArgs = '--pull always --rm'
+	runArgs += " --name 'pyprt-build-py${cfg.py}-${cfg.kind}-${cfg.tc}-${env.BRANCH_NAME}-${BUILD_ID}'"
 	runArgs += dirMapStrArgs
 	runArgs += " -w ${workDir}"
 	runArgs += " ${getDockerImage(cfg)}"
