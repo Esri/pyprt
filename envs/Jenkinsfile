@@ -139,11 +139,15 @@ def taskBuildDockerImage(cfg) {
 	final String image = getDockerImage(cfg)
 	final String tag = getDockerTag(cfg)
 	final String dockerArgs = getDockerArgs(cfg)
+	
+	final String buildLabel = "build=${tag}-${BUILD_ID}"
+	final String labelArgs = "--label ${buildLabel}"
 
 	dir(path: SOURCE) {
 		docker.withRegistry("https://${DOCKER_REGISTRY}", 'jenkins-pyprt-dreg-robot') {
-			def dockerImage = docker.build(image, "-m 4GB --rm -f ${dockerFile} ${dockerArgs} .")
+			def dockerImage = docker.build(image, "-m 4GB --rm -f ${dockerFile} ${dockerArgs} ${labelArgs} .")
 			dockerImage.push(tag)
+			psl.runCmd("docker image prune -a -f --filter label=${buildLabel}")
 		}
 	}
 }
