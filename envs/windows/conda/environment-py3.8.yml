@@ -2,9 +2,11 @@ channels:
   - defaults
   - anaconda
   - esri
+  - conda-forge
 dependencies:
   - python=3.8
   - sphinx
   - conda-build
   - conda-verify
   - arcgis=2.0.0
+  - ruamel_yaml=0.15.80

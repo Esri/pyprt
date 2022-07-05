@@ -25,9 +25,14 @@ from distutils import log
 from sphinx.setup_command import BuildDoc
 
 try:
-    from distutils.command.bdist_conda import CondaDistribution
+    try:
+        from conda_build.bdist_conda import CondaDistribution
 
-    distclass = CondaDistribution
+        distclass = CondaDistribution
+    except:
+        from distutils.command.bdist_conda import CondaDistribution # this will be dropped with the removal of Python 3.6
+
+        distclass = CondaDistribution
 except:
     distclass = []
 
