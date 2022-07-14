@@ -1,7 +1,7 @@
 alabaster==0.7.12
 anyio==2.2.0
 appdirs==1.4.4
-arcgis==2.0.0
+arcgis==1.9.1
 argon2-cffi==20.1.0
 async-generator==1.10
 attrs==20.3.0
