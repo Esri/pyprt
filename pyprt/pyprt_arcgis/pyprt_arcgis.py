@@ -38,28 +38,6 @@ def swap_yz_dimensions(array_coord):
     return np.reshape(coord_swap_dim, (1, coord_swap_dim.shape[0]*coord_swap_dim.shape[1]))
 
 
-def holes_conversion(holes_ind_list):
-    holes_dict = {}
-    holes_list = []
-    if len(holes_ind_list) > 0:
-        for h_idx in holes_ind_list:
-            f_idx = h_idx
-            while f_idx > 0:
-                f_idx -= 1
-                if not (f_idx in holes_ind_list):
-                    if not (f_idx in holes_dict):
-                        holes_dict[f_idx] = [h_idx]
-                    else:
-                        holes_dict[f_idx].append(h_idx)
-                    break
-
-        for key, value in holes_dict.items():
-            face_holes = [key]
-            face_holes.extend(value)
-            holes_list.append(face_holes)
-    return holes_list
-
-
 def arcgis_to_pyprt(feature_set):
     """arcgis_to_pyprt(feature_set) -> List[InitialShape]
     This function allows converting an ArcGIS FeatureSet into a list of PyPRT InitialShape instances.
@@ -104,13 +82,10 @@ def arcgis_to_pyprt(feature_set):
                     nb_pts = len(coord_fin[0])/3
                     pts_cnt += nb_pts
                     face_count_list.append(int(nb_pts))
-                    if store_area > 0.0: # interior ring / holes
-                        holes_ind_list.append(face_idx)
 
                 face_indices_list = list(range(0, sum(face_count_list)))
-                holes_list = holes_conversion(holes_ind_list)
                 
-                initial_geometry = pyprt.InitialShape(vert_coord_list, face_indices_list, face_count_list, holes_list)
+                initial_geometry = pyprt.InitialShape(vert_coord_list, face_indices_list, face_count_list)
                 initial_geometries.append(initial_geometry)
         except:
             print("This feature is not valid: ")

@@ -1,10 +1,11 @@
 channels:
+  - esri
+  - conda-forge
   - defaults
   - anaconda
-  - esri
 dependencies:
   - python=3.9
+  - arcgis=2.0.0
   - sphinx
   - conda-build
   - conda-verify
-  #- arcgis=1.8.2
