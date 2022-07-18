@@ -1,5 +1,12 @@
 # PyPRT ChangeLog
 
+## v1.6.0 (2022-XX-XX)
+
+### Changed
+* Internal update to PRT 2.6.8300 (CityEngine 2022.0)
+* Rebuilt test RPKs with CityEngine 2022.0
+
+
 ## v1.5.0 (2022-01-10)
 
 ### Added
