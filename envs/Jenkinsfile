@@ -46,6 +46,7 @@ psl.runsHere('production')
 @Field final Map PY37 = [ py: '3.7' ]
 @Field final Map PY38 = [ py: '3.8' ]
 @Field final Map PY39 = [ py: '3.9' ]
+@Field final Map PY310 = [ py: '3.10' ]
 
 @Field final Map BASE = [ kind: 'base' ]
 @Field final Map WHEEL = [ kind: 'wheel' ]
@@ -67,6 +68,7 @@ psl.runsHere('production')
 	composeConfig(PY37, BASE, WINDOWS_TOOLCHAIN),
 	composeConfig(PY38, BASE, WINDOWS_TOOLCHAIN),
 	composeConfig(PY39, BASE, WINDOWS_TOOLCHAIN),
+	composeConfig(PY310, BASE, WINDOWS_TOOLCHAIN),
 ]
 @Field final List CONFIGS_IMAGES = [
 	composeConfig(PY36, WHEEL, LINUX_TOOLCHAIN),
@@ -84,6 +86,10 @@ psl.runsHere('production')
 	composeConfig(PY39, WHEEL, WINDOWS_TOOLCHAIN),
 	composeConfig(PY39, CONDA, LINUX_TOOLCHAIN),
 	composeConfig(PY39, CONDA, WINDOWS_TOOLCHAIN),
+	composeConfig(PY310, WHEEL, LINUX_TOOLCHAIN),
+	composeConfig(PY310, WHEEL, WINDOWS_TOOLCHAIN),
+	composeConfig(PY310, CONDA, LINUX_TOOLCHAIN),
+	composeConfig(PY310, CONDA, WINDOWS_TOOLCHAIN),
 ]
 
 
@@ -165,8 +171,8 @@ Map composeConfig(py, kind, tc) {
 
 String getDockerFile(cfg) {
 	String path = "envs/${cfg.os}/${cfg.kind}/Dockerfile"
-	if (cfg.py == PY39.py && cfg.os == OS_CENTOS7 && cfg.kind == WHEEL.kind)
-		path += '-py3.9' // workaround: no Python 3.9 packages available for CentOS7
+	if (cfg.py == PY310.py && cfg.os == OS_CENTOS7 && cfg.kind == WHEEL.kind)
+		path += '-py3.10' // workaround: no Python 3.10 packages available for CentOS7
 	else if (cfg.py != null && cfg.kind == BASE.kind)
 		path += '-py' // base images from pre-built python images
 	return path
