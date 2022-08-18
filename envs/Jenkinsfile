@@ -171,8 +171,8 @@ Map composeConfig(py, kind, tc) {
 
 String getDockerFile(cfg) {
 	String path = "envs/${cfg.os}/${cfg.kind}/Dockerfile"
-	if (cfg.py == PY310.py && cfg.os == OS_CENTOS7 && cfg.kind == WHEEL.kind)
-		path += '-py3.10' // workaround: no Python 3.10 packages available for CentOS7
+	if (cfg.py == PY39.py || cfg.py == PY310.py && cfg.os == OS_CENTOS7 && cfg.kind == WHEEL.kind)
+		path += '-py3.9-10' // workaround: no Python 3.9 or 3.10 packages available for CentOS7
 	else if (cfg.py != null && cfg.kind == BASE.kind)
 		path += '-py' // base images from pre-built python images
 	return path
