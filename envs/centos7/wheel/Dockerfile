@@ -28,6 +28,6 @@ RUN source scl_source enable rh-python${PY_VER//./} && python -m venv $VIRTUAL_E
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN source scl_source enable devtoolset-9 \
-    && python -m pip install --trusted-host pypi.org --no-cache-dir --upgrade pip \
+    && python -m pip install --no-cache-dir --upgrade pip \
 	&& python -m pip install --no-cache-dir --upgrade wheel \
 	&& python -m pip install --no-cache-dir -r requirements.txt

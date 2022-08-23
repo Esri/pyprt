@@ -7,9 +7,10 @@ ARG PY_VER
 # no RPM repos yet, we manually build Python 3.9 and 3.10 with default CentOS 7 toolchain
 WORKDIR /tmp
 ADD https://www.python.org/ftp/python/${PY_VER}.6/Python-${PY_VER}.6.tar.xz python_src.tar.xz
-RUN yum install -y gcc make openssl-devel libffi-devel bzip2-devel liblzma-dev
+RUN yum install -y gcc make openssl11 openssl11-libs openssl11-static openssl11-devel libffi-devel bzip2-devel liblzma-dev
 RUN tar xf python_src.tar.xz && \
     pushd Python-${PY_VER}.6 && \
+    sed -i 's/PKG_CONFIG openssl /PKG_CONFIG openssl11 /g' configure \
     ./configure --enable-optimizations && \
     CPU_COUNT=$(grep -c ^processor /proc/cpuinfo) && \
     make -j$CPU_COUNT altinstall && \
@@ -37,5 +38,5 @@ RUN python${PY_VER} -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN python -V && \
-    python -m pip install --trusted-host pypi.org --no-cache-dir --upgrade pip && python -m pip install --no-cache-dir --upgrade wheel && \
+    python -m pip install --no-cache-dir --upgrade pip && python -m pip install --no-cache-dir --upgrade wheel && \
     python -m pip install --no-cache-dir -r requirements.txt
