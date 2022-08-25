@@ -10,7 +10,7 @@ ADD https://www.python.org/ftp/python/${PY_VER}.6/Python-${PY_VER}.6.tar.xz pyth
 RUN yum install -y gcc make openssl11 openssl11-libs openssl11-static openssl11-devel libffi-devel bzip2-devel liblzma-dev
 RUN tar xf python_src.tar.xz && \
     pushd Python-${PY_VER}.6 && \
-    sed -i 's/PKG_CONFIG openssl /PKG_CONFIG openssl11 /g' configure \
+    sed -i 's/PKG_CONFIG openssl /PKG_CONFIG openssl11 /g' configure && \
     ./configure --enable-optimizations && \
     CPU_COUNT=$(grep -c ^processor /proc/cpuinfo) && \
     make -j$CPU_COUNT altinstall && \
