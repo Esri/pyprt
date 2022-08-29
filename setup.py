@@ -19,7 +19,9 @@ import subprocess
 
 from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
+from setuptools.command.install_lib import install_lib
 from distutils.command.clean import clean
+import distutils.command.install_lib as orig
 from distutils.dir_util import copy_tree, remove_tree
 from distutils import log
 from sphinx.setup_command import BuildDoc
@@ -206,6 +208,40 @@ class CMakeBuild(build_ext):
                 self.write_stub(package_dir or os.curdir, ext, True)
 
 
+class CMakeInstallLib(install_lib):
+    def copy_tree(
+            self, infile, outfile,
+            preserve_mode=1, preserve_times=1, preserve_symlinks=0, level=1
+    ):
+        assert preserve_mode and preserve_times and not preserve_symlinks
+        exclude = self.get_exclusions()
+        exclude.add(os.path.join(outfile,'pyprt\\pyprt\\bin\\com.esri.prt.core.lib'))
+        exclude.add(os.path.join(outfile,'pyprt\\pyprt\\bin\\glutess.lib'))
+
+        if not exclude:
+            return orig.install_lib.copy_tree(self, infile, outfile)
+
+        # Exclude namespace package __init__.py* files from the output
+
+        from setuptools.archive_util import unpack_directory
+        from distutils import log
+
+        outfiles = []
+
+        def pf(src, dst):
+            if dst in exclude:
+                log.warn("Skipping installation of %s (namespace package)",
+                         dst)
+                return False
+
+            log.info("copying %s -> %s", src, os.path.dirname(dst))
+            outfiles.append(dst)
+            return dst
+
+        unpack_directory(infile, outfile, pf)
+        return outfiles
+
+
 class CleanCommand(clean):
     def run(self):
         clean.run(self)
@@ -242,7 +278,7 @@ setup(
     include_package_data=True,
     ext_modules=[CMakeExtension('pyprt.pyprt', 'src')],
     cmdclass={'build_ext': CMakeBuild, 'clean': CleanCommand,
-              'build_doc': BuildDoc},
+              'build_doc': BuildDoc, 'install_lib': CMakeInstallLib},
     distclass=distclass,
     conda_import_tests=False,
     license="PyPRT is free for personal, educational, and non-commercial use. Commercial use requires at least one "
