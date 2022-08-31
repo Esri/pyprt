@@ -264,7 +264,7 @@ setup(
                  'Topic :: Scientific/Engineering',
                  'Topic :: Software Development :: Libraries :: Python Modules'],
     zip_safe=False,
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     command_options={
         'build_doc': {
             'project': ('setup.py', pyprt_name),
