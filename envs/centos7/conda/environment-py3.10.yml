@@ -7,4 +7,3 @@ dependencies:
   - sphinx
   - conda-build
   - conda-verify
-  #- arcgis=2.0.0
