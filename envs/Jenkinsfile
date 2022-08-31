@@ -32,7 +32,7 @@ psl.runsHere('production')
 
 @Field final String DOCKER_REGISTRY  = 'zrh-dreg-sp-1.esri.com'
 @Field final String DOCKER_PROJECT   = "${DOCKER_REGISTRY}/pyprt/"
-@Field final String DOCKER_IMAGE_REV = 'v8' // target revision of the generated images
+@Field final String DOCKER_IMAGE_REV = 'v10' // target revision of the generated images
 
 @Field final String REPO   = 'git@github.com:esri/pyprt.git'
 @Field final String SOURCE = 'pyprt.git'
@@ -42,7 +42,6 @@ psl.runsHere('production')
 @Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
 
-@Field final Map PY36 = [ py: '3.6' ]
 @Field final Map PY37 = [ py: '3.7' ]
 @Field final Map PY38 = [ py: '3.8' ]
 @Field final Map PY39 = [ py: '3.9' ]
@@ -63,16 +62,11 @@ psl.runsHere('production')
 @Field final List CONFIGS_BASE_IMAGES = [
 	composeConfig(null, BASE, LINUX_TOOLCHAIN),
 	composeConfig(null, BASE, WINDOWS_TOOLCHAIN),
-	composeConfig(PY36, BASE, WINDOWS_TOOLCHAIN),
 	composeConfig(PY37, BASE, WINDOWS_TOOLCHAIN),
 	composeConfig(PY38, BASE, WINDOWS_TOOLCHAIN),
 	composeConfig(PY39, BASE, WINDOWS_TOOLCHAIN),
 ]
 @Field final List CONFIGS_IMAGES = [
-	composeConfig(PY36, WHEEL, LINUX_TOOLCHAIN),
-	composeConfig(PY36, WHEEL, WINDOWS_TOOLCHAIN),
-	composeConfig(PY36, CONDA, LINUX_TOOLCHAIN),
-	composeConfig(PY36, CONDA, WINDOWS_TOOLCHAIN),
 	composeConfig(PY37, WHEEL, WINDOWS_TOOLCHAIN),
 	composeConfig(PY37, CONDA, LINUX_TOOLCHAIN),
 	composeConfig(PY37, CONDA, WINDOWS_TOOLCHAIN),

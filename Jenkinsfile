@@ -37,7 +37,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final String SOURCE_STASH = 'pyprt-sources'
 @Field String pkgVer = "0.0.0"
 
-@Field final String DOCKER_IMAGE_REV = "v8"
+@Field final String DOCKER_IMAGE_REV = "v10"
 
 @Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
 @Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
@@ -45,7 +45,6 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
 @Field final String DOCKER_WS_WINDOWS = "c:/temp/pyprt/ws"
 
-@Field final Map PY36                  = [ py: '3.6' ]
 @Field final Map PY37                  = [ py: '3.7' ]
 @Field final Map PY38                  = [ py: '3.8' ]
 @Field final Map PY39                  = [ py: '3.9' ]
@@ -57,12 +56,10 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
 
 @Field final List CONFIGS_PREPARE = [
-    composeConfig(PY36, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_TEST = [
-    composeConfig(PY36, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-    composeConfig(PY36, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
     composeConfig(PY37, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
     composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
     composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
@@ -71,8 +68,6 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 ]
 
 @Field final List CONFIGS_BUILD_WHEEL = [
-    composeConfig(PY36, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-    composeConfig(PY36, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
     composeConfig(PY37, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
     composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
     composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
@@ -81,8 +76,6 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 ]
 
 @Field final List CONFIGS_BUILD_CONDA = [
-    composeConfig(PY36, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-    composeConfig(PY36, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
     composeConfig(PY37, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
     composeConfig(PY37, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
     composeConfig(PY38, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
@@ -92,7 +85,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 ]
 
 @Field final List CONFIGS_DOC = [
-    composeConfig(PY36, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 ]
 
 
