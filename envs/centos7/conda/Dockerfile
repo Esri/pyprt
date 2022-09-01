@@ -24,7 +24,7 @@ RUN bash miniconda.sh -bfp ./conda && \
     conda/bin/conda update conda && \
     conda/bin/conda clean --all --yes
 
-COPY envs/centos7/conda/environment-py${PY_VER}.yml ./environment.yml
+COPY envs/centos7/conda/environment-py${PY_VER::-2}.yml ./environment.yml
 RUN ./conda/bin/conda env create --prefix ./pyprt-conda-env --file ./environment.yml
 
 # also see https://github.com/sclorg/devtoolset-container

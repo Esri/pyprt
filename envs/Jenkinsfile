@@ -42,10 +42,10 @@ psl.runsHere('production')
 @Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
 
-@Field final Map PY37 = [ py: '3.7' ]
-@Field final Map PY38 = [ py: '3.8' ]
-@Field final Map PY39 = [ py: '3.9' ]
-@Field final Map PY310 = [ py: '3.10' ]
+@Field final Map PY37 = [ py: '3.7.13' ]
+@Field final Map PY38 = [ py: '3.8.13' ]
+@Field final Map PY39 = [ py: '3.9.13' ]
+@Field final Map PY310 = [ py: '3.10.6' ]
 
 @Field final Map BASE = [ kind: 'base' ]
 @Field final Map WHEEL = [ kind: 'wheel' ]

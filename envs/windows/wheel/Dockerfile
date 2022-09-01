@@ -7,7 +7,7 @@ FROM ${REGISTRY}pyprt-base:${BASE_TAG}-py${PY_VER}
 
 WORKDIR C:\temp\pyprt
 ARG PY_VER
-COPY ./envs/windows/wheel/requirements-py${PY_VER}.txt ./requirements.txt
+COPY ./envs/windows/wheel/requirements-py${PY_VER::-2}.txt ./requirements.txt
 
 RUN python -m pip install --no-cache-dir --upgrade pip `
 	&& python -m pip install --no-cache-dir --upgrade wheel `

@@ -6,16 +6,16 @@ ARG PY_VER
 
 # no RPM repos yet, we manually build Python 3.9 and 3.10 with default CentOS 7 toolchain
 WORKDIR /tmp
-ADD https://www.python.org/ftp/python/${PY_VER}.6/Python-${PY_VER}.6.tar.xz python_src.tar.xz
+ADD https://www.python.org/ftp/python/${PY_VER}/Python-${PY_VER}.tar.xz python_src.tar.xz
 RUN yum install -y gcc make openssl11 openssl11-libs openssl11-static openssl11-devel libffi-devel bzip2-devel liblzma-dev
 RUN tar xf python_src.tar.xz && \
-    pushd Python-${PY_VER}.6 && \
+    pushd Python-${PY_VER} && \
     sed -i 's/PKG_CONFIG openssl /PKG_CONFIG openssl11 /g' configure && \
     ./configure --enable-optimizations && \
     CPU_COUNT=$(grep -c ^processor /proc/cpuinfo) && \
     make -j$CPU_COUNT altinstall && \
     popd && \
-    python${PY_VER} -V
+    python${PY_VER::-2} -V
 
 ## this container works with mounted host directories
 ## we create a user with matching uid/gid to avoid permissions issues
@@ -31,10 +31,10 @@ RUN echo "unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable devtools
 ENV BASH_ENV=/tmp/scl_enable ENV=/tmp/scl_enable PROMPT_COMMAND=". /tmp/scl_enable"
 
 WORKDIR /tmp/pyprt/docker
-COPY envs/centos7/wheel/requirements-py${PY_VER}.txt ./requirements.txt
+COPY envs/centos7/wheel/requirements-py${PY_VER::-2}.txt ./requirements.txt
 
 ENV VIRTUAL_ENV=/tmp/pyprt-venv
-RUN python${PY_VER} -m venv $VIRTUAL_ENV
+RUN python${PY_VER::-2} -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN python -V && \
