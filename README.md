@@ -76,7 +76,7 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
   * Windows: MSVC 14.27 or later
   * Linux: GCC 9.3 or later (we build and test on RHEL7/CentOS7)
 * Python (version >= 3.7)
-  * Packages (latest version if not specified): wheel, arcgis, twine, sphinx, pkginfo, xmlrunner
+  * Packages (latest version if not specified): wheel, arcgis (only for Python <3.10), twine, sphinx, pkginfo, xmlrunner
 * Optional: Conda (e.g. miniconda3)
 * CMake (version >= 3.14)
 * Ninja (or jom)
