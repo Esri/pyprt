@@ -6,10 +6,8 @@ ARG PY_VER
 ARG USER_ID
 ARG GROUP_ID
 
-ENV PY_VER_NOPATCH=${PY_VER::-2}
-
 # install python and any devel packages needed to install the required python modules
-RUN yum install -y rh-python${PY_VER_NOPATCH//./}-python rh-python${PY_VER_NOPATCH//./}-python-devel rh-python${PY_VER_NOPATCH//./}-python-pip krb5-devel
+RUN yum install -y rh-python${PY_VER//./}-python rh-python${PY_VER//./}-python-devel rh-python${PY_VER//./}-python-pip krb5-devel
 
 # this container works with mounted host directories
 # we create a user with matching uid/gid to avoid permissions issues
@@ -23,10 +21,10 @@ RUN echo "unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable devtools
 ENV BASH_ENV=/tmp/scl_enable ENV=/tmp/scl_enable PROMPT_COMMAND=". /tmp/scl_enable"
 
 WORKDIR /tmp/pyprt
-COPY envs/centos7/wheel/requirements-py${PY_VER_NOPATCH}.txt ./requirements.txt
+COPY envs/centos7/wheel/requirements-py${PY_VER}.txt ./requirements.txt
 
 ENV VIRTUAL_ENV=/tmp/pyprt-venv
-RUN source scl_source enable rh-python${PY_VER_NOPATCH//./} && python -m venv $VIRTUAL_ENV
+RUN source scl_source enable rh-python${PY_VER//./} && python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN source scl_source enable devtoolset-9 \

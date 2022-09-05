@@ -45,10 +45,10 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
 @Field final String DOCKER_WS_WINDOWS = "c:/temp/pyprt/ws"
 
-@Field final Map PY37                  = [ py: '3.7.13' ]
-@Field final Map PY38                  = [ py: '3.8.13' ]
-@Field final Map PY39                  = [ py: '3.9.13' ]
-@Field final Map PY310                 = [ py: '3.10.6' ]
+@Field final Map PY37                  = [ py: '3.7' ]
+@Field final Map PY38                  = [ py: '3.8' ]
+@Field final Map PY39                  = [ py: '3.9' ]
+@Field final Map PY310                 = [ py: '3.10' ]
 @Field final Map KIND_WHEEL            = [ kind: 'wheel' ]
 @Field final Map KIND_CONDA            = [ kind: 'conda' ]
 @Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC93, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
