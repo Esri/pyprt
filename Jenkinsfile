@@ -37,7 +37,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final String SOURCE_STASH = 'pyprt-sources'
 @Field String pkgVer = "0.0.0"
 
-@Field final String DOCKER_IMAGE_REV = "v10"
+@Field final String DOCKER_IMAGE_REV = "v9"
 
 @Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
 @Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
@@ -48,6 +48,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map PY37                  = [ py: '3.7' ]
 @Field final Map PY38                  = [ py: '3.8' ]
 @Field final Map PY39                  = [ py: '3.9' ]
+@Field final Map PY310                 = [ py: '3.10' ]
 @Field final Map KIND_WHEEL            = [ kind: 'wheel' ]
 @Field final Map KIND_CONDA            = [ kind: 'conda' ]
 @Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC93, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
@@ -65,6 +66,8 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
     composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
     composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
     composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_BUILD_WHEEL = [
@@ -73,6 +76,8 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
     composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
     composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
     composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_BUILD_CONDA = [
@@ -82,6 +87,8 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
     composeConfig(PY38, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
     composeConfig(PY39, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
     composeConfig(PY39, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+    composeConfig(PY310, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+    composeConfig(PY310, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_DOC = [
