@@ -166,7 +166,7 @@ Map composeConfig(py, kind, tc) {
 String getDockerFile(cfg) {
 	String path = "envs/${cfg.os}/${cfg.kind}/Dockerfile"
 	if ((cfg.py == PY39.py || cfg.py == PY310.py) && cfg.os == OS_CENTOS7 && cfg.kind == WHEEL.kind)
-		path += '-py' + cfg.py // workaround: no Python 3.9 or 3.10 packages available for CentOS7
+		path += '-custom-py' // workaround: no Python 3.9 or 3.10 RPMs available
 	else if (cfg.py != null && cfg.kind == BASE.kind)
 		path += '-py' // base images from pre-built python images
 	return path
@@ -196,6 +196,13 @@ String getBuildArgs(cfg) {
 		args += " --build-arg REGISTRY=${DOCKER_PROJECT} --build-arg BASE_TAG=${base_tag}"
 	if (cfg.py != null)
 		args += " --build-arg PY_VER=${cfg.py}"
+
+    // specify the exact python version to build on linux for the wheels
+	if (cfg.os == OS_CENTOS7 && cfg.kind == WHEEL.kind && cfg.py == PY39.py)
+		args += " --build-arg PY_VER_MICRO=.13"
+	else if (cfg.os == OS_CENTOS7 && cfg.kind == WHEEL.kind && cfg.py == PY310.py)
+		args += " --build-arg PY_VER_MICRO=.6"
+
 	if (cfg.os == OS_CENTOS7)
 		args += ' --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
 	return args
