@@ -55,6 +55,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC1427, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
 @Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
+@Field final Map PYBIND11_CONFIG	   = [ r: 'thirdparty', g: 'com.github', a: 'pybind11', v: '2.5.0', e: '.zip', f: 'pybind11.zip', extract: true ]
 
 @Field final List CONFIGS_PREPARE = [
     composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
@@ -141,6 +142,11 @@ Map taskGenPyPRT() {
 def taskPrepare(cfg) {
  	cepl.cleanCurrentDir()
 	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
+
+	dir(path: "${SOURCE}/src") {
+		psl.fetchFromNexus2(PYBIND11_CONFIG)
+	}
+
 	stash(name: SOURCE_STASH)
 
 	String buildCmd = "python setup.py build_py && python get_pkg_version.py > ${cfg.ws}/current_version.txt"
@@ -163,7 +169,9 @@ def taskBuildWheel(cfg) {
 
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
-	runDockerCmd(cfg, dirMap, workDir, buildCmd)
+	String pybind11Env = "PYBIND11_DIR=${workDir}/src/pybind11-${PYBIND11_CONFIG.v}" // see prepare task
+    String envCmd = isUnix() ? "export ${pybind11Env}" : "set ${pybind11Env}"
+	runDockerCmd(cfg, dirMap, workDir, "${envCmd} && ${buildCmd}")
 
 	def classifierExtractor = { p ->
 		def cls = (p =~ /[^-]*-[^-]*-[0-9]*-([^-]*-[^-]*-[^-]*)\.whl/)
@@ -190,7 +198,9 @@ def taskBuildConda(cfg) {
 
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
-	runDockerCmd(cfg, dirMap, workDir, buildCmd)
+	String pybind11Env = "PYBIND11_DIR=${workDir}/src/pybind11-${PYBIND11_CONFIG.v}" // see prepare task
+    String envCmd = isUnix() ? "export ${pybind11Env}" : "set ${pybind11Env}"
+	runDockerCmd(cfg, dirMap, workDir, "${envCmd} && ${buildCmd}")
 
 	def classifierExtractor = { p ->
  		def cls = (p =~ /.*-(py[0-9]+)_[0-9]+\.tar\.bz2/)
@@ -226,7 +236,9 @@ def taskRunTests(cfg) {
 	String buildCmd = "python setup.py install && python tests/run_tests.py --xml_output_directory ${cfg.ws}"
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
-	runDockerCmd(cfg, dirMap, workDir, buildCmd)
+	String pybind11Env = "PYBIND11_DIR=${workDir}/src/pybind11-${PYBIND11_CONFIG.v}" // see prepare task
+    String envCmd = isUnix() ? "export ${pybind11Env}" : "set ${pybind11Env}"
+	runDockerCmd(cfg, dirMap, workDir, "${envCmd} && ${buildCmd}")
 
 	junit(testResults: 'TEST-*.xml')
 }
