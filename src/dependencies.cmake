@@ -75,15 +75,19 @@ list(APPEND PRT_EXT_RESOURCES ${PRT_EXTENSION_PATH}/usd)
 
 ### look for PyBind11
 
-FetchContent_Declare(
- 	pybind11
-	GIT_REPOSITORY https://github.com/pybind/pybind11.git
-	GIT_TAG v2.2.4
-	GIT_SUBMODULES ""
-)
-
-FetchContent_GetProperties(pybind11)
-if(NOT pybind11_POPULATED)
-	FetchContent_Populate(pybind11)
-	add_subdirectory(${pybind11_SOURCE_DIR} ${pybind11_BINARY_DIR})
+if(pybind11_DIR)
+	add_subdirectory(${pybind11_DIR} ${CMAKE_CURRENT_BINARY_DIR}/pybind11-build)
+else()
+	# if pybind11_DIR is not provided, download pybind11 from its github home
+	FetchContent_Declare(
+		pybind11
+		GIT_REPOSITORY https://github.com/pybind/pybind11.git
+		GIT_TAG v2.2.4
+		GIT_SUBMODULES ""
+	)
+	FetchContent_GetProperties(pybind11)
+	if(NOT pybind11_POPULATED)
+		FetchContent_Populate(pybind11)
+		add_subdirectory(${pybind11_SOURCE_DIR} ${pybind11_BINARY_DIR})
+	endif()
 endif()
