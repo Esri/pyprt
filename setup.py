@@ -164,6 +164,10 @@ class CMakeBuild(build_ext):
         if prt_dir != '':
             cmake_configure_command.append('-Dprt_DIR={}'.format(prt_dir))
 
+        pybind11_dir = os.getenv('PYBIND11_DIR', '')
+        if pybind11_dir != '':
+            cmake_configure_command.append('-Dpybind11_DIR={}'.format(pybind11_dir))
+
         self.spawn(cmake_configure_command)
 
         self.announce('Building binaries', level=3)
