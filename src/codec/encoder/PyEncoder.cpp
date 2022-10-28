@@ -163,7 +163,7 @@ void PyEncoder::encode(prtx::GenerateContext& context, size_t initialShapeIndex)
 	                .mergeVertices(false)
 	                .cleanupUVs(false)
 	                .cleanupVertexNormals(false)
-	                .mergeByMaterial(true);
+	                .meshMerging(prtx::MeshMerging::ALL_OF_SAME_MATERIAL_AND_TYPE);
 
 	const prtx::InitialShape* is = context.getInitialShape(initialShapeIndex);
 	auto* cb = getPyCallbacks(getCallbacks());
