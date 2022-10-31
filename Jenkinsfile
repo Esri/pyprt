@@ -55,7 +55,6 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC1427, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
 @Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
-@Field final Map PYBIND11_CONFIG	   = [ r: 'thirdparty', g: 'com.github', a: 'pybind11', v: '2.5.0', e: '.zip', f: 'pybind11.zip', extract: true ]
 
 @Field final List CONFIGS_PREPARE = [
     composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
@@ -143,9 +142,24 @@ def taskPrepare(cfg) {
  	cepl.cleanCurrentDir()
 	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
 
+    def deps = readProperties(file: "${SOURCE}/src/dependencies.properties")
+
 	dir(path: "${SOURCE}/src") {
+        Map PYBIND11_CONFIG = [ r: 'thirdparty', g: 'com.github', a: 'pybind11', v: deps.PYBIND11_VERSION, e: 'zip', f: 'pybind11.zip', extract: true ]
 		psl.fetchFromNexus2(PYBIND11_CONFIG)
 	}
+
+    dir(path: 'cesdk') {
+        String CESDK_BASE_URL = 'https://github.com/Esri/cityengine-sdk/releases/download'
+        dir(path: 'windows') {
+            String CESDK_URL_WINDOWS = "${CESDK_BASE_URL}/${deps.PRT_VERSION}/esri_ce_sdk-${deps.PRT_VERSION}-${deps.PRT_CLS_WINDOWS}.zip"
+            downloadAndExtract(CESDK_URL_WINDOWS)
+        }
+        dir(path: 'linux') {
+            String CESDK_URL_LINUX = "${CESDK_BASE_URL}/${deps.PRT_VERSION}/esri_ce_sdk-${deps.PRT_VERSION}-${deps.PRT_CLS_LINUX}.zip"
+            downloadAndExtract(CESDK_URL_LINUX)
+        }
+    }
 
 	stash(name: SOURCE_STASH)
 
@@ -169,7 +183,7 @@ def taskBuildWheel(cfg) {
 
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
-	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(workDir, buildCmd))
+	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(cfg, workDir, buildCmd))
 
 	def classifierExtractor = { p ->
 		def cls = (p =~ /[^-]*-[^-]*-[0-9]*-([^-]*-[^-]*-[^-]*)\.whl/)
@@ -196,7 +210,7 @@ def taskBuildConda(cfg) {
 
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
-	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(workDir, buildCmd))
+	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(cfg, workDir, buildCmd))
 
 	def classifierExtractor = { p ->
  		def cls = (p =~ /.*-(py[0-9]+)_[0-9]+\.tar\.bz2/)
@@ -232,7 +246,7 @@ def taskRunTests(cfg) {
 	String buildCmd = "python setup.py install && python tests/run_tests.py --xml_output_directory ${cfg.ws}"
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
-	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(workDir, buildCmd))
+	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(cfg, workDir, buildCmd))
 
 	junit(testResults: 'TEST-*.xml')
 }
@@ -240,10 +254,13 @@ def taskRunTests(cfg) {
 
 // -- HELPERS
 
-String updateBuildEnv(String workDir, String buildCmd) {
-	String pybind11Env = "PYBIND11_DIR=${workDir}/src/pybind11-${PYBIND11_CONFIG.v}" // see prepare task
-    String envCmd = isUnix() ? "export ${pybind11Env}" : "set ${pybind11Env}"
-    return "${envCmd} && ${buildCmd}"
+String updateBuildEnv(Map cfg, String workDir, String buildCmd) {
+    def deps = readProperties(file: "${SOURCE}/src/dependencies.properties")
+
+	String pybind11Env = "PYBIND11_DIR=${workDir}/src/pybind11-${deps.PYBIND11_VERSION}"
+    String cesdkEnv = "PRT_DIR=${cfg.ws}/cesdk/${isUnix() ? 'linux' : 'windows'}/cmake"
+    String envCmd = isUnix() ? "export ${pybind11Env} ${cesdkEnv} " : "set ${pybind11Env}&& set ${cesdkEnv}"
+    return "${envCmd}&& ${buildCmd}"
 }
 
 @NonCPS
@@ -273,4 +290,30 @@ def runDockerCmd(Map cfg, Map dirMap, String workDir, String cmd) {
 	runArgs += isUnix() ? " bash -c '${cmd}'" : " cmd /c \"${cmd}\""
 
 	psl.runCmd("docker run ${runArgs}")
+}
+
+def downloadFile(String url, String dest, int numRetries = 5, int retryMaxTimeSecs = 180) {
+    def curlCmd = "curl --location --remote-header-name --retry ${numRetries} --retry-max-time ${retryMaxTimeSecs} -o ${dest} ${url}"
+
+    try {
+        psl.runCmd(curlCmd)
+    } catch(e) {
+        String reason =
+            e.message && e.message.endsWith('exit code 22') ? "Requested document could not be downloaded within ${retryMaxTimeSecs} secs." : e.message
+        error("Failed to download ${url}: ${reason}")
+    }
+
+    if (!fileExists(dest)) {
+        error("Failed to download: ${url}")
+    }
+}
+
+def downloadAndExtract(String url) {
+    String tmpPath = pwd(tmp: true)
+    String archive = "${tmpPath}/archive.zip"
+    downloadFile(url, archive)
+    unzip(zipFile: archive)
+    dir(path: tmpPath) {
+        deleteDir() // remove archive zip
+    }
 }
