@@ -169,9 +169,7 @@ def taskBuildWheel(cfg) {
 
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
-	String pybind11Env = "PYBIND11_DIR=${workDir}/src/pybind11-${PYBIND11_CONFIG.v}" // see prepare task
-    String envCmd = isUnix() ? "export ${pybind11Env}" : "set ${pybind11Env}"
-	runDockerCmd(cfg, dirMap, workDir, "${envCmd} && ${buildCmd}")
+	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(workDir, buildCmd))
 
 	def classifierExtractor = { p ->
 		def cls = (p =~ /[^-]*-[^-]*-[0-9]*-([^-]*-[^-]*-[^-]*)\.whl/)
@@ -198,9 +196,7 @@ def taskBuildConda(cfg) {
 
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
-	String pybind11Env = "PYBIND11_DIR=${workDir}/src/pybind11-${PYBIND11_CONFIG.v}" // see prepare task
-    String envCmd = isUnix() ? "export ${pybind11Env}" : "set ${pybind11Env}"
-	runDockerCmd(cfg, dirMap, workDir, "${envCmd} && ${buildCmd}")
+	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(workDir, buildCmd))
 
 	def classifierExtractor = { p ->
  		def cls = (p =~ /.*-(py[0-9]+)_[0-9]+\.tar\.bz2/)
@@ -236,15 +232,19 @@ def taskRunTests(cfg) {
 	String buildCmd = "python setup.py install && python tests/run_tests.py --xml_output_directory ${cfg.ws}"
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
-	String pybind11Env = "PYBIND11_DIR=${workDir}/src/pybind11-${PYBIND11_CONFIG.v}" // see prepare task
-    String envCmd = isUnix() ? "export ${pybind11Env}" : "set ${pybind11Env}"
-	runDockerCmd(cfg, dirMap, workDir, "${envCmd} && ${buildCmd}")
+	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(workDir, buildCmd))
 
 	junit(testResults: 'TEST-*.xml')
 }
 
 
 // -- HELPERS
+
+String updateBuildEnv(String workDir, String buildCmd) {
+	String pybind11Env = "PYBIND11_DIR=${workDir}/src/pybind11-${PYBIND11_CONFIG.v}" // see prepare task
+    String envCmd = isUnix() ? "export ${pybind11Env}" : "set ${pybind11Env}"
+    return "${envCmd} && ${buildCmd}"
+}
 
 @NonCPS
 Map composeConfig(py, kind, tc, dc) {
