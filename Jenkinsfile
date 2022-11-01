@@ -145,8 +145,12 @@ def taskPrepare(cfg) {
 	def deps = readProperties(file: "${SOURCE}/src/dependencies.properties")
 
 	dir(path: "${SOURCE}/src") {
-		Map PYBIND11_CONFIG = [ r: 'thirdparty', g: 'com.github', a: 'pybind11', v: deps.PYBIND11_VERSION, e: 'zip', f: 'pybind11.zip', extract: true ]
+		String tmpPath = pwd(tmp: true)
+		Map PYBIND11_CONFIG = [ r: 'thirdparty', g: 'com.github', a: 'pybind11', v: deps.PYBIND11_VERSION, e: 'zip', f: "${tmpPath}/pybind11.zip", extract: true ]
 		psl.fetchFromNexus2(PYBIND11_CONFIG)
+		dir(path: tmpPath) {
+			deleteDir() // remove archive zip
+		}
 	}
 
 	dir(path: 'cesdk') {
