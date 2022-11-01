@@ -57,42 +57,42 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
 
 @Field final List CONFIGS_PREPARE = [
-    composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_TEST = [
-    composeConfig(PY37, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-    composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-    composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-    composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-    composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-    composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-    composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY37, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_BUILD_WHEEL = [
-    composeConfig(PY37, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-    composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-    composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-    composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-    composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-    composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-    composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY37, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_BUILD_CONDA = [
-    composeConfig(PY37, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-    composeConfig(PY37, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-    composeConfig(PY38, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-    composeConfig(PY38, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-    composeConfig(PY39, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-    composeConfig(PY39, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-    composeConfig(PY310, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-    composeConfig(PY310, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY37, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY37, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY38, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY38, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY39, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY39, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY310, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY310, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_DOC = [
-    composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 ]
 
 
@@ -123,15 +123,15 @@ Map taskGenPrepare() {
 
 Map taskGenTests() {
 	Map tasks = [:]
- 	tasks << cepl.generateTasks('test', this.&taskRunTests, CONFIGS_TEST)
+	tasks << cepl.generateTasks('test', this.&taskRunTests, CONFIGS_TEST)
 	return tasks
 }
 
 Map taskGenPyPRT() {
 	Map tasks = [:]
-  	tasks << cepl.generateTasks('build', this.&taskBuildWheel, CONFIGS_BUILD_WHEEL)
+	tasks << cepl.generateTasks('build', this.&taskBuildWheel, CONFIGS_BUILD_WHEEL)
 	tasks << cepl.generateTasks('build', this.&taskBuildConda, CONFIGS_BUILD_CONDA)
-  	tasks << cepl.generateTasks('doc', this.&taskBuildDoc, CONFIGS_DOC)
+	tasks << cepl.generateTasks('doc', this.&taskBuildDoc, CONFIGS_DOC)
 	return tasks;
 }
 
@@ -139,27 +139,27 @@ Map taskGenPyPRT() {
 // -- TASK BUILDERS
 
 def taskPrepare(cfg) {
- 	cepl.cleanCurrentDir()
+	cepl.cleanCurrentDir()
 	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
 
-    def deps = readProperties(file: "${SOURCE}/src/dependencies.properties")
+	def deps = readProperties(file: "${SOURCE}/src/dependencies.properties")
 
 	dir(path: "${SOURCE}/src") {
-        Map PYBIND11_CONFIG = [ r: 'thirdparty', g: 'com.github', a: 'pybind11', v: deps.PYBIND11_VERSION, e: 'zip', f: 'pybind11.zip', extract: true ]
+		Map PYBIND11_CONFIG = [ r: 'thirdparty', g: 'com.github', a: 'pybind11', v: deps.PYBIND11_VERSION, e: 'zip', f: 'pybind11.zip', extract: true ]
 		psl.fetchFromNexus2(PYBIND11_CONFIG)
 	}
 
-    dir(path: 'cesdk') {
-        String CESDK_BASE_URL = 'https://github.com/Esri/cityengine-sdk/releases/download'
-        dir(path: 'windows') {
-            String CESDK_URL_WINDOWS = "${CESDK_BASE_URL}/${deps.PRT_VERSION}/esri_ce_sdk-${deps.PRT_VERSION}-${deps.PRT_CLS_WINDOWS}.zip"
-            downloadAndExtract(CESDK_URL_WINDOWS)
-        }
-        dir(path: 'linux') {
-            String CESDK_URL_LINUX = "${CESDK_BASE_URL}/${deps.PRT_VERSION}/esri_ce_sdk-${deps.PRT_VERSION}-${deps.PRT_CLS_LINUX}.zip"
-            downloadAndExtract(CESDK_URL_LINUX)
-        }
-    }
+	dir(path: 'cesdk') {
+		String CESDK_BASE_URL = 'https://github.com/Esri/cityengine-sdk/releases/download'
+		dir(path: 'windows') {
+			String CESDK_URL_WINDOWS = "${CESDK_BASE_URL}/${deps.PRT_VERSION}/esri_ce_sdk-${deps.PRT_VERSION}-${deps.PRT_CLS_WINDOWS}.zip"
+			downloadAndExtract(CESDK_URL_WINDOWS)
+		}
+		dir(path: 'linux') {
+			String CESDK_URL_LINUX = "${CESDK_BASE_URL}/${deps.PRT_VERSION}/esri_ce_sdk-${deps.PRT_VERSION}-${deps.PRT_CLS_LINUX}.zip"
+			downloadAndExtract(CESDK_URL_LINUX)
+		}
+	}
 
 	stash(name: SOURCE_STASH)
 
@@ -170,7 +170,7 @@ def taskPrepare(cfg) {
 
 	String rawVer = readFile(file: "current_version.txt")
 	pkgVer = "${rawVer.trim()}-${env.BUILD_NUMBER}"
- 	echo("Detected PyPRT version: ${pkgVer}")
+	echo("Detected PyPRT version: ${pkgVer}")
 }
 
 def taskBuildWheel(cfg) {
@@ -203,7 +203,7 @@ def taskBuildConda(cfg) {
 		buildCmd += " && mkdir ${outDir} && cp -r ${condaEnv}/conda-bld/linux-64/pyprt*.tar.bz2 ${outDir}"
 	}
 	else {
-	    String condaEnv = 'C:\\temp\\conda\\envs\\pyprt'
+		String condaEnv = 'C:\\temp\\conda\\envs\\pyprt'
 		String outDir = "${cfg.ws.replace('/','\\')}\\build\\"
 		buildCmd += " && mkdir ${outDir} && copy ${condaEnv}\\conda-bld\\win-64\\pyprt-*.tar.bz2 ${outDir}"
 	}
@@ -213,10 +213,10 @@ def taskBuildConda(cfg) {
 	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(cfg, workDir, buildCmd))
 
 	def classifierExtractor = { p ->
- 		def cls = (p =~ /.*-(py[0-9]+)_[0-9]+\.tar\.bz2/)
+		def cls = (p =~ /.*-(py[0-9]+)_[0-9]+\.tar\.bz2/)
 		return "${cls[0][1]}-${cfg.os}-${cfg.arch}"
 	}
- 	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-*.tar.bz2", { return pkgVer }, cfg, classifierExtractor)
+	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-*.tar.bz2", { return pkgVer }, cfg, classifierExtractor)
 }
 
 def taskBuildDoc(cfg) {
@@ -255,12 +255,12 @@ def taskRunTests(cfg) {
 // -- HELPERS
 
 String updateBuildEnv(Map cfg, String workDir, String buildCmd) {
-    def deps = readProperties(file: "${SOURCE}/src/dependencies.properties")
+	def deps = readProperties(file: "${SOURCE}/src/dependencies.properties")
 
 	String pybind11Env = "PYBIND11_DIR=${workDir}/src/pybind11-${deps.PYBIND11_VERSION}"
-    String cesdkEnv = "PRT_DIR=${cfg.ws}/cesdk/${isUnix() ? 'linux' : 'windows'}/cmake"
-    String envCmd = isUnix() ? "export ${pybind11Env} ${cesdkEnv} " : "set ${pybind11Env}&& set ${cesdkEnv}"
-    return "${envCmd}&& ${buildCmd}"
+	String cesdkEnv = "PRT_DIR=${cfg.ws}/cesdk/${isUnix() ? 'linux' : 'windows'}/cmake"
+	String envCmd = isUnix() ? "export ${pybind11Env} ${cesdkEnv} " : "set ${pybind11Env}&& set ${cesdkEnv}"
+	return "${envCmd}&& ${buildCmd}"
 }
 
 @NonCPS
@@ -293,27 +293,27 @@ def runDockerCmd(Map cfg, Map dirMap, String workDir, String cmd) {
 }
 
 def downloadFile(String url, String dest, int numRetries = 5, int retryMaxTimeSecs = 180) {
-    def curlCmd = "curl --location --remote-header-name --retry ${numRetries} --retry-max-time ${retryMaxTimeSecs} -o ${dest} ${url}"
+	def curlCmd = "curl --location --remote-header-name --retry ${numRetries} --retry-max-time ${retryMaxTimeSecs} -o ${dest} ${url}"
 
-    try {
-        psl.runCmd(curlCmd)
-    } catch(e) {
-        String reason =
-            e.message && e.message.endsWith('exit code 22') ? "Requested document could not be downloaded within ${retryMaxTimeSecs} secs." : e.message
-        error("Failed to download ${url}: ${reason}")
-    }
+	try {
+		psl.runCmd(curlCmd)
+	} catch(e) {
+		String reason =
+			e.message && e.message.endsWith('exit code 22') ? "Requested document could not be downloaded within ${retryMaxTimeSecs} secs." : e.message
+		error("Failed to download ${url}: ${reason}")
+	}
 
-    if (!fileExists(dest)) {
-        error("Failed to download: ${url}")
-    }
+	if (!fileExists(dest)) {
+		error("Failed to download: ${url}")
+	}
 }
 
 def downloadAndExtract(String url) {
-    String tmpPath = pwd(tmp: true)
-    String archive = "${tmpPath}/archive.zip"
-    downloadFile(url, archive)
-    unzip(zipFile: archive)
-    dir(path: tmpPath) {
-        deleteDir() // remove archive zip
-    }
+	String tmpPath = pwd(tmp: true)
+	String archive = "${tmpPath}/archive.zip"
+	downloadFile(url, archive)
+	unzip(zipFile: archive)
+	dir(path: tmpPath) {
+		deleteDir() // remove archive zip
+	}
 }
