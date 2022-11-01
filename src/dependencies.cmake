@@ -28,20 +28,37 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
 
 
+### read dependencies properties
+
+function(get_dependencies_properties PROP_FILE)
+	file(STRINGS "${PROP_FILE}" PROPS)
+	foreach(P IN LISTS PROPS)
+		string(FIND "${P}" "#" HASHPOS)
+		if(NOT ${HASHPOS} EQUAL 0)
+			string(REPLACE "=" ";" L "${P}")
+			list(GET L 0 PN)
+			list(GET L 1 PV)
+			set(${PN} ${PV} PARENT_SCOPE)
+		endif()
+	endforeach()
+endfunction()
+
+# workaround: copy the file once to register it as a source dependency
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dependencies.properties dependencies.properties COPYONLY)
+get_dependencies_properties(${CMAKE_CURRENT_BINARY_DIR}/dependencies.properties)
+
+
 ### look for the PRT libraries
 
 # if prt_DIR is not provided, download PRT from its github home
 if(NOT prt_DIR)
 	if(PYPRT_WINDOWS)
-		set(PRT_OS "win10")
-		set(PRT_TC "vc1427")
+		set(PRT_CLS "${PRT_CLS_WINDOWS}")
 	elseif(PYPRT_LINUX)
-		set(PRT_OS "rhel7")
-		set(PRT_TC "gcc93")
+		set(PRT_CLS "${PRT_CLS_LINUX}")
 	endif()
 
-	set(PRT_VERSION "2.7.8538")
-	set(PRT_ARCHIVE "esri_ce_sdk-${PRT_VERSION}-${PRT_OS}-${PRT_TC}-x86_64-rel-opt.zip")
+	set(PRT_ARCHIVE "esri_ce_sdk-${PRT_VERSION}-${PRT_CLS}.zip")
 	set(PRT_URL     "https://github.com/esri/cityengine-sdk/releases/download/${PRT_VERSION}/${PRT_ARCHIVE}")
 
 	FetchContent_Declare(prt URL ${PRT_URL} DOWNLOAD_NO_EXTRACT $ENV{PRT_EXTRACTION_WORKAROUND})
@@ -75,15 +92,19 @@ list(APPEND PRT_EXT_RESOURCES ${PRT_EXTENSION_PATH}/usd)
 
 ### look for PyBind11
 
-FetchContent_Declare(
- 	pybind11
-	GIT_REPOSITORY https://github.com/pybind/pybind11.git
-	GIT_TAG v2.2.4
-	GIT_SUBMODULES ""
-)
-
-FetchContent_GetProperties(pybind11)
-if(NOT pybind11_POPULATED)
-	FetchContent_Populate(pybind11)
-	add_subdirectory(${pybind11_SOURCE_DIR} ${pybind11_BINARY_DIR})
+if(pybind11_DIR)
+	add_subdirectory(${pybind11_DIR} ${CMAKE_CURRENT_BINARY_DIR}/pybind11-build)
+else()
+	# if pybind11_DIR is not provided, download pybind11 from its github home
+	FetchContent_Declare(
+		pybind11
+		GIT_REPOSITORY https://github.com/pybind/pybind11.git
+		GIT_TAG "v${PYBIND11_VERSION}"
+		GIT_SUBMODULES ""
+	)
+	FetchContent_GetProperties(pybind11)
+	if(NOT pybind11_POPULATED)
+		FetchContent_Populate(pybind11)
+		add_subdirectory(${pybind11_SOURCE_DIR} ${pybind11_BINARY_DIR})
+	endif()
 endif()
