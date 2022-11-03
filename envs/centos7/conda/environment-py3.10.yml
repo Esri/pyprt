@@ -1,9 +1,7 @@
 channels:
   - defaults
-  - anaconda
-  - esri
 dependencies:
   - python=3.10
-  - sphinx
-  - conda-build
-  - conda-verify
+  - anaconda::sphinx
+  - anaconda::conda-build
+  - anaconda::conda-verify
