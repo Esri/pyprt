@@ -44,8 +44,6 @@ def get_hole_info(geo):
     # we assume that interior rings follow "their" exterior ring
 
     shapely_geo = geo.as_shapely
-    print(geo.type)
-    print(shapely_geo)
 
     shapely_rings = []
     for shapely_part in shapely_geo.geoms:
