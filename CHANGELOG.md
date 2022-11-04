@@ -5,6 +5,7 @@
 ### Changed
 * Internal update to PRT 2.7.8538 (CityEngine 2022.1)
 * Rebuilt test RPKs with CityEngine 2022.1
+* Geometry holes handling mechanism using Shapely library
 
 
 ## v1.5.0 (2022-01-10)
