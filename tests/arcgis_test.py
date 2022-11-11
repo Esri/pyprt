@@ -38,3 +38,41 @@ class ArcGISAPITest(unittest.TestCase):
         initial_geometries = arcgis_to_pyprt(fset)
 
         self.assertEqual(len(initial_geometries), 2)
+
+    def test_arcgis_with_holes(self):
+        
+        from arcgis.gis import GIS
+        from pyprt.pyprt_arcgis import arcgis_to_pyprt
+
+        gis = GIS()
+        shapes_id = 'd9e727c94cf041d1a353cd43b1c05d0e'
+        item = gis.content.get(shapes_id)
+        shapes_set = item.layers[0].query(return_z=True)
+
+        initial_geometries_from_set = arcgis_to_pyprt(shapes_set)
+
+        rpk = asset_file('FacesHolesVerticesrule.rpk')
+        attrs = {}
+
+        m = pyprt.ModelGenerator(initial_geometries_from_set)
+        models = m.generate_model(
+            [attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
+
+        expected_content = ("14\n"
+                            "9\n"
+                            "2\n"
+                            "14\n"
+                            "9\n"
+                            "0\n"
+                            "16\n"
+                            "10\n"
+                            "0\n"
+                            "26\n"
+                            "15\n"
+                            "4\n")
+            
+        actual_content = ""
+        for model in models:
+            actual_content += model.get_cga_prints()
+
+        self.assertEqual(expected_content,actual_content)

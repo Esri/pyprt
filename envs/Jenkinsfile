@@ -32,7 +32,7 @@ psl.runsHere('production')
 
 @Field final String DOCKER_REGISTRY  = 'zrh-dreg-sp-1.esri.com'
 @Field final String DOCKER_PROJECT   = "${DOCKER_REGISTRY}/pyprt/"
-@Field final String DOCKER_IMAGE_REV = 'v6' // target revision of the generated images
+@Field final String DOCKER_IMAGE_REV = 'v7' // target revision of the generated images
 
 @Field final String REPO   = 'git@github.com:esri/pyprt.git'
 @Field final String SOURCE = 'pyprt.git'
@@ -145,7 +145,7 @@ def taskBuildDockerImage(cfg) {
 
 	dir(path: SOURCE) {
 		docker.withRegistry("https://${DOCKER_REGISTRY}", 'jenkins-pyprt-dreg-robot') {
-			def dockerImage = docker.build(image, "-m 4GB --rm -f ${dockerFile} ${buildArgs} ${labelArgs} .")
+			def dockerImage = docker.build(image, "-m 8GB --rm -f ${dockerFile} ${buildArgs} ${labelArgs} .")
 			dockerImage.push(tag)
 			psl.runCmd("docker image prune -a -f --filter label=${buildLabel}")
 		}

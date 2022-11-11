@@ -5,6 +5,7 @@
 ### Changed
 * Internal update to PRT 2.7.8538 (CityEngine 2022.1)
 * Rebuilt test RPKs with CityEngine 2022.1
+* `pyprt_arcgis` module: added handling of polygons holes (inner rings) based on Shapely
 
 
 ## v1.5.0 (2022-01-10)
