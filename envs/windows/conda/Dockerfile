@@ -13,6 +13,9 @@ WORKDIR C:\temp\pyprt
 
 ARG PY_VER
 COPY envs/windows/conda/environment-py${PY_VER}.yml ./environment.yml
+RUN conda update conda
+RUN conda clean --all --yes
+RUN conda config -v --system --set remote_backoff_factor 2 --set remote_connect_timeout_secs 20 --set remote_max_retries 8 --set remote_read_timeout_secs 120
 RUN conda env create -vv -n pyprt --file environment.yml
 
 # https://devblogs.microsoft.com/cppblog/using-msvc-in-a-docker-container-for-your-c-projects/
