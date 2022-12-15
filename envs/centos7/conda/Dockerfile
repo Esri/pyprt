@@ -23,7 +23,7 @@ RUN bash miniconda.sh -bfp ./conda && \
     conda/bin/conda install -y python=${PY_VER} && \
     conda/bin/conda update conda && \
     conda/bin/conda clean --all --yes && \
-    conda/bin/conda config -v --system --set remote_backoff_factor 2 --set remote_connect_timeout_secs 20 --set remote_max_retries 8 --set remote_read_timeout_secs 120
+    conda/bin/conda config -v --system --set remote_backoff_factor 2 --set remote_connect_timeout_secs 60 --set remote_max_retries 8 --set remote_read_timeout_secs 240
 
 COPY envs/centos7/conda/environment-py${PY_VER}.yml ./environment.yml
 RUN ./conda/bin/conda env create -vv --prefix ./pyprt-conda-env --file ./environment.yml
