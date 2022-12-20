@@ -94,7 +94,7 @@ stage('prepare') {
 }
 
 stage('build-base-images') {
-	cepl.runParallel(taskGenBuildDockerBaseImage())
+	//cepl.runParallel(taskGenBuildDockerBaseImage())
 }
 
 stage('build-images') {
