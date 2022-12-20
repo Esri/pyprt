@@ -7,8 +7,8 @@
 * Rebuilt test RPKs with CityEngine 2022.1
 * `pyprt_arcgis` module: added handling of polygons holes (inner rings) based on Shapely
 * Modified PRT and PyBind11 fetch in the build system
-* Simplified the environment files to the minimal necessary packages
-* Updated environment files
+* Cleaned and updated conda environment files.
+
 * Removed unnecessary PRT import libraries
 * Build Python with SSL support in Linux Docker images
 * Improved conda environments pipeline
