@@ -15,7 +15,7 @@
 
 ### Added
 * Added pre-built wheels and conda packages for Python 3.10
-* New setup.py flag for externally provided PyBind11 sources
+* New CMake flag `pybind11_DIR` and env var `PYBIND11_DIR` for setup.py to let users specify a custom copy of PyBind11.
 * [New example (number 10)](https://github.com/esri/pyprt-examples) about updating Scene Layers used in Web Scenes.
 
 
