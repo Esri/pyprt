@@ -6,21 +6,18 @@
 * Internal update to PRT 2.7.8538 (CityEngine 2022.1)
 * Rebuilt test RPKs with CityEngine 2022.1
 * `pyprt_arcgis` module: added handling of polygons holes (inner rings) based on Shapely
-* Modified PRT and PyBind11 fetch in the build system
-* Cleaned and updated conda environment files.
-
-* Stop shipping unnecessary MSVC import libraries for PRT in the packages.
+* Cleaned and updated environment files
 * Build Python with SSL support in Linux Docker images
 * Improved conda environments pipeline
 
 ### Added
 * Added pre-built wheels and conda packages for Python 3.10
-* New CMake flag `pybind11_DIR` and env var `PYBIND11_DIR` for setup.py to let users specify a custom copy of PyBind11.
-* [New example (number 10)](https://github.com/esri/pyprt-examples) about updating Scene Layers used in Web Scenes.
-
+* New CMake flag `pybind11_DIR` and env var `PYBIND11_DIR` for setup.py to let users specify a custom copy of PyBind11
+* [New example (number 10)](https://github.com/esri/pyprt-examples) about updating Scene Layers used in Web Scenes
 
 ### Removed
 * Removed Python 3.6 support
+* Stop shipping unnecessary MSVC import libraries for PRT in the packages
 
 ## v1.5.0 (2022-01-10)
 
