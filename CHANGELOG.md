@@ -11,6 +11,7 @@
 * Updated environment files
 * Removed unnecessary PRT import libraries
 * Build Python with SSL support in Linux Docker images
+* Improved conda environments pipeline
 
 ### Added
 * Added pre-built wheels and conda packages for Python 3.10
