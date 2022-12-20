@@ -9,7 +9,7 @@
 * Modified PRT and PyBind11 fetch in the build system
 * Cleaned and updated conda environment files.
 
-* Removed unnecessary PRT import libraries
+* Stop shipping unnecessary MSVC import libraries for PRT in the packages.
 * Build Python with SSL support in Linux Docker images
 * Improved conda environments pipeline
 
