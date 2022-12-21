@@ -1,6 +1,6 @@
 # PyPRT ChangeLog
 
-## v1.6.0 (2022-XX-XX)
+## v1.6.0 (2022-12-21)
 
 ### Added
 * Added support for Rule Packages (RPK) created with CityEngine 2022.1
@@ -9,7 +9,7 @@
 * [New example (number 10)](https://github.com/esri/pyprt-examples) about updating Scene Layers used in Web Scenes
 
 ### Changed
-* Update to PRT 2.7.8538.
+* Update to PRT 2.7.8538
 * Rebuilt test RPKs with CityEngine 2022.1
 * `pyprt_arcgis` module: added handling of polygons holes (inner rings) based on Shapely
 * Cleaned and updated environment files
