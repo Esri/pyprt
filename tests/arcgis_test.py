@@ -47,7 +47,7 @@ class ArcGISAPITest(unittest.TestCase):
         gis = GIS()
         shapes_id = 'd9e727c94cf041d1a353cd43b1c05d0e'
         item = gis.content.get(shapes_id)
-        shapes_set = item.layers[0].query()
+        shapes_set = item.layers[0].query(return_z=True)
 
         initial_geometries_from_set = arcgis_to_pyprt(shapes_set)
 

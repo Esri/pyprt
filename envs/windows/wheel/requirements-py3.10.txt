@@ -1,7 +1,6 @@
-arcgis
 pkginfo
-Shapely
 Sphinx
 twine
 wheel
 xmlrunner
+

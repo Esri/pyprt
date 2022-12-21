@@ -25,16 +25,21 @@ from distutils import log
 from sphinx.setup_command import BuildDoc
 
 try:
-    from distutils.command.bdist_conda import CondaDistribution
+    try:
+        from conda_build.bdist_conda import CondaDistribution
 
-    distclass = CondaDistribution
+        distclass = CondaDistribution
+    except:
+        from distutils.command.bdist_conda import CondaDistribution # this will be dropped with the removal of Python 3.6
+
+        distclass = CondaDistribution
 except:
     distclass = []
 
 pyprt_name = 'PyPRT'
 pyprt_author = 'Esri R&D Center Zurich'
 pyprt_copyright = '(c) 2022, ' + pyprt_author
-pyprt_version = '1.5.0'  # keep consistent with __version__ in pyprt/__init__.py
+pyprt_version = '1.6.0'  # keep consistent with __version__ in pyprt/__init__.py
 
 record_file = os.path.join(os.path.realpath(os.curdir), pyprt_name + '.egg-info', 'record_setup_develop_files.txt')
 
@@ -159,6 +164,10 @@ class CMakeBuild(build_ext):
         if prt_dir != '':
             cmake_configure_command.append('-Dprt_DIR={}'.format(prt_dir))
 
+        pybind11_dir = os.getenv('PYBIND11_DIR', '')
+        if pybind11_dir != '':
+            cmake_configure_command.append('-Dpybind11_DIR={}'.format(pybind11_dir))
+
         self.spawn(cmake_configure_command)
 
         self.announce('Building binaries', level=3)
@@ -259,7 +268,7 @@ setup(
                  'Topic :: Scientific/Engineering',
                  'Topic :: Software Development :: Libraries :: Python Modules'],
     zip_safe=False,
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     command_options={
         'build_doc': {
             'project': ('setup.py', pyprt_name),

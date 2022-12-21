@@ -32,7 +32,7 @@ psl.runsHere('production')
 
 @Field final String DOCKER_REGISTRY  = 'zrh-dreg-sp-1.esri.com'
 @Field final String DOCKER_PROJECT   = "${DOCKER_REGISTRY}/pyprt/"
-@Field final String DOCKER_IMAGE_REV = 'v5' // target revision of the generated images
+@Field final String DOCKER_IMAGE_REV = 'v6' // target revision of the generated images
 
 @Field final String REPO   = 'git@github.com:esri/pyprt.git'
 @Field final String SOURCE = 'pyprt.git'
@@ -42,10 +42,10 @@ psl.runsHere('production')
 @Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
 
-@Field final Map PY36 = [ py: '3.6' ]
 @Field final Map PY37 = [ py: '3.7' ]
 @Field final Map PY38 = [ py: '3.8' ]
 @Field final Map PY39 = [ py: '3.9' ]
+@Field final Map PY310 = [ py: '3.10' ]
 
 @Field final Map BASE = [ kind: 'base' ]
 @Field final Map WHEEL = [ kind: 'wheel' ]
@@ -63,16 +63,12 @@ psl.runsHere('production')
 @Field final List CONFIGS_BASE_IMAGES = [
 	composeConfig(null, BASE, LINUX_TOOLCHAIN),
 	composeConfig(null, BASE, WINDOWS_TOOLCHAIN),
-	composeConfig(PY36, BASE, WINDOWS_TOOLCHAIN),
 	composeConfig(PY37, BASE, WINDOWS_TOOLCHAIN),
 	composeConfig(PY38, BASE, WINDOWS_TOOLCHAIN),
 	composeConfig(PY39, BASE, WINDOWS_TOOLCHAIN),
+	composeConfig(PY310, BASE, WINDOWS_TOOLCHAIN),
 ]
 @Field final List CONFIGS_IMAGES = [
-	composeConfig(PY36, WHEEL, LINUX_TOOLCHAIN),
-	composeConfig(PY36, WHEEL, WINDOWS_TOOLCHAIN),
-	composeConfig(PY36, CONDA, LINUX_TOOLCHAIN),
-	composeConfig(PY36, CONDA, WINDOWS_TOOLCHAIN),
 	composeConfig(PY37, WHEEL, WINDOWS_TOOLCHAIN),
 	composeConfig(PY37, CONDA, LINUX_TOOLCHAIN),
 	composeConfig(PY37, CONDA, WINDOWS_TOOLCHAIN),
@@ -84,6 +80,10 @@ psl.runsHere('production')
 	composeConfig(PY39, WHEEL, WINDOWS_TOOLCHAIN),
 	composeConfig(PY39, CONDA, LINUX_TOOLCHAIN),
 	composeConfig(PY39, CONDA, WINDOWS_TOOLCHAIN),
+	composeConfig(PY310, WHEEL, LINUX_TOOLCHAIN),
+	composeConfig(PY310, WHEEL, WINDOWS_TOOLCHAIN),
+	composeConfig(PY310, CONDA, LINUX_TOOLCHAIN),
+	composeConfig(PY310, CONDA, WINDOWS_TOOLCHAIN),
 ]
 
 
@@ -94,7 +94,7 @@ stage('prepare') {
 }
 
 stage('build-base-images') {
-	cepl.runParallel(taskGenBuildDockerBaseImage())
+	//cepl.runParallel(taskGenBuildDockerBaseImage())
 }
 
 stage('build-images') {
@@ -138,12 +138,17 @@ def taskBuildDockerImage(cfg) {
 	final String dockerFile = getDockerFile(cfg)
 	final String image = getDockerImage(cfg)
 	final String tag = getDockerTag(cfg)
-	final String dockerArgs = getDockerArgs(cfg)
+	final String buildArgs = getBuildArgs(cfg)
+	final String targetArgs = getTargetArgs(cfg)
+
+	final String buildLabel = "build=${tag}-${BUILD_ID}"
+	final String labelArgs = "--label ${buildLabel}"
 
 	dir(path: SOURCE) {
 		docker.withRegistry("https://${DOCKER_REGISTRY}", 'jenkins-pyprt-dreg-robot') {
-			def dockerImage = docker.build(image, "-m 4GB --rm -f ${dockerFile} ${dockerArgs} .")
+			def dockerImage = docker.build(image, "-m 8GB --rm -f ${dockerFile} ${buildArgs} ${labelArgs} ${targetArgs} .")
 			dockerImage.push(tag)
+			psl.runCmd("docker image prune -a -f --filter label=${buildLabel}")
 		}
 	}
 }
@@ -161,8 +166,8 @@ Map composeConfig(py, kind, tc) {
 
 String getDockerFile(cfg) {
 	String path = "envs/${cfg.os}/${cfg.kind}/Dockerfile"
-	if (cfg.py == PY39.py && cfg.os == OS_CENTOS7 && cfg.kind == WHEEL.kind)
-		path += '-py3.9' // workaround: no Python 3.9 packages available for CentOS7
+	if ((cfg.py == PY39.py || cfg.py == PY310.py) && cfg.os == OS_CENTOS7 && cfg.kind == WHEEL.kind)
+		path += '-custom-py' // workaround: no Python 3.9 or 3.10 RPMs available
 	else if (cfg.py != null && cfg.kind == BASE.kind)
 		path += '-py' // base images from pre-built python images
 	return path
@@ -178,21 +183,38 @@ String getDockerBaseTag(cfg) {
 
 String getDockerTag(cfg) {
 	String tag = getDockerBaseTag(cfg)
-	if (cfg.kind != BASE.kind)
-		tag += "-py${cfg.py}-${cfg.kind}-${cfg.tc}"
 	if (cfg.py != null)
 		tag += "-py${cfg.py}"
+	if (cfg.kind != BASE.kind)
+		tag += "-${cfg.kind}-${cfg.tc}"
 	return tag
 }
 
-String getDockerArgs(cfg) {
+String getBuildArgs(cfg) {
 	String args = ''
 	String base_tag = getDockerBaseTag(cfg)
 	if (cfg.kind != BASE.kind)
 		args += " --build-arg REGISTRY=${DOCKER_PROJECT} --build-arg BASE_TAG=${base_tag}"
 	if (cfg.py != null)
 		args += " --build-arg PY_VER=${cfg.py}"
+
+    // specify the exact python version to build on linux for the wheels
+	if (cfg.os == OS_CENTOS7 && cfg.kind == WHEEL.kind && cfg.py == PY39.py)
+		args += " --build-arg PY_VER_MICRO=.13"
+	else if (cfg.os == OS_CENTOS7 && cfg.kind == WHEEL.kind && cfg.py == PY310.py)
+		args += " --build-arg PY_VER_MICRO=.6"
+
 	if (cfg.os == OS_CENTOS7)
 		args += ' --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+	return args
+}
+
+// for conda builds:
+// 1. we install arcgis in an extra layer to filter out the yet unsupported Python 3.10
+// 2. we want to install it after env creation anyways to avoid the conda resolver blowing up
+String getTargetArgs(cfg) {
+	String args = ''
+	if (cfg.py == PY310.py && cfg.kind == CONDA.kind)
+		args = '--target req_install'
 	return args
 }
