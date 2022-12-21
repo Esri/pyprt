@@ -5,3 +5,4 @@ Sphinx
 twine
 wheel
 xmlrunner
+numpy==1.21.6
