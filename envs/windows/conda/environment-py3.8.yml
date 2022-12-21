@@ -7,4 +7,3 @@ dependencies:
   - anaconda::sphinx
   - conda-forge::shapely
   - conda-forge::xmlrunner
-  - esri::arcgis

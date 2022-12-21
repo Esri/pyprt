@@ -94,7 +94,7 @@ stage('prepare') {
 }
 
 stage('build-base-images') {
-	cepl.runParallel(taskGenBuildDockerBaseImage())
+	//cepl.runParallel(taskGenBuildDockerBaseImage())
 }
 
 stage('build-images') {
@@ -139,13 +139,14 @@ def taskBuildDockerImage(cfg) {
 	final String image = getDockerImage(cfg)
 	final String tag = getDockerTag(cfg)
 	final String buildArgs = getBuildArgs(cfg)
-	
+	final String targetArgs = getTargetArgs(cfg)
+
 	final String buildLabel = "build=${tag}-${BUILD_ID}"
 	final String labelArgs = "--label ${buildLabel}"
 
 	dir(path: SOURCE) {
 		docker.withRegistry("https://${DOCKER_REGISTRY}", 'jenkins-pyprt-dreg-robot') {
-			def dockerImage = docker.build(image, "-m 8GB --rm -f ${dockerFile} ${buildArgs} ${labelArgs} .")
+			def dockerImage = docker.build(image, "-m 8GB --rm -f ${dockerFile} ${buildArgs} ${labelArgs} ${targetArgs} .")
 			dockerImage.push(tag)
 			psl.runCmd("docker image prune -a -f --filter label=${buildLabel}")
 		}
@@ -205,5 +206,15 @@ String getBuildArgs(cfg) {
 
 	if (cfg.os == OS_CENTOS7)
 		args += ' --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+	return args
+}
+
+// for conda builds:
+// 1. we install arcgis in an extra layer to filter out the yet unsupported Python 3.10
+// 2. we want to install it after env creation anyways to avoid the conda resolver blowing up
+String getTargetArgs(cfg) {
+	String args = ''
+	if (cfg.py == PY310.py && cfg.kind == CONDA.kind)
+		args = '--target req_install'
 	return args
 }
