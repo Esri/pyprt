@@ -110,5 +110,5 @@ def arcgis_to_pyprt(feature_set):
                 initial_geometry = pyprt.InitialShape(vert_coord_list, face_indices_list, face_count_list, holes)
                 initial_geometries.append(initial_geometry)
         except:
-            print(f'Ignoring invalid feature with id = {feature.get_field("OBJECTID")}.')
+            print(f'Ignoring invalid feature with id = {feature.get_value("objectid")}.')
     return initial_geometries
