@@ -2,18 +2,19 @@
 
 ## v1.6.0 (2022-XX-XX)
 
+### Added
+* Added support for Rule Packages (RPK) created with CityEngine 2022.1
+* Added pre-built wheels and conda packages for Python 3.10
+* New CMake flag `pybind11_DIR` and env var `PYBIND11_DIR` for setup.py to let users specify a custom copy of PyBind11
+* [New example (number 10)](https://github.com/esri/pyprt-examples) about updating Scene Layers used in Web Scenes
+
 ### Changed
-* Internal update to PRT 2.7.8538 (CityEngine 2022.1)
+* Update to PRT 2.7.8538.
 * Rebuilt test RPKs with CityEngine 2022.1
 * `pyprt_arcgis` module: added handling of polygons holes (inner rings) based on Shapely
 * Cleaned and updated environment files
 * Build Python with SSL support in Linux Docker images
 * Improved conda environments pipeline
-
-### Added
-* Added pre-built wheels and conda packages for Python 3.10
-* New CMake flag `pybind11_DIR` and env var `PYBIND11_DIR` for setup.py to let users specify a custom copy of PyBind11
-* [New example (number 10)](https://github.com/esri/pyprt-examples) about updating Scene Layers used in Web Scenes
 
 ### Removed
 * Removed Python 3.6 support
