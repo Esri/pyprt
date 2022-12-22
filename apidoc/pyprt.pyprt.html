@@ -4,14 +4,17 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pyprt module &#8212; PyPRT 1.5.0 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>pyprt module &#8212; PyPRT 1.6.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="pyprt.pyprt_arcgis module" href="pyprt.pyprt_arcgis.html" />
@@ -32,7 +35,7 @@
         <li class="right" >
           <a href="pyprt.html" title="pyprt package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.6.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="pyprt.html" accesskey="U">pyprt package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt module</a></li> 
       </ul>
@@ -43,105 +46,105 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-pyprt.pyprt.bin.pyprt">
-<span id="pyprt-module"></span><h1>pyprt module<a class="headerlink" href="#module-pyprt.pyprt.bin.pyprt" title="Permalink to this headline">¶</a></h1>
+  <section id="module-pyprt.pyprt.bin.pyprt">
+<span id="pyprt-module"></span><h1>pyprt module<a class="headerlink" href="#module-pyprt.pyprt.bin.pyprt" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
-<dt id="pyprt.pyprt.bin.pyprt.GeneratedModel">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">GeneratedModel</span></code><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.GeneratedModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeneratedModel</span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>The GeneratedModel instance contains the generated 3D geometry. This class is only employed if the <em>com.esri.pyprt.PyEncoder</em> encoder is used in the <a class="reference internal" href="#pyprt.pyprt.bin.pyprt.ModelGenerator" title="pyprt.pyprt.bin.pyprt.ModelGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelGenerator</span></code></a> instance.</p>
 <dl class="py method">
-<dt id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_attributes">
-<code class="sig-name descname"><span class="pre">get_attributes</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_attributes">
+<span class="sig-name descname"><span class="pre">get_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_attributes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a dictionary with the CGA rule attributes name and value used to generate this model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_cga_errors">
-<code class="sig-name descname"><span class="pre">get_cga_errors</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_cga_errors" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_cga_errors">
+<span class="sig-name descname"><span class="pre">get_cga_errors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_cga_errors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of the CGA and asset errors messages of this model. The asset error messages additionally
 contain the key and URI of the asset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[str]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_cga_prints">
-<code class="sig-name descname"><span class="pre">get_cga_prints</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_cga_prints" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_cga_prints">
+<span class="sig-name descname"><span class="pre">get_cga_prints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_cga_prints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a string with all the CGA print outputs of this model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_faces">
-<code class="sig-name descname"><span class="pre">get_faces</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_faces" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_faces">
+<span class="sig-name descname"><span class="pre">get_faces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_faces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the vertex indices count per face of the generated 3D geometry. If the <code class="docutils literal notranslate"><span class="pre">'emitGeometry'</span></code> entry of the
 encoder options dictionary has been set to <em>False</em>, this function returns an empty vector.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[int]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_indices">
-<code class="sig-name descname"><span class="pre">get_indices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_indices" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_indices">
+<span class="sig-name descname"><span class="pre">get_indices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_indices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the vertex indices of the generated 3D geometry, for all faces. If the <code class="docutils literal notranslate"><span class="pre">'emitGeometry'</span></code> entry of the encoder
 options dictionary has been set to <em>False</em>, this function returns an empty vector.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[int]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_initial_shape_index">
-<code class="sig-name descname"><span class="pre">get_initial_shape_index</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_initial_shape_index" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_initial_shape_index">
+<span class="sig-name descname"><span class="pre">get_initial_shape_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_initial_shape_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the index of the initial shape on which the generated geometry has been built. The
 <a class="reference internal" href="#pyprt.pyprt.bin.pyprt.ModelGenerator" title="pyprt.pyprt.bin.pyprt.ModelGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelGenerator</span></code></a> class is instantiated by specifying a list of
 <a class="reference internal" href="#pyprt.pyprt.bin.pyprt.InitialShape" title="pyprt.pyprt.bin.pyprt.InitialShape"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialShape</span></code></a> instances. This index indicates the corresponding
 <a class="reference internal" href="#pyprt.pyprt.bin.pyprt.InitialShape" title="pyprt.pyprt.bin.pyprt.InitialShape"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialShape</span></code></a> instance of that list.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_report">
-<code class="sig-name descname"><span class="pre">get_report</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_report" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_report">
+<span class="sig-name descname"><span class="pre">get_report</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_report" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the CGA report of the generated 3D geometry. This report dictionary is empty if the CGA rule
 file employed does not output any report or if the <code class="docutils literal notranslate"><span class="pre">'emitReport'</span></code> entry of the encoder options
 dictionary has been set to <em>False</em>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_vertices">
-<code class="sig-name descname"><span class="pre">get_vertices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_vertices" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.GeneratedModel.get_vertices">
+<span class="sig-name descname"><span class="pre">get_vertices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_vertices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the generated 3D geometry vertex coordinates as a series of (x, y, z) triplets. Its size is 3 x the
 number of vertices. If the <code class="docutils literal notranslate"><span class="pre">'emitGeometry'</span></code> entry of the encoder options dictionary has been set to <em>False</em>,
 this function returns an empty vector.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[float]</p>
 </dd>
 </dl>
@@ -150,8 +153,8 @@ this function returns an empty vector.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="pyprt.pyprt.bin.pyprt.InitialShape">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">InitialShape</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.InitialShape" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.InitialShape">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InitialShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.InitialShape" title="Permalink to this definition">¶</a></dt>
 <dd><p>The initial shape corresponds to the geometry on which the CGA rule will be applied.</p>
 <ol class="arabic simple">
 <li><p><strong>__init__</strong> (<em>vert_coordinates</em>)</p></li>
@@ -159,10 +162,10 @@ this function returns an empty vector.</p>
 <p>Constructs an InitialShape with one polygon by accepting a list of direct vertex coordinates. The
 vertex order is expected to be counter-clockwise.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>vert_coordinates</strong> – List[float]</p>
 </dd>
-<dt class="field-even">Example</dt>
+<dt class="field-even">Example<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">shape1</span> <span class="pre">=</span> <span class="pre">pyprt.InitialShape([0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">10,</span> <span class="pre">10,</span> <span class="pre">0,</span> <span class="pre">10,</span> <span class="pre">10,</span> <span class="pre">0,</span> <span class="pre">0])</span></code></p>
 </dd>
 </dl>
@@ -178,7 +181,7 @@ It is a list of lists, that assign hole-faces to faces. It follows this structur
 </div></blockquote>
 <p>Holes must have the opposite vertex-ordering as the encircling face.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>vert_coordinates</strong> – List[float]</p></li>
 <li><p><strong>face_indices</strong> – List[int]</p></li>
@@ -186,7 +189,7 @@ It is a list of lists, that assign hole-faces to faces. It follows this structur
 <li><p><strong>holes</strong> – List[List[int]]</p></li>
 </ul>
 </dd>
-<dt class="field-even">Examples</dt>
+<dt class="field-even">Examples<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">shape_without_holes</span> <span class="pre">=</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">pyprt.InitialShape([0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">10,</span> <span class="pre">10,</span> <span class="pre">0,</span> <span class="pre">10,</span> <span class="pre">10,</span> <span class="pre">0,</span> <span class="pre">0],</span> <span class="pre">[0,</span> <span class="pre">1,</span> <span class="pre">2,</span> <span class="pre">3],</span> <span class="pre">[4])</span></code></p>
 </dd>
@@ -201,55 +204,55 @@ It is a list of lists, that assign hole-faces to faces. It follows this structur
 <p>Constructs an InitialShape by accepting the path to a shape file. This can be an OBJ file, Collada, etc.
 A list of supported file formats can be found at <a class="reference external" href="https://esri.github.io/cityengine-sdk/html/esri_prt_codecs.html">PRT geometry encoders</a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>initial_shape_path</strong> – str</p>
 </dd>
-<dt class="field-even">Example</dt>
+<dt class="field-even">Example<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">shape3</span> <span class="pre">=</span> <span class="pre">pyprt.InitialShape(os.path.join(os.getcwd(),</span> <span class="pre">'myInitialShape.obj'))</span></code></p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="pyprt.pyprt.bin.pyprt.InitialShape.get_face_counts_count">
-<code class="sig-name descname"><span class="pre">get_face_counts_count</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.InitialShape.get_face_counts_count" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.InitialShape.get_face_counts_count">
+<span class="sig-name descname"><span class="pre">get_face_counts_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.InitialShape.get_face_counts_count" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of faces of the initial shape, only if the <a class="reference internal" href="#pyprt.pyprt.bin.pyprt.InitialShape" title="pyprt.pyprt.bin.pyprt.InitialShape"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialShape</span></code></a> has been initialized from a
 list of vertex coordinates.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="pyprt.pyprt.bin.pyprt.InitialShape.get_index_count">
-<code class="sig-name descname"><span class="pre">get_index_count</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.InitialShape.get_index_count" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.InitialShape.get_index_count">
+<span class="sig-name descname"><span class="pre">get_index_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.InitialShape.get_index_count" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the length of the vector containing the vertex indices of the initial shape, only if the
 <a class="reference internal" href="#pyprt.pyprt.bin.pyprt.InitialShape" title="pyprt.pyprt.bin.pyprt.InitialShape"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialShape</span></code></a> has been initialized from a list of vertex coordinates.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="pyprt.pyprt.bin.pyprt.InitialShape.get_path">
-<code class="sig-name descname"><span class="pre">get_path</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.InitialShape.get_path" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.InitialShape.get_path">
+<span class="sig-name descname"><span class="pre">get_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.InitialShape.get_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the initial shape file path, if the <a class="reference internal" href="#pyprt.pyprt.bin.pyprt.InitialShape" title="pyprt.pyprt.bin.pyprt.InitialShape"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialShape</span></code></a> has been initialized from a file. Empty otherwise.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="pyprt.pyprt.bin.pyprt.InitialShape.get_vertex_count">
-<code class="sig-name descname"><span class="pre">get_vertex_count</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.InitialShape.get_vertex_count" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.InitialShape.get_vertex_count">
+<span class="sig-name descname"><span class="pre">get_vertex_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.InitialShape.get_vertex_count" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of vertex coordinates of the initial shape, only if the <a class="reference internal" href="#pyprt.pyprt.bin.pyprt.InitialShape" title="pyprt.pyprt.bin.pyprt.InitialShape"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialShape</span></code></a> has been
 initialized from a list of vertex coordinates.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -258,18 +261,18 @@ initialized from a list of vertex coordinates.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="pyprt.pyprt.bin.pyprt.ModelGenerator">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">ModelGenerator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_shapes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.ModelGenerator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.ModelGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ModelGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_shapes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.ModelGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ModelGenerator class will host the data required to procedurally generate the 3D model on a given initial shape.</p>
 <p>The ModelGenerator constructor takes a list of <a class="reference internal" href="#pyprt.pyprt.bin.pyprt.InitialShape" title="pyprt.pyprt.bin.pyprt.InitialShape"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialShape</span></code></a> instances as parameter.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>init_shapes</strong> – List[InitialShape]</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="pyprt.pyprt.bin.pyprt.ModelGenerator.generate_model">
-<code class="sig-name descname"><span class="pre">generate_model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.GeneratedModel" title="pyprt.pyprt.bin.pyprt.GeneratedModel"><span class="pre">GeneratedModel</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.ModelGenerator.generate_model" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.ModelGenerator.generate_model">
+<span class="sig-name descname"><span class="pre">generate_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.GeneratedModel" title="pyprt.pyprt.bin.pyprt.GeneratedModel"><span class="pre">GeneratedModel</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.ModelGenerator.generate_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function does the procedural generation of the models. It outputs a list of <a class="reference internal" href="#pyprt.pyprt.bin.pyprt.GeneratedModel" title="pyprt.pyprt.bin.pyprt.GeneratedModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">GeneratedModel</span></code></a> instances.
 You need to provide one shape attribute dictionary per initial shape or one dictionary that will be applied
 to all initial shapes. The shape attribute dictionary only contains either string, float or bool values, <strong>except</strong> the
@@ -279,12 +282,12 @@ the shape attribute dictionary will contain the CGA input attributes specific to
 <code class="docutils literal notranslate"><span class="pre">get_rpk_attributes_info</span></code> function to know these input attributes). Concerning the encoder, you can use the
 <code class="docutils literal notranslate"><span class="pre">'com.esri.pyprt.PyEncoder'</span></code> or any other geometry encoder. The PyEncoder has these options:
 <code class="docutils literal notranslate"><span class="pre">'emitGeometry'</span></code>, <code class="docutils literal notranslate"><span class="pre">'emitReport'</span></code> and <code class="docutils literal notranslate"><span class="pre">'triangulate'</span></code> whose value is a boolean. The complete list of the other geometry
-encoders can be found <a class="reference external" href="https://esri.github.io/esri-cityengine-sdk/html/esri_prt_codecs.html">here</a>. In
+encoders can be found <a class="reference external" href="https://esri.github.io/cityengine-sdk/html/esri_prt_codecs.html">here</a>. In
 case you are using another geometry encoder than the PyEncoder, you can add an <code class="docutils literal notranslate"><span class="pre">'outputPath'</span></code> entry to
 the shape attribute dictionary to specify where the generated 3D geometry will be outputted. In this case,
 the return value of this <em>generate_model</em> function will be an empty list.</p>
 <dl class="field-list">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>shape_attributes</strong> – List[dict]</p></li>
 <li><p><strong>rule_package_path</strong> – str</p></li>
@@ -292,10 +295,10 @@ the return value of this <em>generate_model</em> function will be an empty list.
 <li><p><strong>encoder_options</strong> – dict</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List[GeneratedModel]</p>
 </dd>
-<dt class="field-odd">Example</dt>
+<dt class="field-odd">Example<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">=</span> <span class="pre">pyprt.ModelGenerator([shape1,</span> <span class="pre">shape2])</span></code></p>
 <p><code class="docutils literal notranslate"><span class="pre">rpk</span> <span class="pre">=</span> <span class="pre">os.path.join(os.getcwd(),</span> <span class="pre">'extrusion_rule.rpk')</span></code></p>
 <p><code class="docutils literal notranslate"><span class="pre">attrs1</span> <span class="pre">=</span> <span class="pre">{'shapeName':</span> <span class="pre">'myShape1',</span> <span class="pre">'seed':</span> <span class="pre">555,</span> <span class="pre">'minBuildingHeight':</span> <span class="pre">30.0}</span></code></p>
@@ -308,42 +311,42 @@ the return value of this <em>generate_model</em> function will be an empty list.
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyprt.pyprt.bin.pyprt.get_rpk_attributes_info">
-<code class="sig-name descname"><span class="pre">get_rpk_attributes_info</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_package_path</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.get_rpk_attributes_info" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.get_rpk_attributes_info">
+<span class="sig-name descname"><span class="pre">get_rpk_attributes_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_package_path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.get_rpk_attributes_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function returns the CGA rule attributes name and value type for the specified rule package path as
 well as a list of the attributes annotations (annotation name, key(s) and value(s)). In case of an unnamed
 annotation parameter, its key is equal to <code class="docutils literal notranslate"><span class="pre">'#NULL#'</span></code>, which can be read using the <code class="docutils literal notranslate"><span class="pre">pyprt.NO_KEY</span></code> constant.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyprt.pyprt.bin.pyprt.initialize_prt">
-<code class="sig-name descname"><span class="pre">initialize_prt</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.initialize_prt" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.initialize_prt">
+<span class="sig-name descname"><span class="pre">initialize_prt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.initialize_prt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialization of PRT. PyPRT functionalities are blocked until the initialization is done.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyprt.pyprt.bin.pyprt.is_prt_initialized">
-<code class="sig-name descname"><span class="pre">is_prt_initialized</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.is_prt_initialized" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.is_prt_initialized">
+<span class="sig-name descname"><span class="pre">is_prt_initialized</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.is_prt_initialized" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function returns <em>True</em> if PRT is initialized, <em>False</em> otherwise.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="pyprt.pyprt.bin.pyprt.shutdown_prt">
-<code class="sig-name descname"><span class="pre">shutdown_prt</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.shutdown_prt" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.shutdown_prt">
+<span class="sig-name descname"><span class="pre">shutdown_prt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.shutdown_prt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shutdown of PRT. The PRT initialization process can be done only once per session/script. Thus, <code class="docutils literal notranslate"><span class="pre">initialize_prt()</span></code> cannot be called after <code class="docutils literal notranslate"><span class="pre">shutdown_prt()</span></code>.</p>
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -352,12 +355,51 @@ annotation parameter, its key is equal to <code class="docutils literal notransl
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="pyprt.html"
-                        title="previous chapter">pyprt package</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="pyprt.pyprt_arcgis.html"
-                        title="next chapter">pyprt.pyprt_arcgis module</a></p>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">pyprt module</a><ul>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.GeneratedModel"><code class="docutils literal notranslate"><span class="pre">GeneratedModel</span></code></a><ul>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_attributes"><code class="docutils literal notranslate"><span class="pre">GeneratedModel.get_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_cga_errors"><code class="docutils literal notranslate"><span class="pre">GeneratedModel.get_cga_errors()</span></code></a></li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_cga_prints"><code class="docutils literal notranslate"><span class="pre">GeneratedModel.get_cga_prints()</span></code></a></li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_faces"><code class="docutils literal notranslate"><span class="pre">GeneratedModel.get_faces()</span></code></a></li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_indices"><code class="docutils literal notranslate"><span class="pre">GeneratedModel.get_indices()</span></code></a></li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_initial_shape_index"><code class="docutils literal notranslate"><span class="pre">GeneratedModel.get_initial_shape_index()</span></code></a></li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_report"><code class="docutils literal notranslate"><span class="pre">GeneratedModel.get_report()</span></code></a></li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.GeneratedModel.get_vertices"><code class="docutils literal notranslate"><span class="pre">GeneratedModel.get_vertices()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.InitialShape"><code class="docutils literal notranslate"><span class="pre">InitialShape</span></code></a><ul>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.InitialShape.get_face_counts_count"><code class="docutils literal notranslate"><span class="pre">InitialShape.get_face_counts_count()</span></code></a></li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.InitialShape.get_index_count"><code class="docutils literal notranslate"><span class="pre">InitialShape.get_index_count()</span></code></a></li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.InitialShape.get_path"><code class="docutils literal notranslate"><span class="pre">InitialShape.get_path()</span></code></a></li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.InitialShape.get_vertex_count"><code class="docutils literal notranslate"><span class="pre">InitialShape.get_vertex_count()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.ModelGenerator"><code class="docutils literal notranslate"><span class="pre">ModelGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.ModelGenerator.generate_model"><code class="docutils literal notranslate"><span class="pre">ModelGenerator.generate_model()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.get_rpk_attributes_info"><code class="docutils literal notranslate"><span class="pre">get_rpk_attributes_info()</span></code></a></li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.initialize_prt"><code class="docutils literal notranslate"><span class="pre">initialize_prt()</span></code></a></li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.is_prt_initialized"><code class="docutils literal notranslate"><span class="pre">is_prt_initialized()</span></code></a></li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.shutdown_prt"><code class="docutils literal notranslate"><span class="pre">shutdown_prt()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="pyprt.html"
+                          title="previous chapter">pyprt package</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="pyprt.pyprt_arcgis.html"
+                          title="next chapter">pyprt.pyprt_arcgis module</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -369,12 +411,12 @@ annotation parameter, its key is equal to <code class="docutils literal notransl
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -394,14 +436,14 @@ annotation parameter, its key is equal to <code class="docutils literal notransl
         <li class="right" >
           <a href="pyprt.html" title="pyprt package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.6.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="pyprt.html" >pyprt package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt module</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright (c) 2022, Esri R&amp;D Center Zurich.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   </body>
 </html>

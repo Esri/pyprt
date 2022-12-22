@@ -5,13 +5,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pyprt.pyprt_arcgis.pyprt_arcgis &#8212; PyPRT 1.5.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <title>pyprt.pyprt_arcgis.pyprt_arcgis &#8212; PyPRT 1.6.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -24,7 +26,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">PyPRT 1.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">PyPRT 1.6.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt.pyprt_arcgis.pyprt_arcgis</a></li> 
       </ul>
@@ -65,7 +67,7 @@
 
 <span class="k">def</span> <span class="nf">add_dimension</span><span class="p">(</span><span class="n">array_coord_2d</span><span class="p">):</span>
     <span class="n">array_coord_3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">array_coord_2d</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">array_coord_3d</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">array_coord_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">array_coord_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">array_coord_3d</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">array_coord_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">array_coord_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
 
 
 <span class="k">def</span> <span class="nf">swap_yz_dimensions</span><span class="p">(</span><span class="n">array_coord</span><span class="p">):</span>
@@ -73,42 +75,47 @@
     <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">array_coord</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
     <span class="n">coord_swap_dim</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">coord_swap_dim</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
     <span class="n">coord_swap_dim</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">coord_swap_dim</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">coord_swap_dim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">coord_swap_dim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">coord_swap_dim</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">coord_swap_dim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">coord_swap_dim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
 
 
-<span class="k">def</span> <span class="nf">holes_conversion</span><span class="p">(</span><span class="n">holes_ind_list</span><span class="p">):</span>
-    <span class="n">holes_dict</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">holes_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">holes_ind_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">h_idx</span> <span class="ow">in</span> <span class="n">holes_ind_list</span><span class="p">:</span>
-            <span class="n">f_idx</span> <span class="o">=</span> <span class="n">h_idx</span>
-            <span class="k">while</span> <span class="n">f_idx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">f_idx</span> <span class="o">-=</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">f_idx</span> <span class="ow">in</span> <span class="n">holes_ind_list</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">f_idx</span> <span class="ow">in</span> <span class="n">holes_dict</span><span class="p">):</span>
-                        <span class="n">holes_dict</span><span class="p">[</span><span class="n">f_idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">h_idx</span><span class="p">]</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">holes_dict</span><span class="p">[</span><span class="n">f_idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h_idx</span><span class="p">)</span>
-                    <span class="k">break</span>
+<div class="viewcode-block" id="get_hole_info"><a class="viewcode-back" href="../../../pyprt.pyprt_arcgis.html#pyprt.pyprt_arcgis.pyprt_arcgis.get_hole_info">[docs]</a><span class="k">def</span> <span class="nf">get_hole_info</span><span class="p">(</span><span class="n">geo</span><span class="p">):</span>
+    <span class="c1"># use Shapely to detect interior rings (holes)</span>
+    <span class="c1"># doing the ccw check is a workaround as sometimes the exterior is actually a hole</span>
+    <span class="c1"># we assume that interior rings follow &quot;their&quot; exterior ring</span>
 
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">holes_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">face_holes</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span><span class="p">]</span>
-            <span class="n">face_holes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="n">holes_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">face_holes</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">holes_list</span>
+    <span class="n">shapely_geo</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">as_shapely</span>
+
+    <span class="n">shapely_rings</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">shapely_part</span> <span class="ow">in</span> <span class="n">shapely_geo</span><span class="o">.</span><span class="n">geoms</span><span class="p">:</span>
+        <span class="n">shapely_rings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shapely_part</span><span class="o">.</span><span class="n">exterior</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">shapely_interior</span> <span class="ow">in</span> <span class="n">shapely_part</span><span class="o">.</span><span class="n">interiors</span><span class="p">:</span>
+            <span class="n">shapely_rings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shapely_interior</span><span class="p">)</span>
+
+    <span class="n">holes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">hole</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">shapely_face_index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">shapely_ring</span> <span class="ow">in</span> <span class="n">shapely_rings</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">shapely_ring</span><span class="o">.</span><span class="n">is_ccw</span><span class="p">:</span>  <span class="c1"># exterior</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hole</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">holes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hole</span><span class="p">)</span>
+            <span class="n">hole</span> <span class="o">=</span> <span class="p">[</span><span class="n">shapely_face_index</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># interior</span>
+            <span class="n">hole</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shapely_face_index</span><span class="p">)</span>
+        <span class="n">shapely_face_index</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hole</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">holes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hole</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">holes</span></div>
 
 
 <div class="viewcode-block" id="arcgis_to_pyprt"><a class="viewcode-back" href="../../../pyprt.pyprt_arcgis.html#pyprt.pyprt_arcgis.pyprt_arcgis.arcgis_to_pyprt">[docs]</a><span class="k">def</span> <span class="nf">arcgis_to_pyprt</span><span class="p">(</span><span class="n">feature_set</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;arcgis_to_pyprt(feature_set) -&gt; List[InitialShape]</span>
 <span class="sd">    This function allows converting an ArcGIS FeatureSet into a list of PyPRT InitialShape instances.</span>
 <span class="sd">    You then typically call the ModelGenerator constructor with the return value if this function as parameter.</span>
-
 <span class="sd">    Parameters:</span>
 <span class="sd">        feature_set: FeatureSet</span>
-
 <span class="sd">    Returns:</span>
 <span class="sd">        List[InitialShape]</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">initial_geometries</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">feature_set</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
@@ -118,15 +125,9 @@
                 <span class="n">pts_cnt</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">vert_coord_list</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="n">face_count_list</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="n">holes_ind_list</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="n">coord_list</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">coordinates</span><span class="p">()</span>
 
                 <span class="k">for</span> <span class="n">face_idx</span><span class="p">,</span> <span class="n">coord_part</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">coord_list</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">coord_part</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-                        <span class="n">in_geo</span> <span class="o">=</span> <span class="n">Geometry</span><span class="p">({</span><span class="s2">&quot;rings&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">coord_part</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]})</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">in_geo</span> <span class="o">=</span> <span class="n">Geometry</span><span class="p">({</span><span class="s2">&quot;rings&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">coord_part</span><span class="p">]})</span>
-                    <span class="n">store_area</span> <span class="o">=</span> <span class="n">in_geo</span><span class="o">.</span><span class="n">area</span>
                     <span class="n">coord_remove_last</span> <span class="o">=</span> <span class="n">coord_part</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                     <span class="n">coord_inverse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">coord_remove_last</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
                     <span class="n">coord_inverse</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
@@ -136,24 +137,20 @@
                     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">coord_part</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
                         <span class="n">coord_fin</span> <span class="o">=</span> <span class="n">swap_yz_dimensions</span><span class="p">(</span><span class="n">coord_inverse</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Only 2D or 3D points are supported.&quot;</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="s2">&quot;Only 2D or 3D points are supported.&quot;</span>
 
                     <span class="n">vert_coord_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">coord_fin</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                    <span class="n">nb_pts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">coord_fin</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">3</span>
+                    <span class="n">nb_pts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">coord_fin</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">3</span>
                     <span class="n">pts_cnt</span> <span class="o">+=</span> <span class="n">nb_pts</span>
                     <span class="n">face_count_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nb_pts</span><span class="p">))</span>
-                    <span class="k">if</span> <span class="n">store_area</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span> <span class="c1"># interior ring / holes</span>
-                        <span class="n">holes_ind_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">face_idx</span><span class="p">)</span>
 
                 <span class="n">face_indices_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">face_count_list</span><span class="p">)))</span>
-                <span class="n">holes_list</span> <span class="o">=</span> <span class="n">holes_conversion</span><span class="p">(</span><span class="n">holes_ind_list</span><span class="p">)</span>
-                
-                <span class="n">initial_geometry</span> <span class="o">=</span> <span class="n">pyprt</span><span class="o">.</span><span class="n">InitialShape</span><span class="p">(</span><span class="n">vert_coord_list</span><span class="p">,</span> <span class="n">face_indices_list</span><span class="p">,</span> <span class="n">face_count_list</span><span class="p">,</span> <span class="n">holes_list</span><span class="p">)</span>
+                <span class="n">holes</span> <span class="o">=</span> <span class="n">get_hole_info</span><span class="p">(</span><span class="n">geo</span><span class="p">)</span>
+
+                <span class="n">initial_geometry</span> <span class="o">=</span> <span class="n">pyprt</span><span class="o">.</span><span class="n">InitialShape</span><span class="p">(</span><span class="n">vert_coord_list</span><span class="p">,</span> <span class="n">face_indices_list</span><span class="p">,</span> <span class="n">face_count_list</span><span class="p">,</span> <span class="n">holes</span><span class="p">)</span>
                 <span class="n">initial_geometries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">initial_geometry</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This feature is not valid: &quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Ignoring invalid feature with id = </span><span class="si">{</span><span class="n">feature</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;objectid&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">initial_geometries</span></div>
 </pre></div>
 
@@ -167,12 +164,12 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -186,14 +183,14 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">PyPRT 1.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">PyPRT 1.6.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt.pyprt_arcgis.pyprt_arcgis</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright (c) 2022, Esri R&amp;D Center Zurich.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   </body>
 </html>

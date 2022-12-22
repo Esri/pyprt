@@ -4,14 +4,17 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pyprt.pyprt_arcgis module &#8212; PyPRT 1.5.0 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>pyprt.pyprt_arcgis module &#8212; PyPRT 1.6.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="pyprt.pyprt_utils module" href="pyprt.pyprt_utils.html" />
@@ -32,7 +35,7 @@
         <li class="right" >
           <a href="pyprt.pyprt.html" title="pyprt module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.6.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="pyprt.html" accesskey="U">pyprt package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt.pyprt_arcgis module</a></li> 
       </ul>
@@ -43,24 +46,27 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-pyprt.pyprt_arcgis.pyprt_arcgis">
-<span id="pyprt-pyprt-arcgis-module"></span><h1>pyprt.pyprt_arcgis module<a class="headerlink" href="#module-pyprt.pyprt_arcgis.pyprt_arcgis" title="Permalink to this headline">¶</a></h1>
+  <section id="module-pyprt.pyprt_arcgis.pyprt_arcgis">
+<span id="pyprt-pyprt-arcgis-module"></span><h1>pyprt.pyprt_arcgis module<a class="headerlink" href="#module-pyprt.pyprt_arcgis.pyprt_arcgis" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
-<dt id="pyprt.pyprt_arcgis.pyprt_arcgis.arcgis_to_pyprt">
-<code class="sig-name descname"><span class="pre">arcgis_to_pyprt</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_set</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">InitialShape</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/pyprt/pyprt_arcgis/pyprt_arcgis.html#arcgis_to_pyprt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyprt.pyprt_arcgis.pyprt_arcgis.arcgis_to_pyprt" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyprt.pyprt_arcgis.pyprt_arcgis.arcgis_to_pyprt">
+<span class="sig-name descname"><span class="pre">arcgis_to_pyprt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_set</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyprt.pyprt.html#pyprt.pyprt.bin.pyprt.InitialShape" title="pyprt.pyprt.bin.pyprt.InitialShape"><span class="pre">InitialShape</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/pyprt/pyprt_arcgis/pyprt_arcgis.html#arcgis_to_pyprt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyprt.pyprt_arcgis.pyprt_arcgis.arcgis_to_pyprt" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function allows converting an ArcGIS FeatureSet into a list of PyPRT InitialShape instances.
-You then typically call the ModelGenerator constructor with the return value if this function as parameter.</p>
+You then typically call the ModelGenerator constructor with the return value if this function as parameter.
+:param feature_set: FeatureSet</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>feature_set</strong> – FeatureSet</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List[InitialShape]</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[InitialShape]</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyprt.pyprt_arcgis.pyprt_arcgis.get_hole_info">
+<span class="sig-name descname"><span class="pre">get_hole_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geo</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyprt/pyprt_arcgis/pyprt_arcgis.html#get_hole_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyprt.pyprt_arcgis.pyprt_arcgis.get_hole_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
 
 
             <div class="clearer"></div>
@@ -69,12 +75,27 @@ You then typically call the ModelGenerator constructor with the return value if 
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="pyprt.pyprt.html"
-                        title="previous chapter">pyprt module</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="pyprt.pyprt_utils.html"
-                        title="next chapter">pyprt.pyprt_utils module</a></p>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">pyprt.pyprt_arcgis module</a><ul>
+<li><a class="reference internal" href="#pyprt.pyprt_arcgis.pyprt_arcgis.arcgis_to_pyprt"><code class="docutils literal notranslate"><span class="pre">arcgis_to_pyprt()</span></code></a></li>
+<li><a class="reference internal" href="#pyprt.pyprt_arcgis.pyprt_arcgis.get_hole_info"><code class="docutils literal notranslate"><span class="pre">get_hole_info()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="pyprt.pyprt.html"
+                          title="previous chapter">pyprt module</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="pyprt.pyprt_utils.html"
+                          title="next chapter">pyprt.pyprt_utils module</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -86,12 +107,12 @@ You then typically call the ModelGenerator constructor with the return value if 
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -111,14 +132,14 @@ You then typically call the ModelGenerator constructor with the return value if 
         <li class="right" >
           <a href="pyprt.pyprt.html" title="pyprt module"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.6.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="pyprt.html" >pyprt package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt.pyprt_arcgis module</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright (c) 2022, Esri R&amp;D Center Zurich.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   </body>
 </html>
