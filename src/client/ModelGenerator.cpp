@@ -63,9 +63,18 @@ ModelGenerator::ModelGenerator(const std::vector<InitialShape>& myGeo) {
 			if (!pcu::toFileURI(myGeo[ind].getPath()).empty()) {
 				LOG_DBG << "trying to read initial shape geometry from " << pcu::toFileURI(myGeo[ind].getPath())
 				        << std::endl;
-				const prt::Status s =
-				        isb->resolveGeometry(pcu::toUTF16FromOSNarrow(pcu::toFileURI(myGeo[ind].getPath())).c_str(),
-				                             mResolveMap.get(), mCache.get());
+
+				const std::wstring assetPath = pcu::toUTF16FromOSNarrow(myGeo[ind].getPath());
+				const std::wstring assetUri = pcu::toUTF16FromUTF8(pcu::toFileURI(myGeo[ind].getPath()));
+
+				// create temporary resolve map for initial shape builder to scan for embedded resources
+				ResolveMapBuilderPtr rmb(prt::ResolveMapBuilder::create());
+				rmb->addEntry(assetPath.c_str(), assetUri.c_str());
+				ResolveMapPtr resolveMap(rmb->createResolveMap());
+				LOG_DBG << "resolve map for embedded resources in asset " << assetPath << ":\n"
+				        << pcu::objectToXML(resolveMap.get()) << std::endl;
+
+				const prt::Status s = isb->resolveGeometry(assetPath.c_str(), resolveMap.get(), mCache.get());
 				if (s != prt::STATUS_OK) {
 					LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(myGeo[ind].getPath());
 					mValid = false;

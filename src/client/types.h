@@ -43,6 +43,7 @@ struct PRTDestroyer {
 using ObjectPtr = std::unique_ptr<const prt::Object, PRTDestroyer>;
 using CachePtr = std::unique_ptr<prt::CacheObject, PRTDestroyer>;
 using ResolveMapPtr = std::unique_ptr<const prt::ResolveMap, PRTDestroyer>;
+using ResolveMapBuilderPtr = std::unique_ptr<prt::ResolveMapBuilder, PRTDestroyer>;
 using InitialShapePtr = std::unique_ptr<const prt::InitialShape, PRTDestroyer>;
 using InitialShapeBuilderPtr = std::unique_ptr<prt::InitialShapeBuilder, PRTDestroyer>;
 using AttributeMapPtr = std::unique_ptr<const prt::AttributeMap, PRTDestroyer>;
