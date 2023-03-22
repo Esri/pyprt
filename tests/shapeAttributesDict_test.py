@@ -112,3 +112,30 @@ class ShapeAttributesTest(unittest.TestCase):
             with open(expected_file, 'r') as cga_print_file:
                 cga_print = cga_print_file.read()
                 self.assertEqual(cga_print, expected_content)
+
+    def convert_asset_to_slpk(self, asset_name):
+        initial_shape_asset = asset_file(asset_name)
+
+        rpk = asset_file('identity.rpk')
+        rpk_attributes = {'ruleFile': 'bin/identity.cgb', 'startRule': 'Default$Init'}
+        encoder_id = 'com.esri.prt.codecs.I3SEncoder'
+
+        initial_shape = pyprt.InitialShape(initial_shape_asset)
+        model_generator = pyprt.ModelGenerator([initial_shape])
+
+        with tempfile.TemporaryDirectory() as output_path:
+            encoder_options = {
+                'outputPath': output_path,
+                'sceneType': "Local",
+                'sceneWkid': "3857"
+            }
+            model_generator.generate_model([rpk_attributes], rpk, encoder_id, encoder_options)
+
+            expected_file = os.path.join(output_path, 'base_name.slpk')
+            self.assertTrue(os.path.exists(expected_file))
+
+    def test_initial_shape_glb(self):
+        self.convert_asset_to_slpk("Candler Building_0.glb")
+
+    def test_initial_shape_fbx(self):
+        self.convert_asset_to_slpk("EmbeddedTextures.fbx")
