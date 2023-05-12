@@ -37,7 +37,8 @@ InitialShape::InitialShape(const Coordinates& vert, const Indices& ind, const In
 	}
 }
 
-InitialShape::InitialShape(const std::string& initShapePath) : mPath(initShapePath), mPathFlag(true) {}
+InitialShape::InitialShape(const std::string& initShapePath, uint8_t directoryRecursionDepth)
+    : mPath(initShapePath), mPathFlag(true), mDirectoryRecursionDepth(directoryRecursionDepth) {}
 
 const double* InitialShape::getVertices() const {
 	return mVertices.data();
@@ -68,4 +69,7 @@ const std::string& InitialShape::getPath() const {
 }
 bool InitialShape::getPathFlag() const {
 	return mPathFlag;
+}
+uint8_t InitialShape::getDirectoryRecursionDepth() const {
+	return mDirectoryRecursionDepth;
 }
