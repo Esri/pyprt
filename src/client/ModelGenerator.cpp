@@ -87,7 +87,7 @@ ModelGenerator::ModelGenerator(const std::vector<InitialShape>& protoShapes)
 	for (const InitialShape& protoShape : protoShapes) {
 		InitialShapeBuilderPtr isb{prt::InitialShapeBuilder::create()};
 
-		if (protoShape.getPathFlag()) {
+		if (protoShape.initializedFromPath()) {
 			if (!pcu::toFileURI(protoShape.getPath()).empty()) {
 				LOG_DBG << "trying to read initial shape geometry from " << protoShape.getPath();
 				const std::filesystem::path assetPath = std::filesystem::path(protoShape.getPath());

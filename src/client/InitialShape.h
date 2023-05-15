@@ -42,7 +42,7 @@ public:
 	const uint32_t* getHoles() const;
 	size_t getHolesCount() const;
 	const std::string& getPath() const;
-	bool getPathFlag() const;
+	bool initializedFromPath() const;
 	uint8_t getDirectoryRecursionDepth() const;
 
 protected:
@@ -51,6 +51,5 @@ protected:
 	Indices mFaceCounts;
 	Indices mHoles;
 	const std::string mPath;
-	const bool mPathFlag;
 	const uint8_t mDirectoryRecursionDepth = 0;
 };
