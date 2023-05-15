@@ -81,28 +81,25 @@ ResolveMapPtr createResolveMapForInitialShape(const std::filesystem::path& asset
 
 } // namespace
 
-ModelGenerator::ModelGenerator(const std::vector<InitialShape>& myGeo) {
-	mInitialShapesBuilders.resize(myGeo.size());
-
-	mCache = (CachePtr)prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT);
-
-	// Initial shapes initializing
-	for (size_t ind = 0; ind < myGeo.size(); ind++) {
-
+ModelGenerator::ModelGenerator(const std::vector<InitialShape>& protoShapes)
+    : mCache(prt::CacheObject::create(prt::CacheObject::CACHE_TYPE_DEFAULT)) {
+	mInitialShapesBuilders.reserve(protoShapes.size());
+	for (const InitialShape& protoShape : protoShapes) {
 		InitialShapeBuilderPtr isb{prt::InitialShapeBuilder::create()};
 
-		if (myGeo[ind].getPathFlag()) {
-			if (!pcu::toFileURI(myGeo[ind].getPath()).empty()) {
-				LOG_DBG << "trying to read initial shape geometry from " << myGeo[ind].getPath();
-				const std::filesystem::path assetPath = std::filesystem::path(myGeo[ind].getPath());
+		if (protoShape.getPathFlag()) {
+			if (!pcu::toFileURI(protoShape.getPath()).empty()) {
+				LOG_DBG << "trying to read initial shape geometry from " << protoShape.getPath();
+				const std::filesystem::path assetPath = std::filesystem::path(protoShape.getPath());
 
 				// create temporary resolve map for initial shape builder to scan for embedded resources
 				ResolveMapPtr resolveMap =
-				        createResolveMapForInitialShape(assetPath, myGeo[ind].getDirectoryRecursionDepth());
+				        createResolveMapForInitialShape(assetPath, protoShape.getDirectoryRecursionDepth());
 				if (!resolveMap) {
 					LOG_WRN << "could not scan asset path for related files (e.g. textures) - the initial shape asset "
 					           "might not be complete."
 					        << assetPath;
+					// we keep the ModelGenerator valid in this case, PRT will emit an e.g. "texture not found" warning
 				}
 				else {
 					LOG_DBG << "resolve map for embedded resources in asset " << assetPath << ":\n"
@@ -112,7 +109,7 @@ ModelGenerator::ModelGenerator(const std::vector<InitialShape>& myGeo) {
 				const prt::Status s =
 				        isb->resolveGeometry(assetPath.generic_wstring().c_str(), resolveMap.get(), mCache.get());
 				if (s != prt::STATUS_OK) {
-					LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(myGeo[ind].getPath());
+					LOG_ERR << "could not resolve geometry from " << pcu::toFileURI(protoShape.getPath());
 					mValid = false;
 				}
 			}
@@ -122,18 +119,16 @@ ModelGenerator::ModelGenerator(const std::vector<InitialShape>& myGeo) {
 			}
 		}
 		else {
-			if (isb->setGeometry(myGeo[ind].getVertices(), myGeo[ind].getVertexCount(), myGeo[ind].getIndices(),
-			                     myGeo[ind].getIndexCount(), myGeo[ind].getFaceCounts(),
-			                     myGeo[ind].getFaceCountsCount(), myGeo[ind].getHoles(),
-			                     myGeo[ind].getHolesCount()) != prt::STATUS_OK) {
-
-				LOG_ERR << "invalid initial geometry";
-				mValid = false;
-			}
+			const prt::Status status = isb->setGeometry(protoShape.getVertices(), protoShape.getVertexCount(),
+			                                            protoShape.getIndices(), protoShape.getIndexCount(),
+			                                            protoShape.getFaceCounts(), protoShape.getFaceCountsCount(),
+			                                            protoShape.getHoles(), protoShape.getHolesCount());
+			mValid = (status == prt::STATUS_OK);
+			if (!mValid)
+				LOG_ERR << "Failed to initialize ModelGenerator: invalid input geometry";
 		}
 
-		if (mValid)
-			mInitialShapesBuilders[ind] = std::move(isb);
+		mInitialShapesBuilders.emplace_back(mValid ? std::move(isb) : InitialShapeBuilderPtr());
 	}
 }
 
