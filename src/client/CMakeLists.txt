@@ -30,11 +30,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "")
 
 message(STATUS "Python Module Suffix: " ${PYTHON_MODULE_EXTENSION})
 
-if(PYPRT_WINDOWS)
-	set(PYBIND11_CPP_STANDARD -std:c++17)
-else()
-	set(PYBIND11_CPP_STANDARD -std=c++17)
-endif()
 pybind11_add_module(${CLIENT_TARGET} MODULE
 		utils.cpp
 		api.cpp
@@ -46,6 +41,8 @@ pybind11_add_module(${CLIENT_TARGET} MODULE
 		ModelGenerator.cpp)
 
 set_target_properties(${CLIENT_TARGET} PROPERTIES
+		CXX_STANDARD 17
+		CXX_EXTENSIONS OFF
 		CXX_STANDARD_REQUIRED TRUE)
 
 if(PYPRT_WINDOWS)
