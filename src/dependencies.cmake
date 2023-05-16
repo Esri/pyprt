@@ -50,7 +50,7 @@ get_dependencies_properties(${CMAKE_CURRENT_BINARY_DIR}/dependencies.properties)
 
 ### look for the PRT libraries
 
-# if prt_DIR is not provided, download PRT from its github home
+set(prt_DIR "" CACHE PATH "Path to directory containing prtConfig.cmake package descriptor. Otherwise PRT will be fetched from github.com")
 if(NOT prt_DIR)
 	if(PYPRT_WINDOWS)
 		set(PRT_CLS "${PRT_CLS_WINDOWS}")
@@ -92,6 +92,7 @@ list(APPEND PRT_EXT_RESOURCES ${PRT_EXTENSION_PATH}/usd)
 
 ### look for PyBind11
 
+set(pybind11_DIR "" CACHE PATH "Path to local PyBind11 distribution. Otherwise PyBind11 will be fetched from github.com")
 if(pybind11_DIR)
 	add_subdirectory(${pybind11_DIR} ${CMAKE_CURRENT_BINARY_DIR}/pybind11-build)
 else()
