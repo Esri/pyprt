@@ -37,6 +37,12 @@ constexpr const char* Shutdown =
         "Shutdown of PRT. The PRT initialization process can be done only once per "
         "session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.";
 
+constexpr const char* getPRTVersion = R"mydelimiter(
+        get_api_version() -> list
+
+        Returns a list with the PRT API version components (major, minor, build).
+    )mydelimiter";
+
 constexpr const char* InspectRPKDeprecated = R"mydelimiter(
         inspect_rpk(rule_package_path) -> dict
         
