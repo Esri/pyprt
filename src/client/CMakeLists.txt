@@ -81,6 +81,10 @@ target_include_directories(${CLIENT_TARGET} PRIVATE
      ${PRT_INCLUDE_PATH}
      ${PROJECT_SOURCE_DIR}/codec)
 
+target_compile_definitions(${CLIENT_TARGET} PRIVATE
+		-DPRT_VERSION_MAJOR=${PRT_VERSION_MAJOR}
+		-DPRT_VERSION_MINOR=${PRT_VERSION_MINOR})
+
 
 ### install target
 
