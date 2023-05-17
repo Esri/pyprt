@@ -197,7 +197,8 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def(py::init<const Coordinates&, const Indices&, const Indices&, const HoleIndices&>(),
 	             py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"),
 	             py::arg("holes") = HoleIndices(), doc::IsInitVI)
-	        .def(py::init<const std::string&>(), py::arg("initialShapePath"), doc::IsInitP)
+	        .def(py::init<const std::string&, uint8_t>(), py::arg("initialShapePath"),
+	             py::arg("maxDirRecursionDepth") = 0, doc::IsInitP)
 	        .def("get_vertex_count", &InitialShape::getVertexCount, doc::IsGetV)
 	        .def("get_index_count", &InitialShape::getIndexCount, doc::IsGetI)
 	        .def("get_face_counts_count", &InitialShape::getFaceCountsCount, doc::IsGetF)

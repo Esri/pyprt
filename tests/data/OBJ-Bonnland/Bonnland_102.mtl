@@ -1,0 +1,20 @@
+#
+# Bonnland_102.obj material file
+# created by l3tex 
+#
+# l3tex created by Dirk (jtk) Frommholz
+# at DLR Berlin-Adlershof
+#
+
+
+newmtl Bonnland_102
+Ka 0.2 0.2 0.2
+Kd 0.5 0.5 0.5
+Ks 0.0 0.0 0.0
+Ns 10.0
+Ni 1.0
+Tr 1.0
+Tf 1.0 1.0 1.0
+illum 2
+map_Ka Bonnland_102.png
+map_Kd Bonnland_102.png

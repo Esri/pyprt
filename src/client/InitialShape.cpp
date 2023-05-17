@@ -21,7 +21,7 @@
 
 #include <numeric>
 
-InitialShape::InitialShape(const Coordinates& vert) : mVertices(vert), mPathFlag(false) {
+InitialShape::InitialShape(const Coordinates& vert) : mVertices(vert) {
 	mIndices.resize(vert.size() / 3);
 	std::iota(std::begin(mIndices), std::end(mIndices), 0);
 	mFaceCounts.resize(1, (uint32_t)mIndices.size());
@@ -29,7 +29,7 @@ InitialShape::InitialShape(const Coordinates& vert) : mVertices(vert), mPathFlag
 
 InitialShape::InitialShape(const Coordinates& vert, const Indices& ind, const Indices& faceCnt,
                            const HoleIndices& holes = {{}})
-    : mVertices(vert), mIndices(ind), mFaceCounts(faceCnt), mPathFlag(false) {
+    : mVertices(vert), mIndices(ind), mFaceCounts(faceCnt) {
 
 	for (auto& holesPerFaceWithHoles : holes) {
 		mHoles.insert(mHoles.end(), holesPerFaceWithHoles.begin(), holesPerFaceWithHoles.end());
@@ -37,7 +37,8 @@ InitialShape::InitialShape(const Coordinates& vert, const Indices& ind, const In
 	}
 }
 
-InitialShape::InitialShape(const std::string& initShapePath) : mPath(initShapePath), mPathFlag(true) {}
+InitialShape::InitialShape(const std::string& initShapePath, uint8_t directoryRecursionDepth)
+    : mPath(initShapePath), mDirectoryRecursionDepth(directoryRecursionDepth) {}
 
 const double* InitialShape::getVertices() const {
 	return mVertices.data();
@@ -66,6 +67,9 @@ size_t InitialShape::getHolesCount() const {
 const std::string& InitialShape::getPath() const {
 	return mPath;
 }
-bool InitialShape::getPathFlag() const {
-	return mPathFlag;
+bool InitialShape::initializedFromPath() const {
+	return !mPath.empty();
+}
+uint8_t InitialShape::getDirectoryRecursionDepth() const {
+	return mDirectoryRecursionDepth;
 }

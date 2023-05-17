@@ -105,9 +105,14 @@ constexpr const char* IsInitP = R"mydelimiter(
         Constructs an InitialShape by accepting the path to a shape file. This can be an OBJ file, Collada, etc.
         A list of supported file formats can be found at `PRT geometry encoders <https://esri.github.io/cityengine-sdk/html/esri_prt_codecs.html>`_.
 
+        As the given asset might reference arbitrary other files (e.g. textures), PyPRT employs a heuristic to
+        recursively search the subtree rooted at the containing directory of the asset path. By default the recursion
+        limit is set to 0, i.e. it will only scan the directory of the asset path. The maximum recursion depth is 255.
+
         :Parameters:
-            **initial_shape_path** -- str
-        :Example: ``shape3 = pyprt.InitialShape(os.path.join(os.getcwd(), 'myInitialShape.obj'))``
+            - **initial_shape_path** -- str
+            - **max_dir_recursion_depth** -- int
+        :Example: ``shape3 = pyprt.InitialShape(os.path.join(os.getcwd(), 'myInitialShape.obj'), 2)``
         )mydelimiter";
 
 constexpr const char* IsGetV = R"mydelimiter(

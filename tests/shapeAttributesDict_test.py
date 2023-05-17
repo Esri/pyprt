@@ -139,3 +139,29 @@ class ShapeAttributesTest(unittest.TestCase):
 
     def test_initial_shape_fbx(self):
         self.convert_asset_to_slpk("EmbeddedTextures.fbx")
+
+    def convert_asset_to_fbx(self, asset_name, max_dir_recursion_depth):
+        initial_shape_asset = asset_file(asset_name)
+
+        rpk = asset_file('identity.rpk')
+        rpk_attributes = {'ruleFile': 'bin/identity.cgb', 'startRule': 'Default$Init'}
+        encoder_id = 'com.esri.prt.codecs.FBXEncoder'
+
+        initial_shape = pyprt.InitialShape(initial_shape_asset, max_dir_recursion_depth)
+        model_generator = pyprt.ModelGenerator([initial_shape])
+
+        with tempfile.TemporaryDirectory() as output_path:
+            encoder_options = {
+                'outputPath': output_path
+            }
+            model_generator.generate_model([rpk_attributes], rpk, encoder_id, encoder_options)
+
+            expected_asset = os.path.join(output_path, 'base_name_0.fbx')
+            expected_texture = os.path.join(output_path, 'Bonnland_102.png')
+            self.assertTrue(os.path.exists(expected_asset) and os.path.exists(expected_texture))
+
+    def test_initial_shape_obj(self):
+        self.convert_asset_to_fbx("OBJ-Bonnland/Bonnland_102.obj", 0)
+
+    def test_initial_shape_obj_with_child_dirs(self):
+        self.convert_asset_to_fbx("OBJ-Bonnland/Bonnland_102.obj", 2)

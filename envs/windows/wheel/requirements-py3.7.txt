@@ -1,7 +1,7 @@
 arcgis
 pkginfo
 Shapely
-Sphinx
+Sphinx<7.0
 twine
 wheel
 xmlrunner
