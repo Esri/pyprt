@@ -234,7 +234,7 @@ class GeometryTest(unittest.TestCase):
     def test_dynamic_imports(self):
         if pyprt.get_api_version()[0] < 3:
             self.skipTest("test case only supported with PRT >= 3.0")
-        rpk = asset_file("ruleA.rpk")  # RPK created with CE 2023.0
+        rpk = asset_file("dynamic_imports.rpk")  # RPK created with CE 2023.0
         attrs = {}
         shape_geo_from_obj = pyprt.InitialShape(asset_file('quad0.obj'))
         m = pyprt.ModelGenerator([shape_geo_from_obj])
