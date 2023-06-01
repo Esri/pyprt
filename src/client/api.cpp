@@ -62,6 +62,14 @@ void shutdownPRT() {
 	PRTContext::shutdown();
 }
 
+py::list getPRTVersion() {
+	py::list version;
+	version.append(prt::getVersion()->mVersionMajor);
+	version.append(prt::getVersion()->mVersionMinor);
+	version.append(prt::getVersion()->mVersionBuild);
+	return version;
+}
+
 void getAnnotations(const prt::RuleFileInfo::Entry* attribute, std::vector<std::vector<py::object>>& annotations,
                     bool& hidden) {
 	for (size_t f = 0; f < attribute->getNumAnnotations(); f++) {
@@ -189,6 +197,7 @@ PYBIND11_MODULE(pyprt, m) {
 	m.def("initialize_prt", &initializePRT, doc::Init);
 	m.def("is_prt_initialized", &isPRTInitialized, doc::IsInit);
 	m.def("shutdown_prt", &shutdownPRT, doc::Shutdown);
+	m.def("get_api_version", &getPRTVersion, doc::getPRTVersion);
 	m.def("get_rpk_attributes_info", &getRPKInfo, py::arg("rulePackagePath"), doc::GetRPKInfo);
 	m.attr("NO_KEY") = NO_KEY;
 

@@ -190,7 +190,9 @@ class GeometryTest(unittest.TestCase):
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
             'emitReport': True, 'emitGeometry': False})
 
-        self.assertEqual(len(model[0].get_cga_errors()), 1)
+        print(model[0].get_cga_errors())
+        expected_error_count = 2 if pyprt.get_api_version()[0] > 2 else 1
+        self.assertEqual(len(model[0].get_cga_errors()), expected_error_count)
 
     def test_attributesvalue_fct(self):
         rpk = asset_file('extrusion_rule.rpk')
@@ -228,3 +230,16 @@ class GeometryTest(unittest.TestCase):
                                                   ['second', 'row'],
                                                   ['third', 'row'],
                                                   ['fourth', 'row']]})
+
+    def test_dynamic_imports(self):
+        if pyprt.get_api_version()[0] < 3:
+            self.skipTest("test case only supported with PRT >= 3.0")
+        rpk = asset_file("dynamic_imports.rpk")  # RPK created with CE 2023.0
+        attrs = {}
+        shape_geo_from_obj = pyprt.InitialShape(asset_file('quad0.obj'))
+        m = pyprt.ModelGenerator([shape_geo_from_obj])
+        model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {})
+        self.assertEqual(len(model), 1)
+        self.assertDictEqual(model[0].get_report(),
+                             {'myHeight_n': 1.0, 'myHeight_sum': 10.0, 'myHeight_avg': 10.0, 'myHeight_min': 10.0,
+                              'myHeight_max': 10.0})
