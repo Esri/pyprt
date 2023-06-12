@@ -1,5 +1,18 @@
 # PyPRT ChangeLog
 
+## v1.7.0 (2023-06-12)
+
+### Added
+* Added support for Rule Packages (RPK) created with CityEngine 2023.0
+* Added support for textured initial shapes (also added the `maxDirRecursionDepth` argument to
+  the `InitialShape` class constructor to control searching for texture files).
+* Added new API function `get_api_version` to get a list of the PRT (major, minor, build) components.
+
+### Changed
+* Updated to PRT 3.0.8905
+* Updated to PyBind11 2.10.4
+* Turned the `prt_DIR` and `pybind11_DIR` into proper CMake cache variables.
+
 ## v1.6.0 (2022-12-21)
 
 ### Added
