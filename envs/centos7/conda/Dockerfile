@@ -20,7 +20,6 @@ WORKDIR /tmp/pyprt
 ADD --chown=${USER_ID}:${GROUP_ID} https://zrh-code.esri.com/nexus/service/local/repositories/tools/content/io/conda/miniconda3/22.11.1/miniconda3-22.11.1-py310-linux-x86_64.sh /tmp/pyprt/miniconda.sh
 RUN bash miniconda.sh -bfp ./conda && \
     rm -rf ./miniconda.sh && \
-    conda/bin/conda install -y python=${PY_VER} && \
     conda/bin/conda update conda && \
     conda/bin/conda clean --all --yes && \
     conda/bin/conda config -v --system --set remote_backoff_factor 2 --set remote_connect_timeout_secs 60 --set remote_max_retries 8 --set remote_read_timeout_secs 240
