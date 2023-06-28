@@ -22,4 +22,4 @@ RUN conda env create -vv -n pyprt --file environment.yml
 ENTRYPOINT [ "C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat", "x64", "-vcvars_ver=14.27", "&&", "call", "conda.bat", "activate", "pyprt", "&&" ]
 
 FROM req_install AS arcgis_install
-RUN conda install -c esri arcgis
+RUN conda install -n pyprt -c esri arcgis
