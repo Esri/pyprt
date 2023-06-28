@@ -191,7 +191,7 @@ class GeometryTest(unittest.TestCase):
             'emitReport': True, 'emitGeometry': False})
 
         print(model[0].get_cga_errors())
-        expected_error_count = 2 if pyprt.get_api_version()[0] > 2 else 1
+        expected_error_count = 1 if pyprt.get_api_version()[0] > 2 else 0
         self.assertEqual(len(model[0].get_cga_errors()), expected_error_count)
 
     def test_attributesvalue_fct(self):
