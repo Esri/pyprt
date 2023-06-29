@@ -6,13 +6,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pyprt module &#8212; PyPRT 1.6.0 documentation</title>
+    <title>pyprt module &#8212; PyPRT 1.7.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/nature.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -35,7 +32,7 @@
         <li class="right" >
           <a href="pyprt.html" title="pyprt package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.6.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.7.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="pyprt.html" accesskey="U">pyprt package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt module</a></li> 
       </ul>
@@ -203,12 +200,18 @@ It is a list of lists, that assign hole-faces to faces. It follows this structur
 </ol>
 <p>Constructs an InitialShape by accepting the path to a shape file. This can be an OBJ file, Collada, etc.
 A list of supported file formats can be found at <a class="reference external" href="https://esri.github.io/cityengine-sdk/html/esri_prt_codecs.html">PRT geometry encoders</a>.</p>
+<p>As the given asset might reference arbitrary other files (e.g. textures), PyPRT employs a heuristic to
+recursively search the subtree rooted at the containing directory of the asset path. By default the recursion
+limit is set to 0, i.e. it will only scan the directory of the asset path. The maximum recursion depth is 255.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>initial_shape_path</strong> – str</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>initial_shape_path</strong> – str</p></li>
+<li><p><strong>max_dir_recursion_depth</strong> – int</p></li>
+</ul>
 </dd>
 <dt class="field-even">Example<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">shape3</span> <span class="pre">=</span> <span class="pre">pyprt.InitialShape(os.path.join(os.getcwd(),</span> <span class="pre">'myInitialShape.obj'))</span></code></p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">shape3</span> <span class="pre">=</span> <span class="pre">pyprt.InitialShape(os.path.join(os.getcwd(),</span> <span class="pre">'myInitialShape.obj'),</span> <span class="pre">2)</span></code></p>
 </dd>
 </dl>
 <dl class="py method">
@@ -311,6 +314,12 @@ the return value of this <em>generate_model</em> function will be an empty list.
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.get_api_version">
+<span class="sig-name descname"><span class="pre">get_api_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.get_api_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list with the PRT API version components (major, minor, build).</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="pyprt.pyprt.bin.pyprt.get_rpk_attributes_info">
 <span class="sig-name descname"><span class="pre">get_rpk_attributes_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule_package_path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pyprt.pyprt.bin.pyprt.get_rpk_attributes_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function returns the CGA rule attributes name and value type for the specified rule package path as
@@ -381,6 +390,7 @@ annotation parameter, its key is equal to <code class="docutils literal notransl
 <li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.ModelGenerator.generate_model"><code class="docutils literal notranslate"><span class="pre">ModelGenerator.generate_model()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.get_api_version"><code class="docutils literal notranslate"><span class="pre">get_api_version()</span></code></a></li>
 <li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.get_rpk_attributes_info"><code class="docutils literal notranslate"><span class="pre">get_rpk_attributes_info()</span></code></a></li>
 <li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.initialize_prt"><code class="docutils literal notranslate"><span class="pre">initialize_prt()</span></code></a></li>
 <li><a class="reference internal" href="#pyprt.pyprt.bin.pyprt.is_prt_initialized"><code class="docutils literal notranslate"><span class="pre">is_prt_initialized()</span></code></a></li>
@@ -436,14 +446,14 @@ annotation parameter, its key is equal to <code class="docutils literal notransl
         <li class="right" >
           <a href="pyprt.html" title="pyprt package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.6.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyPRT 1.7.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="pyprt.html" >pyprt package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt module</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright (c) 2022, Esri R&amp;D Center Zurich.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+        &#169; Copyright (c) 2023, Esri R&amp;D Center Zurich.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
     </div>
   </body>
 </html>
