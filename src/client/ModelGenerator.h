@@ -1,7 +1,7 @@
 /**
  * PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
  *
- * Copyright (c) 2012-2022 Esri R&D Center Zurich
+ * Copyright (c) 2012-2023 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@
 
 class ModelGenerator {
 public:
-	ModelGenerator(const std::vector<InitialShape>& myGeo);
+	ModelGenerator(const std::vector<InitialShape>& protoShapes);
 	~ModelGenerator() = default;
 
 	std::vector<GeneratedModel> generateModel(const std::vector<pybind11::dict>& shapeAttributes,

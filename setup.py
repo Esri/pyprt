@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2022 Esri R&D Center Zurich
+# Copyright (c) 2012-2023 Esri R&D Center Zurich
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ except:
 
 pyprt_name = 'PyPRT'
 pyprt_author = 'Esri R&D Center Zurich'
-pyprt_copyright = '(c) 2022, ' + pyprt_author
-pyprt_version = '1.6.0'  # keep consistent with __version__ in pyprt/__init__.py
+pyprt_copyright = '(c) 2023, ' + pyprt_author
+pyprt_version = '1.7.0'  # keep consistent with __version__ in pyprt/__init__.py
 
 record_file = os.path.join(os.path.realpath(os.curdir), pyprt_name + '.egg-info', 'record_setup_develop_files.txt')
 
@@ -162,11 +162,11 @@ class CMakeBuild(build_ext):
 
         prt_dir = os.getenv('PRT_DIR', '')
         if prt_dir != '':
-            cmake_configure_command.append('-Dprt_DIR={}'.format(prt_dir))
+            cmake_configure_command.append('-Dprt_DIR:FILEPATH={}'.format(prt_dir))
 
         pybind11_dir = os.getenv('PYBIND11_DIR', '')
         if pybind11_dir != '':
-            cmake_configure_command.append('-Dpybind11_DIR={}'.format(pybind11_dir))
+            cmake_configure_command.append('-Dpybind11_DIR:FILEPATH={}'.format(pybind11_dir))
 
         self.spawn(cmake_configure_command)
 

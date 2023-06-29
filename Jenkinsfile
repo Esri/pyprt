@@ -9,14 +9,14 @@
 import com.esri.zrh.jenkins.PipelineSupportLibrary
 import com.esri.zrh.jenkins.JenkinsTools
 import com.esri.zrh.jenkins.ce.CityEnginePipelineLibrary
-import com.esri.zrh.jenkins.ce.PrtAppPipelineLibrary
+import com.esri.zrh.jenkins.ce.PrtAppPipelineLibrary as PAPL
 import com.esri.zrh.jenkins.PslFactory
 import com.esri.zrh.jenkins.psl.UploadTrackingPsl
 import groovy.transform.Field
 
 @Field def psl = PslFactory.create(this, UploadTrackingPsl.ID)
 @Field def cepl = new CityEnginePipelineLibrary(this, psl)
-@Field def papl = new PrtAppPipelineLibrary(cepl)
+@Field def papl = new PAPL(cepl)
 
 
 // -- SETUP
@@ -37,7 +37,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final String SOURCE_STASH = 'pyprt-sources'
 @Field String pkgVer = "0.0.0"
 
-@Field final String DOCKER_IMAGE_REV = "v6"
+@Field final String DOCKER_IMAGE_REV = "v7"
 
 @Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
 @Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
@@ -56,6 +56,9 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
 @Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
 
+@Field final Map PRT_DEFAULT           = [ prt: 'Default' ] // as defined in the build system
+@Field final Map PRT_LATEST            = [ prt: 'Latest' ] // latest internal PRT build
+
 @Field final List CONFIGS_PREPARE = [
 	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 ]
@@ -68,6 +71,8 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 	composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG, PRT_LATEST),
+	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG, PRT_LATEST),
 ]
 
 @Field final List CONFIGS_BUILD_WHEEL = [
@@ -78,6 +83,8 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 	composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG, PRT_LATEST),
+	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG, PRT_LATEST),
 ]
 
 @Field final List CONFIGS_BUILD_CONDA = [
@@ -153,7 +160,18 @@ def taskPrepare(cfg) {
 		}
 	}
 
-	dir(path: 'cesdk') {
+	dir(path: 'cesdk_latest') {
+		dir(path: 'windows') {
+			def myCfg = cfg + WINDOWS_NATIVE_CONFIG
+			papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
+		}
+		dir(path: 'linux') {
+			def myCfg = cfg + LINUX_NATIVE_CONFIG
+			papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
+		}
+	}
+
+	dir(path: 'cesdk_default') {
 		String CESDK_BASE_URL = 'https://github.com/Esri/cityengine-sdk/releases/download'
 		dir(path: 'windows') {
 			String CESDK_URL_WINDOWS = "${CESDK_BASE_URL}/${deps.PRT_VERSION}/esri_ce_sdk-${deps.PRT_VERSION}-${deps.PRT_CLS_WINDOWS}.zip"
@@ -190,8 +208,11 @@ def taskBuildWheel(cfg) {
 	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(cfg, workDir, buildCmd))
 
 	def classifierExtractor = { p ->
-		def cls = (p =~ /[^-]*-[^-]*-[0-9]*-([^-]*-[^-]*-[^-]*)\.whl/)
-		return cls[0][1]
+		def clsRegEx = (p =~ /[^-]*-[^-]*-[0-9]*-([^-]*-[^-]*-[^-]*)\.whl/)
+		String cls = clsRegEx[0][1]
+		if (cfg.prt == PRT_LATEST.prt)
+			cls += '-prtLatest'
+		return cls
 	}
 	papl.publish('pyprt', env.BRANCH_NAME, "PyPRT-*.whl", { return pkgVer }, cfg, classifierExtractor)
 }
@@ -262,14 +283,22 @@ String updateBuildEnv(Map cfg, String workDir, String buildCmd) {
 	def deps = readProperties(file: "${SOURCE}/src/dependencies.properties")
 
 	String pybind11Env = "PYBIND11_DIR=${workDir}/src/pybind11-${deps.PYBIND11_VERSION}"
-	String cesdkEnv = "PRT_DIR=${cfg.ws}/cesdk/${isUnix() ? 'linux' : 'windows'}/cmake"
+
+	String os = isUnix() ? 'linux' : 'windows'
+	String cesdkDir = (cfg.prt == PRT_LATEST.prt) ? "cesdk_latest/${os}/ce_sdk" : "cesdk_default/${os}"
+	String cesdkEnv = "PRT_DIR=${cfg.ws}/${cesdkDir}/cmake"
+
 	String envCmd = isUnix() ? "export ${pybind11Env} ${cesdkEnv} " : "set ${pybind11Env}&& set ${cesdkEnv}"
+
 	return "${envCmd}&& ${buildCmd}"
 }
 
 @NonCPS
-Map composeConfig(py, kind, tc, dc) {
-	return py + kind + tc + dc + [ grp: "py${py['py']}-${kind['kind']}" ]
+Map composeConfig(py, kind, tc, dc, prt = PRT_DEFAULT) {
+	String label = "py${py['py']}-${kind['kind']}"
+	if (prt != PRT_DEFAULT)
+		label += "-prt${prt['prt']}"
+	return py + kind + tc + dc + prt + [ grp: label ]
 }
 
 String getDockerImage(Map cfg) {

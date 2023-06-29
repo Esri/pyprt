@@ -1,7 +1,7 @@
 /**
  * PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
  *
- * Copyright (c) 2012-2022 Esri R&D Center Zurich
+ * Copyright (c) 2012-2023 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,14 @@ bool isPRTInitialized() {
 
 void shutdownPRT() {
 	PRTContext::shutdown();
+}
+
+py::list getPRTVersion() {
+	py::list version;
+	version.append(prt::getVersion()->mVersionMajor);
+	version.append(prt::getVersion()->mVersionMinor);
+	version.append(prt::getVersion()->mVersionBuild);
+	return version;
 }
 
 void getAnnotations(const prt::RuleFileInfo::Entry* attribute, std::vector<std::vector<py::object>>& annotations,
@@ -189,6 +197,7 @@ PYBIND11_MODULE(pyprt, m) {
 	m.def("initialize_prt", &initializePRT, doc::Init);
 	m.def("is_prt_initialized", &isPRTInitialized, doc::IsInit);
 	m.def("shutdown_prt", &shutdownPRT, doc::Shutdown);
+	m.def("get_api_version", &getPRTVersion, doc::getPRTVersion);
 	m.def("get_rpk_attributes_info", &getRPKInfo, py::arg("rulePackagePath"), doc::GetRPKInfo);
 	m.attr("NO_KEY") = NO_KEY;
 
@@ -197,7 +206,8 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def(py::init<const Coordinates&, const Indices&, const Indices&, const HoleIndices&>(),
 	             py::arg("vertCoordinates"), py::arg("faceVertIndices"), py::arg("faceVertCount"),
 	             py::arg("holes") = HoleIndices(), doc::IsInitVI)
-	        .def(py::init<const std::string&>(), py::arg("initialShapePath"), doc::IsInitP)
+	        .def(py::init<const std::string&, uint8_t>(), py::arg("initialShapePath"),
+	             py::arg("maxDirRecursionDepth") = 0, doc::IsInitP)
 	        .def("get_vertex_count", &InitialShape::getVertexCount, doc::IsGetV)
 	        .def("get_index_count", &InitialShape::getIndexCount, doc::IsGetI)
 	        .def("get_face_counts_count", &InitialShape::getFaceCountsCount, doc::IsGetF)

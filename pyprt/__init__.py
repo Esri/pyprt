@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2022 Esri R&D Center Zurich
+# Copyright (c) 2012-2023 Esri R&D Center Zurich
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,6 @@
 # limitations under the License.
 # A copy of the license is available in the repository's LICENSE file.
 
-__version__ = '1.6.0'
+__version__ = '1.7.0'
 
 from .pyprt import *

@@ -1,7 +1,7 @@
 /**
  * PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
  *
- * Copyright (c) 2012-2022 Esri R&D Center Zurich
+ * Copyright (c) 2012-2023 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,12 @@ constexpr const char* IsInit = R"mydelimiter(
 constexpr const char* Shutdown =
         "Shutdown of PRT. The PRT initialization process can be done only once per "
         "session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.";
+
+constexpr const char* getPRTVersion = R"mydelimiter(
+        get_api_version() -> list
+
+        Returns a list with the PRT API version components (major, minor, build).
+    )mydelimiter";
 
 constexpr const char* InspectRPKDeprecated = R"mydelimiter(
         inspect_rpk(rule_package_path) -> dict
@@ -105,9 +111,14 @@ constexpr const char* IsInitP = R"mydelimiter(
         Constructs an InitialShape by accepting the path to a shape file. This can be an OBJ file, Collada, etc.
         A list of supported file formats can be found at `PRT geometry encoders <https://esri.github.io/cityengine-sdk/html/esri_prt_codecs.html>`_.
 
+        As the given asset might reference arbitrary other files (e.g. textures), PyPRT employs a heuristic to
+        recursively search the subtree rooted at the containing directory of the asset path. By default the recursion
+        limit is set to 0, i.e. it will only scan the directory of the asset path. The maximum recursion depth is 255.
+
         :Parameters:
-            **initial_shape_path** -- str
-        :Example: ``shape3 = pyprt.InitialShape(os.path.join(os.getcwd(), 'myInitialShape.obj'))``
+            - **initial_shape_path** -- str
+            - **max_dir_recursion_depth** -- int
+        :Example: ``shape3 = pyprt.InitialShape(os.path.join(os.getcwd(), 'myInitialShape.obj'), 2)``
         )mydelimiter";
 
 constexpr const char* IsGetV = R"mydelimiter(

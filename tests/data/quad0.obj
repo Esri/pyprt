@@ -1,0 +1,15 @@
+mtllib quad0.mtl
+
+# mesh 'mesh_CityEngineShapeMaterial' from geometry 'mesh_CityEngineShapeMaterial'
+v 64.594 0.000 22.651
+v 18.150 0.000 22.651
+v 18.150 0.000 67.925
+v 64.594 0.000 67.925
+# 4 vertices
+
+g CityEngineShapeMaterial
+s off
+usemtl CityEngineShapeMaterial
+f 1 2 3 4
+# 1 face
+

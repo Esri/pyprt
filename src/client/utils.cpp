@@ -1,7 +1,7 @@
 /**
  * PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
  *
- * Copyright (c) 2012-2022 Esri R&D Center Zurich
+ * Copyright (c) 2012-2023 Esri R&D Center Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,6 +89,14 @@ bool getResolveMap(const std::filesystem::path& rulePackagePath, ResolveMapPtr* 
 }
 
 std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap) {
+#if (PRT_VERSION_MAJOR > 2) // CE 2023 introduced multiple CGBs per RPK and PRT 3.0 has tools for this
+	prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
+	const wchar_t* cgbKey = resolveMap->findCGBKey(&status);
+	if (cgbKey == nullptr || (status != prt::STATUS_OK))
+		return {};
+	return cgbKey;
+
+#else
 	const std::wstring sCGB(L".cgb");
 
 	size_t nKeys;
@@ -98,8 +106,9 @@ std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap) {
 		if (std::equal(sCGB.rbegin(), sCGB.rend(), key.rbegin()))
 			return key;
 	}
-
 	return {};
+
+#endif
 }
 
 std::wstring detectStartRule(const RuleFileInfoUPtr& ruleFileInfo) {
