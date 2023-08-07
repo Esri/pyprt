@@ -93,9 +93,7 @@ class ShapeAttributesTest(unittest.TestCase):
     def test_array_attributes(self):
         with tempfile.TemporaryDirectory() as output_path:
             rpk = asset_file('arrayAttrs.rpk')
-            attrs = {'ruleFile': 'bin/arrayAttrs.cgb',
-                     'startRule': 'Default$Init',
-                     'arrayAttrFloat': [0.0, 1.0, 2.0],
+            attrs = {'arrayAttrFloat': [0.0, 1.0, 2.0],
                      'arrayAttrBool': [False, False, True],
                      'arrayAttrString': ['foo', 'bar', 'baz']}
             initial_shape = pyprt.InitialShape(
@@ -117,7 +115,7 @@ class ShapeAttributesTest(unittest.TestCase):
         initial_shape_asset = asset_file(asset_name)
 
         rpk = asset_file('identity.rpk')
-        rpk_attributes = {'ruleFile': 'bin/identity.cgb', 'startRule': 'Default$Init'}
+        rpk_attributes = {}
         encoder_id = 'com.esri.prt.codecs.I3SEncoder'
 
         initial_shape = pyprt.InitialShape(initial_shape_asset)
@@ -144,7 +142,7 @@ class ShapeAttributesTest(unittest.TestCase):
         initial_shape_asset = asset_file(asset_name)
 
         rpk = asset_file('identity.rpk')
-        rpk_attributes = {'ruleFile': 'bin/identity.cgb', 'startRule': 'Default$Init'}
+        rpk_attributes = {}
         encoder_id = 'com.esri.prt.codecs.FBXEncoder'
 
         initial_shape = pyprt.InitialShape(initial_shape_asset, max_dir_recursion_depth)
