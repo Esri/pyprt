@@ -1,6 +1,7 @@
+build>=1.0.0
+setuptools>=64.0
 pkginfo
 Sphinx<7.0
 twine
-wheel
 xmlrunner
 

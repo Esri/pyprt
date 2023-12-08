@@ -92,6 +92,8 @@ list(APPEND PRT_EXT_RESOURCES ${PRT_EXTENSION_PATH}/usd)
 
 ### look for PyBind11
 
+find_package(Python COMPONENTS Interpreter Development REQUIRED)
+
 set(pybind11_DIR "" CACHE PATH "Path to local PyBind11 distribution. Otherwise PyBind11 will be fetched from github.com")
 if(pybind11_DIR)
 	add_subdirectory(${pybind11_DIR} ${CMAKE_CURRENT_BINARY_DIR}/pybind11-build)

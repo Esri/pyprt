@@ -16,8 +16,7 @@
 /**/Pipfile.lock
 
 # development mode
-/pyprt/pyprt/bin/*
-/pyprt/pyprt/lib/*
+/src/python/pyprt/pyprt/
 
 /.vs
 /.vscode

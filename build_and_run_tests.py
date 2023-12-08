@@ -32,9 +32,8 @@ os.system(f"{py_cmd} -m pip install --upgrade pip")
 os.system(f"{py_cmd} -m pip install --upgrade wheel")
 os.system(f"{py_cmd} -m pip install -r envs/{env_os}/wheel/requirements-{env_py}.txt")
 
-os.system(f"{py_cmd} setup.py clean --all")
-os.system(f"{py_cmd} setup.py install")
+os.system(f"{py_cmd} -m pip install .")
 os.system(f"{py_cmd} tests/run_tests.py")
-os.system(f"{py_cmd} setup.py clean --all")
+os.system(f"{py_cmd} -m pip uninstall -y pyprt")
 
 env_dir.cleanup()
