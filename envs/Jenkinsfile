@@ -32,7 +32,7 @@ psl.runsHere('production')
 
 @Field final String DOCKER_REGISTRY  = 'zrh-dreg-sp-1.esri.com'
 @Field final String DOCKER_PROJECT   = "${DOCKER_REGISTRY}/pyprt/"
-@Field final String DOCKER_IMAGE_REV = 'v7' // target revision of the generated images
+@Field final String DOCKER_IMAGE_REV = 'v8' // target revision of the generated images
 
 @Field final String REPO   = 'git@github.com:esri/pyprt.git'
 @Field final String SOURCE = 'pyprt.git'

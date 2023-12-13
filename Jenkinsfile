@@ -37,7 +37,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final String SOURCE_STASH = 'pyprt-sources'
 @Field String pkgVer = "0.0.0"
 
-@Field final String DOCKER_IMAGE_REV = "v7"
+@Field final String DOCKER_IMAGE_REV = "v8"
 
 @Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
 @Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
