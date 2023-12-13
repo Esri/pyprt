@@ -40,7 +40,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 @Field final String DOCKER_IMAGE_REV = "v8"
 
-@Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
+@Field final String DOCKER_AGENT_LINUX = psl.BA_LINUX_DOCKER
 @Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
 
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
@@ -56,12 +56,13 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC1427, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
 @Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
+@Field final Map LINUX_AGENT_CONFIG    = [ ba: psl.BA_RHEL7 ]
 
 @Field final Map PRT_DEFAULT           = [ prt: 'Default' ] // as defined in the build system
 @Field final Map PRT_LATEST            = [ prt: 'Latest' ] // latest internal PRT build
 
 @Field final List CONFIGS_PREPARE = [
-	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_AGENT_CONFIG),
 ]
 
 @Field final List CONFIGS_TEST = [
