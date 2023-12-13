@@ -1,5 +1,15 @@
 # PyPRT ChangeLog
 
+## v1.8.0 (2023-12-XX)
+
+### Changed
+* Introduced `pyproject.toml` (calling setup.py directly has been deprecated by `setuptools`).
+* Switched to the `build` package for wheel builds.
+* Reorganized the `src` directory to better support isolated builds.
+* Switched conda builds from `bdist_conda` to explicit conda recipe (`conda-recipe/meta.yaml`) and `conda build`.
+* Updated to PyBind11 2.11.1
+* Raised minimum CMake version to 3.19
+
 ## v1.7.0 (2023-06-12)
 
 ### Added
