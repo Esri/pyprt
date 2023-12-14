@@ -172,8 +172,6 @@ String getDockerFile(cfg) {
 	String path = "envs/${cfg.os}/${cfg.kind}/Dockerfile"
 	if ((cfg.py == PY39.py || cfg.py == PY310.py) && cfg.os == OS_LINUX && cfg.kind == WHEEL.kind)
 		path += '-custom-py' // workaround: no Python 3.9 or 3.10 RPMs available
-	else if (cfg.py != null && cfg.kind == BASE.kind)
-		path += '-py' // base images from pre-built python images
 	return path
 }
 
@@ -197,6 +195,12 @@ String getDockerTag(cfg) {
 String getBuildArgs(cfg) {
 	String args = ''
 	String base_tag = getDockerBaseTag(cfg)
+
+	if (cfg.kind == BASE.kind && cfg.os == OS_WINDOWS && cfg.py != null) {
+        // use pre-built python image from docker hub as base
+        args += " --build-arg BASE_IMAGE=python:${cfg.py}-windowsservercore-1809"
+    }
+
 	if (cfg.kind != BASE.kind)
 		args += " --build-arg REGISTRY=${DOCKER_PROJECT} --build-arg BASE_TAG=${base_tag}"
 	if (cfg.py != null)
