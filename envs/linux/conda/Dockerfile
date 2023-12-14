@@ -17,7 +17,7 @@ RUN mkdir /tmp/pyprt
 WORKDIR /tmp/pyprt
 
 # see https://github.com/conda/conda-docker/blob/master/miniconda3/centos7/Dockerfile
-ADD --chown=${USER_ID}:${GROUP_ID} https://zrh-code.esri.com/nexus/service/local/repositories/tools/content/io/conda/miniconda3/22.11.1/miniconda3-22.11.1-py310-linux-x86_64.sh /tmp/pyprt/miniconda.sh
+ADD --chown=${USER_ID}:${GROUP_ID} https://zrh-code.esri.com/nexus/service/local/repositories/tools/content/io/conda/miniconda3/23.10.0/miniconda3-23.10.0-py311-linux-x86_64.sh /tmp/pyprt/miniconda.sh
 RUN bash miniconda.sh -bfp ./conda && \
     rm -rf ./miniconda.sh && \
     conda/bin/conda update conda && \
