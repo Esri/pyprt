@@ -315,7 +315,7 @@ String getDockerImage(Map cfg) {
 	String image = 'zrh-dreg-sp-1.esri.com/pyprt/pyprt'
 
 	String tag = "jnk-${DOCKER_IMAGE_REV}-"
-	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL7) ? 'centos7' : error(cfg.os)
+	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL7) ? 'linux' : error(cfg.os)
 	tag += "-py${cfg.py}-${cfg.kind}-${cfg.tc}"
 
 	return "${image}:${tag}"

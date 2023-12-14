@@ -96,7 +96,7 @@ _Note: on Windows, replace `bin` with `Scripts` in the following commands. Some 
     1. Create the virtual environment: `python3.8 -m venv .venv`
     1. Get latest pip: `.venv/bin/python -m pip install --upgrade pip`
     1. Get latest wheel: `.venv/bin/python -m pip install --upgrade wheel`
-    1. Install build dependencies for PyPRT: `.venv/bin/python -m pip install -r envs/centos7/wheel/requirements-py3.8.txt`
+    1. Install build dependencies for PyPRT: `.venv/bin/python -m pip install -r envs/linux/wheel/requirements-py3.8.txt`
 1. Run `.venv/bin/python -m build --wheel`. This will build the CMake project and Python package. See [below](#c-debug-builds) for native debug mode.
 1. The resulting wheel is written to the temporary `dist` folder.
 
@@ -106,7 +106,7 @@ Note: To build a wheel with the native extension module in debug mode, edit the 
 
 1. Install Miniconda or Anaconda.
 1. Open a shell in the PyPRT git root and activate Miniconda (or Anaconda).
-1. First time only: run `conda env create -n pyprt-py38 --file envs/centos7/conda/environment-py3.8.yml` to create a conda environment with all the required Python packages (adapt the `pyprt-py38` env name, `centos7` and `environment-py3.8.yml` to your desired OS/Python combination).
+1. First time only: run `conda env create -n pyprt-py38 --file envs/linux/conda/environment-py3.8.yml` to create a conda environment with all the required Python packages (adapt the `pyprt-py38` env name, `linux` and `environment-py3.8.yml` to your desired OS/Python combination).
 1. First time only: run `conda install -n pyprt-py38 -c esri arcgis` (this is a workaround to reduce conda env resolving time in the step above)
 1. Activate the new conda env: `conda activate pyprt-py38`
 1. Run `conda build ./conda-recipe`. This will build the CMake project and Python packages. See [below](#c-debug-builds) for native debug mode.
@@ -161,13 +161,13 @@ Note: On Windows, Docker needs to be switched to "Windows Containers".
 
 1. Open a shell in the PyPRT git root
 1. Create the base image for the desired build toolchain (adapt to your desired Python version):
-   * Linux: `docker build --rm -f envs/centos7/base/Dockerfile -t pyprt-base:centos7-py3.8 --build-arg PY_VER=3.8 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
+   * Linux: `docker build --rm -f envs/linux/base/Dockerfile -t pyprt-base:linux-py3.8 --build-arg PY_VER=3.8 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
    * Windows: `docker build --rm -f envs\windows\base\Dockerfile-py -t pyprt-base:windows-py3.8 --build-arg PY_VER=3.8 .`
 1. Create the desired image for the build toolchain (adapt to your desired Python version):
-   * Linux: `docker build --rm -f envs/centos7/wheel/Dockerfile -t pyprt:centos7-py3.8 --build-arg PY_VER=3.8 --build-arg BASE_TAG=centos7-py3.8 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
+   * Linux: `docker build --rm -f envs/linux/wheel/Dockerfile -t pyprt:linux-py3.8 --build-arg PY_VER=3.8 --build-arg BASE_TAG=linux-py3.8 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
    * Windows: `docker build --rm -f envs\windows\wheel\Dockerfile -t pyprt:windows-py3.8 --build-arg PY_VER=3.8 --build-arg BASE_TAG=windows-py3.8 .`
 1. Run the build
-   * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:centos7-py3.8 bash -c 'python -m build --wheel'`
+   * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:linux-py3.8 bash -c 'python -m build --wheel'`
    * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py3.8 cmd /c "python -m build --wheel"`
 1. The resulting wheel should appear in the `dist` directory.
 
@@ -175,13 +175,13 @@ Note: On Windows, Docker needs to be switched to "Windows Containers".
 
 1. Open a shell in the PyPRT git root
 1. Create the base image for the desired build toolchain (adapt `py3.8` to your desired Python version):
-    * Linux: `docker build --rm -f envs/centos7/base/Dockerfile -t pyprt-base:centos7-py3.8 --build-arg PY_VER=3.8 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
+    * Linux: `docker build --rm -f envs/linux/base/Dockerfile -t pyprt-base:linux-py3.8 --build-arg PY_VER=3.8 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
     * Windows: `docker build --rm -f envs\windows\base\Dockerfile-py -t pyprt-base:windows-py3.8 --build-arg PY_VER=3.8 .`
 1. Create the desired image for the build toolchain (adapt `py3.8` to your desired Python version):
-    * Linux: `docker build --rm -f envs/centos7/conda/Dockerfile -t pyprt:centos7-py3.8-conda --build-arg PY_VER=3.8 --build-arg BASE_TAG=centos7-py3.8 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
+    * Linux: `docker build --rm -f envs/linux/conda/Dockerfile -t pyprt:linux-py3.8-conda --build-arg PY_VER=3.8 --build-arg BASE_TAG=linux-py3.8 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
     * Windows: `docker build --rm -f envs\windows\conda\Dockerfile -t pyprt:windows-py3.8-conda --build-arg PY_VER=3.8 --build-arg BASE_TAG=windows-py3.8 .`
 1. Run the build
-    * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:centos7-py3.8-conda bash -c 'conda build ./conda-recipe && cp -r /tmp/pyprt/pyprt-conda-env/conda-bld/linux-64/pyprt*.tar.bz2 /tmp/pyprt/root'`
+    * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:linux-py3.8-conda bash -c 'conda build ./conda-recipe && cp -r /tmp/pyprt/pyprt-conda-env/conda-bld/linux-64/pyprt*.tar.bz2 /tmp/pyprt/root'`
     * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py3.8-conda cmd /c "conda build ./conda-recipe && copy C:\temp\conda\envs\pyprt\conda-bld\win-64\pyprt-*.tar.bz2 C:\temp\pyprt\root"`
 1. The resulting conda package will be located in the current directly (PyPRT git repo root).
 

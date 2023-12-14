@@ -19,7 +19,7 @@ import tempfile
 import platform
 import venv
 
-env_os = "windows" if platform.system() == "Windows" else "centos7"
+env_os = "windows" if platform.system() == "Windows" else "linux"
 env_py = f"py{sys.version_info[0]}.{sys.version_info[1]}"
 
 env_dir = tempfile.TemporaryDirectory(prefix="pyprt-test-venv")

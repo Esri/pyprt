@@ -21,7 +21,7 @@ RUN echo "unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable devtools
 ENV BASH_ENV=/tmp/scl_enable ENV=/tmp/scl_enable PROMPT_COMMAND=". /tmp/scl_enable"
 
 WORKDIR /tmp/pyprt
-COPY envs/centos7/wheel/requirements-py${PY_VER}.txt ./requirements.txt
+COPY envs/linux/wheel/requirements-py${PY_VER}.txt ./requirements.txt
 
 ENV VIRTUAL_ENV=/tmp/pyprt-venv
 RUN source scl_source enable rh-python${PY_VER//./} && python -m venv $VIRTUAL_ENV
