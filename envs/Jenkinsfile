@@ -203,9 +203,9 @@ String getBuildArgs(cfg) {
 
     // specify the exact python version to build on linux for the wheels
 	if (cfg.os == OS_LINUX && cfg.kind == WHEEL.kind && cfg.py == PY39.py)
-		args += " --build-arg PY_VER_MICRO=.13"
+		args += " --build-arg PY_VER_MICRO=.18"
 	else if (cfg.os == OS_LINUX && cfg.kind == WHEEL.kind && cfg.py == PY310.py)
-		args += " --build-arg PY_VER_MICRO=.6"
+		args += " --build-arg PY_VER_MICRO=.13"
 
 	if (cfg.os == OS_LINUX)
 		args += ' --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
