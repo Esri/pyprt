@@ -46,6 +46,7 @@ psl.runsHere('production')
 @Field final Map PY38 = [ py: '3.8' ]
 @Field final Map PY39 = [ py: '3.9' ]
 @Field final Map PY310 = [ py: '3.10' ]
+@Field final Map PY311 = [ py: '3.11' ]
 
 @Field final Map BASE = [ kind: 'base' ]
 @Field final Map WHEEL = [ kind: 'wheel' ]
@@ -66,6 +67,7 @@ psl.runsHere('production')
 	composeConfig(PY38, BASE, WINDOWS_TOOLCHAIN),
 	composeConfig(PY39, BASE, WINDOWS_TOOLCHAIN),
 	composeConfig(PY310, BASE, WINDOWS_TOOLCHAIN),
+	composeConfig(PY311, BASE, WINDOWS_TOOLCHAIN),
 ]
 @Field final List CONFIGS_IMAGES = [
 	composeConfig(PY38, WHEEL, LINUX_TOOLCHAIN),
@@ -80,6 +82,10 @@ psl.runsHere('production')
 	composeConfig(PY310, WHEEL, WINDOWS_TOOLCHAIN),
 	composeConfig(PY310, CONDA, LINUX_TOOLCHAIN),
 	composeConfig(PY310, CONDA, WINDOWS_TOOLCHAIN),
+	composeConfig(PY311, WHEEL, LINUX_TOOLCHAIN),
+	composeConfig(PY311, WHEEL, WINDOWS_TOOLCHAIN),
+	composeConfig(PY311, CONDA, LINUX_TOOLCHAIN),
+	composeConfig(PY311, CONDA, WINDOWS_TOOLCHAIN),
 ]
 
 
@@ -165,8 +171,8 @@ Map composeConfig(py, kind, tc) {
 
 String getDockerFile(cfg) {
 	String path = "envs/${cfg.os}/${cfg.kind}/Dockerfile"
-	if ((cfg.py == PY39.py || cfg.py == PY310.py) && cfg.os == OS_LINUX && cfg.kind == WHEEL.kind)
-		path += '-custom-py' // workaround: no Python 3.9 or 3.10 RPMs available
+	if (cfg.py != PY38.py && cfg.os == OS_LINUX && cfg.kind == WHEEL.kind)
+		path += '-custom-py' // we build Python > 3.8 manually as long as we are on CentOS 7 base image
 	return path
 }
 
@@ -206,6 +212,8 @@ String getBuildArgs(cfg) {
 		args += " --build-arg PY_VER_MICRO=.18"
 	else if (cfg.os == OS_LINUX && cfg.kind == WHEEL.kind && cfg.py == PY310.py)
 		args += " --build-arg PY_VER_MICRO=.13"
+	else if (cfg.os == OS_LINUX && cfg.kind == WHEEL.kind && cfg.py == PY311.py)
+		args += " --build-arg PY_VER_MICRO=.7"
 
 	if (cfg.os == OS_LINUX)
 		args += ' --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'

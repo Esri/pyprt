@@ -5,17 +5,22 @@ FROM ${REGISTRY}pyprt-base:${BASE_TAG}
 ARG PY_VER
 ARG PY_VER_MICRO
 
-# no RPM repos yet, we manually build Python with default CentOS 7 toolchain
+# dependencies for Python source build (also used for module native extensions)
+RUN yum install -y gcc gcc-c++ make openssl11 openssl11-libs \
+    openssl11-static openssl11-devel libffi-devel bzip2-devel liblzma-dev
+
+# we manually build Python with default CentOS 7 toolchain
 WORKDIR /tmp
 ADD https://www.python.org/ftp/python/${PY_VER}${PY_VER_MICRO}/Python-${PY_VER}${PY_VER_MICRO}.tar.xz python_src.tar.xz
-RUN yum install -y gcc make openssl11 openssl11-libs openssl11-static openssl11-devel libffi-devel bzip2-devel liblzma-dev
-RUN tar xf python_src.tar.xz && \
-    pushd Python-${PY_VER}${PY_VER_MICRO} && \
-    sed -i 's/PKG_CONFIG openssl /PKG_CONFIG openssl11 /g' configure && \
-    ./configure --enable-optimizations && \
-    CPU_COUNT=$(grep -c ^processor /proc/cpuinfo) && \
-    make -j$CPU_COUNT altinstall && \
-    popd
+RUN tar xf python_src.tar.xz \
+    && rm /tmp/python_src.tar.xz \
+    && pushd Python-${PY_VER}${PY_VER_MICRO} \
+    && sed -i 's/PKG_CONFIG openssl /PKG_CONFIG openssl11 /g' configure \
+    && ./configure \
+    && CPU_COUNT=$(grep -c ^processor /proc/cpuinfo) \
+    && make -j$CPU_COUNT altinstall \
+    && popd \
+    && rm -rf /tmp/Python-${PY_VER}${PY_VER_MICRO}
 
 ## this container works with mounted host directories
 ## we create a user with matching uid/gid to avoid permissions issues
@@ -37,6 +42,7 @@ ENV VIRTUAL_ENV=/tmp/pyprt-venv
 RUN python${PY_VER} -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN python -V && \
-    python -m pip install --no-cache-dir --upgrade pip && python -m pip install --no-cache-dir --upgrade wheel && \
-    python -m pip install --no-cache-dir -r requirements.txt
+RUN python -V \
+    && python -m pip install --no-cache-dir --upgrade pip  \
+    && python -m pip install --no-cache-dir --upgrade wheel \
+    && python -m pip install --no-cache-dir -r requirements.txt

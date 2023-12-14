@@ -16,9 +16,7 @@ PyPRT provides a Python binding for the [CityEngine Procedural RunTime (PRT)](ht
 
 Run `pip install pyprt` in your (virtual) Python environment or `conda install -c esri pyprt` in a Conda environment. Then use `import pyprt` in your scripts.
 
-We provide wheels for Python 3.8, 3.9 and 3.10 on Linux and Windows. Conda packages are available for Python 3.8, 3.9 and 3.10(*) on Linux and Windows. For other Python versions please [build](#development) PyPRT yourself.
-
-(*) A note regarding Python 3.10: The arcgis package for Python 3.10 is not yet available, therefore the arcgis submodule in PyPRT is not yet working with Python 3.10.
+We provide wheels and Conda packages for Python 3.8, 3.9, 3.10 and 3.11 on Linux and Windows. For other Python versions please [build](#development) PyPRT yourself.
 
 ## Minimal Example
 
@@ -76,11 +74,11 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
 * C++ Compiler (C++ 17)
   * Windows: MSVC 14.27 or later
   * Linux: GCC 9.3 or later (we build and test on RHEL7/CentOS7)
-* Python (version >= 3.8)
-  * Packages (latest version if not specified): wheel, arcgis (only for Python <3.10), twine, sphinx, pkginfo, xmlrunner
+* Python (version >=3.8, <=3.11)
+  * Packages: wheel, arcgis, twine, sphinx, pkginfo, xmlrunner
 * Optional: Conda (e.g. miniconda3)
 * CMake (version >= 3.19)
-* Ninja (or jom)
+* Ninja
 
 A note regarding the meaning of "open a shell" in the following sections: this implies that the shell also needs to have the correct C++ compiler activated:
 
@@ -161,10 +159,10 @@ Note: On Windows, Docker needs to be switched to "Windows Containers".
 
 1. Open a shell in the PyPRT git root
 1. Create the base image for the desired build toolchain (adapt to your desired Python version):
-   * Linux: `docker build --rm -f envs/linux/base/Dockerfile -t pyprt-base:linux-py3.8 --build-arg PY_VER=3.8 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
+   * Linux: `docker build --rm -f envs/linux/base/Dockerfile -t pyprt-base:linux .`
    * Windows: `docker build --rm -f envs\windows\base\Dockerfile-py -t pyprt-base:windows-py3.8 --build-arg PY_VER=3.8 .`
 1. Create the desired image for the build toolchain (adapt to your desired Python version):
-   * Linux: `docker build --rm -f envs/linux/wheel/Dockerfile -t pyprt:linux-py3.8 --build-arg PY_VER=3.8 --build-arg BASE_TAG=linux-py3.8 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
+   * Linux: `docker build --rm -f envs/linux/wheel/Dockerfile -t pyprt:linux-py3.8 --build-arg PY_VER=3.8 --build-arg BASE_TAG=linux --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
    * Windows: `docker build --rm -f envs\windows\wheel\Dockerfile -t pyprt:windows-py3.8 --build-arg PY_VER=3.8 --build-arg BASE_TAG=windows-py3.8 .`
 1. Run the build
    * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:linux-py3.8 bash -c 'python -m build --wheel'`
@@ -175,10 +173,10 @@ Note: On Windows, Docker needs to be switched to "Windows Containers".
 
 1. Open a shell in the PyPRT git root
 1. Create the base image for the desired build toolchain (adapt `py3.8` to your desired Python version):
-    * Linux: `docker build --rm -f envs/linux/base/Dockerfile -t pyprt-base:linux-py3.8 --build-arg PY_VER=3.8 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
+    * Linux: `docker build --rm -f envs/linux/base/Dockerfile -t pyprt-base:linux .`
     * Windows: `docker build --rm -f envs\windows\base\Dockerfile-py -t pyprt-base:windows-py3.8 --build-arg PY_VER=3.8 .`
 1. Create the desired image for the build toolchain (adapt `py3.8` to your desired Python version):
-    * Linux: `docker build --rm -f envs/linux/conda/Dockerfile -t pyprt:linux-py3.8-conda --build-arg PY_VER=3.8 --build-arg BASE_TAG=linux-py3.8 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
+    * Linux: `docker build --rm -f envs/linux/conda/Dockerfile -t pyprt:linux-py3.8-conda --build-arg PY_VER=3.8 --build-arg BASE_TAG=linux --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
     * Windows: `docker build --rm -f envs\windows\conda\Dockerfile -t pyprt:windows-py3.8-conda --build-arg PY_VER=3.8 --build-arg BASE_TAG=windows-py3.8 .`
 1. Run the build
     * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:linux-py3.8-conda bash -c 'conda build ./conda-recipe && cp -r /tmp/pyprt/pyprt-conda-env/conda-bld/linux-64/pyprt*.tar.bz2 /tmp/pyprt/root'`
