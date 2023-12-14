@@ -22,7 +22,8 @@ import groovy.transform.Field
 // -- SETUP
 
 properties([
-	disableConcurrentBuilds()
+    parameters([booleanParam(name: 'BUILD_BASE_IMAGES', defaultValue: false, description: 'Build base images')]),
+    disableConcurrentBuilds()
 ])
 
 psl.runsHere('production')
@@ -94,7 +95,8 @@ stage('prepare') {
 }
 
 stage('build-base-images') {
-	//cepl.runParallel(taskGenBuildDockerBaseImage())
+    if (env.BUILD_BASE_IMAGES == 'true')
+	    cepl.runParallel(taskGenBuildDockerBaseImage())
 }
 
 stage('build-images') {
