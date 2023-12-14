@@ -43,7 +43,6 @@ psl.runsHere('production')
 @Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
 
-@Field final Map PY37 = [ py: '3.7' ]
 @Field final Map PY38 = [ py: '3.8' ]
 @Field final Map PY39 = [ py: '3.9' ]
 @Field final Map PY310 = [ py: '3.10' ]
@@ -64,15 +63,11 @@ psl.runsHere('production')
 @Field final List CONFIGS_BASE_IMAGES = [
 	composeConfig(null, BASE, LINUX_TOOLCHAIN),
 	composeConfig(null, BASE, WINDOWS_TOOLCHAIN),
-	composeConfig(PY37, BASE, WINDOWS_TOOLCHAIN),
 	composeConfig(PY38, BASE, WINDOWS_TOOLCHAIN),
 	composeConfig(PY39, BASE, WINDOWS_TOOLCHAIN),
 	composeConfig(PY310, BASE, WINDOWS_TOOLCHAIN),
 ]
 @Field final List CONFIGS_IMAGES = [
-	composeConfig(PY37, WHEEL, WINDOWS_TOOLCHAIN),
-	composeConfig(PY37, CONDA, LINUX_TOOLCHAIN),
-	composeConfig(PY37, CONDA, WINDOWS_TOOLCHAIN),
 	composeConfig(PY38, WHEEL, LINUX_TOOLCHAIN),
 	composeConfig(PY38, WHEEL, WINDOWS_TOOLCHAIN),
 	composeConfig(PY38, CONDA, LINUX_TOOLCHAIN),
