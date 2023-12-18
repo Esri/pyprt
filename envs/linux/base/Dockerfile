@@ -1,8 +1,11 @@
 FROM centos:7
 
-RUN yum install -y centos-release-scl-rh epel-release \
+RUN yum -y update \
+    && yum install -y centos-release-scl-rh epel-release \
 	&& yum install -y git ninja-build devtoolset-9-toolchain \
-	&& yum install -y curl bzip2
+	&& yum install -y curl bzip2 \
+    && yum clean all \
+    && rm -rf /var/cache/yum
 
 # we manually install the tools below because we require newer versions than what the distro can provide
 

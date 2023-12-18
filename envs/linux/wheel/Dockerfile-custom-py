@@ -6,8 +6,11 @@ ARG PY_VER
 ARG PY_VER_MICRO
 
 # dependencies for Python source build (also used for module native extensions)
-RUN yum install -y gcc gcc-c++ make openssl11 openssl11-libs \
-    openssl11-static openssl11-devel libffi-devel bzip2-devel liblzma-dev
+RUN yum -y update \
+    && yum install -y gcc gcc-c++ make openssl11 openssl11-libs \
+      openssl11-static openssl11-devel libffi-devel bzip2-devel liblzma-dev \
+    && yum clean all \
+    && rm -rf /var/cache/yum
 
 # we manually build Python with default CentOS 7 toolchain
 WORKDIR /tmp
