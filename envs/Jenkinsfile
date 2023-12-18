@@ -220,12 +220,5 @@ String getBuildArgs(cfg) {
 	return args
 }
 
-// for conda builds:
-// 1. we install arcgis in an extra layer to filter out the yet unsupported Python 3.10
-// 2. we want to install it after env creation anyways to avoid the conda resolver blowing up
-String getTargetArgs(cfg) {
-	String args = ''
-	if (cfg.py == PY310.py && cfg.kind == CONDA.kind)
-		args = '--target req_install'
 	return args
 }
