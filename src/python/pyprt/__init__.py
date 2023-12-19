@@ -13,6 +13,4 @@
 # limitations under the License.
 # A copy of the license is available in the repository's LICENSE file.
 
-__version__ = '1.8.0.dev0'
-
 from .pyprt import *
