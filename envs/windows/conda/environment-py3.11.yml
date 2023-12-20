@@ -1,7 +1,7 @@
 channels:
   - defaults
 dependencies:
-  - python=3.7
+  - python=3.11
   - anaconda::conda-build
   - anaconda::conda-verify
   - anaconda::sphinx

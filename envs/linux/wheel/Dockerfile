@@ -7,7 +7,10 @@ ARG USER_ID
 ARG GROUP_ID
 
 # install python and any devel packages needed to install the required python modules
-RUN yum install -y rh-python${PY_VER//./}-python rh-python${PY_VER//./}-python-devel rh-python${PY_VER//./}-python-pip krb5-devel
+RUN yum -y update \
+    && yum install -y rh-python${PY_VER//./}-python rh-python${PY_VER//./}-python-devel rh-python${PY_VER//./}-python-pip krb5-devel \
+    && yum clean all \
+    && rm -rf /var/cache/yum
 
 # this container works with mounted host directories
 # we create a user with matching uid/gid to avoid permissions issues

@@ -5,4 +5,5 @@ dependencies:
   - anaconda::conda-build
   - anaconda::conda-verify
   - anaconda::sphinx
+  - conda-forge::shapely
   - conda-forge::xmlrunner

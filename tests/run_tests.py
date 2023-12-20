@@ -35,8 +35,7 @@ def test_suite():
     suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
     suite.addTests(loader.loadTestsFromModule(shapeAttributesDict_test))
     suite.addTests(loader.loadTestsFromModule(inspectRPK_test))
-    if sys.version_info.minor != 10:
-        suite.addTests(loader.loadTestsFromModule(arcgis_test))
+    suite.addTests(loader.loadTestsFromModule(arcgis_test))
     return suite
 
 
