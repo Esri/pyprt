@@ -109,6 +109,8 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 // -- PIPELINE
 
+@Field def prtLatestEnabled = true
+
 stage('prepare') {
 	cepl.runParallel(taskGenPrepare())
 }
@@ -165,13 +167,18 @@ def taskPrepare(cfg) {
 	}
 
 	dir(path: 'cesdk_latest') {
-		dir(path: 'windows') {
-			def myCfg = cfg + WINDOWS_NATIVE_CONFIG
-			papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
-		}
-		dir(path: 'linux') {
-			def myCfg = cfg + LINUX_NATIVE_CONFIG
-			papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
+		try {
+			dir(path: 'windows') {
+				def myCfg = cfg + WINDOWS_NATIVE_CONFIG
+				papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
+			}
+			dir(path: 'linux') {
+				def myCfg = cfg + LINUX_NATIVE_CONFIG
+				papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
+			}
+		} catch (Exception e) {
+			echo("Failed to fetch latest CI build of the CityEngine SDK. Disabling building against latest CE SDK.")
+			prtLatestEnabled = false
 		}
 	}
 
@@ -205,6 +212,11 @@ def taskPrepare(cfg) {
 }
 
 def taskBuildWheel(cfg) {
+	if (cfg.prt == PRT_LATEST.prt && !prtLatestEnabled) {
+		echo("Task skipped - building against latest CE SDK is not available.")
+		return
+	}
+
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
@@ -235,6 +247,11 @@ def taskBuildWheel(cfg) {
 }
 
 def taskBuildConda(cfg) {
+	if (cfg.prt == PRT_LATEST.prt && !prtLatestEnabled) {
+		echo("Task skipped - building against latest CE SDK is not available.")
+		return
+	}
+
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
@@ -277,6 +294,11 @@ def taskBuildDoc(cfg) {
 }
 
 def taskRunTests(cfg) {
+	if (cfg.prt == PRT_LATEST.prt && !prtLatestEnabled) {
+		echo("Task skipped - building against latest CE SDK is not available.")
+		return
+	}
+
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
