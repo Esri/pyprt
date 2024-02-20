@@ -40,7 +40,7 @@ psl.runsHere('production')
 @Field final String CREDS = 'jenkins-devtopia-pyprt-deployer-key'
 @Field final String SOURCE_STASH = 'pyprt-sources'
 
-@Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
+@Field final String DOCKER_AGENT_LINUX = 'linux && docker'
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
 
 // we build Python > 3.8 from source as long as we are on CentOS 7 base image
