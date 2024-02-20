@@ -38,7 +38,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field String pkgVer = "0.0.0"
 @Field final String PYPRT_CPP_DEPENDENCY_PROPERTIES = "${SOURCE}/src/cpp/dependencies.properties"
 
-@Field final String DOCKER_IMAGE_REV = "v8"
+@Field final String DOCKER_IMAGE_REV = "v9"
 
 @Field final String DOCKER_AGENT_LINUX = psl.BA_LINUX_DOCKER
 @Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
@@ -327,9 +327,14 @@ def runDockerCmd(Map cfg, Map dirMap, String workDir, String cmd) {
 	String dirMapStrArgs = ""
 	dirMap.each { k,v -> dirMapStrArgs += " -v \"${k}:${v}\"" }
 
+	String envMapStrArgs = ''
+	Map envMap = isUnix() ? [ DEFAULT_UID: '$(id -u)', DEFAULT_GID: '$(id -g)' ] : [:]
+	envMap.each { k,v -> envMapStrArgs += " -e ${k}=${v}" }
+
 	String runArgs = '--pull always --rm'
 	runArgs += " --name pyprt"
 	runArgs += dirMapStrArgs
+	runArgs += envMapStrArgs
 	runArgs += " -w ${workDir}"
 	runArgs += " ${getDockerImage(cfg)}"
 	runArgs += isUnix() ? " bash -c '${cmd}'" : " cmd /c \"${cmd}\""
