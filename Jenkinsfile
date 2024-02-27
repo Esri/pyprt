@@ -354,6 +354,9 @@ def runDockerCmd(Map cfg, Map dirMap, String workDir, String cmd) {
 	envMap.each { k,v -> envMapStrArgs += " -e ${k}=${v}" }
 
 	String runArgs = '--pull always --rm'
+	if (isUnix()) {
+	    runArgs += " --init" // make sure container always terminate cleanly (signal handling)
+	}
 	runArgs += " --name pyprt"
 	runArgs += dirMapStrArgs
 	runArgs += envMapStrArgs
