@@ -38,7 +38,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field String pkgVer = "0.0.0"
 @Field final String PYPRT_CPP_DEPENDENCY_PROPERTIES = "${SOURCE}/src/cpp/dependencies.properties"
 
-@Field final String DOCKER_IMAGE_REV = "v8"
+@Field final String DOCKER_IMAGE_REV = "v9"
 
 @Field final String DOCKER_AGENT_LINUX = psl.BA_LINUX_DOCKER
 @Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
@@ -109,6 +109,8 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 // -- PIPELINE
 
+@Field def prtLatestEnabled = true
+
 stage('prepare') {
 	cepl.runParallel(taskGenPrepare())
 }
@@ -165,13 +167,18 @@ def taskPrepare(cfg) {
 	}
 
 	dir(path: 'cesdk_latest') {
-		dir(path: 'windows') {
-			def myCfg = cfg + WINDOWS_NATIVE_CONFIG
-			papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
-		}
-		dir(path: 'linux') {
-			def myCfg = cfg + LINUX_NATIVE_CONFIG
-			papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
+		try {
+			dir(path: 'windows') {
+				def myCfg = cfg + WINDOWS_NATIVE_CONFIG
+				papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
+			}
+			dir(path: 'linux') {
+				def myCfg = cfg + LINUX_NATIVE_CONFIG
+				papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
+			}
+		} catch (Exception e) {
+			echo("Failed to fetch latest CI build of the CityEngine SDK. Disabling building against latest CE SDK.")
+			prtLatestEnabled = false
 		}
 	}
 
@@ -205,6 +212,11 @@ def taskPrepare(cfg) {
 }
 
 def taskBuildWheel(cfg) {
+	if (cfg.prt == PRT_LATEST.prt && !prtLatestEnabled) {
+		echo("Task skipped - building against latest CE SDK is not available.")
+		return
+	}
+
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
@@ -235,6 +247,11 @@ def taskBuildWheel(cfg) {
 }
 
 def taskBuildConda(cfg) {
+	if (cfg.prt == PRT_LATEST.prt && !prtLatestEnabled) {
+		echo("Task skipped - building against latest CE SDK is not available.")
+		return
+	}
+
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
@@ -277,6 +294,11 @@ def taskBuildDoc(cfg) {
 }
 
 def taskRunTests(cfg) {
+	if (cfg.prt == PRT_LATEST.prt && !prtLatestEnabled) {
+		echo("Task skipped - building against latest CE SDK is not available.")
+		return
+	}
+
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
@@ -327,9 +349,14 @@ def runDockerCmd(Map cfg, Map dirMap, String workDir, String cmd) {
 	String dirMapStrArgs = ""
 	dirMap.each { k,v -> dirMapStrArgs += " -v \"${k}:${v}\"" }
 
+	String envMapStrArgs = ''
+	Map envMap = isUnix() ? [ DEFAULT_UID: '$(id -u)', DEFAULT_GID: '$(id -g)' ] : [:]
+	envMap.each { k,v -> envMapStrArgs += " -e ${k}=${v}" }
+
 	String runArgs = '--pull always --rm'
 	runArgs += " --name pyprt"
 	runArgs += dirMapStrArgs
+	runArgs += envMapStrArgs
 	runArgs += " -w ${workDir}"
 	runArgs += " ${getDockerImage(cfg)}"
 	runArgs += isUnix() ? " bash -c '${cmd}'" : " cmd /c \"${cmd}\""
