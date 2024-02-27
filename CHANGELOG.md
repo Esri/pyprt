@@ -1,14 +1,23 @@
 # PyPRT ChangeLog
 
-## v1.8.0 (2023-12-XX)
+## v1.8.0 (2024-03-05)
+
+### Added
+* Added support for Rule Packages (RPK) created with CityEngine 2023.1
+* Added pre-built wheels and conda packages for Python 3.11
 
 ### Changed
+* Updated to PRT 3.1.9666
 * Introduced `pyproject.toml` (calling setup.py directly has been deprecated by `setuptools`).
 * Switched to the `build` package for wheel builds.
 * Reorganized the `src` directory to better support isolated builds.
 * Switched conda builds from `bdist_conda` to explicit conda recipe (`conda-recipe/meta.yaml`) and `conda build`.
 * Updated to PyBind11 2.11.1
 * Raised minimum CMake version to 3.19
+* Fixed source links in the API docs and improved the sidebar layout.
+
+### Removed
+* Removed support for Python 3.7
 
 ## v1.7.0 (2023-06-12)
 
