@@ -5,4 +5,4 @@ Shapely
 Sphinx<7.0
 twine
 xmlrunner
-numpy<1.24.0
+numpy
