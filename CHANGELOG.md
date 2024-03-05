@@ -5,16 +5,16 @@
 ### Added
 * Added support for Rule Packages (RPK) created with CityEngine 2023.1
 * Added pre-built wheels and conda packages for Python 3.11
+* Introduced `pyproject.toml` (calling setup.py directly has been deprecated by `setuptools`)
 
 ### Changed
 * Updated to PRT 3.1.9666
-* Introduced `pyproject.toml` (calling setup.py directly has been deprecated by `setuptools`).
-* Switched to the `build` package for wheel builds.
-* Reorganized the `src` directory to better support isolated builds.
-* Switched conda builds from `bdist_conda` to explicit conda recipe (`conda-recipe/meta.yaml`) and `conda build`.
+* Switched to the `build` package for wheel builds
+* Reorganized the `src` directory to better support isolated builds
+* Switched conda builds from `bdist_conda` to explicit conda recipe (`conda-recipe/meta.yaml`) and `conda build`
 * Updated to PyBind11 2.11.1
 * Raised minimum CMake version to 3.19
-* Fixed source links in the API docs and improved the sidebar layout.
+* Fixed source links in the API docs and improved the sidebar layout
 
 ### Removed
 * Removed support for Python 3.7
@@ -24,13 +24,13 @@
 ### Added
 * Added support for Rule Packages (RPK) created with CityEngine 2023.0
 * Added support for textured initial shapes (also added the `maxDirRecursionDepth` argument to
-  the `InitialShape` class constructor to control searching for texture files).
-* Added new API function `get_api_version` to get a list of the PRT (major, minor, build) components.
+  the `InitialShape` class constructor to control searching for texture files)
+* Added new API function `get_api_version` to get a list of the PRT (major, minor, build) components
 
 ### Changed
 * Updated to PRT 3.0.8905
 * Updated to PyBind11 2.10.4
-* Turned the `prt_DIR` and `pybind11_DIR` into proper CMake cache variables.
+* Turned the `prt_DIR` and `pybind11_DIR` into proper CMake cache variables
 
 ## v1.6.0 (2022-12-21)
 
