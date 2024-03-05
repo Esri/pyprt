@@ -104,11 +104,11 @@ Note: To build a wheel with the native extension module in debug mode, edit the 
 
 1. Install Miniconda or Anaconda.
 1. Open a shell in the PyPRT git root and activate Miniconda (or Anaconda).
-1. First time only: run `conda env create -n pyprt-py38 --file envs/linux/conda/environment-py3.8.yml` to create a conda environment with all the required Python packages (adapt the `pyprt-py38` env name, `linux` and `environment-py3.8.yml` to your desired OS/Python combination).
-1. First time only: run `conda install -n pyprt-py38 -c esri arcgis` (this is a workaround to reduce conda env resolving time in the step above)
-1. Activate the new conda env: `conda activate pyprt-py38`
+1. First time only: run `conda env create -n pyprt --file envs/linux/conda/environment-py3.8.yml` to create a conda environment with all the required Python packages (adapt to your desired OS/Python combination).
+1. First time only: run `conda install -n pyprt -c esri arcgis` (this is a workaround to reduce conda env resolving time in the step above)
+1. Activate the new conda env: `conda activate pyprt`
 1. Run `conda build ./conda-recipe`. This will build the CMake project and Python packages. See [below](#c-debug-builds) for native debug mode.
-1. The resulting package is written to the `<miniconda home>/envs/pyprt-py38/conda-bld/{platform}` directory.
+1. The resulting package is written to the `<miniconda home>/envs/pyprt/conda-bld/{platform}` directory.
 
 ### Iterative Python Development
 
@@ -148,7 +148,7 @@ Detailed steps to run tests for development (basically what the `build_and_run_t
 ### Build the API documentation
 
 1. Install PyPRT in development mode as described [above](#iterative-python-development).
-1. Run `.venv38/bin/sphinx-build docs build/sphinx`, this will output the html files into the `build/sphinx` directory.
+1. Run `.venv/bin/sphinx-build docs build/sphinx`, this will output the html files into the `build/sphinx` directory.
 1. Leave development mode also as described [above](#iterative-python-development).
 
 ### Build with Docker

@@ -275,7 +275,7 @@ def taskBuildConda(cfg) {
 		def cls = (p =~ /.*-(py[0-9]+)_[0-9]+\.tar\.bz2/)
 		return "${cls[0][1]}-${cfg.os}-${cfg.arch}"
 	}
-	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-*.tar.bz2", { return pkgVer }, cfg, classifierExtractor)
+	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-*.tar.bz2", { return pkgVer }, cfg, classifierExtractor, 'build', 'tar.bz2')
 }
 
 def taskBuildDoc(cfg) {
