@@ -9,7 +9,7 @@ RUN yum -y update \
 
 # we manually install the tools below because we require newer versions than what the distro can provide
 
-ADD https://zrh-code.esri.com/nexus/service/local/repositories/tools/content/com/esri/cityengine/toolchain/cmake/3.27.7/cmake-3.27.7-linux-x86_64.tar.gz /tmp/cmake.tar.gz
+ADD https://cmake.org/files/v3.27/cmake-3.27.7-linux-x86_64.tar.gz /tmp/cmake.tar.gz
 RUN tar -xzf /tmp/cmake.tar.gz -C /opt && rm /tmp/cmake.tar.gz
 ENV PATH="/opt/cmake-3.27.7-linux-x86_64/bin:$PATH"
 

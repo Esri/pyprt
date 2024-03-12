@@ -6,7 +6,7 @@ ARG PY_VER
 ARG BASE_TAG=''
 FROM ${REGISTRY}pyprt-base:${BASE_TAG}
 
-ADD https://zrh-code.esri.com/nexus/service/local/repositories/tools/content/io/conda/miniconda3/23.10.0/miniconda3-23.10.0-py311-windows-x86_64.exe C:/temp/miniconda.exe
+ADD https://repo.anaconda.com/miniconda/Miniconda3-py311_23.10.0-1-Windows-x86_64.exe C:/temp/miniconda.exe
 RUN C:\temp\miniconda.exe /S /AddToPath=1 /InstallationType=JustMe /RegisterPython=0 /D=C:\temp\conda
 
 WORKDIR C:/temp/pyprt
