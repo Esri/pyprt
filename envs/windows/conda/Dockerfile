@@ -1,9 +1,7 @@
 # escape=`
 
-ARG REGISTRY=''
-ARG PY_VER
-
-ARG BASE_TAG=''
+ARG REGISTRY
+ARG BASE_TAG=windows
 FROM ${REGISTRY}pyprt-base:${BASE_TAG}
 
 ADD https://repo.anaconda.com/miniconda/Miniconda3-py311_23.10.0-1-Windows-x86_64.exe C:/temp/miniconda.exe
