@@ -155,19 +155,15 @@ Detailed steps to run tests for development (basically what the `build_and_run_t
 
 Note: On Windows, Docker needs to be switched to "Windows Containers".
 
-#### Build Base Image
+#### Build Wheels
 
 1. Open a shell in the PyPRT git root
 1. Create the base image for the desired build toolchain (adapt to your desired Python version):
    * Linux: `docker build --rm -f envs/linux/base/Dockerfile -t pyprt-base:linux .`
-   * Windows: `docker build --rm -f envs\windows\base\Dockerfile-py -t pyprt-base:windows-py3.8 --build-arg PY_VER=3.8 .`
-1. Continue building "wheels" or "conda" images below
-
-#### Build Wheels
-
+   * Windows: `docker build --rm -f envs\windows\base\Dockerfile -t pyprt-base:windows-py3.8 --build-arg BASE_IMAGE=python:3.8-windowsservercore-1809 .`
 1. Create the desired image for the build toolchain (adapt to your desired Python version):
-   * Linux: `docker build --rm -f envs/linux/wheel/Dockerfile -t pyprt:linux-py3.8 --build-arg PY_VER=3.8 --build-arg BASE_TAG=linux .`
-   * Windows: `docker build --rm -f envs\windows\wheel\Dockerfile -t pyprt:windows-py3.8 --build-arg PY_VER=3.8 --build-arg BASE_TAG=windows-py3.8 .`
+   * Linux: `docker build --rm -f envs/linux/wheel/Dockerfile -t pyprt:linux-py3.8 --build-arg PY_VER=3.8 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
+   * Windows: `docker build --rm -f envs\windows\wheel\Dockerfile -t pyprt:windows-py3.8 --build-arg PY_VER=3.8 .`
 1. Run the build
    * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:linux-py3.8 bash -c 'python -m build --wheel'`
    * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py3.8 cmd /c "python -m build --wheel"`
@@ -175,9 +171,13 @@ Note: On Windows, Docker needs to be switched to "Windows Containers".
 
 #### Build Conda Packages
 
+1. Open a shell in the PyPRT git root
+1. Create the base image for the desired build toolchain:
+    * Linux: `docker build --rm -f envs/linux/base/Dockerfile -t pyprt-base:linux .`
+    * Windows: `docker build --rm -f envs\windows\base\Dockerfile -t pyprt-base:windows .`
 1. Create the desired image for the build toolchain (adapt `py3.8` to your desired Python version):
-    * Linux: `docker build --rm -f envs/linux/conda/Dockerfile -t pyprt:linux-py3.8-conda --build-arg PY_VER=3.8 --build-arg BASE_TAG=linux .`
-    * Windows: `docker build --rm -f envs\windows\conda\Dockerfile -t pyprt:windows-py3.8-conda --build-arg PY_VER=3.8 --build-arg BASE_TAG=windows-py3.8 .`
+    * Linux: `docker build --rm -f envs/linux/conda/Dockerfile -t pyprt:linux-py3.8-conda --build-arg PY_VER=3.8 --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .`
+    * Windows: `docker build --rm -f envs\windows\conda\Dockerfile -t pyprt:windows-py3.8-conda --build-arg PY_VER=3.8 .`
 1. Run the build
     * Linux: `docker run --rm -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:linux-py3.8-conda bash -c 'conda build ./conda-recipe && cp -r /tmp/pyprt/pyprt-conda-env/conda-bld/linux-64/pyprt*.tar.bz2 /tmp/pyprt/root'`
     * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py3.8-conda cmd /c "conda build ./conda-recipe && copy C:\temp\conda\envs\pyprt\conda-bld\win-64\pyprt-*.tar.bz2 C:\temp\pyprt\root"`
