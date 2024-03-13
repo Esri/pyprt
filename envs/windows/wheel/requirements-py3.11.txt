@@ -6,4 +6,3 @@ Sphinx<7.0
 twine
 xmlrunner
 numpy
-urllib3<2.0
