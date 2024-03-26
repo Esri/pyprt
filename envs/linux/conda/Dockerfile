@@ -13,7 +13,8 @@ RUN bash miniconda.sh -bfp ./conda && \
 ARG PY_VER
 COPY envs/linux/conda/environment-py${PY_VER}.yml ./environment.yml
 RUN ./conda/bin/conda env create --prefix ./pyprt-conda-env --file ./environment.yml && \
-    ./conda/bin/conda install --prefix ./pyprt-conda-env -c esri arcgis
+    ./conda/bin/conda install --prefix ./pyprt-conda-env -c esri arcgis && \
+    ./conda/bin/conda update --prefix ./pyprt-conda-env --all
 
 # also see https://github.com/sclorg/devtoolset-container
 RUN echo "unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable devtoolset-9 && source /tmp/pyprt/conda/bin/activate /tmp/pyprt/pyprt-conda-env" >> /tmp/env_enable
