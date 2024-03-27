@@ -31,40 +31,41 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 // -- GLOBAL DEFINITIONS
 
-@Field final String REPO   = 'git@github.com:esri/pyprt.git'
+@Field final String REPO = 'git@github.com:esri/pyprt.git'
 @Field final String SOURCE = 'pyprt.git'
 @Field final String CREDS = 'jenkins-devtopia-pyprt-deployer-key'
 @Field final String SOURCE_STASH = 'pyprt-sources'
 @Field String pkgVer = "0.0.0"
+@Field final String PYPRT_CPP_DEPENDENCY_PROPERTIES = "${SOURCE}/src/cpp/dependencies.properties"
 
-@Field final String DOCKER_IMAGE_REV = "v7"
+@Field final String DOCKER_IMAGE_REV = "v9"
 
-@Field final String DOCKER_AGENT_LINUX = 'centos7-64-d'
+@Field final String DOCKER_AGENT_LINUX = psl.BA_LINUX_DOCKER
 @Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
 
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
 @Field final String DOCKER_WS_WINDOWS = "c:/temp/pyprt/ws"
 
-@Field final Map PY37                  = [ py: '3.7' ]
 @Field final Map PY38                  = [ py: '3.8' ]
 @Field final Map PY39                  = [ py: '3.9' ]
 @Field final Map PY310                 = [ py: '3.10' ]
+@Field final Map PY311                 = [ py: '3.11' ]
 @Field final Map KIND_WHEEL            = [ kind: 'wheel' ]
 @Field final Map KIND_CONDA            = [ kind: 'conda' ]
 @Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC93, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC1427, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
 @Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
+@Field final Map LINUX_AGENT_CONFIG    = [ ba: psl.BA_RHEL7 ]
 
 @Field final Map PRT_DEFAULT           = [ prt: 'Default' ] // as defined in the build system
 @Field final Map PRT_LATEST            = [ prt: 'Latest' ] // latest internal PRT build
 
 @Field final List CONFIGS_PREPARE = [
-	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_AGENT_CONFIG),
 ]
 
 @Field final List CONFIGS_TEST = [
-	composeConfig(PY37, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 	composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
@@ -73,10 +74,11 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG, PRT_LATEST),
 	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG, PRT_LATEST),
+	composeConfig(PY311, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY311, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_BUILD_WHEEL = [
-	composeConfig(PY37, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 	composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
@@ -85,17 +87,19 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG, PRT_LATEST),
 	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG, PRT_LATEST),
+	composeConfig(PY311, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY311, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_BUILD_CONDA = [
-	composeConfig(PY37, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY37, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY38, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 	composeConfig(PY38, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY39, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 	composeConfig(PY39, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY310, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 	composeConfig(PY310, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY311, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY311, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_DOC = [
@@ -104,6 +108,8 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 
 // -- PIPELINE
+
+@Field def prtLatestEnabled = true
 
 stage('prepare') {
 	cepl.runParallel(taskGenPrepare())
@@ -149,7 +155,7 @@ def taskPrepare(cfg) {
 	cepl.cleanCurrentDir()
 	papl.checkout(REPO, env.BRANCH_NAME, CREDS)
 
-	def deps = readProperties(file: "${SOURCE}/src/dependencies.properties")
+	def deps = readProperties(file: PYPRT_CPP_DEPENDENCY_PROPERTIES)
 
 	dir(path: "${SOURCE}/src") {
 		String tmpPath = pwd(tmp: true)
@@ -161,13 +167,18 @@ def taskPrepare(cfg) {
 	}
 
 	dir(path: 'cesdk_latest') {
-		dir(path: 'windows') {
-			def myCfg = cfg + WINDOWS_NATIVE_CONFIG
-			papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
-		}
-		dir(path: 'linux') {
-			def myCfg = cfg + LINUX_NATIVE_CONFIG
-			papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
+		try {
+			dir(path: 'windows') {
+				def myCfg = cfg + WINDOWS_NATIVE_CONFIG
+				papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
+			}
+			dir(path: 'linux') {
+				def myCfg = cfg + LINUX_NATIVE_CONFIG
+				papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
+			}
+		} catch (Exception e) {
+			echo("Failed to fetch latest CI build of the CityEngine SDK. Disabling building against latest CE SDK.")
+			prtLatestEnabled = false
 		}
 	}
 
@@ -183,45 +194,68 @@ def taskPrepare(cfg) {
 		}
 	}
 
+	// inject build number into version
+	dir(path: SOURCE) {
+		String rawVer = readFile(file: 'VERSION')
+		echo("Read raw version: ${rawVer}")
+		String[] ver = rawVer.tokenize('.')
+		echo("Tokenized raw version: ${ver}")
+		if (ver.length < 4)
+			error('VERSION file does not match expected version format: <major>.<minor>.<patch>.<buildnum>[.devN]')
+		ver[3] = env.BUILD_NUMBER // version format is <major>.<minor>.<patch>.<buildnum>[.devN]
+		pkgVer = ver.join('.') // this value is reused by subsequent tasks!
+		echo("Detected PyPRT version: ${pkgVer}")
+		writeFile(file: "VERSION", text: pkgVer) // overwrite existing VERSION for pyproject.toml and meta.yaml
+	}
+
 	stash(name: SOURCE_STASH)
-
-	String buildCmd = "python setup.py build_py && python get_pkg_version.py > ${cfg.ws}/current_version.txt"
-	String workDir = "${cfg.ws}/${SOURCE}"
-	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
-	runDockerCmd(cfg, dirMap, workDir, buildCmd)
-
-	String rawVer = readFile(file: "current_version.txt")
-	pkgVer = "${rawVer.trim()}-${env.BUILD_NUMBER}"
-	echo("Detected PyPRT version: ${pkgVer}")
 }
 
 def taskBuildWheel(cfg) {
+	if (cfg.prt == PRT_LATEST.prt && !prtLatestEnabled) {
+		echo("Task skipped - building against latest CE SDK is not available.")
+		return
+	}
+
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
-	String buildCmd = "python setup.py bdist_wheel --dist-dir=${cfg.ws}/build --build-number=${env.BUILD_NUMBER}"
-	if (isUnix())
-		buildCmd += ' -p manylinux2014_x86_64' // see https://github.com/pypa/manylinux
+	String publishPattern = 'pyprt-*.whl'
+
+	String buildCmd = "python -m build --no-isolation --wheel --outdir ${cfg.ws}/build"
+	if (isUnix()) {
+	    // see https://github.com/pypa/manylinux
+		buildCmd += " && auditwheel repair --only-plat --plat manylinux2014_x86_64"
+		buildCmd += " --exclude libcom.esri.prt.core.so --exclude libglutess.so"
+		buildCmd += " --wheel-dir ${cfg.ws}/build/audited ${cfg.ws}/build/pyprt-*-linux_x86_64.whl"
+		publishPattern = 'audited/' + publishPattern
+	}
 
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
 	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(cfg, workDir, buildCmd))
 
 	def classifierExtractor = { p ->
-		def clsRegEx = (p =~ /[^-]*-[^-]*-[0-9]*-([^-]*-[^-]*-[^-]*)\.whl/)
+		echo("parsing filename for extractor: ${p}")
+		def clsRegEx = (p =~ /.*\/?[^-]*-[^-]*-([^-]*-[^-]*-[^-]*)\.whl/) // e.g. pyprt-<ver>-<cpXX>-<cpXX>-<cls>.whl
 		String cls = clsRegEx[0][1]
 		if (cfg.prt == PRT_LATEST.prt)
 			cls += '-prtLatest'
 		return cls
 	}
-	papl.publish('pyprt', env.BRANCH_NAME, "PyPRT-*.whl", { return pkgVer }, cfg, classifierExtractor)
+	papl.publish('pyprt', env.BRANCH_NAME, publishPattern, { return pkgVer }, cfg, classifierExtractor)
 }
 
 def taskBuildConda(cfg) {
+	if (cfg.prt == PRT_LATEST.prt && !prtLatestEnabled) {
+		echo("Task skipped - building against latest CE SDK is not available.")
+		return
+	}
+
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
-	String buildCmd = "python setup.py bdist_conda --buildnum=${env.BUILD_NUMBER}"
+	String buildCmd = "conda build conda-recipe"
 	if (isUnix()) {
 		String condaEnv = '/tmp/pyprt/pyprt-conda-env'
 		String outDir = "${cfg.ws}/build/"
@@ -241,34 +275,34 @@ def taskBuildConda(cfg) {
 		def cls = (p =~ /.*-(py[0-9]+)_[0-9]+\.tar\.bz2/)
 		return "${cls[0][1]}-${cfg.os}-${cfg.arch}"
 	}
-	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-*.tar.bz2", { return pkgVer }, cfg, classifierExtractor)
+	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-*.tar.bz2", { return pkgVer }, cfg, classifierExtractor, 'build', 'tar.bz2')
 }
 
 def taskBuildDoc(cfg) {
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
-	final String sphinxOutput = "${env.WORKSPACE}/build"
+	final String sphinxOutput = 'html'
 
-	String buildLib = "${cfg.ws}/tmp_build"
-	String buildResult = "${cfg.ws}/build"
-	String buildCmd = "python setup.py build --build-lib=${buildLib} && PYPRT_PACKAGE_LOCATION=${buildLib} python setup.py build_doc --build-dir=${buildResult}"
+	String buildCmd = "python -m pip install . && sphinx-build docs ${cfg.ws}/${sphinxOutput}"
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
 	runDockerCmd(cfg, dirMap, workDir, buildCmd)
 
-	dir(path: sphinxOutput) {
-		zip(zipFile: "pyprt-doc.zip", dir: "html")
-	}
-
-	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-doc.zip", { return pkgVer }, cfg, { return "doc" })
+	zip(zipFile: "pyprt-doc.zip", dir: "${env.WORKSPACE}/${sphinxOutput}")
+	papl.publish('pyprt', env.BRANCH_NAME, "pyprt-doc.zip", { return pkgVer }, cfg, { return "doc" }, env.WORKSPACE)
 }
 
 def taskRunTests(cfg) {
+	if (cfg.prt == PRT_LATEST.prt && !prtLatestEnabled) {
+		echo("Task skipped - building against latest CE SDK is not available.")
+		return
+	}
+
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
-	String buildCmd = "python setup.py install && python tests/run_tests.py --xml_output_directory ${cfg.ws}"
+	String buildCmd = "python -m pip install . && python tests/run_tests.py --xml_output_directory ${cfg.ws}"
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
 	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(cfg, workDir, buildCmd))
@@ -280,7 +314,7 @@ def taskRunTests(cfg) {
 // -- HELPERS
 
 String updateBuildEnv(Map cfg, String workDir, String buildCmd) {
-	def deps = readProperties(file: "${SOURCE}/src/dependencies.properties")
+	def deps = readProperties(file: PYPRT_CPP_DEPENDENCY_PROPERTIES)
 
 	String pybind11Env = "PYBIND11_DIR=${workDir}/src/pybind11-${deps.PYBIND11_VERSION}"
 
@@ -305,7 +339,7 @@ String getDockerImage(Map cfg) {
 	String image = 'zrh-dreg-sp-1.esri.com/pyprt/pyprt'
 
 	String tag = "jnk-${DOCKER_IMAGE_REV}-"
-	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL7) ? 'centos7' : error(cfg.os)
+	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL7) ? 'linux' : error(cfg.os)
 	tag += "-py${cfg.py}-${cfg.kind}-${cfg.tc}"
 
 	return "${image}:${tag}"
@@ -315,9 +349,17 @@ def runDockerCmd(Map cfg, Map dirMap, String workDir, String cmd) {
 	String dirMapStrArgs = ""
 	dirMap.each { k,v -> dirMapStrArgs += " -v \"${k}:${v}\"" }
 
+	String envMapStrArgs = ''
+	Map envMap = isUnix() ? [ DEFAULT_UID: '$(id -u)', DEFAULT_GID: '$(id -g)' ] : [:]
+	envMap.each { k,v -> envMapStrArgs += " -e ${k}=${v}" }
+
 	String runArgs = '--pull always --rm'
+	if (isUnix()) {
+	    runArgs += " --init" // make sure container always terminate cleanly (signal handling)
+	}
 	runArgs += " --name pyprt"
 	runArgs += dirMapStrArgs
+	runArgs += envMapStrArgs
 	runArgs += " -w ${workDir}"
 	runArgs += " ${getDockerImage(cfg)}"
 	runArgs += isUnix() ? " bash -c '${cmd}'" : " cmd /c \"${cmd}\""

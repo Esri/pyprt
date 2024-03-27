@@ -1,8 +1,0 @@
-channels:
-  - defaults
-dependencies:
-  - python=3.10
-  - anaconda::conda-build
-  - anaconda::conda-verify
-  - anaconda::sphinx
-  - conda-forge::xmlrunner

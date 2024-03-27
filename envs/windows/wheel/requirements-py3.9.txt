@@ -1,9 +1,8 @@
+build>=1.0.0
+setuptools>=64.0
 arcgis
-urllib3<1.26.0
-pkginfo
 Shapely
 Sphinx<7.0
 twine
-wheel
 xmlrunner
-numpy<1.24.0
+numpy

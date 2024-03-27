@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2023 Esri R&D Center Zurich
+# Copyright (c) 2012-2024 Esri R&D Center Zurich
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,8 +35,7 @@ def test_suite():
     suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
     suite.addTests(loader.loadTestsFromModule(shapeAttributesDict_test))
     suite.addTests(loader.loadTestsFromModule(inspectRPK_test))
-    if sys.version_info.minor != 10:
-        suite.addTests(loader.loadTestsFromModule(arcgis_test))
+    suite.addTests(loader.loadTestsFromModule(arcgis_test))
     return suite
 
 

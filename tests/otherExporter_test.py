@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2023 Esri R&D Center Zurich
+# Copyright (c) 2012-2024 Esri R&D Center Zurich
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 # A copy of the license is available in the repository's LICENSE file.
 
 import os
+import sys
 import unittest
 
 import pyprt
@@ -31,6 +32,9 @@ def asset_output_file(filename):
 
 class ExporterTest(unittest.TestCase):
     def test_slpk(self):
+        if sys.platform == "linux" and pyprt.get_api_version()[2] >= 9666:
+            self.fail("explicit fail to prevent crash introduced with PRT 3.1.9666")
+
         if os.path.isfile(asset_output_file('Unittest4SLPK.slpk')):
             os.remove(asset_output_file('Unittest4SLPK.slpk'))
 

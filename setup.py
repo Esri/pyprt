@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2023 Esri R&D Center Zurich
+# Copyright (c) 2012-2024 Esri R&D Center Zurich
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,52 +14,12 @@
 # A copy of the license is available in the repository's LICENSE file.
 
 import os
+import shutil
 import sys
 import subprocess
 
-from setuptools import setup, Extension, find_packages
+from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
-from distutils.command.clean import clean
-from distutils.dir_util import copy_tree, remove_tree
-from distutils import log
-from sphinx.setup_command import BuildDoc
-
-try:
-    try:
-        from conda_build.bdist_conda import CondaDistribution
-
-        distclass = CondaDistribution
-    except:
-        from distutils.command.bdist_conda import CondaDistribution # this will be dropped with the removal of Python 3.6
-
-        distclass = CondaDistribution
-except:
-    distclass = []
-
-pyprt_name = 'PyPRT'
-pyprt_author = 'Esri R&D Center Zurich'
-pyprt_copyright = '(c) 2023, ' + pyprt_author
-pyprt_version = '1.7.0'  # keep consistent with __version__ in pyprt/__init__.py
-
-record_file = os.path.join(os.path.realpath(os.curdir), pyprt_name + '.egg-info', 'record_setup_develop_files.txt')
-
-long_description = """PyPRT provides a Python binding for PRT (Procedural RunTime) of CityEngine. This enables the 
-execution of [CityEngine](https://www.esri.com/software/cityengine) CGA rules within Python. Using PyPRT, 
-the generation of 3D content in Python is greatly simplified. Therefore, Python developers, data scientists, 
-GIS analysts, etc. can efficiently make use of CityEngine rule packages in order to create 3D geometries stored as 
-Python data structures, or to export these geometries in another format (like OBJ, Scene Layer Package, ... ). Given 
-an initial geometry, on which to apply the CGA rule, the 3D generation is procedurally done in Python (Python script, 
-Jupyter Notebook, ...). This allows for efficient and customizable geometry generation. For instance, when modeling 
-buildings, PyPRT users can easily change the parameters of the generated buildings (like the height or the shape) by 
-changing the values of the CGA rule input attributes. 
-
-PyPRT 3D content generation is based on CGA rule packages (RPK), which are authored in CityEngine. RPKs contain the 
-CGA rule files that define the shape transformations, as well as supplementary assets. RPK examples can be found 
-below and directly used in PyPRT. 
-
-PyPRT allows generating 3D models on multiple initial geometries. Different input attributes can be applied on each 
-of these initial shapes. Moreover, the outputted 3D geometries can either be used inside Python or exported to 
-another format by using one of PRT encoders."""
 
 
 class CMakeConfig:
@@ -128,9 +88,10 @@ class CMakeConfig:
 
 
 class CMakeExtension(Extension):
-    def __init__(self, name, source_dir):
+    def __init__(self, name, source_dir, debug=False):
         super().__init__(name, sources=[])
         self.source_dir = source_dir
+        self.debug = debug
 
 
 class CMakeBuild(build_ext):
@@ -141,7 +102,7 @@ class CMakeBuild(build_ext):
 
         self.announce('Configuring CMake project', level=3)
 
-        cmake = CMakeConfig(self.debug)
+        cmake = CMakeConfig(extension.debug)
         print(cmake)
 
         cmake_install_prefix = os.path.join(self.build_lib, 'pyprt', 'pyprt')
@@ -150,7 +111,7 @@ class CMakeBuild(build_ext):
             cmake.cmake_executable,
             '-DCMAKE_BUILD_TYPE={}'.format(cmake.cmake_build_type),
             '-DCMAKE_INSTALL_PREFIX={}'.format(cmake_install_prefix),
-            '-DPYTHON_EXECUTABLE={}'.format(sys.executable),
+            '-DPython_EXECUTABLE={}'.format(sys.executable),  # to control by FindPython
             '-H{}'.format(extension.source_dir),
             '-B{}'.format(self.build_temp),
             '-G{}'.format(cmake.cmake_generator),
@@ -195,85 +156,18 @@ class CMakeBuild(build_ext):
             modpath = fullname.split('.')
             package = '.'.join(modpath[:-1])
             package_dir = build_py.get_package_dir(package)
+            build_dir = os.path.join(self.build_lib, package)
 
             # Always copy, even if source is older than destination, to ensure
             # that the right extensions for the current Python/platform are
             # used.
-            files_record = copy_tree(self.build_lib, os.curdir,
-                                     verbose=self.verbose, dry_run=self.dry_run)
-            with open(record_file, 'w+') as f:
-                for each_file in files_record:
-                    f.write('%s\n' % each_file)
-            f.close()
+            shutil.copytree(src=build_dir, dst=package_dir, dirs_exist_ok=True)
 
             if ext._needs_stub:
-                self.write_stub(package_dir or os.curdir, ext, True)
-
-
-class CleanCommand(clean):
-    def run(self):
-        clean.run(self)
-        if os.path.isfile(record_file):
-            with open(record_file, 'r') as f:
-                for each_file in f:
-                    fname = os.path.join(each_file.rstrip())
-                    dirname = os.path.dirname(fname)
-                    basename = os.path.basename(dirname)
-                    if os.path.exists(dirname) and (basename == 'bin' or basename == 'lib'):
-                        remove_tree(dirname, dry_run=self.dry_run)
-                    else:
-                        if os.path.isfile(fname):
-                            os.remove(fname)
-                            log.warn("removing '%s'", fname)
-            os.remove(os.path.join(os.curdir, record_file))
-            log.warn("removing '%s'", record_file)
+                self.write_stub(package_dir, ext, compile=True)
 
 
 setup(
-    name=pyprt_name,
-    version=pyprt_version,
-    author=pyprt_author,
-    description='Python bindings for the "Procedural Runtime" (PRT) of CityEngine by Esri.',
-    long_description_content_type="text/markdown",
-    long_description=long_description,
-    url='https://esri.github.io/cityengine/pyprt',
-    download_url='https://github.com/Esri/pyprt/releases',
-    project_urls={"Documentation": "https://github.com/Esri/pyprt/blob/master/README.md#documentation",
-                  "Examples": "https://github.com/Esri/pyprt-examples",
-                  "Source Code": "https://github.com/Esri/pyprt"},
-    platforms=['Windows', 'Linux'],
-    packages=find_packages(exclude=['tests']),
-    include_package_data=True,
-    ext_modules=[CMakeExtension('pyprt.pyprt', 'src')],
-    cmdclass={'build_ext': CMakeBuild, 'clean': CleanCommand,
-              'build_doc': BuildDoc},
-    distclass=distclass,
-    conda_import_tests=False,
-    license="PyPRT is free for personal, educational, and non-commercial use. Commercial use requires at least one "
-            "commercial license of the latest CityEngine version installed in the organization. Redistribution or web "
-            "service offerings are not allowed unless expressly permitted. PyPRT is under the same license as the "
-            "included [CityEngine SDK](https://github.com/Esri/esri-cityengine-sdk#licensing). An exception is the "
-            "PyPRT source code (without CityEngine SDK, binaries, or object code), which is licensed under the Apache "
-            "License, Version 2.0 (the “License”); you may not use this work except in compliance with the License. "
-            "You may obtain a copy of the License at https://www.apache.org/licenses/LICENSE-2.0",
-    classifiers=['Development Status :: 5 - Production/Stable',
-                 'License :: Free for non-commercial use',
-                 'License :: OSI Approved :: Apache Software License',
-                 'Operating System :: Microsoft :: Windows',
-                 'Operating System :: Unix',
-                 'Programming Language :: C++',
-                 'Programming Language :: Python',
-                 'Programming Language :: Python :: 3 :: Only',
-                 'Topic :: Multimedia :: Graphics :: 3D Modeling',
-                 'Topic :: Scientific/Engineering',
-                 'Topic :: Software Development :: Libraries :: Python Modules'],
-    zip_safe=False,
-    python_requires='>=3.7',
-    command_options={
-        'build_doc': {
-            'project': ('setup.py', pyprt_name),
-            'copyright': ('setup.py', pyprt_copyright),
-            'version': ('setup.py', pyprt_version),
-            'release': ('setup.py', pyprt_version),
-            'source_dir': ('setup.py', 'docs')}},
+    ext_modules=[CMakeExtension('pyprt.bin', 'src/cpp', debug=False)],
+    cmdclass={'build_ext': CMakeBuild}
 )

@@ -1,7 +1,7 @@
 # escape=`
 
-ARG REGISTRY=''
-ARG BASE_TAG=''
+ARG REGISTRY
+ARG BASE_TAG=windows
 ARG PY_VER
 FROM ${REGISTRY}pyprt-base:${BASE_TAG}-py${PY_VER}
 

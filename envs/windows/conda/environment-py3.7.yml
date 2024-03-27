@@ -1,9 +1,0 @@
-channels:
-  - defaults
-dependencies:
-  - python=3.7
-  - anaconda::conda-build
-  - anaconda::conda-verify
-  - anaconda::sphinx
-  - conda-forge::shapely
-  - conda-forge::xmlrunner

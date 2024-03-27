@@ -1,0 +1,39 @@
+{% set version = load_file_regex(load_file="VERSION", regex_pattern=".*").group(0) %}
+
+{% set build_number_match = load_file_regex(load_file="VERSION", regex_pattern="[0-9]+\\.[0-9]+\\.[0-9]+\\.([0-9]+).*") %}
+{% if build_number_match != None -%}
+  {% set build_number = build_number_match[1] %}
+{% else -%}
+  {% set build_number = 0 %}
+{% endif %}
+
+package:
+  name: pyprt
+  version: {{ version }}
+
+source:
+  - path: ../src
+    folder: src
+  - path: ../pyproject.toml
+    folder: .
+  - path: ../setup.py
+    folder: .
+  - path: ../VERSION
+    folder: .
+
+build:
+  script: python -m pip install .
+  number: {{ build_number }}
+
+ # important so that the Python version of the current env is used
+requirements:
+  build:
+    - python
+  run:
+    - python
+
+test:
+  imports:
+    - pyprt
+  commands:
+    - python -c "import pyprt; print(pyprt.get_api_version())"
