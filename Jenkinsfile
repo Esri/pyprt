@@ -5,7 +5,7 @@
 
 // -- PIPELINE LIBRARIES
 
-@Library('psl')
+@Library('psl@simo6772/prt-3.2.9903')
 import com.esri.zrh.jenkins.PipelineSupportLibrary
 import com.esri.zrh.jenkins.JenkinsTools
 import com.esri.zrh.jenkins.ce.CityEnginePipelineLibrary
@@ -38,7 +38,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field String pkgVer = "0.0.0"
 @Field final String PYPRT_CPP_DEPENDENCY_PROPERTIES = "${SOURCE}/src/cpp/dependencies.properties"
 
-@Field final String DOCKER_IMAGE_REV = "v9"
+@Field final String DOCKER_IMAGE_REV = "v10"
 
 @Field final String DOCKER_AGENT_LINUX = psl.BA_LINUX_DOCKER
 @Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
@@ -52,54 +52,54 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map PY311                 = [ py: '3.11' ]
 @Field final Map KIND_WHEEL            = [ kind: 'wheel' ]
 @Field final Map KIND_CONDA            = [ kind: 'conda' ]
-@Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC93, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
-@Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC1427, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
+@Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL8, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC112, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
+@Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC1437, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
 @Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
-@Field final Map LINUX_AGENT_CONFIG    = [ ba: psl.BA_RHEL7 ]
+@Field final Map LINUX_AGENT_CONFIG    = [ ba: psl.BA_RHEL8 ]
 
 @Field final Map PRT_DEFAULT           = [ prt: 'Default' ] // as defined in the build system
-@Field final Map PRT_LATEST            = [ prt: 'Latest' ] // latest internal PRT build
+@Field final Map PRT_329903            = [ prt: '3.2.9903' ]
 
 @Field final List CONFIGS_PREPARE = [
 	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_AGENT_CONFIG),
 ]
 
 @Field final List CONFIGS_TEST = [
-	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-	composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG, PRT_LATEST),
-	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG, PRT_LATEST),
-	composeConfig(PY311, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY311, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+// 	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+// 	composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+// 	composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+// 	composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+// 	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+// 	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+// 	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG, PRT_LATEST),
+// 	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG, PRT_LATEST),
+	composeConfig(PY311, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG, PRT_329903),
+	composeConfig(PY311, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG, PRT_329903),
 ]
 
 @Field final List CONFIGS_BUILD_WHEEL = [
-	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-	composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG, PRT_LATEST),
-	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG, PRT_LATEST),
-	composeConfig(PY311, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY311, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+// 	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+// 	composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+// 	composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+// 	composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+// 	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+// 	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+// 	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG, PRT_LATEST),
+// 	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG, PRT_LATEST),
+	composeConfig(PY311, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG, PRT_329903),
+	composeConfig(PY311, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG, PRT_329903),
 ]
 
 @Field final List CONFIGS_BUILD_CONDA = [
-	composeConfig(PY38, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY38, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-	composeConfig(PY39, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY39, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-	composeConfig(PY310, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY310, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
-	composeConfig(PY311, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY311, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+// 	composeConfig(PY38, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+// 	composeConfig(PY38, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+// 	composeConfig(PY39, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+// 	composeConfig(PY39, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+// 	composeConfig(PY310, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+// 	composeConfig(PY310, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY311, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG, PRT_329903),
+	composeConfig(PY311, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG, PRT_329903),
 ]
 
 @Field final List CONFIGS_DOC = [
@@ -166,15 +166,15 @@ def taskPrepare(cfg) {
 		}
 	}
 
-	dir(path: 'cesdk_latest') {
+	dir(path: 'cesdk-3.2.9903') {
 		try {
 			dir(path: 'windows') {
 				def myCfg = cfg + WINDOWS_NATIVE_CONFIG
-				papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
+				papl.fetchDependency(PAPL.Dependencies.CESDK329903, myCfg)
 			}
 			dir(path: 'linux') {
 				def myCfg = cfg + LINUX_NATIVE_CONFIG
-				papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
+				papl.fetchDependency(PAPL.Dependencies.CESDK329903, myCfg)
 			}
 		} catch (Exception e) {
 			echo("Failed to fetch latest CI build of the CityEngine SDK. Disabling building against latest CE SDK.")
@@ -212,7 +212,7 @@ def taskPrepare(cfg) {
 }
 
 def taskBuildWheel(cfg) {
-	if (cfg.prt == PRT_LATEST.prt && !prtLatestEnabled) {
+	if (cfg.prt != PRT_DEFAULT.prt && !prtLatestEnabled) {
 		echo("Task skipped - building against latest CE SDK is not available.")
 		return
 	}
@@ -239,8 +239,8 @@ def taskBuildWheel(cfg) {
 		echo("parsing filename for extractor: ${p}")
 		def clsRegEx = (p =~ /.*\/?[^-]*-[^-]*-([^-]*-[^-]*-[^-]*)\.whl/) // e.g. pyprt-<ver>-<cpXX>-<cpXX>-<cls>.whl
 		String cls = clsRegEx[0][1]
-		if (cfg.prt == PRT_LATEST.prt)
-			cls += '-prtLatest'
+		if (cfg.prt != PRT_DEFAULT.prt)
+			cls += "-prt${cfg.prt}"
 		return cls
 	}
 	papl.publish('pyprt', env.BRANCH_NAME, publishPattern, { return pkgVer }, cfg, classifierExtractor)
@@ -319,7 +319,7 @@ String updateBuildEnv(Map cfg, String workDir, String buildCmd) {
 	String pybind11Env = "PYBIND11_DIR=${workDir}/src/pybind11-${deps.PYBIND11_VERSION}"
 
 	String os = isUnix() ? 'linux' : 'windows'
-	String cesdkDir = (cfg.prt == PRT_LATEST.prt) ? "cesdk_latest/${os}/ce_sdk" : "cesdk_default/${os}"
+	String cesdkDir = (cfg.prt == PRT_329903.prt) ? "cesdk-3.2.9903/${os}/ce_sdk" : "cesdk_default/${os}"
 	String cesdkEnv = "PRT_DIR=${cfg.ws}/${cesdkDir}/cmake"
 
 	String envCmd = isUnix() ? "export ${pybind11Env} ${cesdkEnv} " : "set ${pybind11Env}&& set ${cesdkEnv}"
@@ -339,7 +339,7 @@ String getDockerImage(Map cfg) {
 	String image = 'zrh-dreg-sp-1.esri.com/pyprt/pyprt'
 
 	String tag = "jnk-${DOCKER_IMAGE_REV}-"
-	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL7) ? 'linux' : error(cfg.os)
+	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL8) ? 'linux' : error(cfg.os)
 	tag += "-py${cfg.py}-${cfg.kind}-${cfg.tc}"
 
 	return "${image}:${tag}"
