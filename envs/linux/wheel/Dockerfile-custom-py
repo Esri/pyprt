@@ -6,18 +6,18 @@ ARG PY_VER
 ARG PY_VER_MICRO
 
 # dependencies for Python source build (also used for module native extensions)
-RUN yum -y update \
-    && yum install -y gcc gcc-c++ make openssl11 openssl11-libs \
-      openssl11-static openssl11-devel libffi-devel bzip2-devel liblzma-dev \
-    && yum clean all \
-    && rm -rf /var/cache/yum
+RUN set -e \
+    && dnf -y update \
+    && INSTALL_PKGS="libffi-devel bzip2-devel xz-devel krb5-devel openssl openssl-libs openssl-devel" \
+    && dnf install -y --setopt=tsflags=nodocs $INSTALL_PKGS \
+    && rpm -V $INSTALL_PKGS \
+    && dnf clean all && rm -rf /var/cache/dnf
 
-# we manually build Python with default CentOS 7 toolchain
+# we manually build Python with default toolchain
 ADD https://www.python.org/ftp/python/${PY_VER}${PY_VER_MICRO}/Python-${PY_VER}${PY_VER_MICRO}.tar.xz /tmp/python_src.tar.xz
 RUN tar xf /tmp/python_src.tar.xz -C /tmp \
     && rm /tmp/python_src.tar.xz \
     && pushd /tmp/Python-${PY_VER}${PY_VER_MICRO} \
-    && sed -i 's/PKG_CONFIG openssl /PKG_CONFIG openssl11 /g' configure \
     && ./configure \
     && CPU_COUNT=$(grep -c ^processor /proc/cpuinfo) \
     && make -j$CPU_COUNT altinstall \
@@ -25,7 +25,7 @@ RUN tar xf /tmp/python_src.tar.xz -C /tmp \
     && rm -rf /tmp/Python-${PY_VER}${PY_VER_MICRO}
 
 ## also see https://github.com/sclorg/devtoolset-container
-RUN echo "unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable devtoolset-9" >> /tmp/scl_enable
+RUN echo "unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable gcc-toolset-11" >> /tmp/scl_enable
 ENV BASH_ENV=/tmp/scl_enable ENV=/tmp/scl_enable PROMPT_COMMAND=". /tmp/scl_enable"
 
 COPY envs/linux/wheel/requirements-py${PY_VER}.txt /tmp/pyprt/requirements.txt

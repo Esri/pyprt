@@ -1,11 +1,15 @@
-FROM centos:7
+ARG IMAGE_OS_BASE=almalinux
+ARG IMAGE_OS_VERSION=8
+FROM ${IMAGE_OS_BASE}:${IMAGE_OS_VERSION}
 
-RUN yum -y update \
-    && yum install -y centos-release-scl-rh epel-release \
-	&& yum install -y git ninja-build devtoolset-9-toolchain \
-	&& yum install -y curl bzip2 \
-    && yum clean all \
-    && rm -rf /var/cache/yum
+RUN set -e \
+    && rpm --import https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux \
+    && dnf -y update \
+    && INSTALL_PKGS="git unzip bzip2 gcc-toolset-11 gcc-toolset-11-gcc gcc-toolset-11-gcc-c++ gcc-toolset-11-gdb redhat-lsb make" \
+    && dnf install -y --setopt=tsflags=nodocs $INSTALL_PKGS \
+    && rpm -V $INSTALL_PKGS \
+    && dnf clean all \
+    && rm -rf /var/cache/dnf
 
 # we manually install the tools below because we require newer versions than what the distro can provide
 

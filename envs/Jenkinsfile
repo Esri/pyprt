@@ -43,9 +43,9 @@ psl.runsHere('production')
 @Field final String DOCKER_AGENT_LINUX = 'linux && docker'
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
 
-// we build Python > 3.8 from source as long as we are on CentOS 7 base image
+// we build Python > 3.9 from source (these are not provided by base image)
 @Field final Map PY38 = [ py: '3.8' ]
-@Field final Map PY39 = [ py: '3.9', py_micro: '18' ]
+@Field final Map PY39 = [ py: '3.9' ]
 @Field final Map PY310 = [ py: '3.10', py_micro: '13' ]
 @Field final Map PY311 = [ py: '3.11', py_micro: '7' ]
 
@@ -56,7 +56,7 @@ psl.runsHere('production')
 @Field final String OS_LINUX = 'linux'
 @Field final String OS_WINDOWS = 'windows'
 
-@Field final Map LINUX_TOOLCHAIN   = [ ba: DOCKER_AGENT_LINUX,   os: OS_LINUX, tc: cepl.CFG_TC_GCC93 ]
+@Field final Map LINUX_TOOLCHAIN   = [ ba: DOCKER_AGENT_LINUX,   os: OS_LINUX, tc: cepl.CFG_TC_GCC112 ]
 @Field final Map WINDOWS_TOOLCHAIN = [ ba: DOCKER_AGENT_WINDOWS, os: OS_WINDOWS, tc: cepl.CFG_TC_VC1427 ]
 
 @Field final List CONFIGS_PREPARE    = [
