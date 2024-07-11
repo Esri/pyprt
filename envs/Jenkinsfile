@@ -57,7 +57,7 @@ psl.runsHere('production')
 @Field final String OS_WINDOWS = 'windows'
 
 @Field final Map LINUX_TOOLCHAIN   = [ ba: DOCKER_AGENT_LINUX,   os: OS_LINUX, tc: cepl.CFG_TC_GCC112 ]
-@Field final Map WINDOWS_TOOLCHAIN = [ ba: DOCKER_AGENT_WINDOWS, os: OS_WINDOWS, tc: cepl.CFG_TC_VC1427 ]
+@Field final Map WINDOWS_TOOLCHAIN = [ ba: DOCKER_AGENT_WINDOWS, os: OS_WINDOWS, tc: cepl.CFG_TC_VC1437 ]
 
 @Field final List CONFIGS_PREPARE    = [
 	LINUX_TOOLCHAIN,
