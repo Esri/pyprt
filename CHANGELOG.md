@@ -1,5 +1,12 @@
 # PyPRT ChangeLog
 
+## v1.9.0 (2024-07-17)
+
+### Changed
+* Updated to [PRT 3.2.9903](https://github.com/Esri/cityengine-sdk/blob/main/changelog.md#cityengine-sdk-329903-changelog)
+* Linux: fixed RPATH entries of various PRT libraries to make `auditwheel` work correctly.
+* Raised build toolchains to MSVC 14.37 and RHEL 8, GCC 11 (as required by PRT).
+
 ## v1.8.0 (2024-03-05)
 
 ### Added
