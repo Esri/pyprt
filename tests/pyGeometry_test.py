@@ -14,7 +14,6 @@
 # A copy of the license is available in the repository's LICENSE file.
 
 import os
-import sys
 import unittest
 
 import pyprt
@@ -62,9 +61,6 @@ class GeometryTest(unittest.TestCase):
         self.assertEqual(len(model[0].get_faces()), 28)
 
     def test_report_green(self):
-        if sys.platform == "linux" and pyprt.get_api_version()[2] >= 9666:
-            self.fail("explicit fail to prevent crash introduced with PRT 3.1.9666")
-
         rpk = asset_file('envelope2002.rpk')
         attrs = {'report_but_not_display_green': True, 'seed': 666}
         shape_geo_from_obj = pyprt.InitialShape(
@@ -175,9 +171,6 @@ class GeometryTest(unittest.TestCase):
             self.assertEqual(cga_print, expected_content)
 
     def test_cga_prints_green(self):
-        if sys.platform == "linux" and pyprt.get_api_version()[2] >= 9666:
-            self.fail("explicit fail to prevent crash introduced with PRT 3.1.9666")
-
         rpk = asset_file('envelope2002.rpk')
         attrs = {'report_but_not_display_green': True, 'seed': 2}
         shape_geo_from_obj = pyprt.InitialShape(
