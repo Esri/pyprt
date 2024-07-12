@@ -60,9 +60,7 @@ elseif(PYPRT_LINUX)
 			$<$<CONFIG:RELWITHDEBINFO>:-O0>
 			$<$<CONFIG:RELEASE>:-O3>)
 
-	target_compile_definitions(${CLIENT_TARGET} PRIVATE
-			-DNDEBUG
-			-D_GLIBCXX_USE_CXX11_ABI=0) # we follow RHEL and use the pre-C++11 libstdc++ mode
+	target_compile_definitions(${CLIENT_TARGET} PRIVATE -DNDEBUG)
 
 	set_target_properties(${CLIENT_TARGET} PROPERTIES
 			INSTALL_RPATH "\$ORIGIN"

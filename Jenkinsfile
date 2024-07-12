@@ -38,7 +38,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field String pkgVer = "0.0.0"
 @Field final String PYPRT_CPP_DEPENDENCY_PROPERTIES = "${SOURCE}/src/cpp/dependencies.properties"
 
-@Field final String DOCKER_IMAGE_REV = "v9"
+@Field final String DOCKER_IMAGE_REV = "v10"
 
 @Field final String DOCKER_AGENT_LINUX = psl.BA_LINUX_DOCKER
 @Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
@@ -52,11 +52,11 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map PY311                 = [ py: '3.11' ]
 @Field final Map KIND_WHEEL            = [ kind: 'wheel' ]
 @Field final Map KIND_CONDA            = [ kind: 'conda' ]
-@Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL7, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC93, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
-@Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC1427, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
+@Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL8, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC112, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
+@Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC1437, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
 @Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
-@Field final Map LINUX_AGENT_CONFIG    = [ ba: psl.BA_RHEL7 ]
+@Field final Map LINUX_AGENT_CONFIG    = [ ba: 'linux' ]
 
 @Field final Map PRT_DEFAULT           = [ prt: 'Default' ] // as defined in the build system
 @Field final Map PRT_LATEST            = [ prt: 'Latest' ] // latest internal PRT build
@@ -225,7 +225,7 @@ def taskBuildWheel(cfg) {
 	String buildCmd = "python -m build --no-isolation --wheel --outdir ${cfg.ws}/build"
 	if (isUnix()) {
 	    // see https://github.com/pypa/manylinux
-		buildCmd += " && auditwheel repair --only-plat --plat manylinux2014_x86_64"
+		buildCmd += " && auditwheel repair --only-plat --plat manylinux_2_28_x86_64"
 		buildCmd += " --exclude libcom.esri.prt.core.so --exclude libglutess.so"
 		buildCmd += " --wheel-dir ${cfg.ws}/build/audited ${cfg.ws}/build/pyprt-*-linux_x86_64.whl"
 		publishPattern = 'audited/' + publishPattern
@@ -339,7 +339,7 @@ String getDockerImage(Map cfg) {
 	String image = 'zrh-dreg-sp-1.esri.com/pyprt/pyprt'
 
 	String tag = "jnk-${DOCKER_IMAGE_REV}-"
-	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL7) ? 'linux' : error(cfg.os)
+	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL8) ? 'linux' : error(cfg.os)
 	tag += "-${cfg.tc}-py${cfg.py}-${cfg.kind}"
 
 	return "${image}:${tag}"
