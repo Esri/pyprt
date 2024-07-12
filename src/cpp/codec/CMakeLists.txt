@@ -55,9 +55,7 @@ elseif(PYPRT_LINUX)
 			$<$<CONFIG:RELWITHDEBINFO>:-O0>
 			$<$<CONFIG:RELEASE>:-O3>)
 
-	target_compile_definitions(${CODEC_TARGET} PRIVATE
-		-DNDEBUG
-		-D_GLIBCXX_USE_CXX11_ABI=0) # we follow RHEL and use the pre-C++11 libstdc++ mode
+	target_compile_definitions(${CODEC_TARGET} PRIVATE -DNDEBUG)
 
 	set_property(TARGET ${CODEC_TARGET} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
