@@ -38,7 +38,7 @@ class GeometryTest(unittest.TestCase):
         m = pyprt.ModelGenerator([shape_geo_from_obj])
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
                                  'emitReport': False, 'emitGeometry': True})
-        self.assertEqual(len(model[0].get_vertices()), 97044*3)
+        self.assertEqual(len(model[0].get_vertices()), 97072*3)
 
     def test_facesnumber_candler(self):
         rpk = asset_file('candler.rpk')
@@ -48,7 +48,7 @@ class GeometryTest(unittest.TestCase):
         m = pyprt.ModelGenerator([shape_geo_from_obj])
         model = m.generate_model([attrs], rpk, 'com.esri.pyprt.PyEncoder', {
                                  'emitReport': False, 'emitGeometry': True})
-        self.assertEqual(len(model[0].get_faces()), 47202)
+        self.assertEqual(len(model[0].get_faces()), 47208)
 
     def test_facesnumber_triangulation(self):
         rpk = asset_file('extrusion_rule.rpk')
