@@ -1,0 +1,6 @@
+build>=1.0.0
+setuptools>=64.0
+Shapely
+Sphinx<7.0
+twine
+numpy
