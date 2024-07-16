@@ -226,7 +226,6 @@ def taskBuildWheel(cfg) {
 	if (isUnix()) {
 	    // see https://github.com/pypa/manylinux
 		buildCmd += " && auditwheel repair --only-plat --plat manylinux_2_28_x86_64"
-		buildCmd += " --exclude libcom.esri.prt.core.so --exclude libglutess.so"
 		buildCmd += " --wheel-dir ${cfg.ws}/build/audited ${cfg.ws}/build/pyprt-*-linux_x86_64.whl"
 		publishPattern = 'audited/' + publishPattern
 	}
