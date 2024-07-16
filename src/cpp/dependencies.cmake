@@ -89,6 +89,31 @@ message(STATUS "Using PRT ${PRT_VERSION_MAJOR}.${PRT_VERSION_MINOR}.${PRT_VERSIO
 # workaround omission in prtConfig.cmake: manually setting up a resources list which needs to be installed as well
 list(APPEND PRT_EXT_RESOURCES ${PRT_EXTENSION_PATH}/usd)
 
+# Linux: patch the RUNPATH entries of some PRT libraries (upstream bug)
+if(PYPRT_LINUX)
+	message(STATUS "Workaround: fixing Linux RPATH for PRT libraries...")
+	# in case you wonder why there are two patchelf commands:
+	# https://github.com/NixOS/patchelf/issues/94#issuecomment-338183814
+
+	# fix missing rpath in libcom.esri.prt.core.so
+	set(_prt_core_lib "${PRT_LIBRARY_PATH}/libcom.esri.prt.core.so")
+	execute_process(COMMAND patchelf --remove-rpath ${_prt_core_lib})
+	execute_process(COMMAND patchelf --force-rpath --set-rpath $ORIGIN ${_prt_core_lib})
+
+	# fix wrong rpath in USD 3rd party library
+	set(_prt_usd_lib "${PRT_EXTENSION_PATH}/libprt_usd_ms.so")
+	execute_process(COMMAND patchelf --remove-rpath ${_prt_usd_lib})
+	execute_process(COMMAND patchelf --force-rpath --set-rpath $ORIGIN ${_prt_usd_lib})
+
+	# fix wrong rpath in extension libraries
+	set(_prt_ext_libs "libcom.esri.prt.adaptors.so;libcom.esri.prt.alembic.so;libcom.esri.prt.codecs.so;libcom.esri.prt.fbx.so;libcom.esri.prt.oda.so;libcom.esri.prt.usd.so")
+	foreach(_prt_lib_name ${_prt_ext_libs})
+		set(_prt_lib "${PRT_EXTENSION_PATH}/${_prt_lib_name}")
+		execute_process(COMMAND patchelf --remove-rpath ${_prt_lib})
+		execute_process(COMMAND patchelf --force-rpath --set-rpath "$ORIGIN:$ORIGIN/../bin" ${_prt_lib})
+	endforeach()
+endif()
+
 
 ### look for PyBind11
 
