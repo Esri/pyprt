@@ -181,7 +181,7 @@ String getDockerImage(cfg) {
 }
 
 String getDockerBaseTag(cfg) {
-	return "jnk-${DOCKER_IMAGE_REV}-${cfg.os}"
+	return "jnk-${DOCKER_IMAGE_REV}-${cfg.os}-${cfg.tc}"
 }
 
 String getDockerTag(cfg) {
@@ -189,7 +189,7 @@ String getDockerTag(cfg) {
 	if (cfg.py != null)
 		tag += "-py${cfg.py}"
 	if (cfg.kind != BASE.kind)
-		tag += "-${cfg.kind}-${cfg.tc}"
+		tag += "-${cfg.kind}"
 	return tag
 }
 
