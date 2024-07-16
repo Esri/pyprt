@@ -340,7 +340,7 @@ String getDockerImage(Map cfg) {
 
 	String tag = "jnk-${DOCKER_IMAGE_REV}-"
 	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL7) ? 'linux' : error(cfg.os)
-	tag += "-py${cfg.py}-${cfg.kind}-${cfg.tc}"
+	tag += "-${cfg.tc}-py${cfg.py}-${cfg.kind}"
 
 	return "${image}:${tag}"
 }
