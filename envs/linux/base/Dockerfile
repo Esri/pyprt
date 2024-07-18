@@ -17,9 +17,9 @@ ADD https://cmake.org/files/v3.27/cmake-3.27.7-linux-x86_64.tar.gz /tmp/cmake.ta
 RUN tar -xzf /tmp/cmake.tar.gz -C /opt && rm /tmp/cmake.tar.gz
 ENV PATH="/opt/cmake-3.27.7-linux-x86_64/bin:$PATH"
 
-ADD https://github.com/NixOS/patchelf/releases/download/0.18.0/patchelf-0.18.0-x86_64.tar.gz /tmp/patchelf.tar.gz
-RUN mkdir -p /opt/patchelf-0.18.0-x86_64 && tar -xzf /tmp/patchelf.tar.gz -C /opt/patchelf-0.18.0-x86_64 && rm /tmp/patchelf.tar.gz
-ENV PATH="/opt/patchelf-0.18.0-x86_64/bin:$PATH"
+ADD https://github.com/NixOS/patchelf/releases/download/0.17.2/patchelf-0.17.2-x86_64.tar.gz /tmp/patchelf.tar.gz
+RUN mkdir -p /opt/patchelf-0.17.2-x86_64 && tar -xzf /tmp/patchelf.tar.gz -C /opt/patchelf-0.17.2-x86_64 && rm /tmp/patchelf.tar.gz
+ENV PATH="/opt/patchelf-0.17.2-x86_64/bin:$PATH"
 
 # setup container initialization and user
 
