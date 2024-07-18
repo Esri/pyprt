@@ -55,12 +55,14 @@ elseif(PYPRT_LINUX)
 			$<$<CONFIG:RELWITHDEBINFO>:-O0>
 			$<$<CONFIG:RELEASE>:-O3>)
 
-	target_compile_definitions(${CODEC_TARGET} PRIVATE
-		-DNDEBUG
-		-D_GLIBCXX_USE_CXX11_ABI=0) # we follow RHEL and use the pre-C++11 libstdc++ mode
+	target_compile_definitions(${CODEC_TARGET} PRIVATE -DNDEBUG)
 
-	set_property(TARGET ${CODEC_TARGET} PROPERTY POSITION_INDEPENDENT_CODE ON)
-
+	set_target_properties(${CODEC_TARGET} PROPERTIES
+			POSITION_INDEPENDENT_CODE ON
+			INSTALL_RPATH "\$ORIGIN/../bin"
+			INSTALL_RPATH_USE_LINK_PATH FALSE
+			SKIP_RPATH FALSE
+			BUILD_WITH_INSTALL_RPATH TRUE)
 endif()
 
 

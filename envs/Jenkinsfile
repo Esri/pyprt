@@ -33,7 +33,7 @@ psl.runsHere('production')
 
 @Field final String DOCKER_REGISTRY  = 'zrh-dreg-sp-1.esri.com'
 @Field final String DOCKER_PROJECT   = "${DOCKER_REGISTRY}/pyprt/"
-@Field final String DOCKER_IMAGE_REV = 'v9' // target revision of the generated images
+@Field final String DOCKER_IMAGE_REV = 'v10' // target revision of the generated images
 
 @Field final String REPO   = 'git@github.com:esri/pyprt.git'
 @Field final String SOURCE = 'pyprt.git'
@@ -43,11 +43,11 @@ psl.runsHere('production')
 @Field final String DOCKER_AGENT_LINUX = 'linux && docker'
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
 
-// we build Python > 3.8 from source as long as we are on CentOS 7 base image
+// we build Python > 3.9 from source (these are not provided by base image)
 @Field final Map PY38 = [ py: '3.8' ]
-@Field final Map PY39 = [ py: '3.9', py_micro: '18' ]
-@Field final Map PY310 = [ py: '3.10', py_micro: '13' ]
-@Field final Map PY311 = [ py: '3.11', py_micro: '7' ]
+@Field final Map PY39 = [ py: '3.9' ]
+@Field final Map PY310 = [ py: '3.10', py_micro: '14' ]
+@Field final Map PY311 = [ py: '3.11', py_micro: '9' ]
 
 @Field final Map BASE = [ kind: 'base' ]
 @Field final Map WHEEL = [ kind: 'wheel' ]
@@ -56,37 +56,37 @@ psl.runsHere('production')
 @Field final String OS_LINUX = 'linux'
 @Field final String OS_WINDOWS = 'windows'
 
-@Field final Map LINUX_TOOLCHAIN   = [ ba: DOCKER_AGENT_LINUX,   os: OS_LINUX, tc: cepl.CFG_TC_GCC93 ]
-@Field final Map WINDOWS_TOOLCHAIN = [ ba: DOCKER_AGENT_WINDOWS, os: OS_WINDOWS, tc: cepl.CFG_TC_VC1427 ]
+@Field final Map LINUX_DOCKER_TOOLCHAIN   = [ ba: DOCKER_AGENT_LINUX,   os: OS_LINUX, tc: cepl.CFG_TC_GCC112 ]
+@Field final Map WINDOWS_DOCKER_TOOLCHAIN = [ ba: DOCKER_AGENT_WINDOWS, os: OS_WINDOWS, tc: cepl.CFG_TC_VC1437 ]
 
 @Field final List CONFIGS_PREPARE    = [
-	LINUX_TOOLCHAIN,
+	[ ba: 'linux' ]
 ]
 @Field final List CONFIGS_BASE_IMAGES = [
-	composeConfig(null, BASE, LINUX_TOOLCHAIN),
-	composeConfig(null, BASE, WINDOWS_TOOLCHAIN),
-	composeConfig(PY38, BASE, WINDOWS_TOOLCHAIN),
-	composeConfig(PY39, BASE, WINDOWS_TOOLCHAIN),
-	composeConfig(PY310, BASE, WINDOWS_TOOLCHAIN),
-	composeConfig(PY311, BASE, WINDOWS_TOOLCHAIN),
+	composeConfig(null, BASE, LINUX_DOCKER_TOOLCHAIN),
+	composeConfig(null, BASE, WINDOWS_DOCKER_TOOLCHAIN),
+	composeConfig(PY38, BASE, WINDOWS_DOCKER_TOOLCHAIN),
+	composeConfig(PY39, BASE, WINDOWS_DOCKER_TOOLCHAIN),
+	composeConfig(PY310, BASE, WINDOWS_DOCKER_TOOLCHAIN),
+	composeConfig(PY311, BASE, WINDOWS_DOCKER_TOOLCHAIN),
 ]
 @Field final List CONFIGS_IMAGES = [
-	composeConfig(PY38, WHEEL, LINUX_TOOLCHAIN),
-	composeConfig(PY38, WHEEL, WINDOWS_TOOLCHAIN),
-	composeConfig(PY38, CONDA, LINUX_TOOLCHAIN),
-	composeConfig(PY38, CONDA, WINDOWS_TOOLCHAIN),
-	composeConfig(PY39, WHEEL, LINUX_TOOLCHAIN),
-	composeConfig(PY39, WHEEL, WINDOWS_TOOLCHAIN),
-	composeConfig(PY39, CONDA, LINUX_TOOLCHAIN),
-	composeConfig(PY39, CONDA, WINDOWS_TOOLCHAIN),
-	composeConfig(PY310, WHEEL, LINUX_TOOLCHAIN),
-	composeConfig(PY310, WHEEL, WINDOWS_TOOLCHAIN),
-	composeConfig(PY310, CONDA, LINUX_TOOLCHAIN),
-	composeConfig(PY310, CONDA, WINDOWS_TOOLCHAIN),
-	composeConfig(PY311, WHEEL, LINUX_TOOLCHAIN),
-	composeConfig(PY311, WHEEL, WINDOWS_TOOLCHAIN),
-	composeConfig(PY311, CONDA, LINUX_TOOLCHAIN),
-	composeConfig(PY311, CONDA, WINDOWS_TOOLCHAIN),
+	composeConfig(PY38, WHEEL, LINUX_DOCKER_TOOLCHAIN),
+	composeConfig(PY38, WHEEL, WINDOWS_DOCKER_TOOLCHAIN),
+	composeConfig(PY38, CONDA, LINUX_DOCKER_TOOLCHAIN),
+	composeConfig(PY38, CONDA, WINDOWS_DOCKER_TOOLCHAIN),
+	composeConfig(PY39, WHEEL, LINUX_DOCKER_TOOLCHAIN),
+	composeConfig(PY39, WHEEL, WINDOWS_DOCKER_TOOLCHAIN),
+	composeConfig(PY39, CONDA, LINUX_DOCKER_TOOLCHAIN),
+	composeConfig(PY39, CONDA, WINDOWS_DOCKER_TOOLCHAIN),
+	composeConfig(PY310, WHEEL, LINUX_DOCKER_TOOLCHAIN),
+	composeConfig(PY310, WHEEL, WINDOWS_DOCKER_TOOLCHAIN),
+	composeConfig(PY310, CONDA, LINUX_DOCKER_TOOLCHAIN),
+	composeConfig(PY310, CONDA, WINDOWS_DOCKER_TOOLCHAIN),
+	composeConfig(PY311, WHEEL, LINUX_DOCKER_TOOLCHAIN),
+	composeConfig(PY311, WHEEL, WINDOWS_DOCKER_TOOLCHAIN),
+	composeConfig(PY311, CONDA, LINUX_DOCKER_TOOLCHAIN),
+	composeConfig(PY311, CONDA, WINDOWS_DOCKER_TOOLCHAIN),
 ]
 
 
@@ -150,9 +150,11 @@ def taskBuildDockerImage(cfg) {
 	dir(path: SOURCE) {
 		docker.withRegistry("https://${DOCKER_REGISTRY}", 'jenkins-pyprt-dreg-robot') {
 			psl.runContainerBuild() {
-				def dockerImage = docker.build(image, "-m 8GB --rm -f ${dockerFile} ${buildArgs} ${labelArgs} .")
-				dockerImage.push(tag)
-				psl.runCmd("docker image prune -a -f --filter label=${buildLabel}")
+				retry(count: 3) {
+					def dockerImage = docker.build(image, "-m 8GB --rm -f ${dockerFile} ${buildArgs} ${labelArgs} .")
+					dockerImage.push(tag)
+					psl.runCmd("docker image prune -a -f --filter label=${buildLabel}")
+				}
 			}
 		}
 	}
@@ -181,7 +183,7 @@ String getDockerImage(cfg) {
 }
 
 String getDockerBaseTag(cfg) {
-	return "jnk-${DOCKER_IMAGE_REV}-${cfg.os}"
+	return "jnk-${DOCKER_IMAGE_REV}-${cfg.os}-${cfg.tc}"
 }
 
 String getDockerTag(cfg) {
@@ -189,7 +191,7 @@ String getDockerTag(cfg) {
 	if (cfg.py != null)
 		tag += "-py${cfg.py}"
 	if (cfg.kind != BASE.kind)
-		tag += "-${cfg.kind}-${cfg.tc}"
+		tag += "-${cfg.kind}"
 	return tag
 }
 

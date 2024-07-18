@@ -72,8 +72,8 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
 ### Requirements
 
 * C++ Compiler (C++ 17)
-  * Windows: MSVC 14.27 or later
-  * Linux: GCC 9.3 or later (we build and test on RHEL7/CentOS7)
+  * Windows: MSVC 14.37 (Visual Studio 2022) or later
+  * Linux: GCC 11.2 or later (we build and test on RHEL8 and compatible)
 * Python (version >=3.8, <=3.11)
   * Packages: wheel, arcgis, twine, sphinx, pkginfo, xmlrunner
 * Optional: Conda (e.g. miniconda3)
@@ -83,7 +83,7 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
 A note regarding the meaning of "open a shell" in the following sections: this implies that the shell also needs to have the correct C++ compiler activated:
 
 * On Windows, use the shortcuts provided by Visual Studio or run `vcvarsall.bat` of the desired MSVC toolchain.
-* On RHEL-based Linux, run e.g. `source /opt/rh/devtoolset-9/enable`.
+* On RHEL-based Linux, run e.g. `source /opt/rh/gcc-toolset-11/enable`.
 
 _Note: on Windows, replace `bin` with `Scripts` in the following commands. Some commands also differ in their file extension between Linux and Windows (`.sh` vs `.bat` and similar). Please refer to the `venv` documentation for details: <https://docs.python.org/3.8/library/venv.html>_
 
