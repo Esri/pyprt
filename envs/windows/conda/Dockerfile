@@ -19,4 +19,4 @@ RUN conda update conda `
   && conda update -n pyprt --all
 
 # https://devblogs.microsoft.com/cppblog/using-msvc-in-a-docker-container-for-your-c-projects/
-ENTRYPOINT [ "C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat", "x64", "-vcvars_ver=14.27", "&&", "call", "conda.bat", "activate", "pyprt", "&&" ]
+ENTRYPOINT [ "C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat", "x64", "-vcvars_ver=14.37", "&&", "call", "conda.bat", "activate", "pyprt", "&&" ]
