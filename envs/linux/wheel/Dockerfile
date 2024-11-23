@@ -10,7 +10,7 @@ RUN set -e \
     && INSTALL_PKGS="libffi-devel bzip2-devel xz-devel krb5-devel" \
     && dnf install -y --setopt=tsflags=nodocs $INSTALL_PKGS \
     && rpm -V $INSTALL_PKGS \
-    && dnf install -y python${PY_VER//./} python${PY_VER//./}-devel python${PY_VER//./}-pip \
+    && if [ "${PY_VER}" == "3.11" ] || [ "${PY_VER}" == "3.12" ]; then dnf install -y python${PY_VER} python${PY_VER}-devel python${PY_VER}-pip; else dnf install -y python${PY_VER//./} python${PY_VER//./}-devel python${PY_VER//./}-pip; fi \
     && dnf clean all && rm -rf /var/cache/dnf
 
 # also see https://github.com/sclorg/devtoolset-container

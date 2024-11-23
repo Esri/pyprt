@@ -16,7 +16,7 @@ PyPRT provides a Python binding for the [CityEngine Procedural RunTime (PRT)](ht
 
 Run `pip install pyprt` in your (virtual) Python environment or `conda install -c esri pyprt` in a Conda environment. Then use `import pyprt` in your scripts.
 
-We provide wheels and Conda packages for Python 3.8, 3.9, 3.10 and 3.11 on Linux and Windows. For other Python versions please [build](#development) PyPRT yourself.
+We provide wheels and Conda packages for Python 3.8, 3.9, 3.10, 3.11 and 3.12 on Linux and Windows. For other Python versions please [build](#development) PyPRT yourself.
 
 ## Minimal Example
 
@@ -74,7 +74,7 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
 * C++ Compiler (C++ 17)
   * Windows: MSVC 14.37 (Visual Studio 2022) or later
   * Linux: GCC 11.2 or later (we build and test on RHEL8 and compatible)
-* Python (version >=3.8, <=3.11)
+* Python (version >=3.8, <=3.12)
   * Packages: wheel, arcgis, twine, sphinx, pkginfo, xmlrunner
 * Optional: Conda (e.g. miniconda3)
 * CMake (version >= 3.19)
