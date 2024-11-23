@@ -1,9 +1,6 @@
-ARG REGISTRY=''
-ARG BASE_TAG=''
+ARG REGISTRY
+ARG BASE_TAG=linux
 FROM ${REGISTRY}pyprt-base:${BASE_TAG}
-
-ARG PY_VER
-ARG PY_VER_MICRO
 
 # dependencies for Python source build (also used for module native extensions)
 RUN set -e \
@@ -14,6 +11,8 @@ RUN set -e \
     && dnf clean all && rm -rf /var/cache/dnf
 
 # we manually build Python with default toolchain
+ARG PY_VER
+ARG PY_VER_MICRO
 ADD https://www.python.org/ftp/python/${PY_VER}${PY_VER_MICRO}/Python-${PY_VER}${PY_VER_MICRO}.tar.xz /tmp/python_src.tar.xz
 RUN tar xf /tmp/python_src.tar.xz -C /tmp \
     && rm /tmp/python_src.tar.xz \
