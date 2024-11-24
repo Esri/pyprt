@@ -17,14 +17,14 @@ RUN set -e \
 RUN echo "unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable gcc-toolset-11" >> /tmp/scl_enable
 ENV BASH_ENV=/tmp/scl_enable ENV=/tmp/scl_enable PROMPT_COMMAND=". /tmp/scl_enable"
 
-COPY envs/linux/wheel/requirements-py${PY_VER}.txt /tmp/pyprt/requirements.txt
+COPY envs/linux/wheel/requirements-py${PY_VER}.txt /tmp/pyprt-wheel-requirements.txt
 
-ENV VIRTUAL_ENV=/tmp/pyprt/venv
+ENV VIRTUAL_ENV=/tmp/pyprt-build-venv
 RUN python${PY_VER} -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN python -V \
     && python -m pip install --no-cache-dir --upgrade pip \
 	&& python -m pip install --no-cache-dir --upgrade wheel \
-	&& python -m pip install --no-cache-dir -r /tmp/pyprt/requirements.txt \
-    && rm /tmp/pyprt/requirements.txt
+	&& python -m pip install --no-cache-dir -r /tmp/pyprt-wheel-requirements.txt \
+    && rm /tmp/pyprt-wheel-requirements.txt

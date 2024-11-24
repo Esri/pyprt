@@ -41,10 +41,10 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final String DOCKER_IMAGE_REV = "v11"
 
 @Field final String DOCKER_AGENT_LINUX = psl.BA_LINUX_DOCKER
-@Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
+@Field final String DOCKER_WS_LINUX = "/tmp/work"
 
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
-@Field final String DOCKER_WS_WINDOWS = "c:/temp/pyprt/ws"
+@Field final String DOCKER_WS_WINDOWS = "c:/temp/work"
 
 @Field final Map PY39                  = [ py: '3.9' ]
 @Field final Map PY310                 = [ py: '3.10' ]
@@ -256,7 +256,7 @@ def taskBuildConda(cfg) {
 
 	String buildCmd = "conda build conda-recipe"
 	if (isUnix()) {
-		String condaEnv = '/tmp/pyprt/pyprt-conda-env'
+		String condaEnv = '/tmp/pyprt-conda-env'
 		String outDir = "${cfg.ws}/build/"
 		buildCmd += " && mkdir ${outDir} && cp -r ${condaEnv}/conda-bld/linux-64/pyprt*.tar.bz2 ${outDir}"
 	}
