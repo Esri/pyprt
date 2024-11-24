@@ -4,7 +4,7 @@ ARG REGISTRY
 ARG BASE_TAG=windows
 FROM ${REGISTRY}pyprt-base:${BASE_TAG}
 
-ADD https://repo.anaconda.com/miniconda/Miniconda3-py312_24.9.2-0-Windows-x86_64.exe C:/temp/miniconda.exe
+ADD https://repo.anaconda.com/miniconda/Miniconda3-py312_24.7.1-0-Windows-x86_64.exe C:/temp/miniconda.exe
 RUN C:\temp\miniconda.exe /S /AddToPath=1 /InstallationType=JustMe /RegisterPython=0 /D=C:\temp\conda
 
 WORKDIR C:/temp/pyprt

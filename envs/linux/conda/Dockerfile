@@ -3,7 +3,7 @@ ARG BASE_TAG=linux
 FROM ${REGISTRY}pyprt-base:${BASE_TAG}
 
 # see https://github.com/conda/conda-docker/blob/master/miniconda3/centos7/Dockerfile
-ADD https://repo.anaconda.com/miniconda/Miniconda3-py312_24.9.2-0-Linux-x86_64.sh /tmp/miniconda.sh
+ADD https://repo.anaconda.com/miniconda/Miniconda3-py312_24.7.1-0-Linux-x86_64.sh /tmp/miniconda.sh
 RUN bash /tmp/miniconda.sh -bfp /opt/conda && rm -rf /tmp/miniconda.sh
 
 ARG PY_VER
