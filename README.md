@@ -75,7 +75,7 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
   * Windows: MSVC 14.37 (Visual Studio 2022) or later
   * Linux: GCC 11.2 or later (we build and test on RHEL8 compatible distros)
 * Python (version >=3.9, <=3.12)
-  * Packages: wheel, arcgis, twine, sphinx, unittest-xml-reporting
+  * Packages required to build wheels and run PyPRT: build, setuptools, wheel, auditwheel, arcgis, shapely, twine, sphinx, unittest-xml-reporting, numpy
 * Optional: Conda (e.g. miniconda3)
 * CMake (version >= 3.19)
 * Ninja
