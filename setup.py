@@ -29,27 +29,23 @@ class CMakeConfig:
         self.make_executable, self.cmake_generator = self.detect_make()
 
     def detect_cmake(self):
-        cmake_home = os.getenv('CMAKE313_HOME', '')
         cmake_candidates = [
-            # 1. try env var (typically for CI)
-            [os.path.join(cmake_home, 'cmake'), '--version'],
-            # 2. try PATH (typically for devs)
-            ['cmake', '--version']
+            # 1. default cmake on PATH
+            ['cmake', '--version'],
+            # 2. some linux distros use 'cmake3' as binary name
+            ['cmake3', '--version']
         ]
         return self.try_alternatives('cmake', cmake_candidates)
 
     def detect_make(self):
-        make_home = os.getenv('NINJA_HOME', '')
         make_candidates = [
-            # 1. try env var
-            [os.path.join(make_home, 'ninja'), '--version'],
-            # 2. try PATH with ninja
+            # 1. try PATH with ninja
             ['ninja', '--version'],
-            # 3. try PATH with alternative name (e.g. used in CentOS)
+            # 2. try PATH with alternative name (e.g. used in CentOS)
             ['ninja-build', '--version'],
-            # 4. try PATH with make (macos, linux)
+            # 3. try PATH with make (macos, linux)
             ['make', '--version'],
-            # 5. try PATH with nmake (windows)
+            # 4. try PATH with nmake (windows)
             ['nmake', '/?']
         ]
         make_executable = self.try_alternatives(
