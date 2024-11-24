@@ -44,7 +44,6 @@ psl.runsHere('production')
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
 
 // we build Python 3.10 from source (not provided by base image)
-@Field final Map PY38 = [ py: '3.8' ]
 @Field final Map PY39 = [ py: '3.9' ]
 @Field final Map PY310 = [ py: '3.10', py_micro: '15' ]
 @Field final Map PY311 = [ py: '3.11' ]
@@ -66,17 +65,12 @@ psl.runsHere('production')
 @Field final List CONFIGS_BASE_IMAGES = [
 	composeConfig(null, BASE, LINUX_DOCKER_TOOLCHAIN),
 	composeConfig(null, BASE, WINDOWS_DOCKER_TOOLCHAIN),
-	composeConfig(PY38, BASE, WINDOWS_DOCKER_TOOLCHAIN),
 	composeConfig(PY39, BASE, WINDOWS_DOCKER_TOOLCHAIN),
 	composeConfig(PY310, BASE, WINDOWS_DOCKER_TOOLCHAIN),
 	composeConfig(PY311, BASE, WINDOWS_DOCKER_TOOLCHAIN),
 	composeConfig(PY312, BASE, WINDOWS_DOCKER_TOOLCHAIN),
 ]
 @Field final List CONFIGS_IMAGES = [
-	composeConfig(PY38, WHEEL, LINUX_DOCKER_TOOLCHAIN),
-	composeConfig(PY38, WHEEL, WINDOWS_DOCKER_TOOLCHAIN),
-	composeConfig(PY38, CONDA, LINUX_DOCKER_TOOLCHAIN),
-	composeConfig(PY38, CONDA, WINDOWS_DOCKER_TOOLCHAIN),
 	composeConfig(PY39, WHEEL, LINUX_DOCKER_TOOLCHAIN),
 	composeConfig(PY39, WHEEL, WINDOWS_DOCKER_TOOLCHAIN),
 	composeConfig(PY39, CONDA, LINUX_DOCKER_TOOLCHAIN),
