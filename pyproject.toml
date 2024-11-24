@@ -27,7 +27,7 @@ Documentation = "https://github.com/Esri/pyprt/blob/master/README.md#documentati
 Examples = "https://github.com/Esri/pyprt-examples"
 
 [build-system]
-requires = ["setuptools>=61", "sphinx", "wheel"]
+requires = ["setuptools>=64", "sphinx", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
