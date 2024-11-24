@@ -4,4 +4,5 @@ arcgis
 Shapely
 Sphinx<7.0
 twine
+unittest-xml-reporting
 numpy

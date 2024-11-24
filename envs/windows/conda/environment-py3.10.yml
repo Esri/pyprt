@@ -6,4 +6,4 @@ dependencies:
   - anaconda::conda-verify
   - anaconda::sphinx
   - conda-forge::shapely
-  - conda-forge::xmlrunner
+  - conda-forge::unittest-xml-reporting
