@@ -31,7 +31,7 @@
  * Helper struct to manage PRT lifetime (e.g. the prt::init() call)
  */
 struct PRTContext {
-	PRTContext(prt::LogLevel minimalLogLevel);
+	explicit PRTContext(prt::LogLevel minimalLogLevel);
 	~PRTContext();
 
 	PythonLogHandler mLogHandler;
