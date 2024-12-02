@@ -161,7 +161,7 @@ py::dict getRPKInfo(const std::filesystem::path& rulePackagePath) {
 
 	if (!std::filesystem::exists(rulePackagePath) || !pcu::getResolveMap(rulePackagePath, &resolveMap)) {
 		LOG_ERR << "invalid rule package path";
-		return py::dict();
+		return {};
 	}
 
 	std::wstring ruleFile = pcu::getRuleFileEntry(resolveMap.get());
@@ -169,14 +169,14 @@ py::dict getRPKInfo(const std::filesystem::path& rulePackagePath) {
 	const wchar_t* ruleFileURI = resolveMap->getString(ruleFile.c_str());
 	if (ruleFileURI == nullptr) {
 		LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
-		return py::dict();
+		return {};
 	}
 
 	prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
 	RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, nullptr, &infoStatus));
 	if (!info || infoStatus != prt::STATUS_OK) {
 		LOG_ERR << "could not get rule file info from rule file " << ruleFile;
-		return py::dict();
+		return {};
 	}
 
 	py::dict ruleAttrs = getRuleAttributes(info.get());
