@@ -21,10 +21,15 @@
 
 namespace doc {
 
-constexpr const char* Init =
-        "Initialization of PRT. PyPRT functionalities are blocked until the initialization is done.";
+constexpr const char* Init = R"mydelimiter(
+        DEPRECATED, this function has no effect. Initialization happens implicitly and automatically.
+
+        Initialization of PRT.
+    )mydelimiter";
 
 constexpr const char* IsInit = R"mydelimiter(
+        DEPRECATED, this function always returns true. PRT life time is tied to Python module life time.
+
         is_prt_initialized() -> bool
 
         This function returns *True* if PRT is initialized, *False* otherwise.
@@ -33,9 +38,11 @@ constexpr const char* IsInit = R"mydelimiter(
             bool
     )mydelimiter";
 
-constexpr const char* Shutdown =
-        "Shutdown of PRT. The PRT initialization process can be done only once per "
-        "session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.";
+constexpr const char* Shutdown = R"mydelimiter(
+        DEPRECATED, this function has no effect. Shutdown happens implicitly and automatically at module unload.
+
+        Shutdown of PRT.
+    )mydelimiter";
 
 constexpr const char* getPRTVersion = R"mydelimiter(
         get_api_version() -> list
