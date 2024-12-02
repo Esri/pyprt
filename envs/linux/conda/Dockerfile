@@ -11,7 +11,7 @@ COPY envs/linux/conda/environment-py${PY_VER}.yml /tmp/pyprt-conda-environment.y
 RUN /opt/conda/bin/conda update --quiet conda \
     && /opt/conda/bin/conda clean --all --yes \
     && /opt/conda/bin/conda config --system --set remote_backoff_factor 2 --set remote_connect_timeout_secs 60 --set remote_max_retries 8 --set remote_read_timeout_secs 240 \
-    && /opt/conda/bin/conda config --system --add pkgs_dirs /tmp/conda_pkgs \
+    && /opt/conda/bin/conda config --system --add pkgs_dirs /tmp/work/conda_pkgs \
     && /opt/conda/bin/conda config --system --set conda_build.pkg_format tar.bz2 \
     && /opt/conda/bin/conda config --system --add channels defaults \
     && /opt/conda/bin/conda env create --quiet --prefix /tmp/pyprt-conda-env --file /tmp/pyprt-conda-environment.yml \

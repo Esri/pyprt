@@ -258,7 +258,7 @@ def taskBuildConda(cfg) {
 	if (isUnix()) {
 		String condaEnv = '/tmp/pyprt-conda-env'
 		String outDir = "${cfg.ws}/build/"
-		buildCmd += " && mkdir ${outDir} && cp -r ${condaEnv}/conda-bld/linux-64/pyprt*.tar.bz2 ${outDir}"
+		buildCmd += " && mkdir ${outDir} && cp -r ${cfg.ws}/conda-bld/linux-64/pyprt*.tar.bz2 ${outDir}"
 	}
 	else {
 		String condaEnv = 'C:\\temp\\conda\\envs\\pyprt'
@@ -283,7 +283,15 @@ def taskBuildDoc(cfg) {
 
 	final String sphinxOutput = 'html'
 
-	String buildCmd = "python -m pip install . && sphinx-build docs ${cfg.ws}/${sphinxOutput}"
+    String venv = "${cfg.ws}/venv"
+	String buildCmd = ''
+	if (isUnix()) {
+        buildCmd += "cp -r /tmp/pyprt-build-venv ${venv}" // copy ro venv so we can install and build docs
+	    buildCmd += " && ${venv}/bin/python -m pip install . && ${venv}/bin/sphinx-build docs ${cfg.ws}/${sphinxOutput}"
+	}
+	else {
+        buildCmd = "python -m pip install . && sphinx-build docs ${cfg.ws}/${sphinxOutput}"
+	}
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
 	runDockerCmd(cfg, dirMap, workDir, buildCmd)
@@ -301,7 +309,15 @@ def taskRunTests(cfg) {
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
-	String buildCmd = "python -m pip install . && python tests/run_tests.py --xml_output_directory ${cfg.ws}"
+    String venv = "${cfg.ws}/venv"
+	String buildCmd = ''
+	if (isUnix()) {
+	    buildCmd = "cp -r /tmp/pyprt-build-venv ${venv}" // copy ro venv so we can install to run tests
+	    buildCmd += " && ${venv}/bin/python -m pip install . && ${venv}/bin/python tests/run_tests.py --xml_output_directory ${cfg.ws}"
+	}
+	else {
+	    buildCmd = "python -m pip install . && python tests/run_tests.py --xml_output_directory ${cfg.ws}"
+	}
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
 	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(cfg, workDir, buildCmd))
