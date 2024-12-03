@@ -26,8 +26,6 @@ We provide wheels and Conda packages for Python 3.8, 3.9, 3.10 and 3.11 on Linux
 import os
 import pyprt
 
-pyprt.initialize_prt()
-
 # Define the input geometry
 shape_geometry = pyprt.InitialShape([0, 0, 0, 0, 0, 100, 100, 0, 100, 100, 0, 0])
 
@@ -50,8 +48,6 @@ for model in generated_models:
     cga_report = model.get_report()
     vertices = model.get_vertices()
     print(f"Model {index} has vertices: {vertices} and reports {cga_report}")
-
-pyprt.shutdown_prt()
 ```
 
 ## Documentation
