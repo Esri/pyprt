@@ -1,5 +1,13 @@
 # PyPRT ChangeLog
 
+## v1.11.0 (2024-12-XX)
+
+### Added
+* Added support for Rule Packages (RPK) created with CityEngine 2024.1
+
+### Changed
+* Update to [PRT 3.2.10650](https://github.com/Esri/cityengine-sdk/blob/3.2.10650/changelog.md#cityengine-sdk-3210650-changelog)
+
 ## v1.10.0 (2024-07-17)
 
 ### Added
