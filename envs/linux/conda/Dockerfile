@@ -8,15 +8,14 @@ RUN bash /tmp/miniconda.sh -bfp /opt/conda && rm -rf /tmp/miniconda.sh
 
 ARG PY_VER
 COPY envs/linux/conda/environment-py${PY_VER}.yml /tmp/pyprt-conda-environment.yml
-RUN /opt/conda/bin/conda update --quiet conda \
-    && /opt/conda/bin/conda clean --all --yes \
-    && /opt/conda/bin/conda config --system --set remote_backoff_factor 2 --set remote_connect_timeout_secs 60 --set remote_max_retries 8 --set remote_read_timeout_secs 240 \
+RUN /opt/conda/bin/conda config --system --set remote_backoff_factor 2 --set remote_connect_timeout_secs 60 --set remote_max_retries 8 --set remote_read_timeout_secs 240 \
     && /opt/conda/bin/conda config --system --add pkgs_dirs /tmp/work/conda_pkgs \
     && /opt/conda/bin/conda config --system --set conda_build.pkg_format tar.bz2 \
     && /opt/conda/bin/conda config --system --add channels defaults \
     && /opt/conda/bin/conda env create --quiet --prefix /tmp/pyprt-conda-env --file /tmp/pyprt-conda-environment.yml \
     && /opt/conda/bin/conda install --quiet --prefix /tmp/pyprt-conda-env -c esri arcgis \
     && /opt/conda/bin/conda update --quiet --prefix /tmp/pyprt-conda-env --all \
+    && /opt/conda/bin/conda clean --all --yes \
     && rm /tmp/pyprt-conda-environment.yml
 
 # also see https://github.com/sclorg/devtoolset-container
