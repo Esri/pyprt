@@ -1,0 +1,2 @@
+twine
+brotli # without this, twine fails to run (exception regarding brotli.error) when called from subprocess.run
