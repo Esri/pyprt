@@ -48,11 +48,11 @@ public:
 	PyEncoder(const PyEncoder&) = delete;
 	PyEncoder(PyEncoder&&) = delete;
 	PyEncoder& operator=(PyEncoder&) = delete;
-	virtual ~PyEncoder() = default;
+	~PyEncoder() override = default;
 
-	virtual void init(prtx::GenerateContext& context) override;
-	virtual void encode(prtx::GenerateContext& context, size_t initialShapeIndex) override;
-	virtual void finish(prtx::GenerateContext& context) override;
+	void init(prtx::GenerateContext& context) override;
+	void encode(prtx::GenerateContext& context, size_t initialShapeIndex) override;
+	void finish(prtx::GenerateContext& context) override;
 
 private:
 	prtx::DefaultNamePreparator mNamePreparator;
@@ -63,11 +63,11 @@ class PyEncoderFactory : public prtx::EncoderFactory, public prtx::Singleton<PyE
 public:
 	static PyEncoderFactory* createInstance();
 
-	PyEncoderFactory(const prt::EncoderInfo* info) : prtx::EncoderFactory(info) {}
+	explicit PyEncoderFactory(const prt::EncoderInfo* info) : prtx::EncoderFactory(info) {}
 	PyEncoderFactory(const PyEncoderFactory&) = delete;
 	PyEncoderFactory(PyEncoderFactory&&) = delete;
 	PyEncoderFactory& operator=(PyEncoderFactory&) = delete;
-	virtual ~PyEncoderFactory() = default;
+	~PyEncoderFactory() override = default;
 
 	PyEncoder* create(const prt::AttributeMap* defaultOptions, prt::Callbacks* callbacks) const override;
 };

@@ -24,16 +24,18 @@
 
 #include "prt/LogLevel.h"
 
+#include <memory>
+
+
 /**
  * Helper struct to manage PRT lifetime (e.g. the prt::init() call)
  */
 struct PRTContext {
-	static std::shared_ptr<PRTContext> get();
-	static void shutdown();
-
-	PRTContext(prt::LogLevel minimalLogLevel);
+	explicit PRTContext(prt::LogLevel minimalLogLevel);
 	~PRTContext();
 
 	PythonLogHandler mLogHandler;
 	ObjectPtr mPRTHandle;
 };
+
+using PRTContextUPtr = std::unique_ptr<PRTContext>;

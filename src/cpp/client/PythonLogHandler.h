@@ -29,7 +29,7 @@
 class PythonLogHandler : public prt::LogHandler {
 public:
 	PythonLogHandler() = default;
-	virtual ~PythonLogHandler() = default;
+	~PythonLogHandler() override = default;
 
 	void handleLogEvent(const wchar_t* msg, prt::LogLevel level) override;
 	const prt::LogLevel* getLevels(size_t* count) override;

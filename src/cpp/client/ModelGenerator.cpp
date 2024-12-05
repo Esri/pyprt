@@ -229,11 +229,6 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 	}
 
 	try {
-		if (!PRTContext::get()) {
-			LOG_ERR << "PRT has not been initialized.";
-			return {};
-		}
-
 		// Rule package
 		prt::Status rpkStat = initializeRulePackageData(rulePackagePath, mResolveMap, mCache);
 

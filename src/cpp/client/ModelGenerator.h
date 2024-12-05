@@ -31,7 +31,7 @@
 
 class ModelGenerator {
 public:
-	ModelGenerator(const std::vector<InitialShape>& protoShapes);
+	explicit ModelGenerator(const std::vector<InitialShape>& protoShapes);
 	~ModelGenerator() = default;
 
 	std::vector<GeneratedModel> generateModel(const std::vector<pybind11::dict>& shapeAttributes,
