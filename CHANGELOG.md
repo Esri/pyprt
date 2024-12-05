@@ -1,6 +1,6 @@
 # PyPRT ChangeLog
 
-## v1.11.0 (2024-12-XX)
+## v1.11.0 (2025-02-20)
 
 ### Added
 * Added support for Rule Packages (RPK) created with CityEngine 2024.1
@@ -8,7 +8,11 @@
 
 ### Changed
 * Update to [PRT 3.2.10650](https://github.com/Esri/cityengine-sdk/blob/3.2.10650/changelog.md#cityengine-sdk-3210650-changelog)
-* Update to PyBind11 2.13.6 
+* PyPRT and the underlying PRT library are now initialized and shutdown automatically (tied to the module "lifetime"). The following API functions are now considered deprecated and will emit warnings when called:
+    * `initialize_prt`
+    * `is_prt_initialized`
+    * `shutdown_prt`
+* Update to PyBind11 2.13.6
 
 ### Removed
 * Removed support for Python 3.8 which reached end-of-life in October 2024.
