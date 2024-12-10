@@ -23,7 +23,7 @@ ENV PATH="/opt/patchelf-0.17.2-x86_64/bin:$PATH"
 
 # setup container initialization and user
 
-ENV HOME=/tmp/pyprt
+ENV HOME=/tmp/work
 COPY envs/linux/base/docker-entrypoint.sh /usr/bin/container-entrypoint.sh
 RUN set -e \
     && mkdir -p ${HOME} \

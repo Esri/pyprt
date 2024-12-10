@@ -1,3 +1,5 @@
 .venv*
 build
 dist
+.git
+.conda*

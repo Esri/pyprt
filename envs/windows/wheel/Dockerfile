@@ -5,13 +5,13 @@ ARG BASE_TAG=windows
 ARG PY_VER
 FROM ${REGISTRY}pyprt-base:${BASE_TAG}-py${PY_VER}
 
-WORKDIR C:\temp\pyprt
+WORKDIR C:/temp/work
 ARG PY_VER
-COPY ./envs/windows/wheel/requirements-py${PY_VER}.txt ./requirements.txt
+COPY ./envs/windows/wheel/requirements-py${PY_VER}.txt C:/temp/pyprt-wheel-requirements.txt
 
 RUN python -m pip install --no-cache-dir --upgrade pip `
 	&& python -m pip install --no-cache-dir --upgrade wheel `
-	&& python -m pip install --no-cache-dir -r requirements.txt
+	&& python -m pip install --no-cache-dir -r C:/temp/pyprt-wheel-requirements.txt
 
 # https://devblogs.microsoft.com/cppblog/using-msvc-in-a-docker-container-for-your-c-projects/
 ENTRYPOINT [ "C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat", "x64", "-vcvars_ver=14.37", "&&" ]
