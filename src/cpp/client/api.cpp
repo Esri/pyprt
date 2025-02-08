@@ -53,7 +53,10 @@ void initializePRT() {
 }
 
 bool isPRTInitialized() {
-	PyErr_WarnEx(PyExc_DeprecationWarning, "is_prt_initialized() is deprecated and will always return true. PRT life time is tied to the module life time.", 1);
+	PyErr_WarnEx(PyExc_DeprecationWarning,
+	             "is_prt_initialized() is deprecated and will always return true. PRT life time is tied to the module "
+	             "life time.",
+	             1);
 	return true;
 }
 
@@ -219,7 +222,7 @@ PYBIND11_MODULE(pyprt, m) {
 	        .def(py::init<const std::vector<InitialShape>&>(), py::arg("initialShapes"), doc::MgInit)
 	        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"),
 	             py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"),
-	             doc::MgGen);
+	             py::arg("assets") = py::dict(), doc::MgGen);
 
 	py::class_<GeneratedModel>(m, "GeneratedModel", doc::Gm)
 	        .def("get_initial_shape_index", &GeneratedModel::getInitialShapeIndex, doc::GmGetInd)
