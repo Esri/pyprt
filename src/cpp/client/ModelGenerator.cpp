@@ -179,7 +179,7 @@ void ModelGenerator::initializeEncoderData(const std::wstring& encName, const py
 }
 
 prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::path& rulePackagePath,
-                                                      ResolveMapPtr& resolveMap, CachePtr& cache) {
+                                                      ResolveMapPtr& resolveMap, CachePtr& cache, const pybind11::dict& assets) {
 	if (!std::filesystem::exists(rulePackagePath)) {
 		LOG_ERR << "The rule package path is unvalid.";
 		return prt::STATUS_FILE_NOT_FOUND;
@@ -188,6 +188,16 @@ prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::pat
 	resolveMap = pcu::getResolveMap(rulePackagePath);
 	if (!resolveMap)
 		return prt::STATUS_RESOLVEMAP_PROVIDER_NOT_FOUND;
+
+	if (!assets.empty()) {
+		ResolveMapBuilderPtr rmb(prt::ResolveMapBuilder::createFromResolveMap(resolveMap.get()));
+		for (const auto& asset: assets) {
+			std::wstring key;
+			std::wstring uri;
+			rmb->addEntry(key.c_str(), uri.c_str());
+		}
+		resolveMap.reset(rmb->createResolveMap());
+	}
 
 	mRuleFile = pcu::getRuleFileEntry(resolveMap.get());
 
@@ -211,6 +221,7 @@ prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::pat
 
 std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::dict>& shapeAttributes,
                                                           const std::filesystem::path& rulePackagePath,
+                                                          const pybind11::dict& assets,
                                                           const std::wstring& geometryEncoderName,
                                                           const py::dict& geometryEncoderOptions) {
 	if (!mValid) {
@@ -231,7 +242,7 @@ std::vector<GeneratedModel> ModelGenerator::generateModel(const std::vector<py::
 
 	try {
 		// Rule package
-		prt::Status rpkStat = initializeRulePackageData(rulePackagePath, mResolveMap, mCache);
+		prt::Status rpkStat = initializeRulePackageData(rulePackagePath, mResolveMap, mCache, assets);
 
 		if (rpkStat != prt::STATUS_OK)
 			return {};

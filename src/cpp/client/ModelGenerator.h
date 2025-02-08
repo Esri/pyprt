@@ -36,6 +36,7 @@ public:
 
 	std::vector<GeneratedModel> generateModel(const std::vector<pybind11::dict>& shapeAttributes,
 	                                          const std::filesystem::path& rulePackagePath,
+	                                          const pybind11::dict& assets,
 	                                          const std::wstring& geometryEncoderName,
 	                                          const pybind11::dict& geometryEcoderOptions);
 
@@ -62,5 +63,5 @@ private:
 	                              std::vector<AttributeMapPtr>& convertShapeAttr);
 	void initializeEncoderData(const std::wstring& encName, const pybind11::dict& encOpt);
 	prt::Status initializeRulePackageData(const std::filesystem::path& rulePackagePath, ResolveMapPtr& resolveMap,
-	                                      CachePtr& cache);
+	                                      CachePtr& cache, const pybind11::dict& assets);
 };

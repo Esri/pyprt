@@ -218,7 +218,7 @@ PYBIND11_MODULE(pyprt, m) {
 	py::class_<ModelGenerator>(m, "ModelGenerator", doc::Mg)
 	        .def(py::init<const std::vector<InitialShape>&>(), py::arg("initialShapes"), doc::MgInit)
 	        .def("generate_model", &ModelGenerator::generateModel, py::arg("shapeAttributes"),
-	             py::arg("rulePackagePath"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"),
+	             py::arg("rulePackagePath"), py::arg("assets"), py::arg("geometryEncoderName"), py::arg("geometryEncoderOptions"),
 	             doc::MgGen);
 
 	py::class_<GeneratedModel>(m, "GeneratedModel", doc::Gm)
