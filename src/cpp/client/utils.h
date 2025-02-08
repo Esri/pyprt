@@ -37,7 +37,7 @@ namespace py = pybind11;
 namespace pcu {
 
 std::filesystem::path getModuleDirectory();
-bool getResolveMap(const std::filesystem::path& rulePackagePath, ResolveMapPtr* resolveMap);
+ResolveMapPtr getResolveMap(const std::filesystem::path& rulePackagePath);
 std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap);
 std::wstring detectStartRule(const RuleFileInfoUPtr& ruleFileInfo);
 std::unordered_set<std::wstring> getHiddenAttributes(const RuleFileInfoUPtr& ruleFileInfo);

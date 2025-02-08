@@ -157,9 +157,8 @@ py::dict getRuleAttributes(const prt::RuleFileInfo* ruleFileInfo) {
 }
 
 py::dict getRPKInfo(const std::filesystem::path& rulePackagePath) {
-	ResolveMapPtr resolveMap;
-
-	if (!std::filesystem::exists(rulePackagePath) || !pcu::getResolveMap(rulePackagePath, &resolveMap)) {
+	ResolveMapPtr resolveMap = pcu::getResolveMap(rulePackagePath);
+	if (!resolveMap) {
 		LOG_ERR << "invalid rule package path";
 		return {};
 	}
