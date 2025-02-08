@@ -62,30 +62,32 @@ namespace pcu {
 
 constexpr const wchar_t* CGA_STYLE_DEFAULT = L"Default$";
 
-bool getResolveMap(const std::filesystem::path& rulePackagePath, ResolveMapPtr* resolveMap) {
-	if (std::filesystem::exists(rulePackagePath)) {
-		LOG_INF << "using rule package " << rulePackagePath << std::endl;
+ResolveMapPtr getResolveMap(const std::filesystem::path& rulePackagePath) {
+	LOG_INF << "using rule package " << rulePackagePath << std::endl;
 
-		const std::string u8rpkURI = toFileURI(rulePackagePath.string());
-		prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
-		try {
-			resolveMap->reset(prt::createResolveMap(toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status));
-		}
-		catch (const std::exception& e) {
-			pybind11::print("CAUGHT EXCEPTION:", e.what());
-			return false;
-		}
+	if (!std::filesystem::exists(rulePackagePath))
+		return {};
 
-		if (resolveMap && (status == prt::STATUS_OK)) {
-			LOG_DBG << "resolve map = " << objectToXML(resolveMap->get()) << std::endl;
-		}
-		else {
-			LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting.";
-			return false;
-		}
+	ResolveMapPtr resolveMap;
+	const std::string u8rpkURI = toFileURI(rulePackagePath.string());
+	prt::Status status = prt::STATUS_UNSPECIFIED_ERROR;
+	try {
+		resolveMap.reset(prt::createResolveMap(toUTF16FromUTF8(u8rpkURI).c_str(), nullptr, &status));
+	}
+	catch (const std::exception& e) {
+		pybind11::print("CAUGHT EXCEPTION:", e.what());
+		return {};
 	}
 
-	return true;
+	if (resolveMap && (status == prt::STATUS_OK)) {
+		LOG_DBG << "resolve map = " << objectToXML(resolveMap.get()) << std::endl;
+	}
+	else {
+		LOG_ERR << "getting resolve map from '" << rulePackagePath << "' failed, aborting.";
+		return {};
+	}
+
+	return resolveMap;
 }
 
 std::wstring getRuleFileEntry(const prt::ResolveMap* resolveMap) {

@@ -185,7 +185,8 @@ prt::Status ModelGenerator::initializeRulePackageData(const std::filesystem::pat
 		return prt::STATUS_FILE_NOT_FOUND;
 	}
 
-	if (!pcu::getResolveMap(rulePackagePath, &resolveMap))
+	resolveMap = pcu::getResolveMap(rulePackagePath);
+	if (!resolveMap)
 		return prt::STATUS_RESOLVEMAP_PROVIDER_NOT_FOUND;
 
 	mRuleFile = pcu::getRuleFileEntry(resolveMap.get());
