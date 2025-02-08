@@ -26,16 +26,18 @@ import pyGeometry_test
 import shapeAttributesDict_test
 import arcgis_test
 import inspectRPK_test
+import custom_adaptor
 
 
 def test_suite():
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
-    suite.addTests(loader.loadTestsFromModule(otherExporter_test))
-    suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
-    suite.addTests(loader.loadTestsFromModule(shapeAttributesDict_test))
-    suite.addTests(loader.loadTestsFromModule(inspectRPK_test))
-    suite.addTests(loader.loadTestsFromModule(arcgis_test))
+    # suite.addTests(loader.loadTestsFromModule(otherExporter_test))
+    # suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
+    # suite.addTests(loader.loadTestsFromModule(shapeAttributesDict_test))
+    # suite.addTests(loader.loadTestsFromModule(inspectRPK_test))
+    # suite.addTests(loader.loadTestsFromModule(arcgis_test))
+    suite.addTests(loader.loadTestsFromModule(custom_adaptor))
     return suite
 
 

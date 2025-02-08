@@ -24,17 +24,20 @@
 #include "InitialShape.h"
 #include "ModelGenerator.h"
 #include "PRTContext.h"
+#include "PyAdaptor.h"
 #include "doc.h"
 #include "logging.h"
 #include "utils.h"
 
 #include "prt/API.h"
+#include "prtx/ExtensionManager.h"
 
 #include "pybind11/pybind11.h"
 #include "pybind11/stl_bind.h"
 
 #include <cstdio>
 #include <filesystem>
+#include <memory>
 #include <string>
 #include <vector>
 #ifdef _WIN32
@@ -53,7 +56,10 @@ void initializePRT() {
 }
 
 bool isPRTInitialized() {
-	PyErr_WarnEx(PyExc_DeprecationWarning, "is_prt_initialized() is deprecated and will always return true. PRT life time is tied to the module life time.", 1);
+	PyErr_WarnEx(PyExc_DeprecationWarning,
+	             "is_prt_initialized() is deprecated and will always return true. PRT life time is tied to the module "
+	             "life time.",
+	             1);
 	return true;
 }
 
@@ -184,12 +190,24 @@ py::dict getRPKInfo(const std::filesystem::path& rulePackagePath) {
 	return ruleAttrs;
 }
 
+void registerAdaptorFactory(py::object const& pyAdaptorFactory) {
+	auto factory = pyAdaptorFactory.cast<std::shared_ptr<PyAdaptorFactory>>();
+
+	auto factoryWrapper = new AdaptorFactoryWrapper(factory);
+	prtx::ExtensionManager::instance().addFactory(factoryWrapper); // ownership transferred to PRT
+	LOG_DBG << "registered Python adaptor factory with id = " << factory->getID();
+
+	auto adaptor = static_cast<PyAdaptor*>(factoryWrapper->create());
+	std::istream* stream = adaptor->createStream(prtx::URI::create(L"http://localhost/foo.bar"));
+	adaptor->destroyStream(stream);
+}
+
 PRTContextUPtr thePRT;
 
 } // namespace
 
 PYBIND11_MODULE(pyprt, m) {
-	thePRT = std::make_unique<PRTContext>(prt::LOG_WARNING);
+	thePRT = std::make_unique<PRTContext>(prt::LOG_DEBUG);
 	m.add_object("_prt_auto_shutdown", py::capsule([]() { thePRT.reset(); }));
 
 	py::options options;
@@ -235,4 +253,36 @@ PYBIND11_MODULE(pyprt, m) {
 	py::class_<std::filesystem::path>(m, "Path").def(py::init<std::string>());
 	py::implicitly_convertible<std::string, std::filesystem::path>();
 
+	py::class_<PyStream, std::shared_ptr<PyStream>>(m, "Stream")
+	        .def(py::init<py::object>())
+	        .def("read",
+	             [](PyStream& self, size_t size) {
+		             std::string result(size, '\0');
+		             self.read(result.data(), size);
+		             result.resize(self.gcount());
+		             return result;
+	             })
+	        .def("readline",
+	             [](PyStream& self) {
+		             std::string line;
+		             std::getline(self, line);
+		             return line;
+	             })
+	        .def("eof", [](PyStream& self) { return self.eof(); });
+
+	py::class_<PyAdaptor, std::shared_ptr<PyAdaptor>>(m, "StreamAdaptor")
+	        .def(py::init<>())
+	        .def("create_stream", &PyAdaptor::createStream, py::arg("uri"))
+	        .def("destroy_stream", &PyAdaptor::destroyStream, py::arg("stream"));
+
+	py::class_<PyAdaptorFactory, std::shared_ptr<PyAdaptorFactory>>(m, "StreamAdaptorFactory")
+	        .def(py::init<>())
+	        .def("create_adaptor", &PyAdaptorFactory::create)
+	        .def("get_merit", &PyAdaptorFactory::getMerit)
+	        .def("get_id", &PyAdaptorFactory::getID)
+	        .def("get_name", &PyAdaptorFactory::getName)
+	        .def("get_description", &PyAdaptorFactory::getDescription)
+	        .def("can_handle_uri", &PyAdaptorFactory::canHandleURI);
+
+	m.def("register_adaptor_factory", &registerAdaptorFactory);
 } // PYBIND11_MODULE
