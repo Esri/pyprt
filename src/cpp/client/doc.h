@@ -116,7 +116,7 @@ constexpr const char* IsInitP = R"mydelimiter(
         3. **__init__** (*init_shape_path*)
 
         Constructs an InitialShape by accepting the path to a shape file. This can be an OBJ file, Collada, etc.
-        A list of supported file formats can be found at `PRT geometry encoders <https://esri.github.io/cityengine-sdk/html/esri_prt_codecs.html>`_.
+        A list of supported file formats can be found in the PRT documentation at `built-in decoders <https://esri.github.io/cityengine-sdk/html/esri_prt_codecs.html#aDecoders>`_.
 
         As the given asset might reference arbitrary other files (e.g. textures), PyPRT employs a heuristic to
         recursively search the subtree rooted at the containing directory of the asset path. By default the recursion
