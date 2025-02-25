@@ -54,6 +54,8 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map KIND_CONDA            = [ kind: 'conda' ]
 @Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL8, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC112, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC1437, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
+@Field final Map LINUX_NATIVE_CONFIG_LATEST   = LINUX_NATIVE_CONFIG
+@Field final Map WINDOWS_NATIVE_CONFIG_LATEST = WINDOWS_NATIVE_CONFIG + [ tc: cepl.CFG_TC_VC1438 ]
 @Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
 @Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
 @Field final Map LINUX_AGENT_CONFIG    = [ ba: 'linux' ]
@@ -169,11 +171,11 @@ def taskPrepare(cfg) {
 	dir(path: 'cesdk_latest') {
 		try {
 			dir(path: 'windows') {
-				def myCfg = cfg + WINDOWS_NATIVE_CONFIG
+				def myCfg = cfg + WINDOWS_NATIVE_CONFIG_LATEST
 				papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
 			}
 			dir(path: 'linux') {
-				def myCfg = cfg + LINUX_NATIVE_CONFIG
+				def myCfg = cfg + LINUX_NATIVE_CONFIG_LATEST
 				papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
 			}
 		} catch (Exception e) {
