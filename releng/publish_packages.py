@@ -69,6 +69,7 @@ def main():
     print(f'Packages have been fetched to {args.workdir}')
 
     if args.publish_kind in [PKG_KINDS, PUBLISH_KIND_BOTH]:
+    if args.publish_kind in PKG_KINDS + [PUBLISH_KIND_BOTH]:
         publish(args)
         print(f'Packages have been published to {args.publish_kind} with mode {args.publish_mode}')
 
