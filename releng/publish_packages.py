@@ -22,6 +22,7 @@
 
 import argparse
 import os
+import shutil
 import ssl
 import tempfile
 from pathlib import Path
@@ -62,13 +63,15 @@ KEYRING_CRED_NAME_ANACONDA = 'anaconda.org'
 
 def main():
     args = get_args()
-    if os.path.exists(args.workdir):
-        raise Exception(f'Work directory {args.workdir} already exists')
 
-    fetch_packages(args)
-    print(f'Packages have been fetched to {args.workdir}')
+    if not args.reuse_fetch:
+        shutil.rmtree(args.workdir)
+        fetch_packages(args)
 
-    if args.publish_kind in [PKG_KINDS, PUBLISH_KIND_BOTH]:
+    if not os.path.exists(args.workdir):
+        raise Exception(f'Work directory {args.workdir} not found!')
+
+    print(f'Packages will be read from {args.workdir}')
     if args.publish_kind in PKG_KINDS + [PUBLISH_KIND_BOTH]:
         publish(args)
         print(f'Packages have been published to {args.publish_kind} with mode {args.publish_mode}')
@@ -165,6 +168,7 @@ def get_args():
     parser.add_argument('--workdir', type=str, required=False)
     parser.add_argument('--publish_kind', type=str, default=PUBLISH_KIND_NONE, choices=PUBLISH_KINDS)
     parser.add_argument('--publish_mode', type=str, default=PUBLISH_MODE_TEST, choices=PUBLISH_MODES)
+    parser.add_argument('--reuse_fetch', type=bool, default=False)
 
     args = parser.parse_args()
     if not args.workdir:
