@@ -38,22 +38,24 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field String pkgVer = "0.0.0"
 @Field final String PYPRT_CPP_DEPENDENCY_PROPERTIES = "${SOURCE}/src/cpp/dependencies.properties"
 
-@Field final String DOCKER_IMAGE_REV = "v10"
+@Field final String DOCKER_IMAGE_REV = "v11"
 
 @Field final String DOCKER_AGENT_LINUX = psl.BA_LINUX_DOCKER
-@Field final String DOCKER_WS_LINUX = "/tmp/pyprt/ws"
+@Field final String DOCKER_WS_LINUX = "/tmp/work"
 
 @Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
-@Field final String DOCKER_WS_WINDOWS = "c:/temp/pyprt/ws"
+@Field final String DOCKER_WS_WINDOWS = "c:/temp/work"
 
-@Field final Map PY38                  = [ py: '3.8' ]
 @Field final Map PY39                  = [ py: '3.9' ]
 @Field final Map PY310                 = [ py: '3.10' ]
 @Field final Map PY311                 = [ py: '3.11' ]
+@Field final Map PY312                 = [ py: '3.12' ]
 @Field final Map KIND_WHEEL            = [ kind: 'wheel' ]
 @Field final Map KIND_CONDA            = [ kind: 'conda' ]
 @Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL8, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC112, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC1437, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
+@Field final Map LINUX_NATIVE_CONFIG_LATEST   = LINUX_NATIVE_CONFIG
+@Field final Map WINDOWS_NATIVE_CONFIG_LATEST = WINDOWS_NATIVE_CONFIG + [ tc: cepl.CFG_TC_VC1438 ]
 @Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
 @Field final Map WINDOWS_DOCKER_CONFIG = [ ba: DOCKER_AGENT_WINDOWS, ws: DOCKER_WS_WINDOWS ]
 @Field final Map LINUX_AGENT_CONFIG    = [ ba: 'linux' ]
@@ -62,12 +64,10 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map PRT_LATEST            = [ prt: 'Latest' ] // latest internal PRT build
 
 @Field final List CONFIGS_PREPARE = [
-	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_AGENT_CONFIG),
+	composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_AGENT_CONFIG),
 ]
 
 @Field final List CONFIGS_TEST = [
-	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 	composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
@@ -76,11 +76,11 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG, PRT_LATEST),
 	composeConfig(PY311, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 	composeConfig(PY311, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY312, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY312, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_BUILD_WHEEL = [
-	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY38, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 	composeConfig(PY39, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
@@ -89,21 +89,23 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 	composeConfig(PY310, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG, PRT_LATEST),
 	composeConfig(PY311, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 	composeConfig(PY311, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY312, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY312, KIND_WHEEL, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_BUILD_CONDA = [
-	composeConfig(PY38, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
-	composeConfig(PY38, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY39, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 	composeConfig(PY39, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY310, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 	composeConfig(PY310, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 	composeConfig(PY311, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 	composeConfig(PY311, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
+	composeConfig(PY312, KIND_CONDA, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY312, KIND_CONDA, WINDOWS_NATIVE_CONFIG, WINDOWS_DOCKER_CONFIG),
 ]
 
 @Field final List CONFIGS_DOC = [
-	composeConfig(PY38, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY39, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 ]
 
 
@@ -169,11 +171,11 @@ def taskPrepare(cfg) {
 	dir(path: 'cesdk_latest') {
 		try {
 			dir(path: 'windows') {
-				def myCfg = cfg + WINDOWS_NATIVE_CONFIG
+				def myCfg = cfg + WINDOWS_NATIVE_CONFIG_LATEST
 				papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
 			}
 			dir(path: 'linux') {
-				def myCfg = cfg + LINUX_NATIVE_CONFIG
+				def myCfg = cfg + LINUX_NATIVE_CONFIG_LATEST
 				papl.fetchDependency(PAPL.Dependencies.CESDK_LATEST, myCfg)
 			}
 		} catch (Exception e) {
@@ -256,9 +258,9 @@ def taskBuildConda(cfg) {
 
 	String buildCmd = "conda build conda-recipe"
 	if (isUnix()) {
-		String condaEnv = '/tmp/pyprt/pyprt-conda-env'
+		String condaEnv = '/tmp/pyprt-conda-env'
 		String outDir = "${cfg.ws}/build/"
-		buildCmd += " && mkdir ${outDir} && cp -r ${condaEnv}/conda-bld/linux-64/pyprt*.tar.bz2 ${outDir}"
+		buildCmd += " && mkdir ${outDir} && cp -r ${cfg.ws}/conda-bld/linux-64/pyprt*.tar.bz2 ${outDir}"
 	}
 	else {
 		String condaEnv = 'C:\\temp\\conda\\envs\\pyprt'
@@ -283,7 +285,15 @@ def taskBuildDoc(cfg) {
 
 	final String sphinxOutput = 'html'
 
-	String buildCmd = "python -m pip install . && sphinx-build docs ${cfg.ws}/${sphinxOutput}"
+    String venv = "${cfg.ws}/venv"
+	String buildCmd = ''
+	if (isUnix()) {
+        buildCmd += "cp -r /tmp/pyprt-build-venv ${venv}" // copy ro venv so we can install and build docs
+	    buildCmd += " && ${venv}/bin/python -m pip install . && ${venv}/bin/sphinx-build docs ${cfg.ws}/${sphinxOutput}"
+	}
+	else {
+        buildCmd = "python -m pip install . && sphinx-build docs ${cfg.ws}/${sphinxOutput}"
+	}
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
 	runDockerCmd(cfg, dirMap, workDir, buildCmd)
@@ -301,7 +311,15 @@ def taskRunTests(cfg) {
 	cepl.cleanCurrentDir()
 	unstash(name: SOURCE_STASH)
 
-	String buildCmd = "python -m pip install . && python tests/run_tests.py --xml_output_directory ${cfg.ws}"
+    String venv = "${cfg.ws}/venv"
+	String buildCmd = ''
+	if (isUnix()) {
+	    buildCmd = "cp -r /tmp/pyprt-build-venv ${venv}" // copy ro venv so we can install to run tests
+	    buildCmd += " && ${venv}/bin/python -m pip install . && ${venv}/bin/python tests/run_tests.py --xml_output_directory ${cfg.ws}"
+	}
+	else {
+	    buildCmd = "python -m pip install . && python tests/run_tests.py --xml_output_directory ${cfg.ws}"
+	}
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
 	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(cfg, workDir, buildCmd))

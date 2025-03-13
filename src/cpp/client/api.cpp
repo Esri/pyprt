@@ -49,17 +49,16 @@ constexpr const wchar_t* ANNOT_HIDDEN = L"@Hidden";
 constexpr const wchar_t* NO_KEY = L"#NULL#";
 
 void initializePRT() {
-	auto prt = PRTContext::get(); // this will implicitly construct PRTContext and call prt::init
-	if (!prt)
-		LOG_ERR << "Failed to initialize PyPRT";
+	PyErr_WarnEx(PyExc_DeprecationWarning, "initialize_prt() is deprecated, initialization happens automatically.", 1);
 }
 
 bool isPRTInitialized() {
-	return (bool)PRTContext::get();
+	PyErr_WarnEx(PyExc_DeprecationWarning, "is_prt_initialized() is deprecated and will always return true. PRT life time is tied to the module life time.", 1);
+	return true;
 }
 
 void shutdownPRT() {
-	PRTContext::shutdown();
+	PyErr_WarnEx(PyExc_DeprecationWarning, "shutdown_prt() is deprecated, shutdown happens automatically.", 1);
 }
 
 py::list getPRTVersion() {
@@ -162,7 +161,7 @@ py::dict getRPKInfo(const std::filesystem::path& rulePackagePath) {
 
 	if (!std::filesystem::exists(rulePackagePath) || !pcu::getResolveMap(rulePackagePath, &resolveMap)) {
 		LOG_ERR << "invalid rule package path";
-		return py::dict();
+		return {};
 	}
 
 	std::wstring ruleFile = pcu::getRuleFileEntry(resolveMap.get());
@@ -170,14 +169,14 @@ py::dict getRPKInfo(const std::filesystem::path& rulePackagePath) {
 	const wchar_t* ruleFileURI = resolveMap->getString(ruleFile.c_str());
 	if (ruleFileURI == nullptr) {
 		LOG_ERR << "could not find rule file URI in resolve map of rule package " << rulePackagePath;
-		return py::dict();
+		return {};
 	}
 
 	prt::Status infoStatus = prt::STATUS_UNSPECIFIED_ERROR;
 	RuleFileInfoUPtr info(prt::createRuleFileInfo(ruleFileURI, nullptr, &infoStatus));
 	if (!info || infoStatus != prt::STATUS_OK) {
 		LOG_ERR << "could not get rule file info from rule file " << ruleFile;
-		return py::dict();
+		return {};
 	}
 
 	py::dict ruleAttrs = getRuleAttributes(info.get());
@@ -185,9 +184,13 @@ py::dict getRPKInfo(const std::filesystem::path& rulePackagePath) {
 	return ruleAttrs;
 }
 
+PRTContextUPtr thePRT;
+
 } // namespace
 
 PYBIND11_MODULE(pyprt, m) {
+	thePRT = std::make_unique<PRTContext>(prt::LOG_WARNING);
+	m.add_object("_prt_auto_shutdown", py::capsule([]() { thePRT.reset(); }));
 
 	py::options options;
 	options.disable_function_signatures();

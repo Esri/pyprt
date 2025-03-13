@@ -106,11 +106,13 @@ if(PYPRT_LINUX)
 	execute_process(COMMAND patchelf --force-rpath --set-rpath $ORIGIN ${_prt_usd_lib})
 
 	# fix wrong rpath in extension libraries
-	set(_prt_ext_libs "libcom.esri.prt.adaptors.so;libcom.esri.prt.alembic.so;libcom.esri.prt.codecs.so;libcom.esri.prt.fbx.so;libcom.esri.prt.oda.so;libcom.esri.prt.usd.so")
+	set(_prt_ext_libs "libcom.esri.prt.adaptors.so;libcom.esri.prt.alembic.so;libcom.esri.prt.codecs.so;libcom.esri.prt.fbx.so;libcom.esri.prt.oda.so;libcom.esri.prt.usd.so;libcom.esri.prt.citygml.so")
 	foreach(_prt_lib_name ${_prt_ext_libs})
 		set(_prt_lib "${PRT_EXTENSION_PATH}/${_prt_lib_name}")
-		execute_process(COMMAND patchelf --remove-rpath ${_prt_lib})
-		execute_process(COMMAND patchelf --force-rpath --set-rpath "$ORIGIN:$ORIGIN/../bin" ${_prt_lib})
+		if (EXISTS "${_prt_lib}")
+			execute_process(COMMAND patchelf --remove-rpath ${_prt_lib} COMMAND_ECHO STDOUT COMMAND_ERROR_IS_FATAL ANY)
+			execute_process(COMMAND patchelf --force-rpath --set-rpath "$ORIGIN:$ORIGIN/../bin" ${_prt_lib} COMMAND_ECHO STDOUT COMMAND_ERROR_IS_FATAL ANY)
+		endif()
 	endforeach()
 endif()
 
@@ -119,6 +121,7 @@ endif()
 
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
 
+set(PYBIND11_FINDPYTHON ON)
 set(pybind11_DIR "" CACHE PATH "Path to local PyBind11 distribution. Otherwise PyBind11 will be fetched from github.com")
 if(pybind11_DIR)
 	add_subdirectory(${pybind11_DIR} ${CMAKE_CURRENT_BINARY_DIR}/pybind11-build)

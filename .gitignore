@@ -1,7 +1,11 @@
+.idea
+.vscode
+.vs
+
+/dist
+/.tox/
 /build
 /install
-/src/.vs
-/src/.idea
 /src/CMakeSettings.json
 /src/cmake-build*
 /prt
@@ -9,22 +13,15 @@
 /examples/output
 /**/__pycache__
 /test-reports/
+/docs/_build
 
 **/.conda-*/
 **/.venv*/
-
 /**/Pipfile.lock
 
 # development mode
 /src/python/pyprt/pyprt/
 
-/.vs
-/.vscode
-/vscode_workspace_py4prt.code-workspace
-
 .ipynb_checkpoints
 *.egg-info
-/dist
-/.tox/
 
-/docs/_build

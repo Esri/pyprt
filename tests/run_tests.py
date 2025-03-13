@@ -45,9 +45,7 @@ def run_tests(test_xml_reports_path = None):
     else:
         runner = unittest.TextTestRunner(verbosity=3)
 
-    pyprt.initialize_prt()
     runner.run(test_suite())
-    pyprt.shutdown_prt()
 
 
 if __name__ == '__main__':    

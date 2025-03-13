@@ -19,7 +19,7 @@ init() {
     fi
 
     # Finally, fix ownership of WORKDIR (cf. Dockerfile)
-    chown -R default:default /tmp/pyprt ||  { echo '[ERROR] Failed to set ownership of workdir /tmp/pyprt!' >&2; exit 1; }
+    chown -R default:default /tmp/work ||  { echo '[ERROR] Failed to set ownership of workdir /tmp/work!' >&2; exit 1; }
 }
 
 {

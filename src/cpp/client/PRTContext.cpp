@@ -26,22 +26,6 @@
 #include <mutex>
 #include <string>
 
-namespace {
-
-std::shared_ptr<PRTContext> prtCtx;
-std::once_flag prtInitFlag;
-
-} // namespace
-
-std::shared_ptr<PRTContext> PRTContext::get() {
-	std::call_once(prtInitFlag, []() { prtCtx = std::make_shared<PRTContext>(prt::LOG_WARNING); });
-	return prtCtx;
-}
-
-void PRTContext::shutdown() {
-	prtCtx.reset();
-}
-
 PRTContext::PRTContext(prt::LogLevel minimalLogLevel) {
 	prt::addLogHandler(&mLogHandler);
 

@@ -21,10 +21,15 @@
 
 namespace doc {
 
-constexpr const char* Init =
-        "Initialization of PRT. PyPRT functionalities are blocked until the initialization is done.";
+constexpr const char* Init = R"mydelimiter(
+        DEPRECATED, this function has no effect. Initialization happens implicitly and automatically.
+
+        Initialization of PRT.
+    )mydelimiter";
 
 constexpr const char* IsInit = R"mydelimiter(
+        DEPRECATED, this function always returns true. PRT life time is tied to Python module life time.
+
         is_prt_initialized() -> bool
 
         This function returns *True* if PRT is initialized, *False* otherwise.
@@ -33,9 +38,11 @@ constexpr const char* IsInit = R"mydelimiter(
             bool
     )mydelimiter";
 
-constexpr const char* Shutdown =
-        "Shutdown of PRT. The PRT initialization process can be done only once per "
-        "session/script. Thus, ``initialize_prt()`` cannot be called after ``shutdown_prt()``.";
+constexpr const char* Shutdown = R"mydelimiter(
+        DEPRECATED, this function has no effect. Shutdown happens implicitly and automatically at module unload.
+
+        Shutdown of PRT.
+    )mydelimiter";
 
 constexpr const char* getPRTVersion = R"mydelimiter(
         get_api_version() -> list
@@ -109,7 +116,7 @@ constexpr const char* IsInitP = R"mydelimiter(
         3. **__init__** (*init_shape_path*)
 
         Constructs an InitialShape by accepting the path to a shape file. This can be an OBJ file, Collada, etc.
-        A list of supported file formats can be found at `PRT geometry encoders <https://esri.github.io/cityengine-sdk/html/esri_prt_codecs.html>`_.
+        A list of supported file formats can be found in the PRT documentation at `built-in decoders <https://esri.github.io/cityengine-sdk/html/esri_prt_codecs.html#aDecoders>`_.
 
         As the given asset might reference arbitrary other files (e.g. textures), PyPRT employs a heuristic to
         recursively search the subtree rooted at the containing directory of the asset path. By default the recursion
