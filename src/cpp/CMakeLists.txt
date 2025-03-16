@@ -30,12 +30,14 @@ include(dependencies.cmake)
 
 set(CLIENT_TARGET pyprt)
 set(CODEC_TARGET pyprt_codec)
+set(COMMON_TARGET pyprt_common)
 
+add_subdirectory(common)
 add_subdirectory(codec)
 add_subdirectory(client)
 
+add_dependencies(${CODEC_TARGET} ${COMMON_TARGET})
 add_dependencies(${CLIENT_TARGET} ${CODEC_TARGET})
-
 
 ### setup default install location
 

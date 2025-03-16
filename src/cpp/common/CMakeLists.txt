@@ -1,0 +1,60 @@
+#
+# PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
+#
+# Copyright (c) 2012-2024 Esri R&D Center Zurich
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# A copy of the license is available in the repository's LICENSE file.
+
+
+### setup build target
+
+set(CMAKE_CXX_FLAGS "")
+set(CMAKE_CXX_FLAGS_RELEASE "")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "")
+set(CMAKE_CXX_FLAGS_MINSIZEREL "")
+set(CMAKE_CXX_FLAGS_DEBUG "")
+
+add_library(${COMMON_TARGET} OBJECT utils.cpp)
+
+target_include_directories(${COMMON_TARGET} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_compile_features(${COMMON_TARGET} PRIVATE cxx_std_17)
+
+if(PYPRT_WINDOWS)
+	# TODO
+
+elseif(PYPRT_LINUX)
+	target_compile_options(${COMMON_TARGET} PRIVATE
+			-march=nocona
+			-fvisibility=hidden -fvisibility-inlines-hidden
+			-Wl,--exclude-libs,ALL
+			-Wall -Wextra -Wunused-parameter
+			$<$<CONFIG:RELWITHDEBINFO>:-O0>
+			$<$<CONFIG:RELEASE>:-O3>)
+
+	target_compile_definitions(${COMMON_TARGET} PRIVATE -DNDEBUG)
+
+	set_target_properties(${COMMON_TARGET} PROPERTIES
+			POSITION_INDEPENDENT_CODE ON
+			INSTALL_RPATH "\$ORIGIN/../bin"
+			INSTALL_RPATH_USE_LINK_PATH FALSE
+			SKIP_RPATH FALSE
+			BUILD_WITH_INSTALL_RPATH TRUE)
+endif()
+
+
+### add prt dependency
+
+target_link_libraries(${COMMON_TARGET} PRIVATE ${PRT_LINK_LIBRARIES})
+target_include_directories(${COMMON_TARGET} PRIVATE ${PRT_INCLUDE_PATH})

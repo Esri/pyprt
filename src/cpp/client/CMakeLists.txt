@@ -28,7 +28,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "")
 message(STATUS "Python Module Suffix: " ${PYTHON_MODULE_EXTENSION})
 
 pybind11_add_module(${CLIENT_TARGET} MODULE
-		utils.cpp
 		api.cpp
 		PyCallbacks.cpp
 		PRTContext.cpp
@@ -70,7 +69,8 @@ elseif(PYPRT_LINUX)
 endif()
 
 target_link_libraries(${CLIENT_TARGET} PRIVATE
-		${PRT_LINK_LIBRARIES})
+		${PRT_LINK_LIBRARIES}
+		${COMMON_TARGET})
 
 target_include_directories(${CLIENT_TARGET} PRIVATE
      ${PRT_INCLUDE_PATH}
