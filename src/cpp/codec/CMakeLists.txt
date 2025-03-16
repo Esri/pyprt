@@ -27,7 +27,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "")
 
 add_library(${CODEC_TARGET} SHARED
 		codec.cpp
-		encoder/PyEncoder.cpp)
+		encoder/PyEncoder.cpp
+		adaptor/HttpAdaptor.cpp)
 
 target_include_directories(${CODEC_TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -66,10 +67,12 @@ elseif(PYPRT_LINUX)
 endif()
 
 
-### add prt dependency
+### dependencies
 
-target_link_libraries(${CODEC_TARGET} PRIVATE ${PRT_LINK_LIBRARIES})
+target_link_libraries(${CODEC_TARGET} PRIVATE ${PRT_LINK_LIBRARIES} ${COMMON_TARGET})
 target_include_directories(${CODEC_TARGET} PRIVATE ${PRT_INCLUDE_PATH})
+
+add_dependency_poco(${CODEC_TARGET})
 
 
 ### install target

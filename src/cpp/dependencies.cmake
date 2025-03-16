@@ -138,3 +138,21 @@ else()
 		FetchContent_MakeAvailable(pybind11)
 	endif()
 endif()
+
+
+### poco networking library
+
+function(add_dependency_poco TARGET)
+	set(BUILD_SHARED_LIBS OFF)
+	set(BUILD_STATIC_LIBS ON)
+	set(POCO_UNBUNDLED OFF)
+	set(CMAKE_C_FLAGS "-fPIC")
+	set(CMAKE_CXX_FLAGS "-fPIC")
+	FetchContent_Declare(Poco
+            URL https://github.com/pocoproject/poco/archive/refs/tags/poco-1.14.1-release.tar.gz
+            DOWNLOAD_EXTRACT_TIMESTAMP true
+            OVERRIDE_FIND_PACKAGE
+			EXCLUDE_FROM_ALL)
+	find_package(Poco REQUIRED Net)
+	target_link_libraries(${TARGET} PRIVATE Poco::Net)
+endfunction()

@@ -20,6 +20,7 @@
 #include "codec.h"
 
 #include "encoder/PyEncoder.h"
+#include "adaptor/HttpAdaptor.h"
 
 #include "prtx/ExtensionManager.h"
 
@@ -30,6 +31,7 @@ extern "C" {
 PYENC_EXPORTS_API void registerExtensionFactories(prtx::ExtensionManager* manager) {
 	try {
 		manager->addFactory(PyEncoderFactory::instance());
+		manager->addFactory(HttpAdaptorFactory::instance());
 	}
 	catch (std::exception& e) {
 		std::cerr << __FUNCTION__ << " caught exception: " << e.what() << std::endl;
