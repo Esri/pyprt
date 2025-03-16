@@ -295,6 +295,10 @@ std::string toUTF8FromOSNarrow(const std::string& osString) {
 	return callAPI<wchar_t, char>(prt::StringUtils::toUTF8FromUTF16, utf16String);
 }
 
+std::string toUTF8FromUTF16(const std::wstring& utf16String) {
+	return callAPI<wchar_t, char>(prt::StringUtils::toUTF8FromUTF16, utf16String);
+}
+
 std::string percentEncode(const std::string& utf8String) {
 	return callAPI<char, char>(prt::StringUtils::percentEncode, utf8String);
 }
