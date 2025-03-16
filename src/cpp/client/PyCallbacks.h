@@ -84,7 +84,7 @@ public:
 	template <typename T>
 	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T value) {
 		if (!isHiddenAttribute(key)) {
-			pybind11::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
+			pybind11::object pyKey = pybind11::cast(pcu::removeDefaultStyleName(key));
 			mPayloads[isIndex]->mAttrVal[pyKey] = value;
 		}
 
@@ -94,7 +94,7 @@ public:
 	template <typename T>
 	prt::Status storeAttr(size_t isIndex, const wchar_t* key, const T* ptr, const size_t size, const size_t nRows) {
 		if (!isHiddenAttribute(key)) {
-			pybind11::object pyKey = py::cast(pcu::removeDefaultStyleName(key));
+			pybind11::object pyKey = pybind11::cast(pcu::removeDefaultStyleName(key));
 			const size_t nCol = size / nRows;
 
 			if (nRows > 1) {

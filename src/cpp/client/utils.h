@@ -24,15 +24,12 @@
 #include "prt/API.h"
 #include "prt/LogHandler.h"
 
-#include "pybind11/pybind11.h"
-#include "pybind11/stl.h"
-
+#include <algorithm>
 #include <cstdlib>
 #include <filesystem>
 #include <ostream>
 #include <string>
-
-namespace py = pybind11;
+#include <unordered_set>
 
 namespace pcu {
 
@@ -43,7 +40,6 @@ std::wstring detectStartRule(const RuleFileInfoUPtr& ruleFileInfo);
 std::unordered_set<std::wstring> getHiddenAttributes(const RuleFileInfoUPtr& ruleFileInfo);
 std::wstring removeDefaultStyleName(const wchar_t* key);
 
-AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::AttributeMapBuilder& bld);
 AttributeMapPtr createValidatedOptions(const std::wstring& encID, const AttributeMapPtr& unvalidatedOptions);
 
 template <typename C>

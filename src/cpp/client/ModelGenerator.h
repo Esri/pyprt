@@ -24,7 +24,7 @@
 #include "types.h"
 #include "utils.h"
 
-#include "pybind11/pybind11.h"
+#include "pybind11/stl.h" // required for PyBind11 type conversions
 
 #include <filesystem>
 #include <vector>

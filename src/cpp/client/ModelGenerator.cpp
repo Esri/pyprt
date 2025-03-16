@@ -22,7 +22,11 @@
 #include "PyCallbacks.h"
 #include "logging.h"
 
+#include "pybind11/pybind11.h"
+
 #include <memory>
+
+namespace py = pybind11;
 
 namespace {
 
@@ -34,10 +38,121 @@ const std::wstring ENCODER_ID_PYTHON = L"com.esri.pyprt.PyEncoder";
 
 constexpr const char* ENC_OPT_OUTPUT_PATH = "outputPath";
 
+/**
+ * Helper function to convert a Python dictionary of "<key>:<value>" into a
+ * prt::AttributeMap
+ */
+AttributeMapPtr createAttributeMapFromPythonDict(const py::dict& args, prt::AttributeMapBuilder& bld) {
+	for (auto a : args) {
+
+		const std::wstring key = a.first.cast<std::wstring>();
+
+		if (py::isinstance<py::list>(a.second.ptr())) {
+			auto li = a.second.cast<py::list>();
+
+			if (py::isinstance<py::bool_>(li[0])) {
+				try {
+					size_t count = li.size();
+					std::unique_ptr<bool[]> v_arr(new bool[count]);
+
+					for (size_t i = 0; i < count; i++) {
+						bool item = li[i].cast<bool>();
+						v_arr[i] = item;
+					}
+
+					bld.setBoolArray(key.c_str(), v_arr.get(), count);
+				}
+				catch (std::exception& e) {
+					LOG_ERR << L"cannot set bool array attribute " << key << ": " << e.what();
+				}
+			}
+			else if (py::isinstance<py::float_>(li[0])) {
+				try {
+					const size_t count = li.size();
+					std::vector<double> v_arr(count);
+					for (size_t i = 0; i < v_arr.size(); i++) {
+						double item = li[i].cast<double>();
+						v_arr[i] = item;
+					}
+
+					bld.setFloatArray(key.c_str(), v_arr.data(), v_arr.size());
+				}
+				catch (std::exception& e) {
+					LOG_ERR << L"cannot set float array attribute " << key << ": " << e.what();
+				}
+			}
+			else if (py::isinstance<py::int_>(li[0])) {
+				try {
+					const size_t count = li.size();
+					std::vector<int32_t> v_arr(count);
+					for (size_t i = 0; i < v_arr.size(); i++) {
+						int32_t item = li[i].cast<int32_t>();
+						v_arr[i] = item;
+					}
+
+					bld.setIntArray(key.c_str(), v_arr.data(), v_arr.size());
+				}
+				catch (std::exception& e) {
+					std::wcerr << L"cannot set int array attribute " << key << ": " << e.what() << std::endl;
+				}
+			}
+			else if (py::isinstance<py::str>(li[0])) {
+				const size_t count = li.size();
+				std::vector<std::wstring> v_arr(count);
+				for (size_t i = 0; i < v_arr.size(); i++) {
+					std::wstring item = li[i].cast<std::wstring>();
+					v_arr[i] = item;
+				}
+
+				const auto v_arr_ptrs = pcu::toPtrVec(v_arr); // setStringArray requires contiguous array
+				bld.setStringArray(key.c_str(), v_arr_ptrs.data(), v_arr_ptrs.size());
+			}
+			else
+				LOG_WRN << "Encountered unknown array type for key " << key;
+		}
+		else {
+			if (py::isinstance<py::bool_>(a.second.ptr())) { // check for boolean first!!
+				try {
+					bool val = a.second.cast<bool>();
+					bld.setBool(key.c_str(), val);
+				}
+				catch (std::exception& e) {
+					LOG_ERR << "cannot set bool attribute " << key << ": " << e.what();
+				}
+			}
+			else if (py::isinstance<py::float_>(a.second.ptr())) {
+				try {
+					double val = a.second.cast<double>();
+					bld.setFloat(key.c_str(), val);
+				}
+				catch (std::exception& e) {
+					LOG_ERR << "cannot set float attribute " << key << ": " << e.what();
+				}
+			}
+			else if (py::isinstance<py::int_>(a.second.ptr())) {
+				try {
+					int32_t val = a.second.cast<int32_t>();
+					bld.setInt(key.c_str(), val);
+				}
+				catch (std::exception& e) {
+					std::wcerr << L"cannot set int attribute " << key << ": " << e.what() << std::endl;
+				}
+			}
+			else if (py::isinstance<py::str>(a.second.ptr())) {
+				std::wstring val = a.second.cast<std::wstring>();
+				bld.setString(key.c_str(), val.c_str());
+			}
+			else
+				LOG_WRN << "Encountered unknown scalar type for key " << key;
+		}
+	}
+	return AttributeMapPtr{bld.createAttributeMap()};
+}
+
 void extractMainShapeAttributes(const py::dict& shapeAttr, int32_t& seed, std::wstring& shapeName,
                                 AttributeMapPtr& convertShapeAttr) {
-	convertShapeAttr = pcu::createAttributeMapFromPythonDict(
-	        shapeAttr, *(AttributeMapBuilderPtr(prt::AttributeMapBuilder::create())));
+	convertShapeAttr =
+	        createAttributeMapFromPythonDict(shapeAttr, *(AttributeMapBuilderPtr(prt::AttributeMapBuilder::create())));
 	if (convertShapeAttr) {
 		if (convertShapeAttr->hasKey(L"seed") && convertShapeAttr->getType(L"seed") == prt::AttributeMap::PT_INT)
 			seed = convertShapeAttr->getInt(L"seed");
@@ -158,7 +273,7 @@ void ModelGenerator::initializeEncoderData(const std::wstring& encName, const py
 	mEncodersOptionsPtr.clear();
 
 	mEncodersNames.push_back(encName);
-	const AttributeMapPtr encOptions{pcu::createAttributeMapFromPythonDict(encOpt, *mEncoderBuilder)};
+	const AttributeMapPtr encOptions{createAttributeMapFromPythonDict(encOpt, *mEncoderBuilder)};
 	mEncodersOptionsPtr.push_back(pcu::createValidatedOptions(encName.c_str(), encOptions));
 
 	mEncodersNames.push_back(ENCODER_ID_CGA_REPORT);
