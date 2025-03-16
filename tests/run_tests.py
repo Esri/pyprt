@@ -26,37 +26,39 @@ import pyGeometry_test
 import shapeAttributesDict_test
 import arcgis_test
 import inspectRPK_test
+import custom_assets
 
 
 def test_suite():
-    loader = unittest.TestLoader()
-    suite = unittest.TestSuite()
-    suite.addTests(loader.loadTestsFromModule(otherExporter_test))
-    suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
-    suite.addTests(loader.loadTestsFromModule(shapeAttributesDict_test))
-    suite.addTests(loader.loadTestsFromModule(inspectRPK_test))
-    suite.addTests(loader.loadTestsFromModule(arcgis_test))
-    return suite
+	loader = unittest.TestLoader()
+	suite = unittest.TestSuite()
+	suite.addTests(loader.loadTestsFromModule(otherExporter_test))
+	suite.addTests(loader.loadTestsFromModule(pyGeometry_test))
+	suite.addTests(loader.loadTestsFromModule(shapeAttributesDict_test))
+	suite.addTests(loader.loadTestsFromModule(inspectRPK_test))
+	suite.addTests(loader.loadTestsFromModule(arcgis_test))
+	suite.addTests(loader.loadTestsFromModule(custom_assets))
+	return suite
 
 
-def run_tests(test_xml_reports_path = None):
-    if test_xml_reports_path:
-        runner = xmlrunner.XMLTestRunner(verbosity=3, output=test_xml_reports_path)
-    else:
-        runner = unittest.TextTestRunner(verbosity=3)
+def run_tests(test_xml_reports_path=None):
+	if test_xml_reports_path:
+		runner = xmlrunner.XMLTestRunner(verbosity=3, output=test_xml_reports_path)
+	else:
+		runner = unittest.TextTestRunner(verbosity=3)
 
-    runner.run(test_suite())
+	runner.run(test_suite())
 
 
-if __name__ == '__main__':    
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--xml_output_directory", help="Output directory for XML test reports (must exist).", )
-    args = parser.parse_args()
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--xml_output_directory", help="Output directory for XML test reports (must exist).", )
+	args = parser.parse_args()
 
-    xml_output_directory = None
-    if args.xml_output_directory:
-        xml_output_directory = os.path.realpath(args.xml_output_directory)
-        if not (os.path.exists(xml_output_directory) and os.path.isdir(xml_output_directory)):
-            raise "XML reports output directory does not exist: " + xml_output_directory
-   
-    run_tests(xml_output_directory)
+	xml_output_directory = None
+	if args.xml_output_directory:
+		xml_output_directory = os.path.realpath(args.xml_output_directory)
+		if not (os.path.exists(xml_output_directory) and os.path.isdir(xml_output_directory)):
+			raise "XML reports output directory does not exist: " + xml_output_directory
+
+	run_tests(xml_output_directory)
