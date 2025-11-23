@@ -41,7 +41,7 @@ psl.runsHere('production')
 @Field final String SOURCE_STASH = 'pyprt-sources'
 
 @Field final String DOCKER_AGENT_LINUX = 'linux && docker'
-@Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
+@Field final String DOCKER_AGENT_WINDOWS = 'windows && docker'
 
 // we build Python 3.10 from source (not provided by base image)
 @Field final Map PY39 = [ py: '3.9' ]

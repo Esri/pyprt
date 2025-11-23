@@ -40,10 +40,10 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 @Field final String DOCKER_IMAGE_REV = "v11"
 
-@Field final String DOCKER_AGENT_LINUX = psl.BA_LINUX_DOCKER
+@Field final String DOCKER_AGENT_LINUX = "linux && docker"
 @Field final String DOCKER_WS_LINUX = "/tmp/work"
 
-@Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
+@Field final String DOCKER_AGENT_WINDOWS = 'windows && docker'
 @Field final String DOCKER_WS_WINDOWS = "c:/temp/work"
 
 @Field final Map PY39                  = [ py: '3.9' ]
