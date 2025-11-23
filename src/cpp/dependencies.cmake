@@ -91,27 +91,23 @@ list(APPEND PRT_EXT_RESOURCES ${PRT_EXTENSION_PATH}/usd)
 
 # Linux: patch the RUNPATH entries of some PRT libraries (upstream bug)
 if(PYPRT_LINUX)
+	function(replace_rpath LIB_PATH NEW_RPATH)
+		# in case you wonder why there are two patchelf commands:
+		# https://github.com/NixOS/patchelf/issues/94#issuecomment-338183814
+		execute_process(COMMAND patchelf --remove-rpath ${LIB_PATH} COMMAND_ECHO STDOUT COMMAND_ERROR_IS_FATAL ANY)
+		execute_process(COMMAND patchelf --force-rpath --set-rpath ${NEW_RPATH} ${LIB_PATH} COMMAND_ECHO STDOUT COMMAND_ERROR_IS_FATAL ANY)
+	endfunction()
+
 	message(STATUS "Workaround: fixing Linux RPATH for PRT libraries...")
-	# in case you wonder why there are two patchelf commands:
-	# https://github.com/NixOS/patchelf/issues/94#issuecomment-338183814
-
-	# fix missing rpath in libcom.esri.prt.core.so
-	set(_prt_core_lib "${PRT_LIBRARY_PATH}/libcom.esri.prt.core.so")
-	execute_process(COMMAND patchelf --remove-rpath ${_prt_core_lib})
-	execute_process(COMMAND patchelf --force-rpath --set-rpath $ORIGIN ${_prt_core_lib})
-
-	# fix wrong rpath in USD 3rd party library
-	set(_prt_usd_lib "${PRT_EXTENSION_PATH}/libprt_usd_ms.so")
-	execute_process(COMMAND patchelf --remove-rpath ${_prt_usd_lib})
-	execute_process(COMMAND patchelf --force-rpath --set-rpath $ORIGIN ${_prt_usd_lib})
+	replace_rpath("${PRT_LIBRARY_PATH}/libcom.esri.prt.core.so" "$ORIGIN")
+	replace_rpath("${PRT_EXTENSION_PATH}/libprt_usd_ms.so" "$ORIGIN")
 
 	# fix wrong rpath in extension libraries
 	set(_prt_ext_libs "libcom.esri.prt.adaptors.so;libcom.esri.prt.alembic.so;libcom.esri.prt.codecs.so;libcom.esri.prt.fbx.so;libcom.esri.prt.oda.so;libcom.esri.prt.usd.so;libcom.esri.prt.citygml.so")
 	foreach(_prt_lib_name ${_prt_ext_libs})
 		set(_prt_lib "${PRT_EXTENSION_PATH}/${_prt_lib_name}")
 		if (EXISTS "${_prt_lib}")
-			execute_process(COMMAND patchelf --remove-rpath ${_prt_lib} COMMAND_ECHO STDOUT COMMAND_ERROR_IS_FATAL ANY)
-			execute_process(COMMAND patchelf --force-rpath --set-rpath "$ORIGIN:$ORIGIN/../bin" ${_prt_lib} COMMAND_ECHO STDOUT COMMAND_ERROR_IS_FATAL ANY)
+			replace_rpath("${_prt_lib}" "$ORIGIN:$ORIGIN/../bin")
 		endif()
 	endforeach()
 endif()
