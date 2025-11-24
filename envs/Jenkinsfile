@@ -57,7 +57,7 @@ psl.runsHere('production')
 @Field final String OS_WINDOWS = 'windows'
 
 @Field final Map LINUX_DOCKER_TOOLCHAIN   = [ ba: DOCKER_AGENT_LINUX,   os: OS_LINUX, tc: cepl.CFG_TC_GCC112 ]
-@Field final Map WINDOWS_DOCKER_TOOLCHAIN = [ ba: DOCKER_AGENT_WINDOWS, os: OS_WINDOWS, tc: cepl.CFG_TC_VC1437 ]
+@Field final Map WINDOWS_DOCKER_TOOLCHAIN = [ ba: DOCKER_AGENT_WINDOWS, os: OS_WINDOWS, tc: cepl.CFG_TC_VC1438 ]
 
 @Field final List CONFIGS_PREPARE    = [
 	[ ba: 'linux' ]
@@ -151,7 +151,7 @@ def taskBuildDockerImage(cfg) {
 		docker.withRegistry("https://${DOCKER_REGISTRY}", 'jenkins-pyprt-dreg-robot') {
 			psl.runContainerBuild() {
 				retry(count: 3) {
-					def dockerImage = docker.build(image, "-m 8GB --rm -f ${dockerFile} ${buildArgs} ${labelArgs} .")
+					def dockerImage = docker.build(image, "--pull -m 8GB --rm -f ${dockerFile} ${buildArgs} ${labelArgs} .")
 					dockerImage.push(tag)
 					psl.runCmd("docker image prune -a -f --filter label=${buildLabel}")
 				}
