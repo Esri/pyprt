@@ -38,7 +38,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field String pkgVer = "0.0.0"
 @Field final String PYPRT_CPP_DEPENDENCY_PROPERTIES = "${SOURCE}/src/cpp/dependencies.properties"
 
-@Field final String DOCKER_IMAGE_REV = "v11"
+@Field final String DOCKER_IMAGE_REV = "v12"
 
 @Field final String DOCKER_AGENT_LINUX = "linux && docker"
 @Field final String DOCKER_WS_LINUX = "/tmp/work"
