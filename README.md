@@ -71,7 +71,7 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
   * Windows: MSVC 14.37 (Visual Studio 2022) or later
   * Linux: GCC 11.2 or later (we build and test on RHEL8 compatible distros)
 * Python (version >=3.9, <=3.12)
-  * Packages required to build wheels and run PyPRT: build, setuptools, wheel, auditwheel, arcgis, shapely, twine, sphinx, unittest-xml-reporting, numpy
+  * Packages required to build wheels and run PyPRT: build, setuptools, wheel, auditwheel, arcgis, shapely, twine, sphinx, numpy, pytest
 * Optional: Conda (e.g. miniconda3)
 * CMake (version >= 3.19)
 * Ninja
@@ -136,8 +136,8 @@ Detailed steps to run tests for development (basically what the `build_and_run_t
 
 1. Open a shell in the PyPRT git root.
 1. First time only: setup a virtual Python environment with build dependencies for PyPRT, see "Build Python Wheel" [above](#build-python-wheel).
-1. Build and install PyPRT into local env: `.venv/bin/python setup.py install`
-1. Run the tests: `.venv/bin/python tests/run_tests.py`
+1. Build and install PyPRT with test dependencies into local env: `.venv/bin/python -m pip install .[test]`
+1. Run the tests: `.venv/bin/pytest tests`
 1. Uninstall PyPRT from local env: `.venv/bin/python -m pip uninstall pyprt`
 1. Cleanup intermediate build files: `.venv/bin/python setup.py clean --all`
 
