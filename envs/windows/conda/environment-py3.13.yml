@@ -1,0 +1,8 @@
+channels:
+  - defaults
+dependencies:
+  - python=3.13
+  - anaconda::conda-build
+  - anaconda::conda-verify
+  - anaconda::sphinx
+  - conda-forge::shapely
