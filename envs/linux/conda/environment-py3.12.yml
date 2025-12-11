@@ -8,4 +8,3 @@ dependencies:
   - anaconda::conda-verify
   - anaconda::sphinx
   - conda-forge::shapely
-  - conda-forge::unittest-xml-reporting
