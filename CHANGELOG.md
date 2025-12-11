@@ -1,14 +1,18 @@
 # PyPRT ChangeLog
 
-## v1.12.0 (2025-08-XX)
+## v1.12.0 (2025-12-XX)
 
 ### Added
 * Added support for Rule Packages (RPK) created with CityEngine 2025.1
+* Added support for Python 3.13, including pre-built wheels and conda packages.
 
 ### Changed
 * Update to [PRT 3.3.11669](https://github.com/Esri/cityengine-sdk/blob/3.3.11669/changelog.md#cityengine-sdk-sdk-3311669-changelog)
 * Update to PyBind11 3.0.1
 * Switched test framework to "pytest"
+
+### Removed
+* Removed support for Python 3.9 which reached end-of-life in October 2025.
 
 ## v1.11.0 (2025-02-20)
 
