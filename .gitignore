@@ -15,7 +15,7 @@
 /test-reports/
 /docs/_build
 
-**/.conda-*/
+**/.conda*
 **/.venv*/
 /**/Pipfile.lock
 

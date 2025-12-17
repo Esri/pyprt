@@ -17,6 +17,7 @@ import os
 import sys
 
 import numpy as np
+import shapely
 import pyprt
 
 try:
@@ -38,6 +39,13 @@ def swap_yz_dimensions(array_coord):
     return np.reshape(coord_swap_dim, (1, coord_swap_dim.shape[0] * coord_swap_dim.shape[1]))
 
 
+def get_rings(polygon: shapely.Polygon):
+    rings = [polygon.exterior]
+    for interior in polygon.interiors:
+        rings.append(interior)
+    return rings
+
+
 def get_hole_info(geo):
     # use Shapely to detect interior rings (holes)
     # doing the ccw check is a workaround as sometimes the exterior is actually a hole
@@ -46,10 +54,11 @@ def get_hole_info(geo):
     shapely_geo = geo.as_shapely
 
     shapely_rings = []
-    for shapely_part in shapely_geo.geoms:
-        shapely_rings.append(shapely_part.exterior)
-        for shapely_interior in shapely_part.interiors:
-            shapely_rings.append(shapely_interior)
+    if isinstance(shapely_geo, shapely.MultiPolygon):
+        for polygon in shapely_geo.geoms:
+            shapely_rings.extend(get_rings(polygon))
+    elif isinstance(shapely_geo, shapely.Polygon):
+        shapely_rings.extend(get_rings(shapely_geo))
 
     holes = []
     hole = []

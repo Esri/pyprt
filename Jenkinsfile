@@ -38,12 +38,12 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field String pkgVer = "0.0.0"
 @Field final String PYPRT_CPP_DEPENDENCY_PROPERTIES = "${SOURCE}/src/cpp/dependencies.properties"
 
-@Field final String DOCKER_IMAGE_REV = "v11"
+@Field final String DOCKER_IMAGE_REV = "v12"
 
-@Field final String DOCKER_AGENT_LINUX = psl.BA_LINUX_DOCKER
+@Field final String DOCKER_AGENT_LINUX = "linux && docker"
 @Field final String DOCKER_WS_LINUX = "/tmp/work"
 
-@Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
+@Field final String DOCKER_AGENT_WINDOWS = 'windows && docker'
 @Field final String DOCKER_WS_WINDOWS = "c:/temp/work"
 
 @Field final Map PY39                  = [ py: '3.9' ]
@@ -53,7 +53,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 @Field final Map KIND_WHEEL            = [ kind: 'wheel' ]
 @Field final Map KIND_CONDA            = [ kind: 'conda' ]
 @Field final Map LINUX_NATIVE_CONFIG   = [ os: cepl.CFG_OS_RHEL8, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_GCC112, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
-@Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC1437, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
+@Field final Map WINDOWS_NATIVE_CONFIG = [ os: cepl.CFG_OS_WIN10, bc: cepl.CFG_BC_REL, tc: cepl.CFG_TC_VC1438, cc: cepl.CFG_CC_OPT, arch: cepl.CFG_ARCH_X86_64 ]
 @Field final Map LINUX_NATIVE_CONFIG_LATEST   = LINUX_NATIVE_CONFIG
 @Field final Map WINDOWS_NATIVE_CONFIG_LATEST = WINDOWS_NATIVE_CONFIG + [ tc: cepl.CFG_TC_VC1438 ]
 @Field final Map LINUX_DOCKER_CONFIG   = [ ba: DOCKER_AGENT_LINUX, ws: DOCKER_WS_LINUX ]
