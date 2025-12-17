@@ -30,7 +30,7 @@ import subprocess
 import keyring
 import sys
 
-PKG_PYTHON_VERSIONS = ['39', '310', '311', '312']
+PKG_PYTHON_VERSIONS = ['310', '311', '312', '313']
 
 PKG_KIND_WHEEL = 'wheel'
 PKG_KIND_CONDA = 'conda'
