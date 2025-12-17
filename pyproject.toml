@@ -25,6 +25,9 @@ Download = "https://github.com/Esri/pyprt/releases"
 Documentation = "https://github.com/Esri/pyprt/blob/master/README.md#documentation"
 Examples = "https://github.com/Esri/pyprt-examples"
 
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
 [build-system]
 requires = ["setuptools>=64", "sphinx", "wheel"]
 build-backend = "setuptools.build_meta"

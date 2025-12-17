@@ -313,18 +313,20 @@ def taskRunTests(cfg) {
 
     String venv = "${cfg.ws}/venv"
 	String buildCmd = ''
+	String pythonCmd = 'python'
+	String pytestCmd = 'pytest'
 	if (isUnix()) {
-	    buildCmd = "cp -r /tmp/pyprt-build-venv ${venv}" // copy ro venv so we can install to run tests
-	    buildCmd += " && ${venv}/bin/python -m pip install . && ${venv}/bin/python tests/run_tests.py --xml_output_directory ${cfg.ws}"
+	    buildCmd += "cp -r /tmp/pyprt-build-venv ${venv} && " // copy ro venv so we can install to run tests
+	    pythonCmd = "${venv}/bin/python"
+	    pytestCmd = "${venv}/bin/pytest"
 	}
-	else {
-	    buildCmd = "python -m pip install . && python tests/run_tests.py --xml_output_directory ${cfg.ws}"
-	}
+    buildCmd += "${pythonCmd} -m pip install .[test] && ${pytestCmd} --junitxml=${cfg.ws}/pyprt_test_results.xml tests"
+
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
 	runDockerCmd(cfg, dirMap, workDir, updateBuildEnv(cfg, workDir, buildCmd))
 
-	junit(testResults: 'TEST-*.xml')
+	junit(testResults: 'pyprt_test_results.xml')
 }
 
 
