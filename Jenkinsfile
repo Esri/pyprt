@@ -31,7 +31,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 
 // -- GLOBAL DEFINITIONS
 
-@Field final String REPO = 'git@github.com:esri/pyprt.git'
+@Field final String REPO = 'https://github.com/esri/pyprt.git'
 @Field final String SOURCE = 'pyprt.git'
 @Field final String CREDS = 'jenkins-devtopia-pyprt-deployer-key'
 @Field final String SOURCE_STASH = 'pyprt-sources'

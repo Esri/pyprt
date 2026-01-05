@@ -34,7 +34,7 @@ psl.runsHere('production')
 @Field final String DOCKER_PROJECT   = "${PSL.HARBOR_NAME}/pyprt/"
 @Field final String DOCKER_IMAGE_REV = 'v13' // target revision of the generated images
 
-@Field final String REPO   = 'git@github.com:esri/pyprt.git'
+@Field final String REPO   = 'https://github.com/esri/pyprt.git'
 @Field final String SOURCE = 'pyprt.git'
 @Field final String CREDS = 'jenkins-devtopia-pyprt-deployer-key'
 @Field final String SOURCE_STASH = 'pyprt-sources'
