@@ -6,7 +6,7 @@
 // -- PIPELINE LIBRARIES
 
 @Library('psl')
-import com.esri.zrh.jenkins.PipelineSupportLibrary
+import com.esri.zrh.jenkins.PipelineSupportLibrary as PSL
 import com.esri.zrh.jenkins.JenkinsTools
 import com.esri.zrh.jenkins.ce.CityEnginePipelineLibrary
 import com.esri.zrh.jenkins.ce.PrtAppPipelineLibrary as PAPL
@@ -355,7 +355,7 @@ Map composeConfig(py, kind, tc, dc, prt = PRT_DEFAULT) {
 }
 
 String getDockerImage(Map cfg) {
-	String image = 'zrh-dreg-sp-1.esri.com/pyprt/pyprt'
+	String image = "${PSL.HARBOR_NAME}/pyprt/pyprt"
 
 	String tag = "jnk-${DOCKER_IMAGE_REV}-"
 	tag += (cfg.os == cepl.CFG_OS_WIN10) ? 'windows' : (cfg.os == cepl.CFG_OS_RHEL8) ? 'linux' : error(cfg.os)
