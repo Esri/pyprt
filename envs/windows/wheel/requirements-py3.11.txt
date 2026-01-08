@@ -2,6 +2,6 @@ build>=1.0.0
 setuptools>=77.0
 arcgis
 Shapely
-Sphinx<7.0
+Sphinx
 twine
 numpy
