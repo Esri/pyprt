@@ -27,4 +27,5 @@ RUN python -V \
     && python -m pip install --no-cache-dir --upgrade pip \
 	&& python -m pip install --no-cache-dir --upgrade wheel \
 	&& python -m pip install --no-cache-dir -r /tmp/pyprt-wheel-requirements.txt \
-    && rm /tmp/pyprt-wheel-requirements.txt
+    && rm /tmp/pyprt-wheel-requirements.txt \
+    && chmod -R a+w $VIRTUAL_ENV
