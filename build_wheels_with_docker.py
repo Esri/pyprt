@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2024 Esri R&D Center Zurich
+# Copyright (c) 2012-2026 Esri R&D Center Zurich
 import shutil
 from pathlib import Path
 
