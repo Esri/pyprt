@@ -3,6 +3,6 @@ setuptools>=77.0
 auditwheel
 arcgis
 Shapely
-Sphinx<7.0
+Sphinx
 twine
 numpy

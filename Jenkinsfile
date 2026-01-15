@@ -105,7 +105,7 @@ env.PIPELINE_ARCHIVING_ALLOWED = "true"
 ]
 
 @Field final List CONFIGS_DOC = [
-	composeConfig(PY310, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
+	composeConfig(PY313, KIND_WHEEL, LINUX_NATIVE_CONFIG, LINUX_DOCKER_CONFIG),
 ]
 
 
@@ -286,14 +286,7 @@ def taskBuildDoc(cfg) {
 	final String sphinxOutput = 'html'
 
     String venv = "${cfg.ws}/venv"
-	String buildCmd = ''
-	if (isUnix()) {
-        buildCmd += "cp -r /tmp/pyprt-build-venv ${venv}" // copy ro venv so we can install and build docs
-	    buildCmd += " && ${venv}/bin/python -m pip install . && ${venv}/bin/sphinx-build docs ${cfg.ws}/${sphinxOutput}"
-	}
-	else {
-        buildCmd = "python -m pip install . && sphinx-build docs ${cfg.ws}/${sphinxOutput}"
-	}
+	String buildCmd = "python -m pip install . && sphinx-build docs ${cfg.ws}/${sphinxOutput}"
 	String workDir = "${cfg.ws}/${SOURCE}"
 	Map dirMap = [ (env.WORKSPACE) : cfg.ws ]
 	runDockerCmd(cfg, dirMap, workDir, buildCmd)

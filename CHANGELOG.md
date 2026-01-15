@@ -1,6 +1,6 @@
 # PyPRT ChangeLog
 
-## v1.12.0 (2025-12-XX)
+## v1.12.0 (2026-01-08)
 
 ### Added
 * Added support for Rule Packages (RPK) created with CityEngine 2025.1
