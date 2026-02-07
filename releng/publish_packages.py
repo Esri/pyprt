@@ -22,6 +22,7 @@
 
 import argparse
 import os
+import shutil
 import ssl
 import tempfile
 from pathlib import Path
@@ -62,13 +63,18 @@ KEYRING_CRED_NAME_ANACONDA = 'anaconda.org'
 
 def main():
     args = get_args()
-    if os.path.exists(args.workdir):
-        raise Exception(f'Work directory {args.workdir} already exists')
 
-    fetch_packages(args)
-    print(f'Packages have been fetched to {args.workdir}')
+    if not args.reuse_fetch:
+        if args.workdir.exists():
+            print(f'Cleaning up existing work directory {args.workdir}...')
+            shutil.rmtree(args.workdir)
+        fetch_packages(args)
 
-    if args.publish_kind in [PKG_KINDS, PUBLISH_KIND_BOTH]:
+    if not os.path.exists(args.workdir):
+        raise Exception(f'Work directory {args.workdir} not found!')
+
+    print(f'Packages will be read from {args.workdir}')
+    if args.publish_kind in PKG_KINDS + [PUBLISH_KIND_BOTH]:
         publish(args)
         print(f'Packages have been published to {args.publish_kind} with mode {args.publish_mode}')
 
@@ -152,6 +158,8 @@ def get_classifier(kind, py_ver, os_):
         return f'cp{py_ver}-cp{py_ver}-' + (PKG_WHEEL_CLS_LINUX if os_ == PKG_OS_LINUX else PKG_WHEEL_CLS_WINDOWS)
     elif kind == PKG_KIND_CONDA:
         return f'py{py_ver}-' + (PKG_CONDA_CLS_LINUX if os_ == PKG_OS_LINUX else PKG_CONDA_CLS_WINDOWS)
+    else:
+        raise Exception(f'Unknown kind {kind}')
 
 
 def get_args():
@@ -164,12 +172,26 @@ def get_args():
     parser.add_argument('--workdir', type=str, required=False)
     parser.add_argument('--publish_kind', type=str, default=PUBLISH_KIND_NONE, choices=PUBLISH_KINDS)
     parser.add_argument('--publish_mode', type=str, default=PUBLISH_MODE_TEST, choices=PUBLISH_MODES)
+    parser.add_argument('--reuse_fetch', type=_str_to_bool, default=False)
 
     args = parser.parse_args()
     if not args.workdir:
-        args.workdir = os.path.join(tempfile.gettempdir(), f'pyprt_pkg_{args.nexus_version}')
+        args.workdir = Path(tempfile.gettempdir()) / f'pyprt_pkg_{args.nexus_version}'
+
+    args.nexus_group = args.nexus_group.replace('.', '/')
 
     return args
+
+
+def _str_to_bool(value):
+    if isinstance(value, bool):
+        return value
+    val = value.strip().lower()
+    if val in ('true', '1', 'yes', 'y', 'on'):
+        return True
+    if val in ('false', '0', 'no', 'n', 'off'):
+        return False
+    raise argparse.ArgumentTypeError('Expected a boolean value: true/false')
 
 
 if __name__ == '__main__':
