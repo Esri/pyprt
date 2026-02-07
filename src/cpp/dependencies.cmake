@@ -1,7 +1,7 @@
 #
 # PyPRT - Python Bindings for the Procedural Runtime (PRT) of CityEngine
 #
-# Copyright (c) 2012-2024 Esri R&D Center Zurich
+# Copyright (c) 2012-2026 Esri R&D Center Zurich
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -61,65 +61,42 @@ if(NOT prt_DIR)
 	set(PRT_ARCHIVE "esri_ce_sdk-${PRT_VERSION}-${PRT_CLS}.zip")
 	set(PRT_URL     "https://github.com/esri/cityengine-sdk/releases/download/${PRT_VERSION}/${PRT_ARCHIVE}")
 
-	FetchContent_Declare(prt URL ${PRT_URL} DOWNLOAD_NO_EXTRACT $ENV{PRT_EXTRACTION_WORKAROUND})
-	FetchContent_GetProperties(prt)
-	if(NOT prt_POPULATED)
-		message(STATUS "Fetching PRT from ${PRT_URL}...")
-		FetchContent_Populate(prt)
-	endif()
-	if(prt_POPULATED)
-		if($ENV{PRT_EXTRACTION_WORKAROUND})
-			# on certain (linux only?) systems, "cmake -E tar" on PRT_ARCHIVE results in a corrupted PRT distribution
-			# manually provide PRT_EXTRACTION_WORKAROUND=1 on the cmake cmd line to use this workaround
-			# maybe related to https://bugzilla.redhat.com/show_bug.cgi?id=1526404
-			message(STATUS "Active PRT extraction workaround: ${prt_SOURCE_DIR}/cmake")
-			if (NOT EXISTS "${prt_SOURCE_DIR}/cmake")
-				# yep, relying on cmake implementation details, better look away...
-				set(PRT_LOCAL_ARCHIVE "${prt_SOURCE_DIR}/../prt-subbuild/prt-populate-prefix/src/${PRT_ARCHIVE}")
-				execute_process(COMMAND unzip -q -d ${prt_SOURCE_DIR} ${PRT_LOCAL_ARCHIVE})
-			endif()
-		endif()
-		set(prt_DIR "${prt_SOURCE_DIR}/cmake")
-	endif()
+	FetchContent_Declare(prt URL ${PRT_URL})
+	FetchContent_MakeAvailable(prt)
+	set(prt_DIR "${prt_SOURCE_DIR}/cmake")
 endif()
 
 find_package(prt CONFIG REQUIRED)
-message(STATUS "Using PRT ${PRT_VERSION_MAJOR}.${PRT_VERSION_MINOR}.${PRT_VERSION_MICRO} at ${prt_DIR}")
+message(STATUS "Using PRT ${PRT_VERSION_MAJOR}.${PRT_VERSION_MINOR}.${PRT_VERSION_MICRO} with cmake config at ${prt_DIR}")
 
 # workaround omission in prtConfig.cmake: manually setting up a resources list which needs to be installed as well
 list(APPEND PRT_EXT_RESOURCES ${PRT_EXTENSION_PATH}/usd)
 
 # Linux: patch the RUNPATH entries of some PRT libraries (upstream bug)
 if(PYPRT_LINUX)
+	function(replace_rpath LIB_PATH NEW_RPATH)
+		# in case you wonder why there are two patchelf commands:
+		# https://github.com/NixOS/patchelf/issues/94#issuecomment-338183814
+		execute_process(COMMAND patchelf --remove-rpath ${LIB_PATH} COMMAND_ECHO STDOUT COMMAND_ERROR_IS_FATAL ANY)
+		execute_process(COMMAND patchelf --force-rpath --set-rpath ${NEW_RPATH} ${LIB_PATH} COMMAND_ECHO STDOUT COMMAND_ERROR_IS_FATAL ANY)
+	endfunction()
+
 	message(STATUS "Workaround: fixing Linux RPATH for PRT libraries...")
-	# in case you wonder why there are two patchelf commands:
-	# https://github.com/NixOS/patchelf/issues/94#issuecomment-338183814
-
-	# fix missing rpath in libcom.esri.prt.core.so
-	set(_prt_core_lib "${PRT_LIBRARY_PATH}/libcom.esri.prt.core.so")
-	execute_process(COMMAND patchelf --remove-rpath ${_prt_core_lib})
-	execute_process(COMMAND patchelf --force-rpath --set-rpath $ORIGIN ${_prt_core_lib})
-
-	# fix wrong rpath in USD 3rd party library
-	set(_prt_usd_lib "${PRT_EXTENSION_PATH}/libprt_usd_ms.so")
-	execute_process(COMMAND patchelf --remove-rpath ${_prt_usd_lib})
-	execute_process(COMMAND patchelf --force-rpath --set-rpath $ORIGIN ${_prt_usd_lib})
+	replace_rpath("${PRT_LIBRARY_PATH}/libcom.esri.prt.core.so" "$ORIGIN")
+	replace_rpath("${PRT_EXTENSION_PATH}/libprt_usd_ms.so" "$ORIGIN")
 
 	# fix wrong rpath in extension libraries
 	set(_prt_ext_libs "libcom.esri.prt.adaptors.so;libcom.esri.prt.alembic.so;libcom.esri.prt.codecs.so;libcom.esri.prt.fbx.so;libcom.esri.prt.oda.so;libcom.esri.prt.usd.so;libcom.esri.prt.citygml.so")
 	foreach(_prt_lib_name ${_prt_ext_libs})
 		set(_prt_lib "${PRT_EXTENSION_PATH}/${_prt_lib_name}")
 		if (EXISTS "${_prt_lib}")
-			execute_process(COMMAND patchelf --remove-rpath ${_prt_lib} COMMAND_ECHO STDOUT COMMAND_ERROR_IS_FATAL ANY)
-			execute_process(COMMAND patchelf --force-rpath --set-rpath "$ORIGIN:$ORIGIN/../bin" ${_prt_lib} COMMAND_ECHO STDOUT COMMAND_ERROR_IS_FATAL ANY)
+			replace_rpath("${_prt_lib}" "$ORIGIN:$ORIGIN/../bin")
 		endif()
 	endforeach()
 endif()
 
 
 ### look for PyBind11
-
-find_package(Python COMPONENTS Interpreter Development REQUIRED)
 
 set(PYBIND11_FINDPYTHON ON)
 set(pybind11_DIR "" CACHE PATH "Path to local PyBind11 distribution. Otherwise PyBind11 will be fetched from github.com")
@@ -133,9 +110,6 @@ else()
 		GIT_TAG "v${PYBIND11_VERSION}"
 		GIT_SUBMODULES ""
 	)
-	FetchContent_GetProperties(pybind11)
-	if(NOT pybind11_POPULATED)
-		FetchContent_Populate(pybind11)
-		add_subdirectory(${pybind11_SOURCE_DIR} ${pybind11_BINARY_DIR})
-	endif()
+	FetchContent_MakeAvailable(pybind11)
 endif()
+message(STATUS "Using pybind11 ${pybind11_VERSION} at ${pybind11_SOURCE_DIR}")

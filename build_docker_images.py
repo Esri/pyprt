@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2024 Esri R&D Center Zurich
+# Copyright (c) 2012-2026 Esri R&D Center Zurich
 import json
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ from docker.errors import BuildError
 
 DOCKER_CLIENT = docker.from_env()
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-PYTHON_VERSIONS = ['3.9', '3.10', '3.11', '3.12']
+PYTHON_VERSIONS = ['3.10', '3.11', '3.12', '3.13']
 KINDS = ['wheel', 'conda']
 TAG_PREFIX_BASE = 'pyprt-base'
 TAG_PREFIX = 'pyprt'
@@ -70,7 +70,7 @@ def build_image(dockerfile, tag, args=None):
 
 def get_dockerfile(root_dir, os_, kind, py_ver=None):
 	dockerfile = os.path.join(root_dir, 'envs', os_, kind, 'Dockerfile')
-	if os_ == 'linux' and kind == 'wheel' and py_ver == '3.10':
+	if os_ == 'linux' and kind == 'wheel' and (py_ver == '3.10' or py_ver == '3.13'):
 		dockerfile += '-custom-py'
 	return dockerfile
 
@@ -87,7 +87,9 @@ def get_tag(prefix, os_, py_ver=None, kind=None):
 def get_args(os_, py_ver, kind):
 	args = dict(PY_VER=py_ver)
 	if os_ == 'linux' and py_ver == '3.10':
-		args['PY_VER_MICRO'] = '.15'
+		args['PY_VER_MICRO'] = '.19'
+	elif os_ == 'linux' and py_ver == '3.13':
+		args['PY_VER_MICRO'] = '.11'
 	elif os_ == 'windows' and kind == 'base' and py_ver:
 		args['BASE_IMAGE'] = f'python:{py_ver}-windowsservercore-1809'
 	return args

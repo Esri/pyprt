@@ -6,7 +6,7 @@
 // -- PIPELINE LIBRARIES
 
 @Library('psl')
-import com.esri.zrh.jenkins.PipelineSupportLibrary
+import com.esri.zrh.jenkins.PipelineSupportLibrary as PSL
 import com.esri.zrh.jenkins.JenkinsTools
 import com.esri.zrh.jenkins.ce.CityEnginePipelineLibrary
 import com.esri.zrh.jenkins.ce.PrtAppPipelineLibrary
@@ -31,23 +31,22 @@ psl.runsHere('production')
 
 // -- GLOBAL DEFINITIONS
 
-@Field final String DOCKER_REGISTRY  = 'zrh-dreg-sp-1.esri.com'
-@Field final String DOCKER_PROJECT   = "${DOCKER_REGISTRY}/pyprt/"
-@Field final String DOCKER_IMAGE_REV = 'v11' // target revision of the generated images
+@Field final String DOCKER_PROJECT   = "${PSL.HARBOR_NAME}/pyprt/"
+@Field final String DOCKER_IMAGE_REV = 'v13' // target revision of the generated images
 
-@Field final String REPO   = 'git@github.com:esri/pyprt.git'
+@Field final String REPO   = 'https://github.com/esri/pyprt.git'
 @Field final String SOURCE = 'pyprt.git'
 @Field final String CREDS = 'jenkins-devtopia-pyprt-deployer-key'
 @Field final String SOURCE_STASH = 'pyprt-sources'
 
 @Field final String DOCKER_AGENT_LINUX = 'linux && docker'
-@Field final String DOCKER_AGENT_WINDOWS = 'win19-64-d'
+@Field final String DOCKER_AGENT_WINDOWS = 'windows && docker'
 
-// we build Python 3.10 from source (not provided by base image)
-@Field final Map PY39 = [ py: '3.9' ]
-@Field final Map PY310 = [ py: '3.10', py_micro: '15' ]
+// On Linux, we build Python 3.10 and 3.13 from source (not provided by RHEL8 base image)
+@Field final Map PY310 = [ py: '3.10', py_micro: '19' ]
 @Field final Map PY311 = [ py: '3.11' ]
 @Field final Map PY312 = [ py: '3.12' ]
+@Field final Map PY313 = [ py: '3.13', py_micro: '11' ]
 
 @Field final Map BASE = [ kind: 'base' ]
 @Field final Map WHEEL = [ kind: 'wheel' ]
@@ -57,7 +56,7 @@ psl.runsHere('production')
 @Field final String OS_WINDOWS = 'windows'
 
 @Field final Map LINUX_DOCKER_TOOLCHAIN   = [ ba: DOCKER_AGENT_LINUX,   os: OS_LINUX, tc: cepl.CFG_TC_GCC112 ]
-@Field final Map WINDOWS_DOCKER_TOOLCHAIN = [ ba: DOCKER_AGENT_WINDOWS, os: OS_WINDOWS, tc: cepl.CFG_TC_VC1437 ]
+@Field final Map WINDOWS_DOCKER_TOOLCHAIN = [ ba: DOCKER_AGENT_WINDOWS, os: OS_WINDOWS, tc: cepl.CFG_TC_VC1438 ]
 
 @Field final List CONFIGS_PREPARE    = [
 	[ ba: 'linux' ]
@@ -65,16 +64,12 @@ psl.runsHere('production')
 @Field final List CONFIGS_BASE_IMAGES = [
 	composeConfig(null, BASE, LINUX_DOCKER_TOOLCHAIN),
 	composeConfig(null, BASE, WINDOWS_DOCKER_TOOLCHAIN),
-	composeConfig(PY39, BASE, WINDOWS_DOCKER_TOOLCHAIN),
 	composeConfig(PY310, BASE, WINDOWS_DOCKER_TOOLCHAIN),
 	composeConfig(PY311, BASE, WINDOWS_DOCKER_TOOLCHAIN),
 	composeConfig(PY312, BASE, WINDOWS_DOCKER_TOOLCHAIN),
+	composeConfig(PY313, BASE, WINDOWS_DOCKER_TOOLCHAIN),
 ]
 @Field final List CONFIGS_IMAGES = [
-	composeConfig(PY39, WHEEL, LINUX_DOCKER_TOOLCHAIN),
-	composeConfig(PY39, WHEEL, WINDOWS_DOCKER_TOOLCHAIN),
-	composeConfig(PY39, CONDA, LINUX_DOCKER_TOOLCHAIN),
-	composeConfig(PY39, CONDA, WINDOWS_DOCKER_TOOLCHAIN),
 	composeConfig(PY310, WHEEL, LINUX_DOCKER_TOOLCHAIN),
 	composeConfig(PY310, WHEEL, WINDOWS_DOCKER_TOOLCHAIN),
 	composeConfig(PY310, CONDA, LINUX_DOCKER_TOOLCHAIN),
@@ -87,6 +82,10 @@ psl.runsHere('production')
 	composeConfig(PY312, WHEEL, WINDOWS_DOCKER_TOOLCHAIN),
 	composeConfig(PY312, CONDA, LINUX_DOCKER_TOOLCHAIN),
 	composeConfig(PY312, CONDA, WINDOWS_DOCKER_TOOLCHAIN),
+	composeConfig(PY313, WHEEL, LINUX_DOCKER_TOOLCHAIN),
+	composeConfig(PY313, WHEEL, WINDOWS_DOCKER_TOOLCHAIN),
+	composeConfig(PY313, CONDA, LINUX_DOCKER_TOOLCHAIN),
+	composeConfig(PY313, CONDA, WINDOWS_DOCKER_TOOLCHAIN),
 ]
 
 
@@ -148,10 +147,10 @@ def taskBuildDockerImage(cfg) {
 	final String labelArgs = "--label ${buildLabel}"
 
 	dir(path: SOURCE) {
-		docker.withRegistry("https://${DOCKER_REGISTRY}", 'jenkins-pyprt-dreg-robot') {
+		docker.withRegistry("https://${PSL.HARBOR_NAME}", 'jenkins-pyprt-dreg-robot') {
 			psl.runContainerBuild() {
 				retry(count: 3) {
-					def dockerImage = docker.build(image, "-m 8GB --rm -f ${dockerFile} ${buildArgs} ${labelArgs} .")
+					def dockerImage = docker.build(image, "--pull -m 8GB --rm -f ${dockerFile} ${buildArgs} ${labelArgs} .")
 					dockerImage.push(tag)
 					psl.runCmd("docker image prune -a -f --filter label=${buildLabel}")
 				}

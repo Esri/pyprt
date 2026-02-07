@@ -1,9 +1,0 @@
-channels:
-  - defaults
-dependencies:
-  - python=3.9
-  - anaconda::conda-build
-  - anaconda::conda-verify
-  - anaconda::sphinx
-  - conda-forge::shapely
-  - conda-forge::unittest-xml-reporting

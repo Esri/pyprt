@@ -16,7 +16,7 @@ PyPRT provides a Python binding for the [CityEngine Procedural RunTime (PRT)](ht
 
 Run `pip install pyprt` in your (virtual) Python environment or `conda install -c esri pyprt` in a Conda environment. Then use `import pyprt` in your scripts.
 
-We provide wheels and Conda packages for Python 3.9, 3.10, 3.11 and 3.12 on Linux and Windows. For other Python versions please [build](#development) PyPRT yourself.
+We provide packages ([PyPI](https://pypi.org/project/pyprt/), [Conda](https://anaconda.org/channels/Esri/packages/pyprt/overview)) for Python 3.10, 3.11, 3.12 and 3.13 on Linux and Windows. For other Python versions please [build](#development) PyPRT yourself.
 
 ## Minimal Example
 
@@ -70,8 +70,8 @@ The project is composed of two parts: the C++ native directory (`src`) and Pytho
 * C++ Compiler (C++ 17)
   * Windows: MSVC 14.37 (Visual Studio 2022) or later
   * Linux: GCC 11.2 or later (we build and test on RHEL8 compatible distros)
-* Python (version >=3.9, <=3.12)
-  * Packages required to build wheels and run PyPRT: build, setuptools, wheel, auditwheel, arcgis, shapely, twine, sphinx, unittest-xml-reporting, numpy
+* Python (version >=3.10, <=3.13)
+  * Packages required to build wheels and run PyPRT: build, setuptools, wheel, auditwheel, arcgis, shapely, twine, sphinx, numpy, pytest
 * Optional: Conda (e.g. miniconda3)
 * CMake (version >= 3.19)
 * Ninja
@@ -86,11 +86,11 @@ _Note: on Windows, replace `bin` with `Scripts` in the following commands. Some 
 ### Build Python Wheel
 
 1. Open a shell in the PyPRT git root.
-1. First time only: set up a virtual Python environment with build dependencies for PyPRT. Adapt `python3.12` and the `envs` file to your desired OS/Python combination.
-    1. Create the virtual environment: `python3.12 -m venv .venv`
+1. First time only: set up a virtual Python environment with build dependencies for PyPRT. Adapt `python3.13` and the `envs` file to your desired OS/Python combination.
+    1. Create the virtual environment: `python3.13 -m venv .venv`
     1. Get latest pip: `.venv/bin/python -m pip install --upgrade pip`
     1. Get latest wheel: `.venv/bin/python -m pip install --upgrade wheel`
-    1. Install build dependencies for PyPRT: `.venv/bin/python -m pip install -r envs/linux/wheel/requirements-py3.12.txt`
+    1. Install build dependencies for PyPRT: `.venv/bin/python -m pip install -r envs/linux/wheel/requirements-py3.13.txt`
 1. Run `.venv/bin/python -m build --wheel`. This will build the CMake project and Python package. See [below](#c-debug-builds) for native debug mode.
 1. The resulting wheel is written to the temporary `dist` folder.
 
@@ -100,7 +100,7 @@ Note: To build a wheel with the native extension module in debug mode, edit the 
 
 1. Install Miniconda or Anaconda.
 1. Open a shell in the PyPRT git root and activate Miniconda (or Anaconda).
-1. First time only: run `conda env create -n pyprt --file envs/linux/conda/environment-py3.12.yml` to create a conda environment with all the required Python packages (adapt to your desired OS/Python combination).
+1. First time only: run `conda env create -n pyprt --file envs/linux/conda/environment-py3.13.yml` to create a conda environment with all the required Python packages (adapt to your desired OS/Python combination).
 1. First time only: run `conda install -n pyprt -c esri arcgis` (this is a workaround to reduce conda env resolving time in the step above)
 1. Activate the new conda env: `conda activate pyprt`
 1. Run `conda build ./conda-recipe`. This will build the CMake project and Python packages. See [below](#c-debug-builds) for native debug mode.
@@ -136,8 +136,8 @@ Detailed steps to run tests for development (basically what the `build_and_run_t
 
 1. Open a shell in the PyPRT git root.
 1. First time only: setup a virtual Python environment with build dependencies for PyPRT, see "Build Python Wheel" [above](#build-python-wheel).
-1. Build and install PyPRT into local env: `.venv/bin/python setup.py install`
-1. Run the tests: `.venv/bin/python tests/run_tests.py`
+1. Build and install PyPRT with test dependencies into local env: `.venv/bin/python -m pip install .[test]`
+1. Run the tests: `.venv/bin/pytest tests`
 1. Uninstall PyPRT from local env: `.venv/bin/python -m pip uninstall pyprt`
 1. Cleanup intermediate build files: `.venv/bin/python setup.py clean --all`
 
@@ -156,13 +156,13 @@ Note: On Windows, Docker needs to be switched to "Windows Containers".
 1. Open a shell in the PyPRT git root
 1. Create the base image for the desired build toolchain (adapt to your desired Python version):
    * Linux: `docker build --rm -f envs/linux/base/Dockerfile -t pyprt-base:linux .`
-   * Windows: `docker build --rm -f envs\windows\base\Dockerfile -t pyprt-base:windows-py3.12 --build-arg BASE_IMAGE=python:3.12-windowsservercore-1809 .`
+   * Windows: `docker build --rm -f envs\windows\base\Dockerfile -t pyprt-base:windows-py3.13 --build-arg BASE_IMAGE=python:3.13-windowsservercore-1809 .`
 1. Create the desired image for the build toolchain (adapt to your desired Python version):
-   * Linux: `docker build --rm -f envs/linux/wheel/Dockerfile -t pyprt:linux-py3.12 --build-arg PY_VER=3.12 .`
-   * Windows: `docker build --rm -f envs\windows\wheel\Dockerfile -t pyprt:windows-py3.12 --build-arg PY_VER=3.12 .`
+   * Linux: `docker build --rm -f envs/linux/wheel/Dockerfile -t pyprt:linux-py3.13 --build-arg PY_VER=3.13 .`
+   * Windows: `docker build --rm -f envs\windows\wheel\Dockerfile -t pyprt:windows-py3.13 --build-arg PY_VER=3.13 .`
 1. Run the build
-   * Linux: `docker run --rm -e DEFAULT_UID=$(id -u) -e DEFAULT_GID=$(id -g) -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:linux-py3.12 bash -c 'python -m build --wheel'`
-   * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py3.12 cmd /c "python -m build --wheel"`
+   * Linux: `docker run --rm -e DEFAULT_UID=$(id -u) -e DEFAULT_GID=$(id -g) -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:linux-py3.13 bash -c 'python -m build --wheel'`
+   * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py3.13 cmd /c "python -m build --wheel"`
 1. The resulting wheel should appear in the `dist` directory.
 
 #### Build Conda Packages
@@ -171,12 +171,12 @@ Note: On Windows, Docker needs to be switched to "Windows Containers".
 1. Create the base image for the desired build toolchain:
     * Linux: `docker build --rm -f envs/linux/base/Dockerfile -t pyprt-base:linux .`
     * Windows: `docker build --rm -f envs\windows\base\Dockerfile -t pyprt-base:windows .`
-1. Create the desired image for the build toolchain (adapt `py3.12` to your desired Python version):
-    * Linux: `docker build --rm -f envs/linux/conda/Dockerfile -t pyprt:linux-py3.12-conda --build-arg PY_VER=3.12 .`
-    * Windows: `docker build --rm -f envs\windows\conda\Dockerfile -t pyprt:windows-py3.12-conda --build-arg PY_VER=3.12 .`
+1. Create the desired image for the build toolchain (adapt `py3.13` to your desired Python version):
+    * Linux: `docker build --rm -f envs/linux/conda/Dockerfile -t pyprt:linux-py3.13-conda --build-arg PY_VER=3.13 .`
+    * Windows: `docker build --rm -f envs\windows\conda\Dockerfile -t pyprt:windows-py3.13-conda --build-arg PY_VER=3.13 .`
 1. Run the build
-    * Linux: `docker run --rm -e DEFAULT_UID=$(id -u) -e DEFAULT_GID=$(id -g) -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:linux-py3.12-conda bash -c 'conda build ./conda-recipe && cp -r /tmp/pyprt/pyprt-conda-env/conda-bld/linux-64/pyprt*.tar.bz2 /tmp/pyprt/root'`
-    * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py3.12-conda cmd /c "conda build ./conda-recipe && copy C:\temp\conda\envs\pyprt\conda-bld\win-64\pyprt-*.tar.bz2 C:\temp\pyprt\root"`
+    * Linux: `docker run --rm -e DEFAULT_UID=$(id -u) -e DEFAULT_GID=$(id -g) -v $(pwd):/tmp/pyprt/root -w /tmp/pyprt/root pyprt:linux-py3.13-conda bash -c 'conda build ./conda-recipe && cp -r /tmp/pyprt/pyprt-conda-env/conda-bld/linux-64/pyprt*.tar.bz2 /tmp/pyprt/root'`
+    * Windows: `docker run --rm -v %cd%:C:\temp\pyprt\root -w C:\temp\pyprt\root pyprt:windows-py3.13-conda cmd /c "conda build ./conda-recipe && copy C:\temp\conda\envs\pyprt\conda-bld\win-64\pyprt-*.tar.bz2 C:\temp\pyprt\root"`
 1. The resulting conda package will be located in the current directly (PyPRT git repo root).
 
 ## Licensing Information

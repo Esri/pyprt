@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2024 Esri R&D Center Zurich
+# Copyright (c) 2012-2026 Esri R&D Center Zurich
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ import sys
 import tempfile
 import platform
 import venv
+import pytest
 
 env_os = "windows" if platform.system() == "Windows" else "linux"
 env_py = f"py{sys.version_info[0]}.{sys.version_info[1]}"
@@ -28,12 +29,11 @@ venv.create(env_dir.name, with_pip=True)
 bin_segment = "Scripts" if platform.system() == "Windows" else "bin"
 py_cmd = os.path.join(env_dir.name, bin_segment, 'python')
 
-os.system(f"{py_cmd} -m pip install --upgrade pip")
-os.system(f"{py_cmd} -m pip install --upgrade wheel")
+os.system(f"{py_cmd} -m pip install --upgrade pip wheel")
 os.system(f"{py_cmd} -m pip install -r envs/{env_os}/wheel/requirements-{env_py}.txt")
 
-os.system(f"{py_cmd} -m pip install .")
-os.system(f"{py_cmd} tests/run_tests.py")
+os.system(f"{py_cmd} -m pip install .[test]")
+pytest.main(["-v", "tests"])
 os.system(f"{py_cmd} -m pip uninstall -y pyprt")
 
 env_dir.cleanup()

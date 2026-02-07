@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2024 Esri R&D Center Zurich
+# Copyright (c) 2012-2026 Esri R&D Center Zurich
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 # A copy of the license is available in the repository's LICENSE file.
 
 import os
-import unittest
 
 import pyprt
 
@@ -25,21 +24,21 @@ def asset_file(filename):
     return os.path.join(os.path.dirname(CS_FOLDER), 'tests', 'data', filename)
 
 
-class InspectRPKTest(unittest.TestCase):
-    def test_candler_rpk(self):
-        rpk = asset_file('candler.rpk')
+def test_candler_rpk():
+    rpk = asset_file('candler.rpk')
 
-        inspect_dict = pyprt.get_rpk_attributes_info(rpk)
-        ground_truth_keys = ['BuildingHeight', 'ColorizeWall', 'CornerWallWidth', 'CorniceOverhang', 'FloorHeight', 'FrontWindowWidth',
-                             'GroundfloorHeight', 'Mode', 'RearWindowWidth', 'SillSize', 'TileWidth', 'WallTexture', 'WindowHeight']
+    inspect_dict = pyprt.get_rpk_attributes_info(rpk)
+    ground_truth_keys = ['BuildingHeight', 'ColorizeWall', 'CornerWallWidth', 'CorniceOverhang', 'FloorHeight', 'FrontWindowWidth',
+                         'GroundfloorHeight', 'Mode', 'RearWindowWidth', 'SillSize', 'TileWidth', 'WallTexture', 'WindowHeight']
 
-        self.assertSetEqual(set(inspect_dict.keys()), set(ground_truth_keys))
+    assert set(inspect_dict.keys()) == set(ground_truth_keys)
 
-    def test_candler_rpk_attr(self):
-        rpk = asset_file('candler.rpk')
 
-        inspect_dict = pyprt.get_rpk_attributes_info(rpk)
-        ground_truth_dict = {'annotations': [['@Order', ['#NULL#', 3.0]],['@Range',['#NULL#', 0.5],['#NULL#', 2.0]],['@Group',['#NULL#', 'Windows'],['#NULL#', 4.0]]],
-                             'type': 'float'}
+def test_candler_rpk_attr():
+    rpk = asset_file('candler.rpk')
 
-        self.assertDictEqual(inspect_dict['RearWindowWidth'], ground_truth_dict)
+    inspect_dict = pyprt.get_rpk_attributes_info(rpk)
+    ground_truth_dict = {'annotations': [['@Order', ['#NULL#', 3.0]],['@Range',['#NULL#', 0.5],['#NULL#', 2.0]],['@Group',['#NULL#', 'Windows'],['#NULL#', 4.0]]],
+                         'type': 'float'}
+
+    assert inspect_dict['RearWindowWidth'] == ground_truth_dict

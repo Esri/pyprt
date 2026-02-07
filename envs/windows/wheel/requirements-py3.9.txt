@@ -1,8 +1,0 @@
-build>=1.0.0
-setuptools>=64.0
-arcgis
-Shapely
-Sphinx<7.0
-twine
-unittest-xml-reporting
-numpy

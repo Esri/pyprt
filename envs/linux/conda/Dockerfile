@@ -3,7 +3,7 @@ ARG BASE_TAG=linux
 FROM ${REGISTRY}pyprt-base:${BASE_TAG}
 
 # see https://github.com/conda/conda-docker/blob/master/miniconda3/centos7/Dockerfile
-ADD https://repo.anaconda.com/miniconda/Miniconda3-py312_24.7.1-0-Linux-x86_64.sh /tmp/miniconda.sh
+ADD https://repo.anaconda.com/miniconda/Miniconda3-py313_25.9.1-3-Linux-x86_64.sh /tmp/miniconda.sh
 RUN bash /tmp/miniconda.sh -bfp /opt/conda && rm -rf /tmp/miniconda.sh
 
 ARG PY_VER
@@ -11,7 +11,11 @@ COPY envs/linux/conda/environment-py${PY_VER}.yml /tmp/pyprt-conda-environment.y
 RUN /opt/conda/bin/conda config --system --set remote_backoff_factor 2 --set remote_connect_timeout_secs 60 --set remote_max_retries 8 --set remote_read_timeout_secs 240 \
     && /opt/conda/bin/conda config --system --add pkgs_dirs /tmp/work/conda_pkgs \
     && /opt/conda/bin/conda config --system --set conda_build.pkg_format tar.bz2 \
-    && /opt/conda/bin/conda config --system --add channels defaults \
+    && /opt/conda/bin/conda config --set always_yes true  \
+    && /opt/conda/bin/conda config --set show_channel_urls true \
+    && /opt/conda/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main \
+    && /opt/conda/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r \
+    && /opt/conda/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/msys2 \
     && /opt/conda/bin/conda env create --quiet --prefix /tmp/pyprt-conda-env --file /tmp/pyprt-conda-environment.yml \
     && /opt/conda/bin/conda install --quiet --prefix /tmp/pyprt-conda-env -c esri arcgis \
     && /opt/conda/bin/conda update --quiet --prefix /tmp/pyprt-conda-env --all \

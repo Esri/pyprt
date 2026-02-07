@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2024 Esri R&D Center Zurich
+# Copyright (c) 2012-2026 Esri R&D Center Zurich
 import shutil
 from pathlib import Path
 
@@ -24,7 +24,7 @@ import tempfile
 
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-PYTHON_VERSIONS = ['3.9', '3.10', '3.11', '3.12']
+PYTHON_VERSIONS = ['3.10', '3.11', '3.12', '3.13']
 TAG_PREFIX = 'pyprt'
 
 

@@ -1,7 +1,9 @@
 channels:
   - defaults
 dependencies:
-  - python=3.12
+  - python=3.13
+  - anaconda::libarchive
+  - anaconda::libmamba
   - anaconda::conda-build
   - anaconda::conda-verify
   - anaconda::sphinx
