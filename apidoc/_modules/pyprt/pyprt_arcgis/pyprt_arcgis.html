@@ -1,20 +1,19 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pyprt.pyprt_arcgis.pyprt_arcgis &#8212; Python  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
+    <title>pyprt.pyprt_arcgis.pyprt_arcgis &#8212; Project name not set  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=99ccb125" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -23,7 +22,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Python  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Project name not set  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt.pyprt_arcgis.pyprt_arcgis</a></li> 
       </ul>
@@ -35,7 +34,7 @@
           <div class="body" role="main">
             
   <h1>Source code for pyprt.pyprt_arcgis.pyprt_arcgis</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright (c) 2012-2024 Esri R&amp;D Center Zurich</span>
+<span></span><span class="c1"># Copyright (c) 2012-2026 Esri R&amp;D Center Zurich</span>
 
 <span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
 <span class="c1"># you may not use this file except in compliance with the License.</span>
@@ -50,24 +49,25 @@
 <span class="c1"># limitations under the License.</span>
 <span class="c1"># A copy of the license is available in the repository&#39;s LICENSE file.</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pyprt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shapely</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyprt</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">arcgis.geometry</span> <span class="kn">import</span> <span class="n">Geometry</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arcgis.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Geometry</span>
 <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;This module can be imported only if arcgis package is installed.&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">add_dimension</span><span class="p">(</span><span class="n">array_coord_2d</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_dimension</span><span class="p">(</span><span class="n">array_coord_2d</span><span class="p">):</span>
     <span class="n">array_coord_3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">array_coord_2d</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">array_coord_3d</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">array_coord_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">array_coord_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
 
 
-<span class="k">def</span> <span class="nf">swap_yz_dimensions</span><span class="p">(</span><span class="n">array_coord</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">swap_yz_dimensions</span><span class="p">(</span><span class="n">array_coord</span><span class="p">):</span>
     <span class="n">coord_swap_dim</span> <span class="o">=</span> <span class="n">array_coord</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">array_coord</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
     <span class="n">coord_swap_dim</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">coord_swap_dim</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
@@ -75,7 +75,19 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">coord_swap_dim</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">coord_swap_dim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">coord_swap_dim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
 
 
-<div class="viewcode-block" id="get_hole_info"><a class="viewcode-back" href="../../../pyprt.pyprt_arcgis.html#pyprt.pyprt_arcgis.pyprt_arcgis.get_hole_info">[docs]</a><span class="k">def</span> <span class="nf">get_hole_info</span><span class="p">(</span><span class="n">geo</span><span class="p">):</span>
+<div class="viewcode-block" id="get_rings">
+<a class="viewcode-back" href="../../../pyprt.pyprt_arcgis.html#pyprt.pyprt_arcgis.pyprt_arcgis.get_rings">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_rings</span><span class="p">(</span><span class="n">polygon</span><span class="p">:</span> <span class="n">shapely</span><span class="o">.</span><span class="n">Polygon</span><span class="p">):</span>
+    <span class="n">rings</span> <span class="o">=</span> <span class="p">[</span><span class="n">polygon</span><span class="o">.</span><span class="n">exterior</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">interior</span> <span class="ow">in</span> <span class="n">polygon</span><span class="o">.</span><span class="n">interiors</span><span class="p">:</span>
+        <span class="n">rings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interior</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rings</span></div>
+
+
+
+<div class="viewcode-block" id="get_hole_info">
+<a class="viewcode-back" href="../../../pyprt.pyprt_arcgis.html#pyprt.pyprt_arcgis.pyprt_arcgis.get_hole_info">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_hole_info</span><span class="p">(</span><span class="n">geo</span><span class="p">):</span>
     <span class="c1"># use Shapely to detect interior rings (holes)</span>
     <span class="c1"># doing the ccw check is a workaround as sometimes the exterior is actually a hole</span>
     <span class="c1"># we assume that interior rings follow &quot;their&quot; exterior ring</span>
@@ -83,10 +95,11 @@
     <span class="n">shapely_geo</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">as_shapely</span>
 
     <span class="n">shapely_rings</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">shapely_part</span> <span class="ow">in</span> <span class="n">shapely_geo</span><span class="o">.</span><span class="n">geoms</span><span class="p">:</span>
-        <span class="n">shapely_rings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shapely_part</span><span class="o">.</span><span class="n">exterior</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">shapely_interior</span> <span class="ow">in</span> <span class="n">shapely_part</span><span class="o">.</span><span class="n">interiors</span><span class="p">:</span>
-            <span class="n">shapely_rings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shapely_interior</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shapely_geo</span><span class="p">,</span> <span class="n">shapely</span><span class="o">.</span><span class="n">MultiPolygon</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="n">shapely_geo</span><span class="o">.</span><span class="n">geoms</span><span class="p">:</span>
+            <span class="n">shapely_rings</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">get_rings</span><span class="p">(</span><span class="n">polygon</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shapely_geo</span><span class="p">,</span> <span class="n">shapely</span><span class="o">.</span><span class="n">Polygon</span><span class="p">):</span>
+        <span class="n">shapely_rings</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">get_rings</span><span class="p">(</span><span class="n">shapely_geo</span><span class="p">))</span>
 
     <span class="n">holes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">hole</span> <span class="o">=</span> <span class="p">[]</span>
@@ -105,7 +118,10 @@
     <span class="k">return</span> <span class="n">holes</span></div>
 
 
-<div class="viewcode-block" id="arcgis_to_pyprt"><a class="viewcode-back" href="../../../pyprt.pyprt_arcgis.html#pyprt.pyprt_arcgis.pyprt_arcgis.arcgis_to_pyprt">[docs]</a><span class="k">def</span> <span class="nf">arcgis_to_pyprt</span><span class="p">(</span><span class="n">feature_set</span><span class="p">):</span>
+
+<div class="viewcode-block" id="arcgis_to_pyprt">
+<a class="viewcode-back" href="../../../pyprt.pyprt_arcgis.html#pyprt.pyprt_arcgis.pyprt_arcgis.arcgis_to_pyprt">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">arcgis_to_pyprt</span><span class="p">(</span><span class="n">feature_set</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;arcgis_to_pyprt(feature_set) -&gt; List[InitialShape]</span>
 <span class="sd">    This function allows converting an ArcGIS FeatureSet into a list of PyPRT InitialShape instances.</span>
 <span class="sd">    You then typically call the ModelGenerator constructor with the return value if this function as parameter.</span>
@@ -149,15 +165,16 @@
         <span class="k">except</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Ignoring invalid feature with id = </span><span class="si">{</span><span class="n">feature</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;objectid&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">initial_geometries</span></div>
+
 </pre></div>
 
             <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
@@ -165,13 +182,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -180,14 +197,14 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Python  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Project name not set  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyprt.pyprt_arcgis.pyprt_arcgis</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright .
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     </div>
   </body>
 </html>

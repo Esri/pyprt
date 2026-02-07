@@ -1,12 +1,5 @@
 /*
- * nature.css_t
- * ~~~~~~~~~~~~
- *
  * Sphinx stylesheet -- nature theme.
- *
- * :copyright: Copyright 2007-2023 by the Sphinx team, see AUTHORS.
- * :license: BSD, see LICENSE for details.
- *
  */
 
 @import url("basic.css");
@@ -140,6 +133,10 @@ a {
 a:hover {
     color: #E32E00;
     text-decoration: underline;
+}
+
+a:visited {
+    color: #551A8B;
 }
 
 div.body h1,
